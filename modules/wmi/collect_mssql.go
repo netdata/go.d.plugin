@@ -167,6 +167,9 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 			seen[name] = true
 			resource := pm.Labels.Get("resource")
 			idx := buildLockWaitIndex(px, name, resource)
+			if idx == "" {
+				continue
+			}
 			mx[idx] = int64(pm.Value)
 		}
 	}
@@ -226,9 +229,37 @@ func buildLockWaitIndex(prefix string, instance string, selector string) string 
 	switch selector {
 	case "AllocUnit":
 		sufix = "allocunit"
+	case "Application":
+		sufix = "application"
+	case "Database":
+		sufix = "database"
+	case "Extent":
+		sufix = "extent"
+	case "File":
+		sufix = "file"
+	case "HoBT":
+		sufix = "hobt"
+	case "Key":
+		sufix = "key"
+	case "Metadata":
+		sufix = "metadata"
+	case "OIB":
+		sufix = "oib"
+	case "Object":
+		sufix = "object"
+	case "Page":
+		sufix = "page"
+	case "RID":
+		sufix = "rid"
+	case "RowGroup":
+		sufix = "rowgroup"
+	case "Xact":
+		sufix = "xact"
+	default:
+		return ""
 	}
 
-	return prefix + "_" + instance + "_lock_wait_" + sufix
+	return prefix + instance + "_lock_wait_" + sufix
 }
 
 func cleanInstanceDBName(name string) string {
