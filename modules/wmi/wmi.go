@@ -40,6 +40,7 @@ func New() *WMI {
 			iis:            make(map[string]bool),
 			services:       make(map[string]bool),
 			mssql_instance: make(map[string]bool),
+			mssql_db:       make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -71,6 +72,7 @@ type (
 		processes      map[string]bool
 		iis            map[string]bool
 		mssql_instance map[string]bool
+		mssql_db       map[string]bool
 		services       map[string]bool
 		collectors     map[string]bool
 		collection     map[string]bool
