@@ -1443,12 +1443,8 @@ func (w *WMI) addMSSQLInstanceCharts(instance string, dbnames *map[string]bool) 
 				dim.ID = fmt.Sprintf(dim.ID, instance)
 			}
 		} else {
-			var markChart bool = false
-			for name, value := range *dbnames {
+			for name := range *dbnames {
 				var dim *module.Dim
-				if value == false {
-					continue
-				}
 				switch chart.Ctx {
 				case mssqlActiveTransactionChart.Ctx:
 					id := fmt.Sprintf("mssql_instance_%s_%s_active_transaction", instance, name)
@@ -1482,9 +1478,6 @@ func (w *WMI) addMSSQLInstanceCharts(instance string, dbnames *map[string]bool) 
 					w.Warning(err)
 					continue
 				}
-				markChart = true
-			}
-			if markChart == true {
 				chart.MarkNotCreated()
 			}
 		}
