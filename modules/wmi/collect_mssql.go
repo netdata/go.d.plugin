@@ -211,14 +211,14 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 	}
 
 	for instance := range seen {
-		if !w.cache.mssql[instance] {
-			w.cache.mssql[instance] = true
+		if !w.cache.mssql_instance[instance] {
+			w.cache.mssql_instance[instance] = true
 			w.addMSSQLInstanceCharts(instance, &db)
 		}
 	}
-	for instance := range w.cache.mssql {
+	for instance := range w.cache.mssql_instance {
 		if !seen[instance] {
-			delete(w.cache.mssql, instance)
+			delete(w.cache.mssql_instance, instance)
 			w.removeMSSQLInstanceCharts(instance)
 		}
 	}
