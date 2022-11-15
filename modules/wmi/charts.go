@@ -800,6 +800,7 @@ var (
 		mssqlStateSafeAutoChart.Copy(),
 		mssqlStateCompilationChart.Copy(),
 		mssqlStateRecompilationChart.Copy(),
+		mssqlUserConnectionChart.Copy(),
 	}
 	mssqlAccessMethodPageSplitsChart = module.Chart{
 		ID:       "mssql_instance_%s_access_page_split",
