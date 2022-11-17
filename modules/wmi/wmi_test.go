@@ -509,7 +509,7 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 		}
 	}
 	for instance := range w.cache.mssql_instance {
-		for _, chart := range mssqlChartsTmpl {
+		for _, chart := range mssqlInstanceChartsTmpl {
 			id := fmt.Sprintf(chart.ID, instance)
 			assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' instance", id, instance)
 		}

@@ -779,19 +779,12 @@ var (
 
 // MS-SQL
 var (
-	mssqlChartsTmpl = module.Charts{
+	mssqlInstanceChartsTmpl = module.Charts{
 		mssqlAccessMethodPageSplitsChart.Copy(),
 		mssqlCacheHitRatioChart.Copy(),
 		mssqlBufferCheckpointPageChart.Copy(),
 		mssqlBufferPageLifeExpectancyChart.Copy(),
 		mssqlPageIOChart.Copy(),
-		mssqlActiveTransactionChart.Copy(),
-		mssqlBackupRestoreChart.Copy(),
-		mssqlDatabaseSizeChart.Copy(),
-		mssqlLogFlushedChart.Copy(),
-		mssqlLogFlushesChart.Copy(),
-		mssqlTransactionChart.Copy(),
-		mssqlWriteTransactionChart.Copy(),
 		mssqlBlockedProcessChart.Copy(),
 		mssqlLocksWaitChart.Copy(),
 		mssqlMemmgrPendingMemoryChart.Copy(),
@@ -801,6 +794,15 @@ var (
 		mssqlStateCompilationChart.Copy(),
 		mssqlStateRecompilationChart.Copy(),
 		mssqlUserConnectionChart.Copy(),
+	}
+	mssqlInstanceDBChartsTmpl = module.Charts{
+		mssqlActiveTransactionChart.Copy(),
+		mssqlBackupRestoreChart.Copy(),
+		mssqlDatabaseSizeChart.Copy(),
+		mssqlLogFlushedChart.Copy(),
+		mssqlLogFlushesChart.Copy(),
+		mssqlTransactionChart.Copy(),
+		mssqlWriteTransactionChart.Copy(),
 	}
 	mssqlAccessMethodPageSplitsChart = module.Chart{
 		ID:       "mssql_instance_%s_access_page_split",
@@ -1522,7 +1524,7 @@ func (w *WMI) removeTableFromCharts(instance string, dbname string) {
 }
 
 func (w *WMI) addMSSQLInstanceCharts(instance string) {
-	charts := mssqlChartsTmpl.Copy()
+	charts := mssqlInstanceChartsTmpl.Copy()
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, instance)
