@@ -223,16 +223,16 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 		}
 	}
 
-	for name := range dbs {
-		if !w.cache.mssql_db[name] {
-			w.cache.mssql_db[name] = true
-			s := strings.Split(name, ":")
-			w.addTableToInstanceCharts(s[0], s[1])
+	for instance_db := range dbs {
+		if !w.cache.mssql_instance_db[instance_db] {
+			w.cache.mssql_instance_db[instance_db] = true
+			s := strings.Split(instance_db, ":")
+			w.addMSSQLInstanceDBCharts(s[0], s[1])
 		}
 	}
-	for instance_db := range w.cache.mssql_db {
+	for instance_db := range w.cache.mssql_instance_db {
 		if !dbs[instance_db] {
-			delete(w.cache.mssql_db, instance_db)
+			delete(w.cache.mssql_instance_db, instance_db)
 			s := strings.Split(instance_db, ":")
 			w.removeTableFromCharts(s[0], s[1])
 		}

@@ -1453,7 +1453,7 @@ func (w *WMI) removeIIWebsiteSCharts(website string) {
 	}
 }
 
-func (w *WMI) addTableToInstanceCharts(instance string, dbname string) {
+func (w *WMI) addMSSQLInstanceDBCharts(instance string, dbname string) {
 	for _, chart := range *w.Charts() {
 		var dim *module.Dim
 		switch chart.Ctx {
