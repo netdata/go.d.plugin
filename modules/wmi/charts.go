@@ -1454,72 +1454,32 @@ func (w *WMI) removeIIWebsiteSCharts(website string) {
 }
 
 func (w *WMI) addMSSQLInstanceDBCharts(instance string, dbname string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.Ctx {
-		case mssqlActiveTransactionChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_active_transaction", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlBackupRestoreChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_backup_restore", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlDatabaseSizeChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_database_size", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlLogFlushedChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_log_flushed", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlLogFlushesChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_log_flushes", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlTransactionChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_transaction", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		case mssqlWriteTransactionChart.Ctx:
-			id := fmt.Sprintf("mssql_instance_%s_db_%s_write_transaction", instance, dbname)
-			dim = &module.Dim{ID: id, Name: dbname, Algo: module.Incremental}
-		default:
-			continue
-		}
+	charts := mssqlInstanceDBChartsTmpl.Copy()
 
-		if dim == nil {
-			continue
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, instance, dbname)
+		chart.Labels = []module.Label{
+			{Key: "instance_db", Value: instance + "_" + dbname},
 		}
-		if err := chart.AddDim(dim); err != nil {
-			w.Warning(err)
-			continue
+		if chart.Dims != nil {
+			for _, dim := range chart.Dims {
+				dim.ID = fmt.Sprintf(dim.ID, instance, dbname)
+			}
 		}
-		chart.MarkNotCreated()
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
 	}
 }
 
-func (w *WMI) removeTableFromCharts(instance string, dbname string) {
+func (w *WMI) removeMSSQLInstanceDBCharts(instance string, dbname string) {
+	px := fmt.Sprintf("mssql_instance_%s_db_%s", instance, dbname)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.Ctx {
-		case mssqlActiveTransactionChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_active_transaction", instance, dbname)
-		case mssqlBackupRestoreChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_backup_restore", instance, dbname)
-		case mssqlDatabaseSizeChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_database_size", instance, dbname)
-		case mssqlLogFlushedChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_log_flushed", instance, dbname)
-		case mssqlLogFlushesChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_log_flushes", instance, dbname)
-		case mssqlTransactionChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_transaction", instance, dbname)
-		case mssqlWriteTransactionChart.Ctx:
-			id = fmt.Sprintf("mssql_instance_%s_%s_write_transaction", instance, dbname)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 

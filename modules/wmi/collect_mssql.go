@@ -234,7 +234,7 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 		if !dbs[instance_db] {
 			delete(w.cache.mssql_instance_db, instance_db)
 			s := strings.Split(instance_db, ":")
-			w.removeTableFromCharts(s[0], s[1])
+			w.removeMSSQLInstanceDBCharts(s[0], s[1])
 		}
 	}
 }
