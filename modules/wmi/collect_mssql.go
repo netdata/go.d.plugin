@@ -188,25 +188,25 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 	for _, pm := range pms.FindByName(metricMSSQLStatsAutoParameterization) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
 			instances[name] = true
-			mx[px+name+"_state_auto_param"] = int64(pm.Value)
+			mx[px+name+"_stats_auto_param"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLStatSafeAutoParameterization) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
 			instances[name] = true
-			mx[px+name+"_state_safe_auto"] = int64(pm.Value)
+			mx[px+name+"_stats_safe_auto"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLCompilation) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
 			instances[name] = true
-			mx[px+name+"_state_compilation"] = int64(pm.Value)
+			mx[px+name+"_stats_compilation"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLRecompilation) {
 		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
 			instances[name] = true
-			mx[px+name+"_state_recompilation"] = int64(pm.Value)
+			mx[px+name+"_stats_recompilation"] = int64(pm.Value)
 		}
 	}
 
