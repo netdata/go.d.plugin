@@ -88,65 +88,65 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLActiveTransactions) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_active_transaction"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_active_transaction"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBackupRestoreOperation) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_backup_restore"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_backup_restore"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLDataFileSize) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_database_size"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_database_size"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLLogFlushed) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_log_flushed"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_log_flushed"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLLogFlushes) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_log_flushes"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_log_flushes"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLTransactions) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_transaction"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_transaction"] = int64(pm.Value)
 			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLWriteTransaction) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
 			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[name] = true
-				dbs[name+":"+dbname] = true
-				mx[px+name+"_"+dbname+"_write_transaction"] = int64(pm.Value)
+				instances[instance] = true
+				dbs[instance+":"+dbname] = true
+				mx[px+instance+"_db_"+dbname+"_write_transaction"] = int64(pm.Value)
 			}
 		}
 	}
