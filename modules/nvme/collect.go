@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -42,32 +43,32 @@ func (n *NVMe) collectNVMeDevice(mx map[string]int64, devicePath string) error {
 
 	device := extractDeviceFromPath(devicePath)
 
-	mx["device_"+device+"_temperature"] = int64(float64(stats.Temperature) - 273.15) // Kelvin => Celsius
-	mx["device_"+device+"_percentage_used"] = stats.PercentUsed
-	mx["device_"+device+"_available_spare"] = stats.AvailSpare
-	mx["device_"+device+"_data_units_read"] = stats.DataUnitsRead * 1000 * 512
-	mx["device_"+device+"_data_units_written"] = stats.DataUnitsWritten * 1000 * 512
-	mx["device_"+device+"_host_read_commands"] = stats.HostReadCommands
-	mx["device_"+device+"_host_write_commands"] = stats.HostWriteCommands
-	mx["device_"+device+"_power_cycles"] = stats.PowerCycles
-	mx["device_"+device+"_power_on_time"] = stats.PowerOnHours * 3600 // hours => seconds
-	mx["device_"+device+"_unsafe_shutdowns"] = stats.UnsafeShutdowns
-	mx["device_"+device+"_media_errors"] = stats.MediaErrors
-	mx["device_"+device+"_num_err_log_entries"] = stats.NumErrLogEntries
-	mx["device_"+device+"_controller_busy_time"] = stats.ControllerBusyTime * 60 // minutes => seconds
-	mx["device_"+device+"_warning_temp_time"] = stats.WarningTempTime * 60       // minutes => seconds
-	mx["device_"+device+"_critical_comp_time"] = stats.CriticalCompTime * 60     // minutes => seconds
-	mx["device_"+device+"_thm_temp1_trans_count"] = stats.ThmTemp1TransCount
-	mx["device_"+device+"_thm_temp2_trans_count"] = stats.ThmTemp2TransCount
-	mx["device_"+device+"_thm_temp1_total_time"] = stats.ThmTemp1TotalTime // seconds
-	mx["device_"+device+"_thm_temp2_total_time"] = stats.ThmTemp2TotalTime // seconds
+	mx["device_"+device+"_temperature"] = int64(float64(parseValue(stats.Temperature)) - 273.15) // Kelvin => Celsius
+	mx["device_"+device+"_percentage_used"] = parseValue(stats.PercentUsed)
+	mx["device_"+device+"_available_spare"] = parseValue(stats.AvailSpare)
+	mx["device_"+device+"_data_units_read"] = parseValue(stats.DataUnitsRead) * 1000 * 512       // units => bytes
+	mx["device_"+device+"_data_units_written"] = parseValue(stats.DataUnitsWritten) * 1000 * 512 // units => bytes
+	mx["device_"+device+"_host_read_commands"] = parseValue(stats.HostReadCommands)
+	mx["device_"+device+"_host_write_commands"] = parseValue(stats.HostWriteCommands)
+	mx["device_"+device+"_power_cycles"] = parseValue(stats.PowerCycles)
+	mx["device_"+device+"_power_on_time"] = parseValue(stats.PowerOnHours) * 3600 // hours => seconds
+	mx["device_"+device+"_unsafe_shutdowns"] = parseValue(stats.UnsafeShutdowns)
+	mx["device_"+device+"_media_errors"] = parseValue(stats.MediaErrors)
+	mx["device_"+device+"_num_err_log_entries"] = parseValue(stats.NumErrLogEntries)
+	mx["device_"+device+"_controller_busy_time"] = parseValue(stats.ControllerBusyTime) * 60 // minutes => seconds
+	mx["device_"+device+"_warning_temp_time"] = parseValue(stats.WarningTempTime) * 60       // minutes => seconds
+	mx["device_"+device+"_critical_comp_time"] = parseValue(stats.CriticalCompTime) * 60     // minutes => seconds
+	mx["device_"+device+"_thm_temp1_trans_count"] = parseValue(stats.ThmTemp1TransCount)
+	mx["device_"+device+"_thm_temp2_trans_count"] = parseValue(stats.ThmTemp2TransCount)
+	mx["device_"+device+"_thm_temp1_total_time"] = parseValue(stats.ThmTemp1TotalTime) // seconds
+	mx["device_"+device+"_thm_temp2_total_time"] = parseValue(stats.ThmTemp2TotalTime) // seconds
 
-	mx["device_"+device+"_critical_warning_available_spare"] = boolToInt(stats.CriticalWarning&1 != 0)
-	mx["device_"+device+"_critical_warning_temp_threshold"] = boolToInt(stats.CriticalWarning&(1<<1) != 0)
-	mx["device_"+device+"_critical_warning_nvm_subsystem_reliability"] = boolToInt(stats.CriticalWarning&(1<<2) != 0)
-	mx["device_"+device+"_critical_warning_read_only"] = boolToInt(stats.CriticalWarning&(1<<3) != 0)
-	mx["device_"+device+"_critical_warning_volatile_mem_backup_failed"] = boolToInt(stats.CriticalWarning&(1<<4) != 0)
-	mx["device_"+device+"_critical_warning_persistent_memory_read_only"] = boolToInt(stats.CriticalWarning&(1<<5) != 0)
+	mx["device_"+device+"_critical_warning_available_spare"] = boolToInt(parseValue(stats.CriticalWarning)&1 != 0)
+	mx["device_"+device+"_critical_warning_temp_threshold"] = boolToInt(parseValue(stats.CriticalWarning)&(1<<1) != 0)
+	mx["device_"+device+"_critical_warning_nvm_subsystem_reliability"] = boolToInt(parseValue(stats.CriticalWarning)&(1<<2) != 0)
+	mx["device_"+device+"_critical_warning_read_only"] = boolToInt(parseValue(stats.CriticalWarning)&(1<<3) != 0)
+	mx["device_"+device+"_critical_warning_volatile_mem_backup_failed"] = boolToInt(parseValue(stats.CriticalWarning)&(1<<4) != 0)
+	mx["device_"+device+"_critical_warning_persistent_memory_read_only"] = boolToInt(parseValue(stats.CriticalWarning)&(1<<5) != 0)
 
 	return nil
 }
@@ -109,4 +110,9 @@ func boolToInt(v bool) int64 {
 		return 1
 	}
 	return 0
+}
+
+func parseValue(s nvmeNumber) int64 {
+	v, _ := strconv.ParseFloat(string(s), 64)
+	return int64(v)
 }
