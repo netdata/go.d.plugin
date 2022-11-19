@@ -1,6 +1,7 @@
 package nvme
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"os/exec"
@@ -9,37 +10,45 @@ import (
 
 type nvmeDeviceList struct {
 	Devices []struct {
-		DevicePath   string `json:"DevicePath"`
-		UsedBytes    int64  `json:"UsedBytes"`
-		PhysicalSize int64  `json:"PhysicalSize"`
-		SectorSize   int64  `json:"SectorSize"`
+		DevicePath   string     `json:"DevicePath"`
+		UsedBytes    nvmeNumber `json:"UsedBytes"`
+		PhysicalSize nvmeNumber `json:"PhysicalSize"`
+		SectorSize   nvmeNumber `json:"SectorSize"`
 	}
 }
 
 // See "Health Information Log Page" in the Current Specification Version
 // https://nvmexpress.org/developers/nvme-specification/
 type nvmeDeviceSmartLog struct {
-	CriticalWarning    int64 `json:"critical_warning"`
-	Temperature        int64 `json:"temperature"`
-	AvailSpare         int64 `json:"avail_spare"`
-	SpareThresh        int64 `json:"spare_thresh"`
-	PercentUsed        int64 `json:"percent_used"`
-	DataUnitsRead      int64 `json:"data_units_read"`
-	DataUnitsWritten   int64 `json:"data_units_written"`
-	HostReadCommands   int64 `json:"host_read_commands"`
-	HostWriteCommands  int64 `json:"host_write_commands"`
-	ControllerBusyTime int64 `json:"controller_busy_time"`
-	PowerCycles        int64 `json:"power_cycles"`
-	PowerOnHours       int64 `json:"power_on_hours"`
-	UnsafeShutdowns    int64 `json:"unsafe_shutdowns"`
-	MediaErrors        int64 `json:"media_errors"`
-	NumErrLogEntries   int64 `json:"num_err_log_entries"`
-	WarningTempTime    int64 `json:"warning_temp_time"`
-	CriticalCompTime   int64 `json:"critical_comp_time"`
-	ThmTemp1TransCount int64 `json:"thm_temp1_trans_count"`
-	ThmTemp2TransCount int64 `json:"thm_temp2_trans_count"`
-	ThmTemp1TotalTime  int64 `json:"thm_temp1_total_time"`
-	ThmTemp2TotalTime  int64 `json:"thm_temp2_total_time"`
+	CriticalWarning    nvmeNumber `json:"critical_warning"`
+	Temperature        nvmeNumber `json:"temperature"`
+	AvailSpare         nvmeNumber `json:"avail_spare"`
+	SpareThresh        nvmeNumber `json:"spare_thresh"`
+	PercentUsed        nvmeNumber `json:"percent_used"`
+	DataUnitsRead      nvmeNumber `json:"data_units_read"`
+	DataUnitsWritten   nvmeNumber `json:"data_units_written"`
+	HostReadCommands   nvmeNumber `json:"host_read_commands"`
+	HostWriteCommands  nvmeNumber `json:"host_write_commands"`
+	ControllerBusyTime nvmeNumber `json:"controller_busy_time"`
+	PowerCycles        nvmeNumber `json:"power_cycles"`
+	PowerOnHours       nvmeNumber `json:"power_on_hours"`
+	UnsafeShutdowns    nvmeNumber `json:"unsafe_shutdowns"`
+	MediaErrors        nvmeNumber `json:"media_errors"`
+	NumErrLogEntries   nvmeNumber `json:"num_err_log_entries"`
+	WarningTempTime    nvmeNumber `json:"warning_temp_time"`
+	CriticalCompTime   nvmeNumber `json:"critical_comp_time"`
+	ThmTemp1TransCount nvmeNumber `json:"thm_temp1_trans_count"`
+	ThmTemp2TransCount nvmeNumber `json:"thm_temp2_trans_count"`
+	ThmTemp1TotalTime  nvmeNumber `json:"thm_temp1_total_time"`
+	ThmTemp2TotalTime  nvmeNumber `json:"thm_temp2_total_time"`
+}
+
+// nvme-cli 2.1.1 exposes some values as strings
+type nvmeNumber string
+
+func (n *nvmeNumber) UnmarshalJSON(b []byte) error {
+	*n = nvmeNumber(bytes.Trim(b, "\""))
+	return nil
 }
 
 type nvmeCLIExec struct {
