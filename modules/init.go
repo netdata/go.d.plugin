@@ -41,6 +41,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/mongodb"
 	_ "github.com/netdata/go.d.plugin/modules/mysql"
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
+	_ "github.com/netdata/go.d.plugin/modules/nginxplus"
 	_ "github.com/netdata/go.d.plugin/modules/nginxvts"
 	_ "github.com/netdata/go.d.plugin/modules/nvidia_smi"
 	_ "github.com/netdata/go.d.plugin/modules/nvme"
