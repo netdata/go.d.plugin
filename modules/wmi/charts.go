@@ -77,27 +77,27 @@ const (
 	prioIISWebsiteErrorsRate
 	prioIISWebsiteUptime
 
-	prioMSSQLAccessMethodPageSplit
+	prioMSSQLAccessMethodPageSplits
 	prioMSSQLCacheHitRatio
-	prioMSSQLBufferCheckpointPage
+	prioMSSQLBufferCheckpointPages
 	prioMSSQLBufferPageLifeExpectancy
-	prioMSSQLPageIO
-	prioMSSQLActiveTransaction
-	prioMSSQLBackupRestoreOperation
-	prioMSSQLDataFileSize
-	prioMSSQLLogFlushed
-	prioMSSQLLogFlushes
-	prioMSSQLTransactions
-	prioMSSQLWriteTransaction
+	prioMSSQLBufManIOPS
+	prioMSSQLDatabaseActiveTransactions
+	prioMSSQLDatabaseBackupRestoreOperations
+	prioMSSQLDatabaseDataFileSize
+	prioMSSQLDatabaseLogFlushed
+	prioMSSQLDatabaseLogFlushes
+	prioMSSQLDatabaseTransactions
+	prioMSSQLDatabaseWriteTransactions
 	prioMSSQLBlockedProcess
 	prioMSSQLUserConnections
-	prioMSSQLLocksWait
-	prioMSSQLMemmgrPendingMemory
+	prioMSSQLLocksLockWait
+	prioMSSQLMemmgrPendingMemoryGrants
 	prioMSSQLMemTotalServer
 	prioMSSQLStatsAutoParameterization
-	prioMSSQLStatsSafeAuto
-	prioMSSQLStatsCompilation
-	prioMSSQLStatsRecompilation
+	prioMSSQLStatsSafeAutoParameterization
+	prioMSSQLStatsCompilations
+	prioMSSQLStatsRecompilations
 
 	prioServiceState
 	prioServiceStatus
@@ -784,7 +784,7 @@ var (
 		mssqlCacheHitRatioChart.Copy(),
 		mssqlBufferCheckpointPageChart.Copy(),
 		mssqlBufferPageLifeExpectancyChart.Copy(),
-		mssqlPageIOChart.Copy(),
+		mssqlBufManIOPSChart.Copy(),
 		mssqlBlockedProcessChart.Copy(),
 		mssqlLocksWaitChart.Copy(),
 		mssqlMemmgrPendingMemoryChart.Copy(),
@@ -795,29 +795,29 @@ var (
 		mssqlStatsRecompilationChart.Copy(),
 		mssqlUserConnectionChart.Copy(),
 	}
-	mssqlInstanceDBChartsTmpl = module.Charts{
-		mssqlActiveTransactionChart.Copy(),
-		mssqlBackupRestoreChart.Copy(),
+	mssqlDatabaseChartsTmpl = module.Charts{
+		mssqlDatabaseActiveTransactionsChart.Copy(),
+		mssqlDatabaseBackupRestoreOperationsChart.Copy(),
 		mssqlDatabaseSizeChart.Copy(),
-		mssqlLogFlushedChart.Copy(),
-		mssqlLogFlushesChart.Copy(),
-		mssqlTransactionChart.Copy(),
-		mssqlWriteTransactionChart.Copy(),
+		mssqlDatabaseLogFlushedChart.Copy(),
+		mssqlDatabaseLogFlushesChart.Copy(),
+		mssqlDatabaseTransactionsChart.Copy(),
+		mssqlDatabaseWriteTransactionsChart.Copy(),
 	}
 	// Access Method:
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-access-methods-object?view=sql-server-ver16
 	mssqlAccessMethodPageSplitsChart = module.Chart{
-		ID:       "mssql_instance_%s_access_page_split",
-		Title:    "Number of pages split",
-		Units:    "pages",
+		ID:       "mssql_instance_%s_accessmethods_page_splits",
+		Title:    "Page splits",
+		Units:    "splits/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_access_page_split",
-		Priority: prioMSSQLAccessMethodPageSplit,
+		Ctx:      "wmi.mssql_instance_accessmethods_page_splits",
+		Priority: prioMSSQLAccessMethodPageSplits,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_access_page_split", Name: "page", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_accessmethods_page_splits", Name: "page", Algo: module.Incremental},
 		},
 	}
-	// BUffer Management
+	// Buffer Management
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-buffer-manager-object?view=sql-server-ver16
 	mssqlCacheHitRatioChart = module.Chart{
 		ID:       "mssql_instance_%s_cache_hit_ratio",
@@ -827,240 +827,241 @@ var (
 		Ctx:      "wmi.mssql_instance_cache_hit_ratio",
 		Priority: prioMSSQLCacheHitRatio,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_cache_hit_ratio", Name: "page"},
+			{ID: "mssql_instance_%s_cache_hit_ratio", Name: "hit_ratio"},
 		},
 	}
 	mssqlBufferCheckpointPageChart = module.Chart{
-		ID:       "mssql_instance_%s_buffer_checkpoint_page",
-		Title:    "Pages flushes by checkpoint",
-		Units:    "pages",
+		ID:       "mssql_instance_%s_bufman_checkpoint_pages",
+		Title:    "Flushed pages",
+		Units:    "pages/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_buffer_checkpoint_page",
-		Priority: prioMSSQLBufferCheckpointPage,
+		Ctx:      "wmi.mssql_instance_bufman_checkpoint_pages",
+		Priority: prioMSSQLBufferCheckpointPages,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_buffer_checkpoint_page", Name: "page", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_bufman_checkpoint_pages", Name: "flushed", Algo: module.Incremental},
 		},
 	}
 	mssqlBufferPageLifeExpectancyChart = module.Chart{
-		ID:       "mssql_instance_%s_buffer_pagelife_expectancy",
-		Title:    "Duration page in buffer",
+		ID:       "mssql_instance_%s_bufman_page_life_expectancy",
+		Title:    "Page life expectancy",
 		Units:    "seconds",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_buffer_pagelife_expectancy",
+		Ctx:      "wmi.mssql_instance_bufman_page_life_expectancy",
 		Priority: prioMSSQLBufferPageLifeExpectancy,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_buffer_pagelife_expectancy", Name: "duration", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_bufman_page_life_expectancy_seconds", Name: "life_expectancy"},
 		},
 	}
-	mssqlPageIOChart = module.Chart{
-		ID:       "mssql_instance_%s_page_io",
+	mssqlBufManIOPSChart = module.Chart{
+		ID:       "mssql_instance_%s_bufman_iops",
 		Title:    "Number of pages input and output",
-		Units:    "pages",
+		Units:    "pages/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_page_io",
-		Priority: prioMSSQLPageIO,
+		Ctx:      "wmi.mssql_instance_bufman_iops",
+		Priority: prioMSSQLBufManIOPS,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_page_read", Name: "read", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_page_write", Name: "write", Mul: -1, Algo: module.Incremental},
-		},
-	}
-	// Database
-	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-databases-object?view=sql-server-2017
-	mssqlActiveTransactionChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_active_transaction",
-		Title:    "Active transactions per database",
-		Units:    "transactions",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_active_transaction",
-		Priority: prioMSSQLActiveTransaction,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_active_transaction", Name: "transaction", Algo: module.Incremental},
-		},
-	}
-	mssqlBackupRestoreChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_backup_restore",
-		Title:    "Backup IO per database",
-		Units:    "operations",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_backup_restore",
-		Priority: prioMSSQLBackupRestoreOperation,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_backup_restore", Name: "backup", Algo: module.Incremental},
-		},
-	}
-	mssqlDatabaseSizeChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_database_size",
-		Title:    "Current database size",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_database_size",
-		Priority: prioMSSQLDataFileSize,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_database_size", Name: "size", Algo: module.Incremental},
-		},
-	}
-	mssqlLogFlushedChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_log_flushed",
-		Title:    "Log byte Flushed per database",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_log_flushed",
-		Priority: prioMSSQLLogFlushed,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_log_flushed", Name: "flush", Algo: module.Incremental},
-		},
-	}
-	mssqlLogFlushesChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_log_flushes",
-		Title:    "Log byte Flushed per database",
-		Units:    "seconds",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_log_flushes",
-		Priority: prioMSSQLLogFlushes,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_log_flushes", Name: "flush", Algo: module.Incremental},
-		},
-	}
-	mssqlTransactionChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_transaction",
-		Title:    "Transactions per database",
-		Units:    "transactions",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_transaction",
-		Priority: prioMSSQLTransactions,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_transaction", Name: "transaction", Algo: module.Incremental},
-		},
-	}
-	mssqlWriteTransactionChart = module.Chart{
-		ID:       "mssql_instance_%s_db_%s_write_transaction",
-		Title:    "Write transactions per database",
-		Units:    "transactions",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_write_transaction",
-		Priority: prioMSSQLWriteTransaction,
-		Dims: module.Dims{
-			{ID: "mssql_instance_%s_db_%s_write_transaction", Name: "transaction", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_bufman_page_reads", Name: "read", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_bufman_page_writes", Name: "written", Mul: -1, Algo: module.Incremental},
 		},
 	}
 	// General Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-general-statistics-object?view=sql-server-ver16
 	mssqlBlockedProcessChart = module.Chart{
 		ID:       "mssql_instance_%s_blocked_process",
-		Title:    "Server is not able to retain lock",
+		Title:    "Blocked processes",
 		Units:    "process",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_blocked_process",
+		Ctx:      "wmi.mssql_instance_blocked_processes",
 		Priority: prioMSSQLBlockedProcess,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_blocked_process", Name: "process", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_genstats_blocked_processes", Name: "blocked"},
 		},
 	}
 	mssqlUserConnectionChart = module.Chart{
 		ID:       "mssql_instance_%s_user_connection",
 		Title:    "User connections",
-		Units:    "connection/s",
+		Units:    "connections",
 		Fam:      "mssql",
 		Ctx:      "wmi.mssql_instance_user_connection",
 		Priority: prioMSSQLUserConnections,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_user_connection", Name: "connection", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_genstats_user_connections", Name: "user"},
 		},
 	}
 	// Lock Wait
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-locks-object?view=sql-server-ver16
 	mssqlLocksWaitChart = module.Chart{
-		ID:       "mssql_instance_%s_locks_wait",
-		Title:    "Blocked processes",
-		Units:    "seconds",
+		ID:       "mssql_instance_%s_locks_lock_wait",
+		Title:    "Lock requests that required the caller to wait",
+		Units:    "locks/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_locks_wait",
-		Priority: prioMSSQLLocksWait,
+		Ctx:      "wmi.mssql_instance_locks_lock_wait",
+		Priority: prioMSSQLLocksLockWait,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_lock_wait_allocunit", Name: "AllocUnit", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_application", Name: "Application", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_database", Name: "Database", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_extent", Name: "Extent", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_file", Name: "File", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_hobt", Name: "HoBT", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_key", Name: "Key", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_metadata", Name: "Metadata", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_oib", Name: "OIB", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_object", Name: "Object", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_page", Name: "Page", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_rid", Name: "RID", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_rowgroup", Name: "RowGroup", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_lock_wait_xact", Name: "Xact", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_AllocUnit_locks_lock_wait_seconds", Name: "alloc_unit", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Application_locks_lock_wait_seconds", Name: "application", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Database_locks_lock_wait_seconds", Name: "database", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Extent_locks_lock_wait_seconds", Name: "extent", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_File_locks_lock_wait_seconds", Name: "file", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_HoBT_locks_lock_wait_seconds", Name: "hobt", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Key_locks_lock_wait_seconds", Name: "key", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Metadata_locks_lock_wait_seconds", Name: "metadata", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_OIB_locks_lock_wait_seconds", Name: "oib", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Object_locks_lock_wait_seconds", Name: "object", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Page_locks_lock_wait_seconds", Name: "page", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_RID_locks_lock_wait_seconds", Name: "rid", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_RowGroup_locks_lock_wait_seconds", Name: "row_group", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Xact_locks_lock_wait_seconds", Name: "xact", Algo: module.Incremental},
 		},
 	}
 	// Memory Manager
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-memory-manager-object?view=sql-server-ver16
 	mssqlMemmgrPendingMemoryChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_pending",
+		ID:       "mssql_instance_%s_memmgr_pending_memory_grants",
 		Title:    "Process waiting for memory grant",
 		Units:    "process",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_pending",
-		Priority: prioMSSQLMemmgrPendingMemory,
+		Ctx:      "wmi.mssql_instance_memmgr_pending_memory_grants",
+		Priority: prioMSSQLMemmgrPendingMemoryGrants,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_memmgr_pending", Name: "process", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_memmgr_pending_memory_grants", Name: "pending"},
 		},
 	}
 	mssqlMemmgrTotalServerChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_total",
-		Title:    "Total memory commited",
+		ID:       "mssql_instance_%s_memmgr_server_memory",
+		Title:    "Memory committed",
 		Units:    "bytes",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_total",
-		Priority: prioMSSQLMemmgrPendingMemory,
+		Ctx:      "wmi.mssql_instance_memmgr_server_memory",
+		Priority: prioMSSQLMemTotalServer,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_memmgr_total", Name: "memory", Mul: 1000, Algo: module.Incremental},
+			{ID: "mssql_instance_%s_memmgr_total_server_memory_bytes", Name: "memory"},
 		},
 	}
 	// SQL Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-statistics-object?view=sql-server-ver16
 	mssqlStatsAutoParamChart = module.Chart{
-		ID:       "mssql_instance_%s_stats_auto_param",
-		Title:    "Total of failed auto-parameterization",
-		Units:    "attemps",
+		ID:       "mssql_instance_%s_sqlstats_auto_parameterization_attempts",
+		Title:    "Failed auto-parameterization attempts",
+		Units:    "attempts/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_stats_auto_param",
+		Ctx:      "wmi.mssql_instance_sqlstats_auto_parameterization_attempts",
 		Priority: prioMSSQLStatsAutoParameterization,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_stats_auto_param", Name: "attemps", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sqlstats_auto_parameterization_attempts", Name: "failed", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsSafeAutoChart = module.Chart{
-		ID:       "mssql_instance_%s_stats_safe_auto",
-		Title:    "Total of safe auto-parameterization",
-		Units:    "attemps",
+		ID:       "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts",
+		Title:    "Safe auto-parameterization attempts",
+		Units:    "attempts/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_stats_safe_auto",
-		Priority: prioMSSQLStatsSafeAuto,
+		Ctx:      "wmi.mssql_instance_sqlstats_safe_auto_parameterization_attempts",
+		Priority: prioMSSQLStatsSafeAutoParameterization,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_stats_safe_auto", Name: "attemps", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts", Name: "safe", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsCompilationChart = module.Chart{
-		ID:       "mssql_instance_%s_stats_compilation",
-		Title:    "Total of compilations",
-		Units:    "operation/s",
+		ID:       "mssql_instance_%s_sqlstats_sql_compilations",
+		Title:    "SQL compilations",
+		Units:    "compilations/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_stats_compilation",
-		Priority: prioMSSQLStatsCompilation,
+		Ctx:      "wmi.mssql_instance_sqlstats_sql_compilations",
+		Priority: prioMSSQLStatsCompilations,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_stats_compilation", Name: "operation", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sqlstats_sql_compilations", Name: "compilations", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsRecompilationChart = module.Chart{
-		ID:       "mssql_instance_%s_stats_recompilation",
-		Title:    "Total of re-compilations",
-		Units:    "operation/s",
+		ID:       "mssql_instance_%s_sqlstats_sql_recompilations",
+		Title:    "SQL re-compilations",
+		Units:    "recompiles/s",
 		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_stats_recompilation",
-		Priority: prioMSSQLStatsRecompilation,
+		Ctx:      "wmi.mssql_instance_sqlstats_sql_recompilations",
+		Priority: prioMSSQLStatsRecompilations,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_stats_recompilation", Name: "operation", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sqlstats_sql_recompilations", Name: "recompiles", Algo: module.Incremental},
+		},
+	}
+
+	// Database
+	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-databases-object?view=sql-server-2017
+	mssqlDatabaseActiveTransactionsChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_active_transactions",
+		Title:    "Active transactions per database",
+		Units:    "transactions",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_active_transactions",
+		Priority: prioMSSQLDatabaseActiveTransactions,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_active_transactions", Name: "active"},
+		},
+	}
+	mssqlDatabaseBackupRestoreOperationsChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_backup_restore_operations",
+		Title:    "Backup IO per database",
+		Units:    "operations/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_backup_restore_operations",
+		Priority: prioMSSQLDatabaseBackupRestoreOperations,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_backup_restore_operations", Name: "backup", Algo: module.Incremental},
+		},
+	}
+	mssqlDatabaseSizeChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_data_files_size",
+		Title:    "Current database size",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_data_files_size",
+		Priority: prioMSSQLDatabaseDataFileSize,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_data_files_size_bytes", Name: "size"},
+		},
+	}
+	mssqlDatabaseLogFlushedChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_log_flushed",
+		Title:    "Log flushed",
+		Units:    "bytes/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_log_flushed",
+		Priority: prioMSSQLDatabaseLogFlushed,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_log_flushed_bytes", Name: "flushed", Algo: module.Incremental},
+		},
+	}
+	mssqlDatabaseLogFlushesChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_log_flushes",
+		Title:    "Log flushes",
+		Units:    "flushes/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_log_flushes",
+		Priority: prioMSSQLDatabaseLogFlushes,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_log_flushes", Name: "log", Algo: module.Incremental},
+		},
+	}
+	mssqlDatabaseTransactionsChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_transactions",
+		Title:    "Transactions",
+		Units:    "transactions/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_database_transactions",
+		Priority: prioMSSQLDatabaseTransactions,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_transactions", Name: "transactions", Algo: module.Incremental},
+		},
+	}
+	mssqlDatabaseWriteTransactionsChart = module.Chart{
+		ID:       "mssql_db_%s_instance_%s_write_transactions",
+		Title:    "Write transactions",
+		Units:    "transactions/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_write_transactions",
+		Priority: prioMSSQLDatabaseWriteTransactions,
+		Dims: module.Dims{
+			{ID: "mssql_db_%s_instance_%s_write_transactions", Name: "write", Algo: module.Incremental},
 		},
 	}
 )
@@ -1467,18 +1468,17 @@ func (w *WMI) removeIIWebsiteSCharts(website string) {
 	}
 }
 
-func (w *WMI) addMSSQLInstanceDBCharts(instance string, dbname string) {
-	charts := mssqlInstanceDBChartsTmpl.Copy()
+func (w *WMI) addMSSQLDBCharts(instance string, dbname string) {
+	charts := mssqlDatabaseChartsTmpl.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, instance, dbname)
+		chart.ID = fmt.Sprintf(chart.ID, dbname, instance)
 		chart.Labels = []module.Label{
-			{Key: "instance_db", Value: instance + "_" + dbname},
+			{Key: "mssql_instance", Value: instance},
+			{Key: "database", Value: dbname},
 		}
-		if chart.Dims != nil {
-			for _, dim := range chart.Dims {
-				dim.ID = fmt.Sprintf(dim.ID, instance, dbname)
-			}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, dbname, instance)
 		}
 	}
 
@@ -1487,8 +1487,8 @@ func (w *WMI) addMSSQLInstanceDBCharts(instance string, dbname string) {
 	}
 }
 
-func (w *WMI) removeMSSQLInstanceDBCharts(instance string, dbname string) {
-	px := fmt.Sprintf("mssql_instance_%s_db_%s", instance, dbname)
+func (w *WMI) removeMSSQLDBCharts(instance string, dbname string) {
+	px := fmt.Sprintf("mssql_db_%s_instance_%s", dbname, instance)
 	for _, chart := range *w.Charts() {
 		if strings.HasPrefix(chart.ID, px) {
 			chart.MarkRemove()
@@ -1503,12 +1503,10 @@ func (w *WMI) addMSSQLInstanceCharts(instance string) {
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, instance)
 		chart.Labels = []module.Label{
-			{Key: "instance", Value: instance},
+			{Key: "mssql_instance", Value: instance},
 		}
-		if chart.Dims != nil {
-			for _, dim := range chart.Dims {
-				dim.ID = fmt.Sprintf(dim.ID, instance)
-			}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, instance)
 		}
 	}
 

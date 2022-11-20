@@ -3,7 +3,6 @@
 package wmi
 
 import (
-	"math"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -15,24 +14,25 @@ const (
 	metricMSSQLBufferCacheLookups           = "windows_mssql_bufman_buffer_cache_lookups"
 	metricMSSQLBufferCheckpointPages        = "windows_mssql_bufman_checkpoint_pages"
 	metricMSSQLBufferPageLifeExpectancy     = "windows_mssql_bufman_page_life_expectancy_seconds"
-	metricMSSQLBufferPageRead               = "windows_mssql_bufman_page_reads"
-	metricMSSQLBufferPageWrite              = "windows_mssql_bufman_page_writes"
-	metricMSSQLActiveTransactions           = "windows_mssql_databases_active_transactions"
-	metricMSSQLBackupRestoreOperation       = "windows_mssql_databases_backup_restore_operations"
-	metricMSSQLDataFileSize                 = "windows_mssql_databases_data_files_size_bytes"
-	metricMSSQLLogFlushed                   = "windows_mssql_databases_log_flushed_bytes"
-	metricMSSQLLogFlushes                   = "windows_mssql_databases_log_flushes"
-	metricMSSQLTransactions                 = "windows_mssql_databases_transactions"
-	metricMSSQLWriteTransaction             = "windows_mssql_databases_write_transactions"
+	metricMSSQLBufferPageReads              = "windows_mssql_bufman_page_reads"
+	metricMSSQLBufferPageWrites             = "windows_mssql_bufman_page_writes"
 	metricMSSQLBlockedProcesses             = "windows_mssql_genstats_blocked_processes"
 	metricMSSQLUserConnections              = "windows_mssql_genstats_user_connections"
 	metricMSSQLLockWait                     = "windows_mssql_locks_lock_wait_seconds"
-	metricMSSQLPendingMemoryGrant           = "windows_mssql_memmgr_pending_memory_grants"
+	metricMSSQLPendingMemoryGrants          = "windows_mssql_memmgr_pending_memory_grants"
 	metricMSSQLTotalServerMemory            = "windows_mssql_memmgr_total_server_memory_bytes"
 	metricMSSQLStatsAutoParameterization    = "windows_mssql_sqlstats_auto_parameterization_attempts"
 	metricMSSQLStatSafeAutoParameterization = "windows_mssql_sqlstats_safe_auto_parameterization_attempts"
-	metricMSSQLCompilation                  = "windows_mssql_sqlstats_sql_compilations"
-	metricMSSQLRecompilation                = "windows_mssql_sqlstats_sql_recompilations"
+	metricMSSQLCompilations                 = "windows_mssql_sqlstats_sql_compilations"
+	metricMSSQLRecompilations               = "windows_mssql_sqlstats_sql_recompilations"
+
+	metricMSSQLDatabaseActiveTransactions      = "windows_mssql_databases_active_transactions"
+	metricMSSQLDatabaseBackupRestoreOperations = "windows_mssql_databases_backup_restore_operations"
+	metricMSSQLDatabaseDataFileSize            = "windows_mssql_databases_data_files_size_bytes"
+	metricMSSQLDatabaseLogFlushed              = "windows_mssql_databases_log_flushed_bytes"
+	metricMSSQLDatabaseLogFlushes              = "windows_mssql_databases_log_flushes"
+	metricMSSQLDatabaseTransactions            = "windows_mssql_databases_transactions"
+	metricMSSQLDatabaseWriteTransactions       = "windows_mssql_databases_write_transactions"
 )
 
 func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
@@ -40,243 +40,175 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Metrics) {
 	dbs := make(map[string]bool)
 	px := "mssql_instance_"
 	for _, pm := range pms.FindByName(metricMSSQLAccessMethodPageSplits) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_access_page_split"] = int64(pm.Value)
+			mx[px+name+"_accessmethods_page_splits"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBufferCacheHits) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_cache_hit_ratio"] = int64(pm.Value)
+			mx[px+name+"_bufman_buffer_cache_hits"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBufferCacheLookups) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" && pm.Value > 0 {
 			instances[name] = true
-			var hit float64
-			if pm.Value != 0 {
-				hit = (float64(mx[px+name+"_cache_hit_ratio"]) / pm.Value) * 100
-			} else {
-				hit = math.NaN()
-			}
-			mx[px+name+"_cache_hit_ratio"] = int64(hit)
+			mx[px+name+"_cache_hit_ratio"] = int64(float64(mx[px+name+"_bufman_buffer_cache_hits"]) / pm.Value * 100)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBufferCheckpointPages) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_buffer_checkpoint_page"] = int64(pm.Value)
+			mx[px+name+"_bufman_checkpoint_pages"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBufferPageLifeExpectancy) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_buffer_pagelife_expectancy"] = int64(pm.Value)
+			mx[px+name+"_bufman_page_life_expectancy_seconds"] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricMSSQLBufferPageRead) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+	for _, pm := range pms.FindByName(metricMSSQLBufferPageReads) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_page_read"] = int64(pm.Value)
+			mx[px+name+"_bufman_page_reads"] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricMSSQLBufferPageWrite) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+	for _, pm := range pms.FindByName(metricMSSQLBufferPageWrites) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_page_write"] = int64(pm.Value)
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLActiveTransactions) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_active_transaction"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLBackupRestoreOperation) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_backup_restore"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLDataFileSize) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_database_size"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLLogFlushed) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_log_flushed"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLLogFlushes) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_log_flushes"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLTransactions) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_transaction"] = int64(pm.Value)
-			}
-		}
-	}
-	for _, pm := range pms.FindByName(metricMSSQLWriteTransaction) {
-		if instance := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); instance != "" {
-			if dbname := cleanInstanceDBName(pm.Labels.Get("database")); dbname != "" {
-				instances[instance] = true
-				dbs[instance+":"+dbname] = true
-				mx[px+instance+"_db_"+dbname+"_write_transaction"] = int64(pm.Value)
-			}
+			mx[px+name+"_bufman_page_writes"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLBlockedProcesses) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_blocked_process"] = int64(pm.Value)
+			mx[px+name+"_genstats_blocked_processes"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLUserConnections) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_user_connection"] = int64(pm.Value)
+			mx[px+name+"_genstats_user_connections"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLLockWait) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			resource := pm.Labels.Get("resource")
-			idx := buildLockWaitIndex(px, name, resource)
-			if idx == "" {
-				continue
+			if res := pm.Labels.Get("resource"); res != "" {
+				mx[px+name+"_resource_"+res+"_locks_lock_wait_seconds"] = int64(pm.Value)
 			}
-			mx[idx] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricMSSQLPendingMemoryGrant) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+	for _, pm := range pms.FindByName(metricMSSQLPendingMemoryGrants) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_memmgr_pending"] = int64(pm.Value)
+			mx[px+name+"_memmgr_pending_memory_grants"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLTotalServerMemory) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_memmgr_total"] = int64(pm.Value)
+			mx[px+name+"_memmgr_total_server_memory_bytes"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLStatsAutoParameterization) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_stats_auto_param"] = int64(pm.Value)
+			mx[px+name+"_sqlstats_auto_parameterization_attempts"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLStatSafeAutoParameterization) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_stats_safe_auto"] = int64(pm.Value)
+			mx[px+name+"_sqlstats_safe_auto_parameterization_attempts"] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricMSSQLCompilation) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+	for _, pm := range pms.FindByName(metricMSSQLCompilations) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_stats_compilation"] = int64(pm.Value)
+			mx[px+name+"_sqlstats_sql_compilations"] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricMSSQLRecompilation) {
-		if name := cleanInstanceDBName(pm.Labels.Get("mssql_instance")); name != "" {
+	for _, pm := range pms.FindByName(metricMSSQLRecompilations) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			mx[px+name+"_stats_recompilation"] = int64(pm.Value)
+			mx[px+name+"_sqlstats_sql_recompilations"] = int64(pm.Value)
 		}
 	}
 
-	for instance := range instances {
-		if !w.cache.mssql_instance[instance] {
-			w.cache.mssql_instance[instance] = true
-			w.addMSSQLInstanceCharts(instance)
+	px = "mssql_db_"
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseActiveTransactions) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_active_transactions"] = int64(pm.Value)
 		}
 	}
-	for instance := range w.cache.mssql_instance {
-		if !instances[instance] {
-			delete(w.cache.mssql_instance, instance)
-			w.removeMSSQLInstanceCharts(instance)
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseBackupRestoreOperations) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_backup_restore_operations"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseDataFileSize) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_data_files_size_bytes"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseLogFlushed) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_log_flushed_bytes"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseLogFlushes) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_log_flushes"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseTransactions) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_transactions"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDatabaseWriteTransactions) {
+		if name, db := pm.Labels.Get("mssql_instance"), pm.Labels.Get("database"); name != "" && db != "" {
+			instances[name], dbs[name+":"+db] = true, true
+			mx[px+db+"_instance_"+name+"_write_transactions"] = int64(pm.Value)
 		}
 	}
 
-	for instance_db := range dbs {
-		if !w.cache.mssql_instance_db[instance_db] {
-			w.cache.mssql_instance_db[instance_db] = true
-			s := strings.Split(instance_db, ":")
-			w.addMSSQLInstanceDBCharts(s[0], s[1])
+	for v := range instances {
+		if !w.cache.mssqlInstances[v] {
+			w.cache.mssqlInstances[v] = true
+			w.addMSSQLInstanceCharts(v)
 		}
 	}
-	for instance_db := range w.cache.mssql_instance_db {
-		if !dbs[instance_db] {
-			delete(w.cache.mssql_instance_db, instance_db)
-			s := strings.Split(instance_db, ":")
-			w.removeMSSQLInstanceDBCharts(s[0], s[1])
+	for v := range w.cache.mssqlInstances {
+		if !instances[v] {
+			delete(w.cache.mssqlInstances, v)
+			w.removeMSSQLInstanceCharts(v)
 		}
 	}
-}
 
-func buildLockWaitIndex(prefix string, instance string, selector string) string {
-	var sufix string
-	switch selector {
-	case "AllocUnit":
-		sufix = "allocunit"
-	case "Application":
-		sufix = "application"
-	case "Database":
-		sufix = "database"
-	case "Extent":
-		sufix = "extent"
-	case "File":
-		sufix = "file"
-	case "HoBT":
-		sufix = "hobt"
-	case "Key":
-		sufix = "key"
-	case "Metadata":
-		sufix = "metadata"
-	case "OIB":
-		sufix = "oib"
-	case "Object":
-		sufix = "object"
-	case "Page":
-		sufix = "page"
-	case "RID":
-		sufix = "rid"
-	case "RowGroup":
-		sufix = "rowgroup"
-	case "Xact":
-		sufix = "xact"
-	default:
-		return ""
+	for v := range dbs {
+		if !w.cache.mssqlDBs[v] {
+			w.cache.mssqlDBs[v] = true
+			if s := strings.Split(v, ":"); len(s) == 2 {
+				w.addMSSQLDBCharts(s[0], s[1])
+			}
+		}
 	}
-
-	return prefix + instance + "_lock_wait_" + sufix
-}
-
-func cleanInstanceDBName(name string) string {
-	return strings.ReplaceAll(name, " ", "_")
+	for v := range w.cache.mssqlDBs {
+		if !dbs[v] {
+			delete(w.cache.mssqlDBs, v)
+			if s := strings.Split(v, ":"); len(s) == 2 {
+				w.removeMSSQLDBCharts(s[0], s[1])
+			}
+		}
+	}
 }
