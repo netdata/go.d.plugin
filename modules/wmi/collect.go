@@ -19,6 +19,7 @@ const (
 	collectorThermalZone = "thermalzone"
 	collectorTCP         = "tcp"
 	collectorIIS         = "iis"
+	collectorMSSQL       = "mssql"
 	collectorProcess     = "process"
 	collectorService     = "service"
 )
@@ -99,6 +100,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Metrics) {
 			w.collectService(mx, pms)
 		case collectorIIS:
 			w.collectIIS(mx, pms)
+		case collectorMSSQL:
+			w.collectMSSQL(mx, pms)
 		}
 	}
 }

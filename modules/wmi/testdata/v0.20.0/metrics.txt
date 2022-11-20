@@ -191,6 +191,7 @@ windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
 windows_exporter_collector_duration_seconds{collector="logon"} 0.1139134
 windows_exporter_collector_duration_seconds{collector="memory"} 0.00052
+windows_exporter_collector_duration_seconds{collector="mssql"} 0.003369
 windows_exporter_collector_duration_seconds{collector="net"} 0
 windows_exporter_collector_duration_seconds{collector="os"} 0.0023497
 windows_exporter_collector_duration_seconds{collector="process"} 0.1154812
@@ -204,6 +205,7 @@ windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
 windows_exporter_collector_success{collector="logon"} 1
 windows_exporter_collector_success{collector="memory"} 1
+windows_exporter_collector_success{collector="mssql"} 1
 windows_exporter_collector_success{collector="net"} 1
 windows_exporter_collector_success{collector="os"} 1
 windows_exporter_collector_success{collector="process"} 1
@@ -217,6 +219,7 @@ windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0
 windows_exporter_collector_timeout{collector="logon"} 0
 windows_exporter_collector_timeout{collector="memory"} 0
+windows_exporter_collector_timeout{collector="mssql"} 0
 windows_exporter_collector_timeout{collector="net"} 0
 windows_exporter_collector_timeout{collector="os"} 0
 windows_exporter_collector_timeout{collector="process"} 0
@@ -724,6 +727,981 @@ windows_memory_transition_pages_repurposed_total 2.856471e+06
 # HELP windows_memory_write_copies_total The number of page faults caused by attempting to write that were satisfied by copying the page from elsewhere in physical memory (WriteCopiesPersec)
 # TYPE windows_memory_write_copies_total counter
 windows_memory_write_copies_total 1.194039e+06
+# HELP windows_mssql_accessmethods_au_batch_cleanup_failures (AccessMethods.FailedAUcleanupbatches)
+# TYPE windows_mssql_accessmethods_au_batch_cleanup_failures counter
+windows_mssql_accessmethods_au_batch_cleanup_failures{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_au_batch_cleanups (AccessMethods.AUcleanupbatches)
+# TYPE windows_mssql_accessmethods_au_batch_cleanups counter
+windows_mssql_accessmethods_au_batch_cleanups{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_au_cleanups (AccessMethods.AUcleanups)
+# TYPE windows_mssql_accessmethods_au_cleanups counter
+windows_mssql_accessmethods_au_cleanups{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_by_reference_lob_creates (AccessMethods.ByreferenceLobCreateCount)
+# TYPE windows_mssql_accessmethods_by_reference_lob_creates counter
+windows_mssql_accessmethods_by_reference_lob_creates{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_by_reference_lob_uses (AccessMethods.ByreferenceLobUseCount)
+# TYPE windows_mssql_accessmethods_by_reference_lob_uses counter
+windows_mssql_accessmethods_by_reference_lob_uses{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_column_value_pulls (AccessMethods.CountPullInRow)
+# TYPE windows_mssql_accessmethods_column_value_pulls counter
+windows_mssql_accessmethods_column_value_pulls{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_column_value_pushes (AccessMethods.CountPushOffRow)
+# TYPE windows_mssql_accessmethods_column_value_pushes counter
+windows_mssql_accessmethods_column_value_pushes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_deferred_dropped_aus (AccessMethods.DeferreddroppedAUs)
+# TYPE windows_mssql_accessmethods_deferred_dropped_aus gauge
+windows_mssql_accessmethods_deferred_dropped_aus{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_deferred_dropped_rowsets (AccessMethods.DeferredDroppedrowsets)
+# TYPE windows_mssql_accessmethods_deferred_dropped_rowsets gauge
+windows_mssql_accessmethods_deferred_dropped_rowsets{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_dropped_rowset_cleanups (AccessMethods.Droppedrowsetcleanups)
+# TYPE windows_mssql_accessmethods_dropped_rowset_cleanups counter
+windows_mssql_accessmethods_dropped_rowset_cleanups{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_dropped_rowset_skips (AccessMethods.Droppedrowsetsskipped)
+# TYPE windows_mssql_accessmethods_dropped_rowset_skips counter
+windows_mssql_accessmethods_dropped_rowset_skips{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_extent_allocations (AccessMethods.ExtentsAllocated)
+# TYPE windows_mssql_accessmethods_extent_allocations counter
+windows_mssql_accessmethods_extent_allocations{mssql_instance="SQLEXPRESS"} 16
+# HELP windows_mssql_accessmethods_extent_deallocations (AccessMethods.ExtentDeallocations)
+# TYPE windows_mssql_accessmethods_extent_deallocations counter
+windows_mssql_accessmethods_extent_deallocations{mssql_instance="SQLEXPRESS"} 3
+# HELP windows_mssql_accessmethods_forwarded_records (AccessMethods.ForwardedRecords)
+# TYPE windows_mssql_accessmethods_forwarded_records counter
+windows_mssql_accessmethods_forwarded_records{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_free_space_page_fetches (AccessMethods.FreeSpacePageFetches)
+# TYPE windows_mssql_accessmethods_free_space_page_fetches counter
+windows_mssql_accessmethods_free_space_page_fetches{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_free_space_scans (AccessMethods.FreeSpaceScans)
+# TYPE windows_mssql_accessmethods_free_space_scans counter
+windows_mssql_accessmethods_free_space_scans{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_full_scans (AccessMethods.FullScans)
+# TYPE windows_mssql_accessmethods_full_scans counter
+windows_mssql_accessmethods_full_scans{mssql_instance="SQLEXPRESS"} 8743
+# HELP windows_mssql_accessmethods_ghost_record_skips (AccessMethods.SkippedGhostedRecordsPersec)
+# TYPE windows_mssql_accessmethods_ghost_record_skips counter
+windows_mssql_accessmethods_ghost_record_skips{mssql_instance="SQLEXPRESS"} 20
+# HELP windows_mssql_accessmethods_index_searches (AccessMethods.IndexSearches)
+# TYPE windows_mssql_accessmethods_index_searches counter
+windows_mssql_accessmethods_index_searches{mssql_instance="SQLEXPRESS"} 843808
+# HELP windows_mssql_accessmethods_insysxact_waits (AccessMethods.InSysXactwaits)
+# TYPE windows_mssql_accessmethods_insysxact_waits counter
+windows_mssql_accessmethods_insysxact_waits{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_leaf_page_cookie_failures (AccessMethods.Failedleafpagecookie)
+# TYPE windows_mssql_accessmethods_leaf_page_cookie_failures counter
+windows_mssql_accessmethods_leaf_page_cookie_failures{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_leaf_page_cookie_uses (AccessMethods.Usedleafpagecookie)
+# TYPE windows_mssql_accessmethods_leaf_page_cookie_uses counter
+windows_mssql_accessmethods_leaf_page_cookie_uses{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_lob_handle_creates (AccessMethods.LobHandleCreateCount)
+# TYPE windows_mssql_accessmethods_lob_handle_creates counter
+windows_mssql_accessmethods_lob_handle_creates{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_lob_handle_destroys (AccessMethods.LobHandleDestroyCount)
+# TYPE windows_mssql_accessmethods_lob_handle_destroys counter
+windows_mssql_accessmethods_lob_handle_destroys{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_lob_read_aheads (AccessMethods.CountLobReadahead)
+# TYPE windows_mssql_accessmethods_lob_read_aheads counter
+windows_mssql_accessmethods_lob_read_aheads{mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_accessmethods_lob_ss_provider_creates (AccessMethods.LobSSProviderCreateCount)
+# TYPE windows_mssql_accessmethods_lob_ss_provider_creates counter
+windows_mssql_accessmethods_lob_ss_provider_creates{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_lob_ss_provider_destroys (AccessMethods.LobSSProviderDestroyCount)
+# TYPE windows_mssql_accessmethods_lob_ss_provider_destroys counter
+windows_mssql_accessmethods_lob_ss_provider_destroys{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_lob_ss_provider_truncations (AccessMethods.LobSSProviderTruncationCount)
+# TYPE windows_mssql_accessmethods_lob_ss_provider_truncations counter
+windows_mssql_accessmethods_lob_ss_provider_truncations{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_mixed_page_allocations (AccessMethods.MixedpageallocationsPersec)
+# TYPE windows_mssql_accessmethods_mixed_page_allocations counter
+windows_mssql_accessmethods_mixed_page_allocations{mssql_instance="SQLEXPRESS"} 66
+# HELP windows_mssql_accessmethods_page_allocations (AccessMethods.PagesAllocatedPersec)
+# TYPE windows_mssql_accessmethods_page_allocations counter
+windows_mssql_accessmethods_page_allocations{mssql_instance="SQLEXPRESS"} 83
+# HELP windows_mssql_accessmethods_page_compression_attempts (AccessMethods.PagecompressionattemptsPersec)
+# TYPE windows_mssql_accessmethods_page_compression_attempts counter
+windows_mssql_accessmethods_page_compression_attempts{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_page_compressions (AccessMethods.PagescompressedPersec)
+# TYPE windows_mssql_accessmethods_page_compressions counter
+windows_mssql_accessmethods_page_compressions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_page_deallocations (AccessMethods.PageDeallocationsPersec)
+# TYPE windows_mssql_accessmethods_page_deallocations counter
+windows_mssql_accessmethods_page_deallocations{mssql_instance="SQLEXPRESS"} 60
+# HELP windows_mssql_accessmethods_page_splits (AccessMethods.PageSplitsPersec)
+# TYPE windows_mssql_accessmethods_page_splits counter
+windows_mssql_accessmethods_page_splits{mssql_instance="SQLEXPRESS"} 429
+# HELP windows_mssql_accessmethods_probe_scans (AccessMethods.ProbeScansPersec)
+# TYPE windows_mssql_accessmethods_probe_scans counter
+windows_mssql_accessmethods_probe_scans{mssql_instance="SQLEXPRESS"} 217563
+# HELP windows_mssql_accessmethods_range_scans (AccessMethods.RangeScansPersec)
+# TYPE windows_mssql_accessmethods_range_scans counter
+windows_mssql_accessmethods_range_scans{mssql_instance="SQLEXPRESS"} 590779
+# HELP windows_mssql_accessmethods_scan_point_revalidations (AccessMethods.ScanPointRevalidationsPersec)
+# TYPE windows_mssql_accessmethods_scan_point_revalidations counter
+windows_mssql_accessmethods_scan_point_revalidations{mssql_instance="SQLEXPRESS"} 5
+# HELP windows_mssql_accessmethods_table_lock_escalations (AccessMethods.TableLockEscalationsPersec)
+# TYPE windows_mssql_accessmethods_table_lock_escalations counter
+windows_mssql_accessmethods_table_lock_escalations{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_tree_page_cookie_failures (AccessMethods.Failedtreepagecookie)
+# TYPE windows_mssql_accessmethods_tree_page_cookie_failures counter
+windows_mssql_accessmethods_tree_page_cookie_failures{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_tree_page_cookie_uses (AccessMethods.Usedtreepagecookie)
+# TYPE windows_mssql_accessmethods_tree_page_cookie_uses counter
+windows_mssql_accessmethods_tree_page_cookie_uses{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_accessmethods_workfile_creates (AccessMethods.WorkfilesCreatedPersec)
+# TYPE windows_mssql_accessmethods_workfile_creates counter
+windows_mssql_accessmethods_workfile_creates{mssql_instance="SQLEXPRESS"} 96
+# HELP windows_mssql_accessmethods_worktables_creates (AccessMethods.WorktablesCreatedPersec)
+# TYPE windows_mssql_accessmethods_worktables_creates counter
+windows_mssql_accessmethods_worktables_creates{mssql_instance="SQLEXPRESS"} 557
+# HELP windows_mssql_accessmethods_worktables_from_cache_hits (AccessMethods.WorktablesFromCacheRatio)
+# TYPE windows_mssql_accessmethods_worktables_from_cache_hits counter
+windows_mssql_accessmethods_worktables_from_cache_hits{mssql_instance="SQLEXPRESS"} 357
+# HELP windows_mssql_accessmethods_worktables_from_cache_lookups (AccessMethods.WorktablesFromCacheRatio_Base)
+# TYPE windows_mssql_accessmethods_worktables_from_cache_lookups counter
+windows_mssql_accessmethods_worktables_from_cache_lookups{mssql_instance="SQLEXPRESS"} 364
+# HELP windows_mssql_bufman_background_writer_pages (BufferManager.Backgroundwriterpages)
+# TYPE windows_mssql_bufman_background_writer_pages counter
+windows_mssql_bufman_background_writer_pages{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_buffer_cache_hits (BufferManager.Buffercachehitratio)
+# TYPE windows_mssql_bufman_buffer_cache_hits gauge
+windows_mssql_bufman_buffer_cache_hits{mssql_instance="SQLEXPRESS"} 86
+# HELP windows_mssql_bufman_buffer_cache_lookups (BufferManager.Buffercachehitratio_Base)
+# TYPE windows_mssql_bufman_buffer_cache_lookups gauge
+windows_mssql_bufman_buffer_cache_lookups{mssql_instance="SQLEXPRESS"} 86
+# HELP windows_mssql_bufman_checkpoint_pages (BufferManager.Checkpointpages)
+# TYPE windows_mssql_bufman_checkpoint_pages counter
+windows_mssql_bufman_checkpoint_pages{mssql_instance="SQLEXPRESS"} 82
+# HELP windows_mssql_bufman_database_pages (BufferManager.Databasepages)
+# TYPE windows_mssql_bufman_database_pages gauge
+windows_mssql_bufman_database_pages{mssql_instance="SQLEXPRESS"} 829
+# HELP windows_mssql_bufman_extension_allocated_pages (BufferManager.Extensionallocatedpages)
+# TYPE windows_mssql_bufman_extension_allocated_pages gauge
+windows_mssql_bufman_extension_allocated_pages{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_free_pages (BufferManager.Extensionfreepages)
+# TYPE windows_mssql_bufman_extension_free_pages gauge
+windows_mssql_bufman_extension_free_pages{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_in_use_as_percentage (BufferManager.Extensioninuseaspercentage)
+# TYPE windows_mssql_bufman_extension_in_use_as_percentage gauge
+windows_mssql_bufman_extension_in_use_as_percentage{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_outstanding_io (BufferManager.ExtensionoutstandingIOcounter)
+# TYPE windows_mssql_bufman_extension_outstanding_io gauge
+windows_mssql_bufman_extension_outstanding_io{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_page_evictions (BufferManager.Extensionpageevictions)
+# TYPE windows_mssql_bufman_extension_page_evictions counter
+windows_mssql_bufman_extension_page_evictions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_page_reads (BufferManager.Extensionpagereads)
+# TYPE windows_mssql_bufman_extension_page_reads counter
+windows_mssql_bufman_extension_page_reads{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_page_unreferenced_seconds (BufferManager.Extensionpageunreferencedtime)
+# TYPE windows_mssql_bufman_extension_page_unreferenced_seconds gauge
+windows_mssql_bufman_extension_page_unreferenced_seconds{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_extension_page_writes (BufferManager.Extensionpagewrites)
+# TYPE windows_mssql_bufman_extension_page_writes counter
+windows_mssql_bufman_extension_page_writes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_free_list_stalls (BufferManager.Freeliststalls)
+# TYPE windows_mssql_bufman_free_list_stalls counter
+windows_mssql_bufman_free_list_stalls{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_integral_controller_slope (BufferManager.IntegralControllerSlope)
+# TYPE windows_mssql_bufman_integral_controller_slope gauge
+windows_mssql_bufman_integral_controller_slope{mssql_instance="SQLEXPRESS"} 10
+# HELP windows_mssql_bufman_lazywrites (BufferManager.Lazywrites)
+# TYPE windows_mssql_bufman_lazywrites counter
+windows_mssql_bufman_lazywrites{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_bufman_page_life_expectancy_seconds (BufferManager.Pagelifeexpectancy)
+# TYPE windows_mssql_bufman_page_life_expectancy_seconds gauge
+windows_mssql_bufman_page_life_expectancy_seconds{mssql_instance="SQLEXPRESS"} 191350
+# HELP windows_mssql_bufman_page_lookups (BufferManager.Pagelookups)
+# TYPE windows_mssql_bufman_page_lookups counter
+windows_mssql_bufman_page_lookups{mssql_instance="SQLEXPRESS"} 1.699668e+06
+# HELP windows_mssql_bufman_page_reads (BufferManager.Pagereads)
+# TYPE windows_mssql_bufman_page_reads counter
+windows_mssql_bufman_page_reads{mssql_instance="SQLEXPRESS"} 797
+# HELP windows_mssql_bufman_page_writes (BufferManager.Pagewrites)
+# TYPE windows_mssql_bufman_page_writes counter
+windows_mssql_bufman_page_writes{mssql_instance="SQLEXPRESS"} 92
+# HELP windows_mssql_bufman_read_ahead_issuing_seconds (BufferManager.Readaheadtime)
+# TYPE windows_mssql_bufman_read_ahead_issuing_seconds counter
+windows_mssql_bufman_read_ahead_issuing_seconds{mssql_instance="SQLEXPRESS"} 1292
+# HELP windows_mssql_bufman_read_ahead_pages (BufferManager.Readaheadpages)
+# TYPE windows_mssql_bufman_read_ahead_pages counter
+windows_mssql_bufman_read_ahead_pages{mssql_instance="SQLEXPRESS"} 94
+# HELP windows_mssql_bufman_target_pages (BufferManager.Targetpages)
+# TYPE windows_mssql_bufman_target_pages gauge
+windows_mssql_bufman_target_pages{mssql_instance="SQLEXPRESS"} 180480
+# HELP windows_mssql_collector_duration_seconds windows_exporter: Duration of an mssql child collection.
+# TYPE windows_mssql_collector_duration_seconds gauge
+windows_mssql_collector_duration_seconds{collector="accessmethods",mssql_instance="SQLEXPRESS"} 0.0009723
+windows_mssql_collector_duration_seconds{collector="availreplica",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="bufman",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="databases",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="dbreplica",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="genstats",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="locks",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="memmgr",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="sqlerrors",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="sqlstats",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="transactions",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_collector_duration_seconds{collector="waitstats",mssql_instance="SQLEXPRESS"} 0.0012212
+# HELP windows_mssql_collector_success windows_exporter: Whether a mssql child collector was successful.
+# TYPE windows_mssql_collector_success gauge
+windows_mssql_collector_success{collector="accessmethods",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="availreplica",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="bufman",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="databases",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="dbreplica",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="genstats",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="locks",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="memmgr",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="sqlerrors",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="sqlstats",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="transactions",mssql_instance="SQLEXPRESS"} 1
+windows_mssql_collector_success{collector="waitstats",mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_databases_active_parallel_redo_threads (Databases.ActiveParallelredothreads)
+# TYPE windows_mssql_databases_active_parallel_redo_threads gauge
+windows_mssql_databases_active_parallel_redo_threads{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_parallel_redo_threads{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_parallel_redo_threads{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_parallel_redo_threads{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_parallel_redo_threads{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_active_transactions (Databases.ActiveTransactions)
+# TYPE windows_mssql_databases_active_transactions gauge
+windows_mssql_databases_active_transactions{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_transactions{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_active_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_backup_restore_operations (Databases.BackupPerRestoreThroughput)
+# TYPE windows_mssql_databases_backup_restore_operations counter
+windows_mssql_databases_backup_restore_operations{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_backup_restore_operations{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_backup_restore_operations{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_backup_restore_operations{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_backup_restore_operations{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_bulk_copy_bytes (Databases.BulkCopyThroughput)
+# TYPE windows_mssql_databases_bulk_copy_bytes counter
+windows_mssql_databases_bulk_copy_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_bulk_copy_rows (Databases.BulkCopyRows)
+# TYPE windows_mssql_databases_bulk_copy_rows counter
+windows_mssql_databases_bulk_copy_rows{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_rows{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_rows{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_rows{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_bulk_copy_rows{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_commit_table_entries (Databases.Committableentries)
+# TYPE windows_mssql_databases_commit_table_entries gauge
+windows_mssql_databases_commit_table_entries{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_commit_table_entries{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_commit_table_entries{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_commit_table_entries{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_commit_table_entries{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_data_files_size_bytes (Databases.DataFilesSizeKB)
+# TYPE windows_mssql_databases_data_files_size_bytes gauge
+windows_mssql_databases_data_files_size_bytes{database="master",mssql_instance="SQLEXPRESS"} 4.653056e+06
+windows_mssql_databases_data_files_size_bytes{database="model",mssql_instance="SQLEXPRESS"} 8.388608e+06
+windows_mssql_databases_data_files_size_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 1.5466496e+07
+windows_mssql_databases_data_files_size_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 4.194304e+07
+windows_mssql_databases_data_files_size_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 8.388608e+06
+# HELP windows_mssql_databases_dbcc_logical_scan_bytes (Databases.DBCCLogicalScanBytes)
+# TYPE windows_mssql_databases_dbcc_logical_scan_bytes counter
+windows_mssql_databases_dbcc_logical_scan_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_dbcc_logical_scan_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_dbcc_logical_scan_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_dbcc_logical_scan_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_dbcc_logical_scan_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_group_commit_stall_seconds (Databases.GroupCommitTime)
+# TYPE windows_mssql_databases_group_commit_stall_seconds counter
+windows_mssql_databases_group_commit_stall_seconds{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_group_commit_stall_seconds{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_group_commit_stall_seconds{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_group_commit_stall_seconds{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_group_commit_stall_seconds{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_cache_hits (Databases.LogCacheHitRatio)
+# TYPE windows_mssql_databases_log_cache_hits gauge
+windows_mssql_databases_log_cache_hits{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_hits{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_hits{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_hits{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_hits{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_cache_lookups (Databases.LogCacheHitRatio_Base)
+# TYPE windows_mssql_databases_log_cache_lookups gauge
+windows_mssql_databases_log_cache_lookups{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_lookups{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_lookups{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_lookups{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_lookups{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_cache_reads (Databases.LogCacheReads)
+# TYPE windows_mssql_databases_log_cache_reads counter
+windows_mssql_databases_log_cache_reads{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_reads{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_reads{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_reads{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_cache_reads{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_files_size_bytes (Databases.LogFilesSizeKB)
+# TYPE windows_mssql_databases_log_files_size_bytes gauge
+windows_mssql_databases_log_files_size_bytes{database="master",mssql_instance="SQLEXPRESS"} 2.08896e+06
+windows_mssql_databases_log_files_size_bytes{database="model",mssql_instance="SQLEXPRESS"} 8.380416e+06
+windows_mssql_databases_log_files_size_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 778240
+windows_mssql_databases_log_files_size_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 1.302528e+06
+windows_mssql_databases_log_files_size_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 8.380416e+06
+# HELP windows_mssql_databases_log_files_used_size_bytes (Databases.LogFilesUsedSizeKB)
+# TYPE windows_mssql_databases_log_files_used_size_bytes gauge
+windows_mssql_databases_log_files_used_size_bytes{database="master",mssql_instance="SQLEXPRESS"} 1.210368e+06
+windows_mssql_databases_log_files_used_size_bytes{database="model",mssql_instance="SQLEXPRESS"} 585728
+windows_mssql_databases_log_files_used_size_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 532480
+windows_mssql_databases_log_files_used_size_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 637952
+windows_mssql_databases_log_files_used_size_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 565248
+# HELP windows_mssql_databases_log_flush_wait_seconds (Databases.LogFlushWaitTime)
+# TYPE windows_mssql_databases_log_flush_wait_seconds gauge
+windows_mssql_databases_log_flush_wait_seconds{database="master",mssql_instance="SQLEXPRESS"} 0.226
+windows_mssql_databases_log_flush_wait_seconds{database="model",mssql_instance="SQLEXPRESS"} 0.002
+windows_mssql_databases_log_flush_wait_seconds{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_wait_seconds{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_wait_seconds{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_flush_waits (Databases.LogFlushWaits)
+# TYPE windows_mssql_databases_log_flush_waits counter
+windows_mssql_databases_log_flush_waits{database="master",mssql_instance="SQLEXPRESS"} 245
+windows_mssql_databases_log_flush_waits{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_flush_waits{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_waits{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_waits{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_flush_write_seconds (Databases.LogFlushWriteTimems)
+# TYPE windows_mssql_databases_log_flush_write_seconds gauge
+windows_mssql_databases_log_flush_write_seconds{database="master",mssql_instance="SQLEXPRESS"} 0.164
+windows_mssql_databases_log_flush_write_seconds{database="model",mssql_instance="SQLEXPRESS"} 0.002
+windows_mssql_databases_log_flush_write_seconds{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_write_seconds{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flush_write_seconds{database="tempdb",mssql_instance="SQLEXPRESS"} 0.002
+# HELP windows_mssql_databases_log_flushed_bytes (Databases.LogBytesFlushed)
+# TYPE windows_mssql_databases_log_flushed_bytes counter
+windows_mssql_databases_log_flushed_bytes{database="master",mssql_instance="SQLEXPRESS"} 3.702784e+06
+windows_mssql_databases_log_flushed_bytes{database="model",mssql_instance="SQLEXPRESS"} 12288
+windows_mssql_databases_log_flushed_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flushed_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flushed_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 118784
+# HELP windows_mssql_databases_log_flushes (Databases.LogFlushes)
+# TYPE windows_mssql_databases_log_flushes counter
+windows_mssql_databases_log_flushes{database="master",mssql_instance="SQLEXPRESS"} 252
+windows_mssql_databases_log_flushes{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_flushes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_flushes{database="tempdb",mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_databases_log_growths (Databases.LogGrowths)
+# TYPE windows_mssql_databases_log_growths gauge
+windows_mssql_databases_log_growths{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_growths{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_growths{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_growths{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_growths{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_cache_misses (Databases.LogPoolCacheMisses)
+# TYPE windows_mssql_databases_log_pool_cache_misses counter
+windows_mssql_databases_log_pool_cache_misses{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_cache_misses{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_cache_misses{database="msdb",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_cache_misses{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_cache_misses{database="tempdb",mssql_instance="SQLEXPRESS"} 3
+# HELP windows_mssql_databases_log_pool_disk_reads (Databases.LogPoolDiskReads)
+# TYPE windows_mssql_databases_log_pool_disk_reads counter
+windows_mssql_databases_log_pool_disk_reads{database="master",mssql_instance="SQLEXPRESS"} 2
+windows_mssql_databases_log_pool_disk_reads{database="model",mssql_instance="SQLEXPRESS"} 2
+windows_mssql_databases_log_pool_disk_reads{database="msdb",mssql_instance="SQLEXPRESS"} 2
+windows_mssql_databases_log_pool_disk_reads{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_disk_reads{database="tempdb",mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_databases_log_pool_empty_free_pool_pushes (Databases.LogPoolPushEmptyFreePool)
+# TYPE windows_mssql_databases_log_pool_empty_free_pool_pushes counter
+windows_mssql_databases_log_pool_empty_free_pool_pushes{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_empty_free_pool_pushes{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_empty_free_pool_pushes{database="msdb",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_empty_free_pool_pushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_empty_free_pool_pushes{database="tempdb",mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_databases_log_pool_hash_deletes (Databases.LogPoolHashDeletes)
+# TYPE windows_mssql_databases_log_pool_hash_deletes counter
+windows_mssql_databases_log_pool_hash_deletes{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_deletes{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_deletes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_hash_deletes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_hash_deletes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_hash_inserts (Databases.LogPoolHashInserts)
+# TYPE windows_mssql_databases_log_pool_hash_inserts counter
+windows_mssql_databases_log_pool_hash_inserts{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_inserts{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_inserts{database="msdb",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_inserts{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_hash_inserts{database="tempdb",mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_databases_log_pool_invalid_hash_entries (Databases.LogPoolInvalidHashEntry)
+# TYPE windows_mssql_databases_log_pool_invalid_hash_entries counter
+windows_mssql_databases_log_pool_invalid_hash_entries{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_invalid_hash_entries{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_invalid_hash_entries{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_invalid_hash_entries{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_invalid_hash_entries{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_log_scan_pushes (Databases.LogPoolLogScanPushes)
+# TYPE windows_mssql_databases_log_pool_log_scan_pushes counter
+windows_mssql_databases_log_pool_log_scan_pushes{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_log_scan_pushes{database="model",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_log_scan_pushes{database="msdb",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_log_scan_pushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_pool_log_scan_pushes{database="tempdb",mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_databases_log_pool_log_writer_pushes (Databases.LogPoolLogWriterPushes)
+# TYPE windows_mssql_databases_log_pool_log_writer_pushes counter
+windows_mssql_databases_log_pool_log_writer_pushes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_log_writer_pushes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_log_writer_pushes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_log_writer_pushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_log_writer_pushes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_low_memory_pushes (Databases.LogPoolPushLowMemory)
+# TYPE windows_mssql_databases_log_pool_low_memory_pushes counter
+windows_mssql_databases_log_pool_low_memory_pushes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_low_memory_pushes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_low_memory_pushes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_low_memory_pushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_low_memory_pushes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_no_free_buffer_pushes (Databases.LogPoolPushNoFreeBuffer)
+# TYPE windows_mssql_databases_log_pool_no_free_buffer_pushes counter
+windows_mssql_databases_log_pool_no_free_buffer_pushes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_no_free_buffer_pushes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_no_free_buffer_pushes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_no_free_buffer_pushes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_no_free_buffer_pushes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_req_behind_trunc (Databases.LogPoolReqBehindTrunc)
+# TYPE windows_mssql_databases_log_pool_req_behind_trunc counter
+windows_mssql_databases_log_pool_req_behind_trunc{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_req_behind_trunc{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_req_behind_trunc{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_req_behind_trunc{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_req_behind_trunc{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_pool_requests (Databases.LogPoolRequests)
+# TYPE windows_mssql_databases_log_pool_requests counter
+windows_mssql_databases_log_pool_requests{database="master",mssql_instance="SQLEXPRESS"} 8
+windows_mssql_databases_log_pool_requests{database="model",mssql_instance="SQLEXPRESS"} 8
+windows_mssql_databases_log_pool_requests{database="msdb",mssql_instance="SQLEXPRESS"} 8
+windows_mssql_databases_log_pool_requests{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 8
+windows_mssql_databases_log_pool_requests{database="tempdb",mssql_instance="SQLEXPRESS"} 4
+# HELP windows_mssql_databases_log_pool_requests_old_vlf (Databases.LogPoolRequestsOldVLF)
+# TYPE windows_mssql_databases_log_pool_requests_old_vlf counter
+windows_mssql_databases_log_pool_requests_old_vlf{database="master",mssql_instance="SQLEXPRESS"} 4
+windows_mssql_databases_log_pool_requests_old_vlf{database="model",mssql_instance="SQLEXPRESS"} 4
+windows_mssql_databases_log_pool_requests_old_vlf{database="msdb",mssql_instance="SQLEXPRESS"} 4
+windows_mssql_databases_log_pool_requests_old_vlf{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 4
+windows_mssql_databases_log_pool_requests_old_vlf{database="tempdb",mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_databases_log_pool_total_active_log_bytes (Databases.LogPoolTotalActiveLogSize)
+# TYPE windows_mssql_databases_log_pool_total_active_log_bytes gauge
+windows_mssql_databases_log_pool_total_active_log_bytes{database="master",mssql_instance="SQLEXPRESS"} 806912
+windows_mssql_databases_log_pool_total_active_log_bytes{database="model",mssql_instance="SQLEXPRESS"} 1.855488e+06
+windows_mssql_databases_log_pool_total_active_log_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 118784
+windows_mssql_databases_log_pool_total_active_log_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 107008
+windows_mssql_databases_log_pool_total_active_log_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 2.142208e+06
+# HELP windows_mssql_databases_log_pool_total_shared_pool_bytes (Databases.LogPoolTotalSharedPoolSize)
+# TYPE windows_mssql_databases_log_pool_total_shared_pool_bytes gauge
+windows_mssql_databases_log_pool_total_shared_pool_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_total_shared_pool_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_pool_total_shared_pool_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 16384
+windows_mssql_databases_log_pool_total_shared_pool_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 67584
+windows_mssql_databases_log_pool_total_shared_pool_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 4096
+# HELP windows_mssql_databases_log_shrinks (Databases.LogShrinks)
+# TYPE windows_mssql_databases_log_shrinks gauge
+windows_mssql_databases_log_shrinks{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_shrinks{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_shrinks{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_shrinks{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_shrinks{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_truncations (Databases.LogTruncations)
+# TYPE windows_mssql_databases_log_truncations gauge
+windows_mssql_databases_log_truncations{database="master",mssql_instance="SQLEXPRESS"} 3
+windows_mssql_databases_log_truncations{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_truncations{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_truncations{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_log_truncations{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_log_used_percent (Databases.PercentLogUsed)
+# TYPE windows_mssql_databases_log_used_percent gauge
+windows_mssql_databases_log_used_percent{database="master",mssql_instance="SQLEXPRESS"} 57
+windows_mssql_databases_log_used_percent{database="model",mssql_instance="SQLEXPRESS"} 6
+windows_mssql_databases_log_used_percent{database="msdb",mssql_instance="SQLEXPRESS"} 68
+windows_mssql_databases_log_used_percent{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 49
+windows_mssql_databases_log_used_percent{database="tempdb",mssql_instance="SQLEXPRESS"} 6
+# HELP windows_mssql_databases_pending_repl_transactions (Databases.ReplPendingTransactions)
+# TYPE windows_mssql_databases_pending_repl_transactions gauge
+windows_mssql_databases_pending_repl_transactions{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_pending_repl_transactions{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_pending_repl_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_pending_repl_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_pending_repl_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_repl_transactions (Databases.ReplTranactions)
+# TYPE windows_mssql_databases_repl_transactions counter
+windows_mssql_databases_repl_transactions{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_repl_transactions{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_repl_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_repl_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_repl_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_shrink_data_movement_bytes (Databases.ShrinkDataMovementBytes)
+# TYPE windows_mssql_databases_shrink_data_movement_bytes counter
+windows_mssql_databases_shrink_data_movement_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_shrink_data_movement_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_shrink_data_movement_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_shrink_data_movement_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_shrink_data_movement_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_tracked_transactions (Databases.Trackedtransactions)
+# TYPE windows_mssql_databases_tracked_transactions counter
+windows_mssql_databases_tracked_transactions{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_tracked_transactions{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_tracked_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_tracked_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_tracked_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_transactions (Databases.Transactions)
+# TYPE windows_mssql_databases_transactions counter
+windows_mssql_databases_transactions{database="master",mssql_instance="SQLEXPRESS"} 2183
+windows_mssql_databases_transactions{database="model",mssql_instance="SQLEXPRESS"} 4467
+windows_mssql_databases_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 4582
+windows_mssql_databases_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 2
+windows_mssql_databases_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 1558
+# HELP windows_mssql_databases_write_transactions (Databases.WriteTransactions)
+# TYPE windows_mssql_databases_write_transactions counter
+windows_mssql_databases_write_transactions{database="master",mssql_instance="SQLEXPRESS"} 236
+windows_mssql_databases_write_transactions{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_write_transactions{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_write_transactions{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_write_transactions{database="tempdb",mssql_instance="SQLEXPRESS"} 29
+# HELP windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds (Databases.XTPControllerDLCLatencyPerFetch)
+# TYPE windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds gauge
+windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_fetch_latency_seconds{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds (Databases.XTPControllerDLCPeakLatency)
+# TYPE windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds gauge
+windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_dlc_peak_latency_seconds{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_xtp_controller_log_processed_bytes (Databases.XTPControllerLogProcessed)
+# TYPE windows_mssql_databases_xtp_controller_log_processed_bytes counter
+windows_mssql_databases_xtp_controller_log_processed_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_log_processed_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_log_processed_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_log_processed_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_controller_log_processed_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_databases_xtp_memory_used_bytes (Databases.XTPMemoryUsedKB)
+# TYPE windows_mssql_databases_xtp_memory_used_bytes gauge
+windows_mssql_databases_xtp_memory_used_bytes{database="master",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_memory_used_bytes{database="model",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_memory_used_bytes{database="msdb",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_memory_used_bytes{database="mssqlsystemresource",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_databases_xtp_memory_used_bytes{database="tempdb",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_active_temp_tables (GeneralStatistics.ActiveTempTables)
+# TYPE windows_mssql_genstats_active_temp_tables gauge
+windows_mssql_genstats_active_temp_tables{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_blocked_processes (GeneralStatistics.Processesblocked)
+# TYPE windows_mssql_genstats_blocked_processes gauge
+windows_mssql_genstats_blocked_processes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_connection_resets (GeneralStatistics.ConnectionReset)
+# TYPE windows_mssql_genstats_connection_resets counter
+windows_mssql_genstats_connection_resets{mssql_instance="SQLEXPRESS"} 1108
+# HELP windows_mssql_genstats_event_notifications_delayed_drop (GeneralStatistics.EventNotificationsDelayedDrop)
+# TYPE windows_mssql_genstats_event_notifications_delayed_drop gauge
+windows_mssql_genstats_event_notifications_delayed_drop{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_http_authenticated_requests (GeneralStatistics.HTTPAuthenticatedRequests)
+# TYPE windows_mssql_genstats_http_authenticated_requests gauge
+windows_mssql_genstats_http_authenticated_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_logical_connections (GeneralStatistics.LogicalConnections)
+# TYPE windows_mssql_genstats_logical_connections gauge
+windows_mssql_genstats_logical_connections{mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_genstats_logins (GeneralStatistics.Logins)
+# TYPE windows_mssql_genstats_logins counter
+windows_mssql_genstats_logins{mssql_instance="SQLEXPRESS"} 378
+# HELP windows_mssql_genstats_logouts (GeneralStatistics.Logouts)
+# TYPE windows_mssql_genstats_logouts counter
+windows_mssql_genstats_logouts{mssql_instance="SQLEXPRESS"} 377
+# HELP windows_mssql_genstats_mars_deadlocks (GeneralStatistics.MarsDeadlocks)
+# TYPE windows_mssql_genstats_mars_deadlocks gauge
+windows_mssql_genstats_mars_deadlocks{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_non_atomic_yields (GeneralStatistics.Nonatomicyields)
+# TYPE windows_mssql_genstats_non_atomic_yields counter
+windows_mssql_genstats_non_atomic_yields{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soap_empty_requests (GeneralStatistics.SOAPEmptyRequests)
+# TYPE windows_mssql_genstats_soap_empty_requests gauge
+windows_mssql_genstats_soap_empty_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soap_method_invocations (GeneralStatistics.SOAPMethodInvocations)
+# TYPE windows_mssql_genstats_soap_method_invocations gauge
+windows_mssql_genstats_soap_method_invocations{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soap_session_initiate_requests (GeneralStatistics.SOAPSessionInitiateRequests)
+# TYPE windows_mssql_genstats_soap_session_initiate_requests gauge
+windows_mssql_genstats_soap_session_initiate_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soap_session_terminate_requests (GeneralStatistics.SOAPSessionTerminateRequests)
+# TYPE windows_mssql_genstats_soap_session_terminate_requests gauge
+windows_mssql_genstats_soap_session_terminate_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soapsql_requests (GeneralStatistics.SOAPSQLRequests)
+# TYPE windows_mssql_genstats_soapsql_requests gauge
+windows_mssql_genstats_soapsql_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_soapwsdl_requests (GeneralStatistics.SOAPWSDLRequests)
+# TYPE windows_mssql_genstats_soapwsdl_requests gauge
+windows_mssql_genstats_soapwsdl_requests{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_sql_trace_io_provider_lock_waits (GeneralStatistics.SQLTraceIOProviderLockWaits)
+# TYPE windows_mssql_genstats_sql_trace_io_provider_lock_waits gauge
+windows_mssql_genstats_sql_trace_io_provider_lock_waits{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_temp_tables_awaiting_destruction (GeneralStatistics.TempTablesForDestruction)
+# TYPE windows_mssql_genstats_temp_tables_awaiting_destruction gauge
+windows_mssql_genstats_temp_tables_awaiting_destruction{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_temp_tables_creations (GeneralStatistics.TempTablesCreations)
+# TYPE windows_mssql_genstats_temp_tables_creations counter
+windows_mssql_genstats_temp_tables_creations{mssql_instance="SQLEXPRESS"} 4
+# HELP windows_mssql_genstats_tempdb_recovery_unit_ids_generated (GeneralStatistics.Tempdbrecoveryunitid)
+# TYPE windows_mssql_genstats_tempdb_recovery_unit_ids_generated gauge
+windows_mssql_genstats_tempdb_recovery_unit_ids_generated{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_tempdb_rowset_ids_generated (GeneralStatistics.Tempdbrowsetid)
+# TYPE windows_mssql_genstats_tempdb_rowset_ids_generated gauge
+windows_mssql_genstats_tempdb_rowset_ids_generated{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_trace_event_notification_queue_size (GeneralStatistics.TraceEventNotificationQueue)
+# TYPE windows_mssql_genstats_trace_event_notification_queue_size gauge
+windows_mssql_genstats_trace_event_notification_queue_size{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_transactions (GeneralStatistics.Transactions)
+# TYPE windows_mssql_genstats_transactions gauge
+windows_mssql_genstats_transactions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_genstats_user_connections (GeneralStatistics.UserConnections)
+# TYPE windows_mssql_genstats_user_connections gauge
+windows_mssql_genstats_user_connections{mssql_instance="SQLEXPRESS"} 1
+# HELP windows_mssql_locks_count (Locks.AverageWaitTimems_Base count of how often requests have run into locks)
+# TYPE windows_mssql_locks_count gauge
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Database"} 0.002
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Metadata"} 0.001
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_count{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_deadlocks (Locks.NumberofDeadlocks)
+# TYPE windows_mssql_locks_deadlocks counter
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Database"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Metadata"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_deadlocks{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_lock_requests (Locks.LockRequests)
+# TYPE windows_mssql_locks_lock_requests counter
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Database"} 204467
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Extent"} 402
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="File"} 19
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="HoBT"} 28
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Key"} 1.681875e+06
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Metadata"} 25785
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Object"} 760875
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Page"} 757
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="RID"} 123
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_lock_requests{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_lock_timeouts (Locks.LockTimeouts)
+# TYPE windows_mssql_locks_lock_timeouts counter
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Database"} 4
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Key"} 216
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Metadata"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_lock_timeouts{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_lock_timeouts_excluding_NOWAIT (Locks.LockTimeoutstimeout0)
+# TYPE windows_mssql_locks_lock_timeouts_excluding_NOWAIT counter
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Database"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Metadata"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_lock_timeouts_excluding_NOWAIT{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_lock_wait_seconds (Locks.LockWaitTimems)
+# TYPE windows_mssql_locks_lock_wait_seconds gauge
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Database"} 0.391
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Metadata"} 0.015
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_lock_wait_seconds{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_lock_waits (Locks.LockWaits)
+# TYPE windows_mssql_locks_lock_waits counter
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Database"} 2
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Metadata"} 1
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_wait_time_seconds (Locks.AverageWaitTimems Total time in seconds which locks have been holding resources)
+# TYPE windows_mssql_locks_wait_time_seconds gauge
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Application"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Database"} 0.391
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Extent"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="File"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="HoBT"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Key"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Metadata"} 0.015
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="OIB"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Object"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Page"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="RID"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
+windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_memmgr_allocated_lock_blocks (MemoryManager.LockBlocksAllocated)
+# TYPE windows_mssql_memmgr_allocated_lock_blocks gauge
+windows_mssql_memmgr_allocated_lock_blocks{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_allocated_lock_owner_blocks (MemoryManager.LockOwnerBlocksAllocated)
+# TYPE windows_mssql_memmgr_allocated_lock_owner_blocks gauge
+windows_mssql_memmgr_allocated_lock_owner_blocks{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_connection_memory_bytes (MemoryManager.ConnectionMemoryKB)
+# TYPE windows_mssql_memmgr_connection_memory_bytes gauge
+windows_mssql_memmgr_connection_memory_bytes{mssql_instance="SQLEXPRESS"} 1.015808e+06
+# HELP windows_mssql_memmgr_database_cache_memory_bytes (MemoryManager.DatabaseCacheMemoryKB)
+# TYPE windows_mssql_memmgr_database_cache_memory_bytes gauge
+windows_mssql_memmgr_database_cache_memory_bytes{mssql_instance="SQLEXPRESS"} 6.791168e+06
+# HELP windows_mssql_memmgr_external_benefit_of_memory (MemoryManager.Externalbenefitofmemory)
+# TYPE windows_mssql_memmgr_external_benefit_of_memory gauge
+windows_mssql_memmgr_external_benefit_of_memory{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_free_memory_bytes (MemoryManager.FreeMemoryKB)
+# TYPE windows_mssql_memmgr_free_memory_bytes gauge
+windows_mssql_memmgr_free_memory_bytes{mssql_instance="SQLEXPRESS"} 1.9234816e+07
+# HELP windows_mssql_memmgr_granted_workspace_memory_bytes (MemoryManager.GrantedWorkspaceMemoryKB)
+# TYPE windows_mssql_memmgr_granted_workspace_memory_bytes gauge
+windows_mssql_memmgr_granted_workspace_memory_bytes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_lock_blocks (MemoryManager.LockBlocks)
+# TYPE windows_mssql_memmgr_lock_blocks gauge
+windows_mssql_memmgr_lock_blocks{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_lock_memory_bytes (MemoryManager.LockMemoryKB)
+# TYPE windows_mssql_memmgr_lock_memory_bytes gauge
+windows_mssql_memmgr_lock_memory_bytes{mssql_instance="SQLEXPRESS"} 663552
+# HELP windows_mssql_memmgr_lock_owner_blocks (MemoryManager.LockOwnerBlocks)
+# TYPE windows_mssql_memmgr_lock_owner_blocks gauge
+windows_mssql_memmgr_lock_owner_blocks{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_log_pool_memory_bytes (MemoryManager.LogPoolMemoryKB)
+# TYPE windows_mssql_memmgr_log_pool_memory_bytes gauge
+windows_mssql_memmgr_log_pool_memory_bytes{mssql_instance="SQLEXPRESS"} 2.834432e+06
+# HELP windows_mssql_memmgr_maximum_workspace_memory_bytes (MemoryManager.MaximumWorkspaceMemoryKB)
+# TYPE windows_mssql_memmgr_maximum_workspace_memory_bytes gauge
+windows_mssql_memmgr_maximum_workspace_memory_bytes{mssql_instance="SQLEXPRESS"} 1.36482816e+09
+# HELP windows_mssql_memmgr_optimizer_memory_bytes (MemoryManager.OptimizerMemoryKB)
+# TYPE windows_mssql_memmgr_optimizer_memory_bytes gauge
+windows_mssql_memmgr_optimizer_memory_bytes{mssql_instance="SQLEXPRESS"} 1.007616e+06
+# HELP windows_mssql_memmgr_outstanding_memory_grants (MemoryManager.MemoryGrantsOutstanding)
+# TYPE windows_mssql_memmgr_outstanding_memory_grants gauge
+windows_mssql_memmgr_outstanding_memory_grants{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_pending_memory_grants (MemoryManager.MemoryGrantsPending)
+# TYPE windows_mssql_memmgr_pending_memory_grants gauge
+windows_mssql_memmgr_pending_memory_grants{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_reserved_server_memory_bytes (MemoryManager.ReservedServerMemoryKB)
+# TYPE windows_mssql_memmgr_reserved_server_memory_bytes gauge
+windows_mssql_memmgr_reserved_server_memory_bytes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_memmgr_sql_cache_memory_bytes (MemoryManager.SQLCacheMemoryKB)
+# TYPE windows_mssql_memmgr_sql_cache_memory_bytes gauge
+windows_mssql_memmgr_sql_cache_memory_bytes{mssql_instance="SQLEXPRESS"} 1.728512e+06
+# HELP windows_mssql_memmgr_stolen_server_memory_bytes (MemoryManager.StolenServerMemoryKB)
+# TYPE windows_mssql_memmgr_stolen_server_memory_bytes gauge
+windows_mssql_memmgr_stolen_server_memory_bytes{mssql_instance="SQLEXPRESS"} 1.7281024e+08
+# HELP windows_mssql_memmgr_target_server_memory_bytes (MemoryManager.TargetServerMemoryKB)
+# TYPE windows_mssql_memmgr_target_server_memory_bytes gauge
+windows_mssql_memmgr_target_server_memory_bytes{mssql_instance="SQLEXPRESS"} 1.816387584e+09
+# HELP windows_mssql_memmgr_total_server_memory_bytes (MemoryManager.TotalServerMemoryKB)
+# TYPE windows_mssql_memmgr_total_server_memory_bytes gauge
+windows_mssql_memmgr_total_server_memory_bytes{mssql_instance="SQLEXPRESS"} 1.98836224e+08
+# HELP windows_mssql_sql_errors_total (SQLErrors.Total)
+# TYPE windows_mssql_sql_errors_total counter
+windows_mssql_sql_errors_total{mssql_instance="SQLEXPRESS",resource="DB Offline Errors"} 0
+windows_mssql_sql_errors_total{mssql_instance="SQLEXPRESS",resource="Info Errors"} 766
+windows_mssql_sql_errors_total{mssql_instance="SQLEXPRESS",resource="Kill Connection Errors"} 0
+windows_mssql_sql_errors_total{mssql_instance="SQLEXPRESS",resource="User Errors"} 29
+# HELP windows_mssql_sqlstats_auto_parameterization_attempts (SQLStatistics.AutoParamAttempts)
+# TYPE windows_mssql_sqlstats_auto_parameterization_attempts counter
+windows_mssql_sqlstats_auto_parameterization_attempts{mssql_instance="SQLEXPRESS"} 37
+# HELP windows_mssql_sqlstats_batch_requests (SQLStatistics.BatchRequests)
+# TYPE windows_mssql_sqlstats_batch_requests counter
+windows_mssql_sqlstats_batch_requests{mssql_instance="SQLEXPRESS"} 2972
+# HELP windows_mssql_sqlstats_failed_auto_parameterization_attempts (SQLStatistics.FailedAutoParams)
+# TYPE windows_mssql_sqlstats_failed_auto_parameterization_attempts counter
+windows_mssql_sqlstats_failed_auto_parameterization_attempts{mssql_instance="SQLEXPRESS"} 29
+# HELP windows_mssql_sqlstats_forced_parameterizations (SQLStatistics.ForcedParameterizations)
+# TYPE windows_mssql_sqlstats_forced_parameterizations counter
+windows_mssql_sqlstats_forced_parameterizations{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_sqlstats_guided_plan_executions (SQLStatistics.Guidedplanexecutions)
+# TYPE windows_mssql_sqlstats_guided_plan_executions counter
+windows_mssql_sqlstats_guided_plan_executions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_sqlstats_misguided_plan_executions (SQLStatistics.Misguidedplanexecutions)
+# TYPE windows_mssql_sqlstats_misguided_plan_executions counter
+windows_mssql_sqlstats_misguided_plan_executions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_sqlstats_safe_auto_parameterization_attempts (SQLStatistics.SafeAutoParams)
+# TYPE windows_mssql_sqlstats_safe_auto_parameterization_attempts counter
+windows_mssql_sqlstats_safe_auto_parameterization_attempts{mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_sqlstats_sql_attentions (SQLStatistics.SQLAttentions)
+# TYPE windows_mssql_sqlstats_sql_attentions counter
+windows_mssql_sqlstats_sql_attentions{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_sqlstats_sql_compilations (SQLStatistics.SQLCompilations)
+# TYPE windows_mssql_sqlstats_sql_compilations counter
+windows_mssql_sqlstats_sql_compilations{mssql_instance="SQLEXPRESS"} 376
+# HELP windows_mssql_sqlstats_sql_recompilations (SQLStatistics.SQLReCompilations)
+# TYPE windows_mssql_sqlstats_sql_recompilations counter
+windows_mssql_sqlstats_sql_recompilations{mssql_instance="SQLEXPRESS"} 8
+# HELP windows_mssql_sqlstats_unsafe_auto_parameterization_attempts (SQLStatistics.UnsafeAutoParams)
+# TYPE windows_mssql_sqlstats_unsafe_auto_parameterization_attempts counter
+windows_mssql_sqlstats_unsafe_auto_parameterization_attempts{mssql_instance="SQLEXPRESS"} 6
+# HELP windows_mssql_transactions_active (Transactions.Transactions)
+# TYPE windows_mssql_transactions_active gauge
+windows_mssql_transactions_active{mssql_instance="SQLEXPRESS"} 6
+# HELP windows_mssql_transactions_longest_transaction_running_seconds (Transactions.LongestTransactionRunningTime)
+# TYPE windows_mssql_transactions_longest_transaction_running_seconds gauge
+windows_mssql_transactions_longest_transaction_running_seconds{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_nonsnapshot_version_active_total (Transactions.NonSnapshotVersionTransactions)
+# TYPE windows_mssql_transactions_nonsnapshot_version_active_total counter
+windows_mssql_transactions_nonsnapshot_version_active_total{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_snapshot_active_total (Transactions.SnapshotTransactions)
+# TYPE windows_mssql_transactions_snapshot_active_total counter
+windows_mssql_transactions_snapshot_active_total{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_tempdb_free_space_bytes (Transactions.FreeSpaceInTempDbKB)
+# TYPE windows_mssql_transactions_tempdb_free_space_bytes gauge
+windows_mssql_transactions_tempdb_free_space_bytes{mssql_instance="SQLEXPRESS"} 5.046272e+06
+# HELP windows_mssql_transactions_update_conflicts_total (Transactions.UpdateConflictRatio)
+# TYPE windows_mssql_transactions_update_conflicts_total counter
+windows_mssql_transactions_update_conflicts_total{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_update_snapshot_active_total (Transactions.UpdateSnapshotTransactions)
+# TYPE windows_mssql_transactions_update_snapshot_active_total counter
+windows_mssql_transactions_update_snapshot_active_total{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_version_cleanup_rate_bytes (Transactions.VersionCleanupRateKBs)
+# TYPE windows_mssql_transactions_version_cleanup_rate_bytes gauge
+windows_mssql_transactions_version_cleanup_rate_bytes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_version_generation_rate_bytes (Transactions.VersionGenerationRateKBs)
+# TYPE windows_mssql_transactions_version_generation_rate_bytes gauge
+windows_mssql_transactions_version_generation_rate_bytes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_version_store_creation_units (Transactions.VersionStoreUnitCreation)
+# TYPE windows_mssql_transactions_version_store_creation_units counter
+windows_mssql_transactions_version_store_creation_units{mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_transactions_version_store_size_bytes (Transactions.VersionStoreSizeKB)
+# TYPE windows_mssql_transactions_version_store_size_bytes gauge
+windows_mssql_transactions_version_store_size_bytes{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_version_store_truncation_units (Transactions.VersionStoreUnitTruncation)
+# TYPE windows_mssql_transactions_version_store_truncation_units counter
+windows_mssql_transactions_version_store_truncation_units{mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_transactions_version_store_units (Transactions.VersionStoreUnitCount)
+# TYPE windows_mssql_transactions_version_store_units counter
+windows_mssql_transactions_version_store_units{mssql_instance="SQLEXPRESS"} 2
+# HELP windows_mssql_waitstats_lock_waits (WaitStats.LockWaits)
+# TYPE windows_mssql_waitstats_lock_waits counter
+windows_mssql_waitstats_lock_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_lock_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_lock_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_lock_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_log_buffer_waits (WaitStats.LogBufferWaits)
+# TYPE windows_mssql_waitstats_log_buffer_waits counter
+windows_mssql_waitstats_log_buffer_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_buffer_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_buffer_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_buffer_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_log_write_waits (WaitStats.LogWriteWaits)
+# TYPE windows_mssql_waitstats_log_write_waits counter
+windows_mssql_waitstats_log_write_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_write_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_write_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_log_write_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_memory_grant_queue_waits (WaitStats.MemoryGrantQueueWaits)
+# TYPE windows_mssql_waitstats_memory_grant_queue_waits counter
+windows_mssql_waitstats_memory_grant_queue_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_memory_grant_queue_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_memory_grant_queue_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_memory_grant_queue_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_network_io_waits (WaitStats.NetworkIOWaits)
+# TYPE windows_mssql_waitstats_network_io_waits counter
+windows_mssql_waitstats_network_io_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_network_io_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_network_io_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_network_io_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_nonpage_latch_waits (WaitStats.NonpageLatchWaits)
+# TYPE windows_mssql_waitstats_nonpage_latch_waits counter
+windows_mssql_waitstats_nonpage_latch_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_nonpage_latch_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_nonpage_latch_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_nonpage_latch_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_page_io_latch_waits (WaitStats.PageIOLatchWaits)
+# TYPE windows_mssql_waitstats_page_io_latch_waits counter
+windows_mssql_waitstats_page_io_latch_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_io_latch_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_io_latch_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_io_latch_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_page_latch_waits (WaitStats.PageLatchWaits)
+# TYPE windows_mssql_waitstats_page_latch_waits counter
+windows_mssql_waitstats_page_latch_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_latch_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_latch_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_page_latch_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_thread_safe_memory_objects_waits (WaitStats.ThreadSafeMemoryObjectsWaits)
+# TYPE windows_mssql_waitstats_thread_safe_memory_objects_waits counter
+windows_mssql_waitstats_thread_safe_memory_objects_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_thread_safe_memory_objects_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_thread_safe_memory_objects_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_thread_safe_memory_objects_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_transaction_ownership_waits (WaitStats.TransactionOwnershipWaits)
+# TYPE windows_mssql_waitstats_transaction_ownership_waits counter
+windows_mssql_waitstats_transaction_ownership_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_transaction_ownership_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_transaction_ownership_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_transaction_ownership_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_wait_for_the_worker_waits (WaitStats.WaitForTheWorkerWaits)
+# TYPE windows_mssql_waitstats_wait_for_the_worker_waits counter
+windows_mssql_waitstats_wait_for_the_worker_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_wait_for_the_worker_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_wait_for_the_worker_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_wait_for_the_worker_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
+# HELP windows_mssql_waitstats_workspace_synchronization_waits (WaitStats.WorkspaceSynchronizationWaits)
+# TYPE windows_mssql_waitstats_workspace_synchronization_waits counter
+windows_mssql_waitstats_workspace_synchronization_waits{item="Average wait time (ms)",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_workspace_synchronization_waits{item="Cumulative wait time (ms) per second",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_workspace_synchronization_waits{item="Waits in progress",mssql_instance="SQLEXPRESS"} 0
+windows_mssql_waitstats_workspace_synchronization_waits{item="Waits started per second",mssql_instance="SQLEXPRESS"} 0
 # HELP windows_net_bytes_received_total (Network.BytesReceivedPerSec)
 # TYPE windows_net_bytes_received_total counter
 windows_net_bytes_received_total{nic="Intel_R__PRO_1000_MT_Network_Connection"} 4.786344482e+09
