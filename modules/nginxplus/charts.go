@@ -520,6 +520,7 @@ var (
 		Fam:      "stream traffic",
 		Ctx:      "nginxplus.stream_server_zone_traffic_rate",
 		Priority: prioStreamServerZoneTrafficRate,
+		Type:     module.Area,
 		Dims: module.Dims{
 			{ID: "stream_server_zone_%s_bytes_received", Name: "received", Algo: module.Incremental},
 			{ID: "stream_server_zone_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -1},
