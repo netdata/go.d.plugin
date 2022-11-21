@@ -12,50 +12,63 @@ import (
 const (
 	prioClientConnectionsRate = module.Priority + iota
 	prioClientConnectionsCount
+
 	prioSSLHandshakesRate
 	prioSSLSessionReusesRate
+
 	prioHTTPRequestsRate
 	prioHTTPRequestsCount
-
 	prioHTTPServerZoneRequestsRate
-	prioHTTPServerZoneResponsesPerCodeClassRate
-	prioHTTPServerZoneTrafficRate
+	prioHTTPLocationZoneRequestsRate
 	prioHTTPServerZoneRequestsProcessingCount
 	prioHTTPServerZoneRequestsDiscardedRate
-
-	prioHTTPLocationZoneRequestsRate
-	prioHTTPLocationZoneResponsesPerCodeClassRate
-	prioHTTPLocationZoneTrafficRate
 	prioHTTPLocationZoneRequestsDiscardedRate
 
-	prioHTTPUpstreamServerRequestsRate
-	prioHTTPUpstreamServerResponsesPerCodeClassRate
-	prioHTTPUpstreamServerResponseTime
-	prioHTTPUpstreamServerResponseHeaderTime
-	prioHTTPUpstreamServerTrafficRate
-	prioHTTPUpstreamServerState
-	prioHTTPUpstreamServerDowntime
-	prioHTTPUpstreamServerConnectionsCount
+	prioHTTPServerZoneResponsesPerCodeClassRate
+	prioHTTPLocationZoneResponsesPerCodeClassRate
+
+	prioHTTPServerZoneTrafficRate
+	prioHTTPLocationZoneTrafficRate
+
 	prioHTTPUpstreamPeersCount
 	prioHTTPUpstreamZombiesCount
 	prioHTTPUpstreamKeepaliveCount
+
+	prioHTTPUpstreamServerState
+	prioHTTPUpstreamServerDowntime
+
+	prioHTTPUpstreamServerConnectionsCount
+
+	prioHTTPUpstreamServerRequestsRate
+
+	prioHTTPUpstreamServerResponsesPerCodeClassRate
+
+	prioHTTPUpstreamServerResponseTime
+	prioHTTPUpstreamServerResponseHeaderTime
+
+	prioHTTPUpstreamServerTrafficRate
 
 	prioHTTPCacheState
 	prioHTTPCacheSize
 
 	prioStreamServerZoneConnectionsRate
-	prioStreamServerZoneSessionsPerCodeClassRate
-	prioStreamServerZoneTrafficRate
 	prioStreamServerZoneConnectionsProcessingCount
 	prioStreamServerZoneConnectionsDiscardedRate
 
-	prioStreamUpstreamServerConnectionsRate
-	prioStreamUpstreamServerTrafficRate
-	prioStreamUpstreamServerConnectionsCount
-	prioStreamUpstreamServerState
-	prioStreamUpstreamServerDowntime
+	prioStreamServerZoneSessionsPerCodeClassRate
+
+	prioStreamServerZoneTrafficRate
+
 	prioStreamUpstreamPeersCount
 	prioStreamUpstreamZombiesCount
+
+	prioStreamUpstreamServerState
+	prioStreamUpstreamServerDowntime
+
+	prioStreamUpstreamServerConnectionsRate
+	prioStreamUpstreamServerConnectionsCount
+
+	prioStreamUpstreamServerTrafficRate
 
 	prioUptime
 )
@@ -165,7 +178,7 @@ var (
 		ID:       "http_server_zone_%s_requests_rate",
 		Title:    "HTTP Server Zone requests rate",
 		Units:    "requests/s",
-		Fam:      "http server zone",
+		Fam:      "http requests",
 		Ctx:      "nginxplus.http_server_zone_requests_rate",
 		Priority: prioHTTPServerZoneRequestsRate,
 		Dims: module.Dims{
@@ -176,7 +189,7 @@ var (
 		ID:       "http_server_zone_%s_responses_per_code_class_rate",
 		Title:    "HTTP Server Zone responses rate",
 		Units:    "responses/s",
-		Fam:      "http server zone",
+		Fam:      "http responses",
 		Ctx:      "nginxplus.http_server_zone_responses_per_code_class_rate",
 		Priority: prioHTTPServerZoneResponsesPerCodeClassRate,
 		Type:     module.Stacked,
@@ -192,7 +205,7 @@ var (
 		ID:       "http_server_zone_%s_traffic_rate",
 		Title:    "HTTP Server Zone traffic",
 		Units:    "bytes/s",
-		Fam:      "http server zone",
+		Fam:      "http traffic",
 		Ctx:      "nginxplus.http_server_zone_traffic_rate",
 		Priority: prioHTTPServerZoneTrafficRate,
 		Type:     module.Area,
@@ -205,7 +218,7 @@ var (
 		ID:       "http_server_zone_%s_requests_processing_count",
 		Title:    "HTTP Server Zone currently processed requests",
 		Units:    "requests",
-		Fam:      "http server zone",
+		Fam:      "http requests",
 		Ctx:      "nginxplus.http_server_zone_requests_processing_count",
 		Priority: prioHTTPServerZoneRequestsProcessingCount,
 		Dims: module.Dims{
@@ -216,7 +229,7 @@ var (
 		ID:       "http_server_zone_%s_requests_discarded_rate",
 		Title:    "HTTP Server Zone requests discarded rate",
 		Units:    "requests/s",
-		Fam:      "http server zone",
+		Fam:      "http requests",
 		Ctx:      "nginxplus.http_server_zone_requests_discarded_rate",
 		Priority: prioHTTPServerZoneRequestsDiscardedRate,
 		Dims: module.Dims{
@@ -236,7 +249,7 @@ var (
 		ID:       "http_location_zone_%s_requests_rate",
 		Title:    "HTTP Location Zone requests rate",
 		Units:    "requests/s",
-		Fam:      "http location zone",
+		Fam:      "http requests",
 		Ctx:      "nginxplus.http_location_zone_requests_rate",
 		Priority: prioHTTPLocationZoneRequestsRate,
 		Dims: module.Dims{
@@ -247,7 +260,7 @@ var (
 		ID:       "http_location_zone_%s_responses_per_code_class_rate",
 		Title:    "HTTP Location Zone responses rate",
 		Units:    "responses/s",
-		Fam:      "http location zone",
+		Fam:      "http responses",
 		Ctx:      "nginxplus.http_location_zone_responses_per_code_class_rate",
 		Priority: prioHTTPLocationZoneResponsesPerCodeClassRate,
 		Type:     module.Stacked,
@@ -263,7 +276,7 @@ var (
 		ID:       "http_location_zone_%s_traffic_rate",
 		Title:    "HTTP Location Zone traffic rate",
 		Units:    "bytes/s",
-		Fam:      "http location zone",
+		Fam:      "http traffic",
 		Ctx:      "nginxplus.http_location_zone_traffic_rate",
 		Priority: prioHTTPLocationZoneTrafficRate,
 		Type:     module.Area,
@@ -276,7 +289,7 @@ var (
 		ID:       "http_location_zone_%s_requests_discarded_rate",
 		Title:    "HTTP Location Zone requests discarded rate",
 		Units:    "requests/s",
-		Fam:      "http location zone",
+		Fam:      "http requests",
 		Ctx:      "nginxplus.http_location_zone_requests_discarded_rate",
 		Priority: prioHTTPLocationZoneRequestsDiscardedRate,
 		Dims: module.Dims{
@@ -339,7 +352,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_requests_rate",
 		Title:    "HTTP Upstream Server requests",
 		Units:    "requests/s",
-		Fam:      "http upstream",
+		Fam:      "http upstream requests",
 		Ctx:      "nginxplus.http_upstream_server_requests_rate",
 		Priority: prioHTTPUpstreamServerRequestsRate,
 		Dims: module.Dims{
@@ -350,7 +363,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_responses_per_code_class_rate",
 		Title:    "HTTP Upstream Server responses",
 		Units:    "responses/s",
-		Fam:      "http upstream",
+		Fam:      "http upstream responses",
 		Ctx:      "nginxplus.http_upstream_server_responses_per_code_class_rate",
 		Priority: prioHTTPUpstreamServerResponsesPerCodeClassRate,
 		Type:     module.Stacked,
@@ -366,7 +379,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_response_time",
 		Title:    "HTTP Upstream Server average response time",
 		Units:    "milliseconds",
-		Fam:      "http upstream",
+		Fam:      "http upstream response time",
 		Ctx:      "nginxplus.http_upstream_server_response_time",
 		Priority: prioHTTPUpstreamServerResponseTime,
 		Dims: module.Dims{
@@ -377,7 +390,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_response_header_time",
 		Title:    "HTTP Upstream Server average response header time",
 		Units:    "milliseconds",
-		Fam:      "http upstream",
+		Fam:      "http upstream response time",
 		Ctx:      "nginxplus.http_upstream_server_response_header_time",
 		Priority: prioHTTPUpstreamServerResponseHeaderTime,
 		Dims: module.Dims{
@@ -388,7 +401,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_traffic_rate",
 		Title:    "HTTP Upstream Server traffic rate",
 		Units:    "bytes/s",
-		Fam:      "http upstream",
+		Fam:      "http upstream traffic",
 		Ctx:      "nginxplus.http_upstream_server_traffic_rate",
 		Priority: prioHTTPUpstreamServerTrafficRate,
 		Type:     module.Area,
@@ -401,7 +414,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_state",
 		Title:    "HTTP Upstream Server state",
 		Units:    "state",
-		Fam:      "http upstream",
+		Fam:      "http upstream state",
 		Ctx:      "nginxplus.http_upstream_server_state",
 		Priority: prioHTTPUpstreamServerState,
 		Dims: module.Dims{
@@ -417,7 +430,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_connection_count",
 		Title:    "HTTP Upstream Server connections",
 		Units:    "connections",
-		Fam:      "http upstream",
+		Fam:      "http upstream connections",
 		Ctx:      "nginxplus.http_upstream_server_connections_count",
 		Priority: prioHTTPUpstreamServerConnectionsCount,
 		Dims: module.Dims{
@@ -428,7 +441,7 @@ var (
 		ID:       "http_upstream_%s_server_%s_zone_%s_downtime",
 		Title:    "HTTP Upstream Server downtime",
 		Units:    "seconds",
-		Fam:      "http upstream",
+		Fam:      "http upstream state",
 		Ctx:      "nginxplus.http_upstream_server_downtime",
 		Priority: prioHTTPUpstreamServerDowntime,
 		Dims: module.Dims{
@@ -479,7 +492,7 @@ var (
 		ID:       "stream_server_zone_%s_connections_rate",
 		Title:    "Stream Server Zone connections rate",
 		Units:    "connections/s",
-		Fam:      "stream server zone",
+		Fam:      "stream connections",
 		Ctx:      "nginxplus.stream_server_zone_connections_rate",
 		Priority: prioStreamServerZoneConnectionsRate,
 		Dims: module.Dims{
@@ -490,7 +503,7 @@ var (
 		ID:       "stream_server_zone_%s_sessions_per_code_class_rate",
 		Title:    "Stream Server Zone sessions rate",
 		Units:    "sessions/s",
-		Fam:      "stream server zone",
+		Fam:      "stream sessions",
 		Ctx:      "nginxplus.stream_server_zone_sessions_per_code_class_rate",
 		Priority: prioStreamServerZoneSessionsPerCodeClassRate,
 		Type:     module.Stacked,
@@ -504,9 +517,10 @@ var (
 		ID:       "stream_server_zone_%s_traffic_rate",
 		Title:    "Stream Server Zone traffic rate",
 		Units:    "bytes/s",
-		Fam:      "stream server zone",
+		Fam:      "stream traffic",
 		Ctx:      "nginxplus.stream_server_zone_traffic_rate",
 		Priority: prioStreamServerZoneTrafficRate,
+		Type:     module.Area,
 		Dims: module.Dims{
 			{ID: "stream_server_zone_%s_bytes_received", Name: "received", Algo: module.Incremental},
 			{ID: "stream_server_zone_%s_bytes_sent", Name: "sent", Algo: module.Incremental, Mul: -1},
@@ -516,7 +530,7 @@ var (
 		ID:       "stream_server_zone_%s_connections_processing_count",
 		Title:    "Stream Server Zone connections processed",
 		Units:    "connections",
-		Fam:      "stream server zone",
+		Fam:      "stream connections",
 		Ctx:      "nginxplus.stream_server_zone_connections_processing_count",
 		Priority: prioStreamServerZoneConnectionsProcessingCount,
 		Dims: module.Dims{
@@ -527,7 +541,7 @@ var (
 		ID:       "stream_server_zone_%s_connections_discarded_rate",
 		Title:    "Stream Server Zone connections discarded",
 		Units:    "connections/s",
-		Fam:      "stream server zone",
+		Fam:      "stream connections",
 		Ctx:      "nginxplus.stream_server_zone_connections_discarded_rate",
 		Priority: prioStreamServerZoneConnectionsDiscardedRate,
 		Dims: module.Dims{
@@ -575,7 +589,7 @@ var (
 		ID:       "stream_upstream_%s_server_%s_zone_%s_connection_rate",
 		Title:    "Stream Upstream Server connections",
 		Units:    "connections/s",
-		Fam:      "stream upstream",
+		Fam:      "stream upstream connections",
 		Ctx:      "nginxplus.stream_upstream_server_connections_rate",
 		Priority: prioStreamUpstreamServerConnectionsRate,
 		Dims: module.Dims{
@@ -586,7 +600,7 @@ var (
 		ID:       "stream_upstream_%s_server_%s_zone_%s_traffic_rate",
 		Title:    "Stream Upstream Server traffic rate",
 		Units:    "bytes/s",
-		Fam:      "stream upstream",
+		Fam:      "stream upstream traffic",
 		Ctx:      "nginxplus.stream_upstream_server_traffic_rate",
 		Priority: prioStreamUpstreamServerTrafficRate,
 		Type:     module.Area,
@@ -599,7 +613,7 @@ var (
 		ID:       "stream_upstream_%s_server_%s_zone_%s_state",
 		Title:    "Stream Upstream Server state",
 		Units:    "state",
-		Fam:      "stream upstream",
+		Fam:      "stream upstream state",
 		Ctx:      "nginxplus.stream_upstream_server_state",
 		Priority: prioStreamUpstreamServerState,
 		Dims: module.Dims{
@@ -614,7 +628,7 @@ var (
 		ID:       "stream_upstream_%s_server_%s_zone_%s_downtime",
 		Title:    "Stream Upstream Server downtime",
 		Units:    "seconds",
-		Fam:      "stream upstream",
+		Fam:      "stream upstream state",
 		Ctx:      "nginxplus.stream_upstream_server_downtime",
 		Priority: prioStreamUpstreamServerDowntime,
 		Dims: module.Dims{
@@ -625,7 +639,7 @@ var (
 		ID:       "stream_upstream_%s_server_%s_zone_%s_connection_count",
 		Title:    "Stream Upstream Server connections",
 		Units:    "connections",
-		Fam:      "stream upstream",
+		Fam:      "stream upstream connections",
 		Ctx:      "nginxplus.stream_upstream_server_connections_count",
 		Priority: prioStreamUpstreamServerConnectionsCount,
 		Dims: module.Dims{
