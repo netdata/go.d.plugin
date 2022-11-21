@@ -29,6 +29,7 @@ var (
 	dataAPI8SSL, _               = os.ReadFile("testdata/api-8/ssl.json")
 	dataAPI8StreamServerZones, _ = os.ReadFile("testdata/api-8/stream_server_zones.json")
 	dataAPI8StreamUpstreams, _   = os.ReadFile("testdata/api-8/stream_upstreams.json")
+	dataAPI8Resolvers, _         = os.ReadFile("testdata/api-8/resolvers.json")
 	data404, _                   = os.ReadFile("testdata/404.json")
 )
 
@@ -47,6 +48,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataAPI8SSL":               dataAPI8SSL,
 		"dataAPI8StreamServerZones": dataAPI8StreamServerZones,
 		"dataAPI8StreamUpstreams":   dataAPI8StreamUpstreams,
+		"dataAPI8Resolvers":         dataAPI8Resolvers,
 		"data404":                   data404,
 	} {
 		require.NotNilf(t, data, name)
@@ -139,7 +141,8 @@ func TestNginxPlus_Collect(t *testing.T) {
 				len(httpUpstreamServerChartsTmpl)*2 +
 				len(streamServerZoneChartsTmpl) +
 				len(streamUpstreamChartsTmpl) +
-				len(streamUpstreamServerChartsTmpl)*2,
+				len(streamUpstreamServerChartsTmpl)*2 +
+				len(resolverZoneChartsTmpl)*2,
 			wantMetrics: map[string]int64{
 				"connections_accepted":                                                        6079,
 				"connections_active":                                                          1,
@@ -222,6 +225,28 @@ func TestNginxPlus_Collect(t *testing.T) {
 				"http_upstream_backend_zone_http_backend_keepalive":                           0,
 				"http_upstream_backend_zone_http_backend_peers":                               2,
 				"http_upstream_backend_zone_http_backend_zombies":                             0,
+				"resolver_zone_resolver-http_requests_addr":                                   0,
+				"resolver_zone_resolver-http_requests_name":                                   0,
+				"resolver_zone_resolver-http_requests_srv":                                    2939408,
+				"resolver_zone_resolver-http_responses_formerr":                               0,
+				"resolver_zone_resolver-http_responses_noerror":                               0,
+				"resolver_zone_resolver-http_responses_notimp":                                0,
+				"resolver_zone_resolver-http_responses_nxdomain":                              2939404,
+				"resolver_zone_resolver-http_responses_refused":                               0,
+				"resolver_zone_resolver-http_responses_servfail":                              0,
+				"resolver_zone_resolver-http_responses_timedout":                              4,
+				"resolver_zone_resolver-http_responses_unknown":                               0,
+				"resolver_zone_resolver-stream_requests_addr":                                 0,
+				"resolver_zone_resolver-stream_requests_name":                                 638797,
+				"resolver_zone_resolver-stream_requests_srv":                                  0,
+				"resolver_zone_resolver-stream_responses_formerr":                             0,
+				"resolver_zone_resolver-stream_responses_noerror":                             433136,
+				"resolver_zone_resolver-stream_responses_notimp":                              0,
+				"resolver_zone_resolver-stream_responses_nxdomain":                            40022,
+				"resolver_zone_resolver-stream_responses_refused":                             165639,
+				"resolver_zone_resolver-stream_responses_servfail":                            0,
+				"resolver_zone_resolver-stream_responses_timedout":                            0,
+				"resolver_zone_resolver-stream_responses_unknown":                             0,
 				"ssl_handshakes":                                                                         0,
 				"ssl_handshakes_failed":                                                                  0,
 				"ssl_session_reuses":                                                                     0,
@@ -265,7 +290,8 @@ func TestNginxPlus_Collect(t *testing.T) {
 				len(httpServerZoneChartsTmpl) +
 				len(httpLocationZoneChartsTmpl)*2 +
 				len(httpUpstreamChartsTmpl) +
-				len(httpUpstreamServerChartsTmpl)*2,
+				len(httpUpstreamServerChartsTmpl)*2 +
+				len(resolverZoneChartsTmpl)*2,
 			wantMetrics: map[string]int64{
 				"connections_accepted":                                                        6079,
 				"connections_active":                                                          1,
@@ -348,6 +374,28 @@ func TestNginxPlus_Collect(t *testing.T) {
 				"http_upstream_backend_zone_http_backend_keepalive":                           0,
 				"http_upstream_backend_zone_http_backend_peers":                               2,
 				"http_upstream_backend_zone_http_backend_zombies":                             0,
+				"resolver_zone_resolver-http_requests_addr":                                   0,
+				"resolver_zone_resolver-http_requests_name":                                   0,
+				"resolver_zone_resolver-http_requests_srv":                                    2939408,
+				"resolver_zone_resolver-http_responses_formerr":                               0,
+				"resolver_zone_resolver-http_responses_noerror":                               0,
+				"resolver_zone_resolver-http_responses_notimp":                                0,
+				"resolver_zone_resolver-http_responses_nxdomain":                              2939404,
+				"resolver_zone_resolver-http_responses_refused":                               0,
+				"resolver_zone_resolver-http_responses_servfail":                              0,
+				"resolver_zone_resolver-http_responses_timedout":                              4,
+				"resolver_zone_resolver-http_responses_unknown":                               0,
+				"resolver_zone_resolver-stream_requests_addr":                                 0,
+				"resolver_zone_resolver-stream_requests_name":                                 638797,
+				"resolver_zone_resolver-stream_requests_srv":                                  0,
+				"resolver_zone_resolver-stream_responses_formerr":                             0,
+				"resolver_zone_resolver-stream_responses_noerror":                             433136,
+				"resolver_zone_resolver-stream_responses_notimp":                              0,
+				"resolver_zone_resolver-stream_responses_nxdomain":                            40022,
+				"resolver_zone_resolver-stream_responses_refused":                             165639,
+				"resolver_zone_resolver-stream_responses_servfail":                            0,
+				"resolver_zone_resolver-stream_responses_timedout":                            0,
+				"resolver_zone_resolver-stream_responses_unknown":                             0,
 				"ssl_handshakes":        0,
 				"ssl_handshakes_failed": 0,
 				"ssl_session_reuses":    0,
@@ -375,6 +423,7 @@ func TestNginxPlus_Collect(t *testing.T) {
 			require.Equal(t, test.wantMetrics, mx)
 			if len(test.wantMetrics) > 0 {
 				assert.Equalf(t, test.wantNumOfCharts, len(*nginx.Charts()), "number of charts")
+				ensureCollectedHasAllChartsDimsVarsIDs(t, nginx, mx)
 			}
 		})
 	}
@@ -411,6 +460,8 @@ func caseAPI8AllRequestsOK(t *testing.T) (*NginxPlus, func()) {
 				_, _ = w.Write(dataAPI8StreamServerZones)
 			case fmt.Sprintf(urlPathAPIStreamUpstreams, 8):
 				_, _ = w.Write(dataAPI8StreamUpstreams)
+			case fmt.Sprintf(urlPathAPIResolvers, 8):
+				_, _ = w.Write(dataAPI8Resolvers)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 				_, _ = w.Write(data404)
@@ -451,6 +502,8 @@ func caseAPI8AllRequestsExceptStreamOK(t *testing.T) (*NginxPlus, func()) {
 				_, _ = w.Write(dataAPI8HTTPUpstreams)
 			case fmt.Sprintf(urlPathAPIHTTPCaches, 8):
 				_, _ = w.Write(dataAPI8HTTPCaches)
+			case fmt.Sprintf(urlPathAPIResolvers, 8):
+				_, _ = w.Write(dataAPI8Resolvers)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 				_, _ = w.Write(data404)
@@ -484,4 +537,20 @@ func caseConnectionRefused(t *testing.T) (*NginxPlus, func()) {
 	require.True(t, nginx.Init())
 
 	return nginx, func() {}
+}
+
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, n *NginxPlus, mx map[string]int64) {
+	for _, chart := range *n.Charts() {
+		if chart.ID == uptimeChart.ID {
+			continue
+		}
+		for _, dim := range chart.Dims {
+			_, ok := mx[dim.ID]
+			assert.Truef(t, ok, "collected metrics has no data for dim '%s' chart '%s'", dim.ID, chart.ID)
+		}
+		for _, v := range chart.Vars {
+			_, ok := mx[v.ID]
+			assert.Truef(t, ok, "collected metrics has no data for var '%s' chart '%s'", v.ID, chart.ID)
+		}
+	}
 }

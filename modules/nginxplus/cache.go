@@ -12,6 +12,7 @@ func newCache() *cache {
 		streamServerZones:     make(map[string]*cacheZoneEntry),
 		streamUpstreams:       make(map[string]*cacheUpstreamEntry),
 		streamUpstreamServers: make(map[string]*cacheUpstreamServerEntry),
+		resolvers:             make(map[string]*cacheResolverEntry),
 	}
 }
 
@@ -25,6 +26,7 @@ type (
 		streamServerZones     map[string]*cacheZoneEntry
 		streamUpstreams       map[string]*cacheUpstreamEntry
 		streamUpstreamServers map[string]*cacheUpstreamServerEntry
+		resolvers             map[string]*cacheResolverEntry
 	}
 	cacheEntry struct {
 		hasCharts    bool
@@ -33,6 +35,10 @@ type (
 	}
 	cacheHTTPCacheEntry struct {
 		name string
+		cacheEntry
+	}
+	cacheResolverEntry struct {
+		zone string
 		cacheEntry
 	}
 	cacheZoneEntry struct {
@@ -76,6 +82,9 @@ func (c *cache) resetUpdated() {
 		v.updated = false
 	}
 	for _, v := range c.streamUpstreamServers {
+		v.updated = false
+	}
+	for _, v := range c.resolvers {
 		v.updated = false
 	}
 }
@@ -149,6 +158,15 @@ func (c *cache) putStreamUpstreamServer(name, serverAddr, serverName, zone strin
 	if !ok {
 		v = &cacheUpstreamServerEntry{name: name, zone: zone, serverAddr: serverAddr, serverName: serverName}
 		c.streamUpstreamServers[name+"_"+serverAddr+"_"+zone] = v
+	}
+	v.updated, v.notSeenTimes = true, 0
+}
+
+func (c *cache) putResolver(zone string) {
+	v, ok := c.resolvers[zone]
+	if !ok {
+		v = &cacheResolverEntry{zone: zone}
+		c.resolvers[zone] = v
 	}
 	v.updated, v.notSeenTimes = true, 0
 }

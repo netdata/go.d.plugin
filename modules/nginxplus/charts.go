@@ -70,6 +70,9 @@ const (
 
 	prioStreamUpstreamServerTrafficRate
 
+	prioResolverZoneRequestsRate
+	prioResolverZoneResponsesRate
+
 	prioUptime
 )
 
@@ -648,6 +651,46 @@ var (
 	}
 )
 
+var (
+	resolverZoneChartsTmpl = module.Charts{
+		resolverZoneRequestsRateChartTmpl.Copy(),
+		resolverZoneResponsesRateChartTmpl.Copy(),
+	}
+	resolverZoneRequestsRateChartTmpl = module.Chart{
+		ID:       "resolver_zone_%s_requests_rate",
+		Title:    "Resolver requests rate",
+		Units:    "requests/s",
+		Fam:      "resolver requests",
+		Ctx:      "nginxplus.resolver_zone_requests_rate",
+		Priority: prioResolverZoneRequestsRate,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "resolver_zone_%s_requests_name", Name: "name", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_requests_srv", Name: "srv", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_requests_addr", Name: "addr", Algo: module.Incremental},
+		},
+	}
+	resolverZoneResponsesRateChartTmpl = module.Chart{
+		ID:       "resolver_zone_%s_responses_rate",
+		Title:    "Resolver responses rate",
+		Units:    "responses/s",
+		Fam:      "resolver responses",
+		Ctx:      "nginxplus.resolver_zone_responses_rate",
+		Priority: prioResolverZoneResponsesRate,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "resolver_zone_%s_responses_noerror", Name: "noerror", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_formerr", Name: "formerr", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_servfail", Name: "servfail", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_nxdomain", Name: "nxdomain", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_notimp", Name: "notimp", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_refused", Name: "refused", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_timedout", Name: "timedout", Algo: module.Incremental},
+			{ID: "resolver_zone_%s_responses_unknown", Name: "unknown", Algo: module.Incremental},
+		},
+	}
+)
+
 func (n *NginxPlus) addHTTPCacheCharts(name string) {
 	charts := httpCacheChartsTmpl.Copy()
 
@@ -837,6 +880,29 @@ func (n *NginxPlus) addStreamUpstreamServerCharts(name, serverAddr, serverName, 
 
 func (n *NginxPlus) removeStreamUpstreamServerCharts(name, serverAddr, zone string) {
 	px := fmt.Sprintf("stream_upstream_%s_server_%s_zone_%s", name, serverAddr, zone)
+	n.removeCharts(px)
+}
+
+func (n *NginxPlus) addResolverZoneCharts(zone string) {
+	charts := resolverZoneChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, zone)
+		chart.Labels = []module.Label{
+			{Key: "resolver_zone", Value: zone},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, zone)
+		}
+	}
+
+	if err := n.Charts().Add(*charts...); err != nil {
+		n.Warning(err)
+	}
+}
+
+func (n *NginxPlus) removeResolverZoneCharts(zone string) {
+	px := fmt.Sprintf("resolver_zone_%s_", zone)
 	n.removeCharts(px)
 }
 

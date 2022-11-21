@@ -42,6 +42,7 @@ func (n *NginxPlus) collect() (map[string]int64, error) {
 	n.collectHTTPUpstreams(mx, ms)
 	n.collectStreamServerZones(mx, ms)
 	n.collectStreamUpstreams(mx, ms)
+	n.collectResolvers(mx, ms)
 	n.updateCharts()
 
 	return mx, nil
@@ -225,6 +226,28 @@ func (n *NginxPlus) collectStreamUpstreams(mx map[string]int64, ms *nginxMetrics
 	}
 }
 
+func (n *NginxPlus) collectResolvers(mx map[string]int64, ms *nginxMetrics) {
+	if ms.resolvers == nil {
+		return
+	}
+	for name, zone := range *ms.resolvers {
+		n.cache.putResolver(name)
+
+		px := fmt.Sprintf("resolver_zone_%s_", name)
+		mx[px+"requests_name"] = zone.Requests.Name
+		mx[px+"requests_srv"] = zone.Requests.Srv
+		mx[px+"requests_addr"] = zone.Requests.Addr
+		mx[px+"responses_noerror"] = zone.Responses.NoError
+		mx[px+"responses_formerr"] = zone.Responses.Formerr
+		mx[px+"responses_servfail"] = zone.Responses.Servfail
+		mx[px+"responses_nxdomain"] = zone.Responses.Nxdomain
+		mx[px+"responses_notimp"] = zone.Responses.Notimp
+		mx[px+"responses_refused"] = zone.Responses.Refused
+		mx[px+"responses_timedout"] = zone.Responses.TimedOut
+		mx[px+"responses_unknown"] = zone.Responses.Unknown
+	}
+}
+
 func (n *NginxPlus) updateCharts() {
 	const notSeenLimit = 3
 
@@ -329,6 +352,19 @@ func (n *NginxPlus) updateCharts() {
 			if v.notSeenTimes++; v.notSeenTimes >= notSeenLimit {
 				delete(n.cache.streamUpstreamServers, key)
 				n.removeStreamUpstreamServerCharts(v.name, v.serverAddr, v.zone)
+			}
+		}
+	}
+	for key, v := range n.cache.resolvers {
+		if v.updated && !v.hasCharts {
+			v.hasCharts = true
+			n.addResolverZoneCharts(v.zone)
+			continue
+		}
+		if !v.updated {
+			if v.notSeenTimes++; v.notSeenTimes >= notSeenLimit {
+				delete(n.cache.resolvers, key)
+				n.removeResolverZoneCharts(v.zone)
 			}
 		}
 	}

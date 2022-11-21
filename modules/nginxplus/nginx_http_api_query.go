@@ -21,6 +21,7 @@ const (
 	urlPathAPIEndpointsStream   = "/api/%d/stream"
 	urlPathAPIConnections       = "/api/%d/connections"
 	urlPathAPISSL               = "/api/%d/ssl"
+	urlPathAPIResolvers         = "/api/%d/resolvers"
 	urlPathAPIHTTPRequests      = "/api/%d/http/requests"
 	urlPathAPIHTTPServerZones   = "/api/%d/http/server_zones"
 	urlPathAPIHTTPLocationZones = "/api/%d/http/location_zones"
@@ -41,6 +42,7 @@ type nginxMetrics struct {
 	httpCaches        *nginxHTTPCaches
 	streamServerZones *nginxStreamServerZones
 	streamUpstreams   *nginxStreamUpstreams
+	resolvers         *nginxResolvers
 }
 
 func (n *NginxPlus) queryAPIVersion() (int64, error) {
@@ -78,6 +80,8 @@ func (n *NginxPlus) queryAvailableEndpoints() error {
 			n.endpoints.connections = true
 		case "ssl":
 			n.endpoints.ssl = true
+		case "resolvers":
+			n.endpoints.resolvers = true
 		case "http":
 			hasHTTP = true
 		case "stream":
@@ -152,6 +156,7 @@ func (n *NginxPlus) queryMetrics() *nginxMetrics {
 		{do: n.endpoints.httpCaches, fn: n.queryHTTPCaches},
 		{do: n.endpoints.streamServerZones, fn: n.queryStreamServerZones},
 		{do: n.endpoints.streamUpstreams, fn: n.queryStreamUpstreams},
+		{do: n.endpoints.resolvers, fn: n.queryResolvers},
 	} {
 		task := task
 		if task.do {
@@ -315,6 +320,21 @@ func (n *NginxPlus) queryStreamUpstreams(ms *nginxMetrics) {
 	ms.streamUpstreams = &v
 }
 
+func (n *NginxPlus) queryResolvers(ms *nginxMetrics) {
+	req, _ := web.NewHTTPRequest(n.Request.Copy())
+	req.URL.Path = fmt.Sprintf(urlPathAPIResolvers, n.apiVersion)
+
+	var v nginxResolvers
+
+	if err := n.doWithDecode(&v, req); err != nil {
+		n.endpoints.resolvers = !errors.Is(err, errPathNotFound)
+		n.Warning(err)
+		return
+	}
+
+	ms.resolvers = &v
+}
+
 var (
 	errPathNotFound = errors.New("path not found")
 )
@@ -354,7 +374,8 @@ func closeBody(resp *http.Response) {
 }
 
 func (n *nginxMetrics) empty() bool {
-	return n.connections == nil &&
+	return n.info != nil &&
+		n.connections == nil &&
 		n.ssl == nil &&
 		n.httpRequests == nil &&
 		n.httpServerZones == nil &&
@@ -362,5 +383,6 @@ func (n *nginxMetrics) empty() bool {
 		n.httpUpstreams == nil &&
 		n.httpCaches == nil &&
 		n.streamServerZones == nil &&
-		n.streamUpstreams == nil
+		n.streamUpstreams == nil &&
+		n.resolvers != nil
 }
