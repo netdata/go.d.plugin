@@ -23,7 +23,7 @@ require (
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/likexian/whois v1.14.3
+	github.com/likexian/whois v1.14.4
 	github.com/likexian/whois-parser v1.24.2
 	github.com/mattn/go-isatty v0.0.16
 	github.com/mattn/go-xmlrpc v0.0.3
@@ -156,11 +156,11 @@ require (
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20220824171710-5757bc0c5503 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
-	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/term v0.2.0 // indirect
 	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
