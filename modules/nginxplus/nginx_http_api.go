@@ -181,3 +181,21 @@ type (
 		Zone    string `json:"zone"`
 	}
 )
+
+type nginxResolvers map[string]struct {
+	Requests struct {
+		Name int64 `json:"name"`
+		Srv  int64 `json:"srv"`
+		Addr int64 `json:"addr"`
+	} `json:"requests"`
+	Responses struct {
+		NoError  int64 `json:"noerror"`
+		Formerr  int64 `json:"formerr"`
+		Servfail int64 `json:"servfail"`
+		Nxdomain int64 `json:"nxdomain"`
+		Notimp   int64 `json:"notimp"`
+		Refused  int64 `json:"refused"`
+		TimedOut int64 `json:"timedout"`
+		Unknown  int64 `json:"unknown"`
+	} `json:"responses"`
+}

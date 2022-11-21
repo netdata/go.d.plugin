@@ -59,6 +59,7 @@ type NginxPlus struct {
 		httpUpstreams     bool
 		streamServerZones bool
 		streamUpstreams   bool
+		resolvers         bool
 	}
 	queryEndpointsTime  time.Time
 	queryEndpointsEvery time.Duration
