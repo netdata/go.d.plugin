@@ -65,6 +65,8 @@ Labels per scope:
 | http_upstream_server_connections_count             |  http upstream server  |                                  active                                  |  connections  |
 | http_upstream_server_downtime                      |  http upstream server  |                                 downtime                                 |    seconds    |
 | http_cache_state                                   |       http cache       |                                warm, cold                                |     state     |
+| http_cache_iops                                    |       http cache       |                         served, written, bypass                          |  responses/s  |
+| http_cache_io                                      |       http cache       |                         served, written, bypass                          |    bytes/s    |
 | http_cache_size                                    |       http cache       |                                   size                                   |     bytes     |
 | stream_server_zone_connections_rate                |   stream server zone   |                                 accepted                                 | connections/s |
 | stream_server_zone_sessions_per_code_class_rate    |   stream server zone   |                              2xx, 4xx, 5xx                               |  sessions/s   |

@@ -92,6 +92,12 @@ func (n *NginxPlus) collectHTTPCache(mx map[string]int64, ms *nginxMetrics) {
 		mx[px+"state_cold"] = boolToInt(cache.Cold)
 		mx[px+"state_warm"] = boolToInt(!cache.Cold)
 		mx[px+"size"] = cache.Size
+		mx[px+"served_responses"] = cache.Hit.Responses + cache.Stale.Responses + cache.Updating.Responses + cache.Revalidated.Responses
+		mx[px+"written_responses"] = cache.Miss.ResponsesWritten + cache.Expired.ResponsesWritten + cache.Bypass.ResponsesWritten
+		mx[px+"bypassed_responses"] = cache.Miss.Responses + cache.Expired.Responses + cache.Bypass.Responses
+		mx[px+"served_bytes"] = cache.Hit.Bytes + cache.Stale.Bytes + cache.Updating.Bytes + cache.Revalidated.Bytes
+		mx[px+"written_bytes"] = cache.Miss.BytesWritten + cache.Expired.BytesWritten + cache.Bypass.BytesWritten
+		mx[px+"bypassed_bytes"] = cache.Miss.Bytes + cache.Expired.Bytes + cache.Bypass.Bytes
 	}
 }
 

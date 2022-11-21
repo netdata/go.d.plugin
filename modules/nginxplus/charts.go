@@ -49,6 +49,8 @@ const (
 	prioHTTPUpstreamServerTrafficRate
 
 	prioHTTPCacheState
+	prioHTTPCacheIOPS
+	prioHTTPCacheIO
 	prioHTTPCacheSize
 
 	prioStreamServerZoneConnectionsRate
@@ -456,6 +458,8 @@ var (
 var (
 	httpCacheChartsTmpl = module.Charts{
 		httpCacheStateChartTmpl.Copy(),
+		httpCacheIOPSChartTmpl.Copy(),
+		httpCacheIOChartTmpl.Copy(),
 		httpCacheSizeChartTmpl.Copy(),
 	}
 	httpCacheStateChartTmpl = module.Chart{
@@ -479,6 +483,32 @@ var (
 		Priority: prioHTTPCacheSize,
 		Dims: module.Dims{
 			{ID: "http_cache_%s_size", Name: "size"},
+		},
+	}
+	httpCacheIOPSChartTmpl = module.Chart{
+		ID:       "http_cache_%s_iops",
+		Title:    "HTTP Cache IOPS",
+		Units:    "responses/s",
+		Fam:      "http cache",
+		Ctx:      "nginxplus.http_cache_iops",
+		Priority: prioHTTPCacheIOPS,
+		Dims: module.Dims{
+			{ID: "http_cache_%s_served_responses", Name: "served", Algo: module.Incremental},
+			{ID: "http_cache_%s_written_responses", Name: "written", Algo: module.Incremental},
+			{ID: "http_cache_%s_bypassed_responses", Name: "bypassed", Algo: module.Incremental},
+		},
+	}
+	httpCacheIOChartTmpl = module.Chart{
+		ID:       "http_cache_%s_io",
+		Title:    "HTTP Cache IO",
+		Units:    "bytes/s",
+		Fam:      "http cache",
+		Ctx:      "nginxplus.http_cache_io",
+		Priority: prioHTTPCacheIO,
+		Dims: module.Dims{
+			{ID: "http_cache_%s_served_bytes", Name: "served", Algo: module.Incremental},
+			{ID: "http_cache_%s_written_bytes", Name: "written", Algo: module.Incremental},
+			{ID: "http_cache_%s_bypassed_bytes", Name: "bypassed", Algo: module.Incremental},
 		},
 	}
 )
