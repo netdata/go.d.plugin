@@ -198,7 +198,7 @@ var pipelineChartsTmpl = module.Charts{
 		ID:       "pipeline_%s_event_duration",
 		Title:    "Pipeline Events Duration",
 		Units:    "seconds",
-		Fam:      "pipeline events",
+		Fam:      "pipeline events duration",
 		Ctx:      "logstash.pipeline_event_duration",
 		Priority: prioPipelineEventDurations,
 		Dims: module.Dims{
