@@ -59,13 +59,13 @@ var checkConnectionLatencyChartTmpl = module.Chart{
 	},
 }
 
-func newPortCharts(port int) *module.Charts {
+func newPortCharts(host string, port int) *module.Charts {
 	charts := chartsTmpl.Copy()
 	for _, chart := range *charts {
-		chart.Labels = []module.Label{{
-			Key:   "port",
-			Value: strconv.Itoa(port),
-		}}
+		chart.Labels = []module.Label{
+			{Key: "host", Value: host},
+			{Key: "port", Value: strconv.Itoa(port)},
+		}
 		chart.ID = fmt.Sprintf(chart.ID, port)
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, port)
