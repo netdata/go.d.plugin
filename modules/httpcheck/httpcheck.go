@@ -47,6 +47,8 @@ type (
 		Config      `yaml:",inline"`
 		UpdateEvery int `yaml:"update_every"`
 
+		charts *module.Charts
+
 		acceptedStatuses map[int]bool
 		reResponse       *regexp.Regexp
 		client           client
@@ -62,6 +64,8 @@ func (hc *HTTPCheck) Init() bool {
 		hc.Errorf("config validation: %v", err)
 		return false
 	}
+
+	hc.charts = hc.initCharts()
 
 	httpClient, err := hc.initHTTPClient()
 	if err != nil {
@@ -96,7 +100,7 @@ func (hc *HTTPCheck) Check() bool {
 }
 
 func (hc *HTTPCheck) Charts() *module.Charts {
-	return charts.Copy()
+	return hc.charts
 }
 
 func (hc *HTTPCheck) Collect() map[string]int64 {

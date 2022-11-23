@@ -52,7 +52,10 @@ func TestHTTPCheck_Check(t *testing.T) {
 }
 
 func TestHTTPCheck_Charts(t *testing.T) {
-	assert.NotNil(t, New().Charts())
+	job := New()
+	job.URL = testURL
+	require.True(t, job.Init())
+	assert.NotNil(t, job.Charts())
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {
