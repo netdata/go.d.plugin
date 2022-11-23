@@ -30,7 +30,7 @@ func (x *X509Check) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (x X509Check) collectExpiration(mx map[string]int64, certs []*x509.Certificate) {
+func (x *X509Check) collectExpiration(mx map[string]int64, certs []*x509.Certificate) {
 	expiry := time.Until(certs[0].NotAfter).Seconds()
 	mx["expiry"] = int64(expiry)
 	mx["days_until_expiration_warning"] = x.DaysUntilWarn
@@ -38,7 +38,7 @@ func (x X509Check) collectExpiration(mx map[string]int64, certs []*x509.Certific
 
 }
 
-func (x X509Check) collectRevocation(mx map[string]int64, certs []*x509.Certificate) {
+func (x *X509Check) collectRevocation(mx map[string]int64, certs []*x509.Certificate) {
 	rev, ok, err := revoke.VerifyCertificateError(certs[0])
 	if err != nil {
 		x.Debug(err)
