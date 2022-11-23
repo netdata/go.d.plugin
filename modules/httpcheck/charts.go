@@ -13,7 +13,7 @@ const (
 	prioResponseInStatusDuration
 )
 
-var charts = module.Charts{
+var httpCheckCharts = module.Charts{
 	responseTimeChart.Copy(),
 	responseLengthChart.Copy(),
 	responseStatusChart.Copy(),

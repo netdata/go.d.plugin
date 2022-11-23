@@ -4,9 +4,11 @@ package httpcheck
 
 import (
 	"errors"
-	"github.com/netdata/go.d.plugin/pkg/web"
 	"net/http"
 	"regexp"
+
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func (hc *HTTPCheck) validateConfig() error {
@@ -25,4 +27,16 @@ func (hc *HTTPCheck) initResponseMatchRegexp() (*regexp.Regexp, error) {
 		return nil, nil
 	}
 	return regexp.Compile(hc.ResponseMatch)
+}
+
+func (hc *HTTPCheck) initCharts() *module.Charts {
+	charts := httpCheckCharts.Copy()
+
+	for _, chart := range *charts {
+		chart.Labels = []module.Label{
+			{Key: "url", Value: hc.URL},
+		}
+	}
+
+	return charts
 }
