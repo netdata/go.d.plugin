@@ -119,6 +119,22 @@ func TestWMI_Collect(t *testing.T) {
 		"success on valid response v0.20.0": {
 			prepare: prepareWMIv0200,
 			wantCollected: map[string]int64{
+				"ad_dra_compressed_bandwidth_inbound":   0,
+				"ad_dra_compressed_bandwidth_outbound":  0,
+				"ad_dra_objects_filtered":               0,
+				"ad_dra_objects_remaining":              0,
+				"ad_dra_pending_sync":                   0,
+				"ad_dra_properties_applied":             0,
+				"ad_dra_properties_filtered":            0,
+				"ad_dra_sync_req_made":                  0,
+				"ad_dra_uncompressed_inbound":           0,
+				"ad_ds_thread":                          0,
+				"ad_ldap_bind_searches":                 1382,
+				"ad_ldap_bind_time":                     0,
+				"ad_ldap_bind_total":                    184,
+				"collector_ad_duration":                 769,
+				"collector_ad_status_fail":              0,
+				"collector_ad_status_success":           1,
 				"collector_cpu_duration":                0,
 				"collector_cpu_status_fail":             0,
 				"collector_cpu_status_success":          1,
@@ -523,6 +539,13 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 				id := fmt.Sprintf(chart.ID, db, instance)
 				assert.Truef(t, w.Charts().Has(id), "charts has no '%s' chart for '%s' instance", id, instance)
 			}
+		}
+	}
+	for _, chart := range adCharts {
+		if w.cache.collection[collectorAD] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
 	for name := range w.cache.collectors {
