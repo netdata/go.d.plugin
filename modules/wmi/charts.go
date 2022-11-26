@@ -1082,7 +1082,7 @@ var (
 
 // AD
 var (
-	adChartsTmpl = module.Charts{
+	adCharts = module.Charts{
 		adCompressedReplication.Copy(),
 		adNotCompressedReplication.Copy(),
 		adInboundObjectRemaining.Copy(),
@@ -1692,6 +1692,14 @@ func (w *WMI) removeMSSQLInstanceCharts(instance string) {
 
 func (w *WMI) addProcessesCharts() {
 	charts := processesCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addADCharts() {
+	charts := adCharts.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)

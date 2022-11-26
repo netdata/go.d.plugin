@@ -9,6 +9,7 @@ import (
 const precision = 1000
 
 const (
+	collectorAD          = "ad"
 	collectorCPU         = "cpu"
 	collectorMemory      = "memory"
 	collectorNet         = "net"
