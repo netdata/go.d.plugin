@@ -103,6 +103,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectIIS(mx, pms)
 		case collectorMSSQL:
 			w.collectMSSQL(mx, pms)
+		case collectorAD:
+			w.collectAD(mx, pms)
 		}
 	}
 }
