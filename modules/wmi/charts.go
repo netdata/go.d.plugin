@@ -1086,7 +1086,6 @@ var (
 		adCompressedReplication.Copy(),
 		adNotCompressedReplication.Copy(),
 		adInboundObjectRemaining.Copy(),
-		adInboundObjectApplied.Copy(),
 		adInboundObjectsFiltered.Copy(),
 		adInboundPropertiesApplied.Copy(),
 		adReplicationPendingSync.Copy(),
@@ -1128,17 +1127,6 @@ var (
 		Priority: prioADInboundObjectsRemaining,
 		Dims: module.Dims{
 			{ID: "ad_dra_objects_remaining", Name: "object"},
-		},
-	}
-	adInboundObjectApplied = module.Chart{
-		ID:       "ad_dra_objects_applied",
-		Title:    "DRA inbound objects applied",
-		Units:    "objects",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_objects_applied",
-		Priority: prioADInboundObjectsApplied,
-		Dims: module.Dims{
-			{ID: "ad_dra_objects_applied", Name: "object", Algo: module.Incremental},
 		},
 	}
 	adInboundObjectsFiltered = module.Chart{
