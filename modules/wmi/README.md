@@ -25,6 +25,7 @@ The module collects metrics from the following collectors:
 - [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md)
 - [service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md)
 - [mssql](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.mssql.md)
+- [ad](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.ad.md)
 
 ## Requirements
 
@@ -139,6 +140,18 @@ All metrics have "wmi." prefix.
 | mssql_database_log_flushes                                  |    database    |                                                                                        log                                                                                         |   flushes/s    |
 | mssql_database_transactions                                 |    database    |                                                                                    transactions                                                                                    | transactions/s |
 | mssql_instance_write_transactions                           |    database    |                                                                                       write                                                                                        | transactions/s |
+| ad_dra_compressed_bandwidth                                 |     domain     |                                                                                 inbound, outbound                                                                                  |     bytes/s    |
+| ad_dra_uncompressed_inbound                                 |     domain     |                                                                                       inbound                                                                                      |     bytes/s    |
+| ad_dra_objects_remaining                                    |     domain     |                                                                                       objects                                                                                      |   objects/s    |
+| ad_dra_objects_filtered                                     |     domain     |                                                                                       objects                                                                                      |   objects/s    |
+| ad_dra_properties_applied                                   |     domain     |                                                                                       properties                                                                                   |  properties/s  |
+| ad_dra_pending_sync                                         |     domain     |                                                                                     Directory sync                                                                                 |    directory   |
+| ad_dra_sync_req_made                                        |     domain     |                                                                                        Requests                                                                                    |     request    |
+| ad_ds_thread                                                |     domain     |                                                                                         Threads                                                                                    |     thread     |
+| ad_ldap_bind_time                                           |     domain     |                                                                                         Seconds                                                                                    |     second     |
+| ad_ldap_bind_total                                          |     domain     |                                                                                          Bind                                                                                      |      bind      |
+| ad_ldap_bind_total                                          |     domain     |                                                                                          Bind                                                                                      |      bind      |
+| ad_ldap_bind_searches                                       |     domain     |                                                                                        searches                                                                                    |   searches/s   |
 
 ## Configuration
 
