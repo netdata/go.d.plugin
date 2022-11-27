@@ -1086,8 +1086,8 @@ var (
 		adCompressedReplication.Copy(),
 		adNotCompressedReplication.Copy(),
 		adInboundObjectRemaining.Copy(),
-		adInboundObjectsFiltered.Copy(),
-		adInboundPropertiesApplied.Copy(),
+		adObjectsFiltered.Copy(),
+		adPropertiesApplied.Copy(),
 		adReplicationPendingSync.Copy(),
 		adSyncRequestMade.Copy(),
 		adDirectoryServiceThread.Copy(),
@@ -1108,11 +1108,11 @@ var (
 		},
 	}
 	adNotCompressedReplication = module.Chart{
-		ID:       "ad_dra_uncompressed_inbound",
+		ID:       "ad_dra_uncompressed",
 		Title:    "Uncompressed DRA inbound",
 		Units:    "bytes/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_uncompressed_bandwidth",
+		Ctx:      "wmi.ad_dra_uncompressed",
 		Priority: prioADUncompressedReplication,
 		Dims: module.Dims{
 			{ID: "ad_dra_uncompressed_inbound", Name: "inbound", Algo: module.Incremental},
@@ -1120,16 +1120,16 @@ var (
 	}
 	adInboundObjectRemaining = module.Chart{
 		ID:       "ad_dra_objects_remaining",
-		Title:    "DRA inbound objects remaining",
+		Title:    "DRA objects remaining",
 		Units:    "objects/s",
 		Fam:      "ad",
 		Ctx:      "wmi.ad_dra_objects_remaining",
 		Priority: prioADInboundObjectsRemaining,
 		Dims: module.Dims{
-			{ID: "ad_dra_objects_remaining", Name: "object"},
+			{ID: "ad_dra_inbound_objects_remaining", Name: "inbound"},
 		},
 	}
-	adInboundObjectsFiltered = module.Chart{
+	adObjectsFiltered = module.Chart{
 		ID:       "ad_dra_objects_filtered",
 		Title:    "DRA inbound objects filtered",
 		Units:    "objects/s",
@@ -1137,18 +1137,18 @@ var (
 		Ctx:      "wmi.ad_dra_objects_filtered",
 		Priority: prioADInboundObjectsFiltered,
 		Dims: module.Dims{
-			{ID: "ad_dra_objects_filtered", Name: "property", Algo: module.Incremental},
+			{ID: "ad_dra_objects_filtered_inbound", Name: "inbound", Algo: module.Incremental},
 		},
 	}
-	adInboundPropertiesApplied = module.Chart{
-		ID:       "ad_dra_properties_fieltered",
-		Title:    "DRA inbound properties fieltered",
+	adPropertiesApplied = module.Chart{
+		ID:       "ad_dra_properties_applied",
+		Title:    "DRA properties applied",
 		Units:    "properties/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_properties_filtered",
+		Ctx:      "wmi.ad_dra_properties_applied",
 		Priority: prioADInboundObjectsApplied,
 		Dims: module.Dims{
-			{ID: "ad_dra_properties_applied", Name: "property", Algo: module.Incremental},
+			{ID: "ad_dra_properties_applied_inbound", Name: "inbound", Algo: module.Incremental},
 		},
 	}
 	adReplicationPendingSync = module.Chart{
@@ -1159,7 +1159,7 @@ var (
 		Ctx:      "wmi.ad_dra_pending_sync",
 		Priority: prioADReplicationPendingSync,
 		Dims: module.Dims{
-			{ID: "ad_dra_pending_sync", Name: "directory"},
+			{ID: "ad_dra_pending_sync_directory", Name: "directory"},
 		},
 	}
 	adSyncRequestMade = module.Chart{
