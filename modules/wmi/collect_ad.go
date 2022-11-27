@@ -28,16 +28,16 @@ func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Metrics) {
 	}
 
 	if pm := pms.FindByName(metricADReplicationIncomingObjectsFiltering); pm.Len() > 0 {
-		mx["ad_dra_objects_filtered"] = int64(pm.Max())
+		mx["ad_dra_objects_filtered_inbound"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADReplicationInboundPropFilteredTotal); pm.Len() > 0 {
-		mx["ad_dra_properties_applied"] = int64(pm.Max())
+		mx["ad_dra_properties_applied_inbound"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADReplicationInboundPropUpdatedTotal); pm.Len() > 0 {
-		mx["ad_dra_properties_filtered"] = int64(pm.Max())
+		mx["ad_dra_properties_filtered_inbound"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADReplicationInboundSyncObjectsReamining); pm.Len() > 0 {
-		mx["ad_dra_objects_remaining"] = int64(pm.Max())
+		mx["ad_dra_objects_remaining_inbound"] = int64(pm.Max())
 	}
 	for _, pm := range pms.FindByName(metricADReplicationDataIntersiteBytesTotal) {
 		if name := pm.Labels.Get("direction"); name != "" {
@@ -48,7 +48,7 @@ func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Metrics) {
 		mx["ad_dra_uncompressed_inbound"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADReplicationPendingSync); pm.Len() > 0 {
-		mx["ad_dra_pending_sync"] = int64(pm.Max())
+		mx["ad_dra_pending_sync_directory"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADReplicationSyncRequestsTotal); pm.Len() > 0 {
 		mx["ad_dra_sync_req_made"] = int64(pm.Max())

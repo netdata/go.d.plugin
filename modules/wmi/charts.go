@@ -1126,7 +1126,7 @@ var (
 		Ctx:      "wmi.ad_dra_objects_remaining",
 		Priority: prioADInboundObjectsRemaining,
 		Dims: module.Dims{
-			{ID: "ad_dra_inbound_objects_remaining", Name: "inbound"},
+			{ID: "ad_dra_objects_remaining_inbound", Name: "inbound"},
 		},
 	}
 	adObjectsFiltered = module.Chart{
