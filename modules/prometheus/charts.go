@@ -154,13 +154,12 @@ func (p *Prometheus) addHistogramChart(id, name, help string, labels labels.Labe
 
 func getChartTitle(name, help string) string {
 	if help == "" {
-		return fmt.Sprintf("SeriesSample \"%s\"", name)
+		return fmt.Sprintf("Metric \"%s\"", name)
 	}
 
 	help = strings.Replace(help, "'", "", -1)
-	if strings.HasSuffix(help, ".") {
-		help = help[:len(help)-1]
-	}
+	help = strings.TrimSuffix(help, ".")
+
 	return help
 }
 
