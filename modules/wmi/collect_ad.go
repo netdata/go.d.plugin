@@ -4,6 +4,11 @@ package wmi
 
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
+// Windows exporte name metrics replication without give explanation:
+// https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.ad.md
+// Microsoft names the same metrics as DRA
+// https://learn.microsoft.com/en-us/previous-versions/ms803980(v=msdn.10)?redirectedfrom=MSDN
+// We are following Microsoft.
 const (
 	metricADReplicationIncomingObjectsFiltering    = "windows_ad_replication_inbound_objects_filtered_total"
 	metricADReplicationInboundPropFilteredTotal    = "windows_ad_replication_inbound_properties_filtered_total"
