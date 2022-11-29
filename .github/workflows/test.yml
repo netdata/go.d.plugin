@@ -25,7 +25,7 @@ jobs:
       - name: Go vet
         run: go vet ./...
       - name: Set up gotestfmt
-        uses: haveyoudebuggedit/gotestfmt-action@v2
+        uses: gotesttools/gotestfmt-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Go test
