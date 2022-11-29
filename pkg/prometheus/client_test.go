@@ -19,9 +19,17 @@ import (
 )
 
 var (
-	testData, _       = os.ReadFile("testData/testdata.txt")
-	testDataNoMeta, _ = os.ReadFile("testData/testdata.nometa.txt")
+	testData, _       = os.ReadFile("testdata/testdata.txt")
+	testDataNoMeta, _ = os.ReadFile("testdata/testdata.nometa.txt")
 )
+
+func Test_testClientDataIsValid(t *testing.T) {
+	for name, data := range map[string][]byte{
+		"testData": testData,
+	} {
+		require.NotNilf(t, data, name)
+	}
+}
 
 func TestPrometheus404(t *testing.T) {
 	tsMux := http.NewServeMux()
