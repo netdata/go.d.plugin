@@ -30,7 +30,6 @@ require (
 	github.com/miekg/dns v1.1.50
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/prometheus-community/pro-bing v0.1.0
-	github.com/prometheus/common v0.37.0
 	github.com/prometheus/prometheus v0.36.2
 	github.com/stretchr/testify v1.8.1
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
@@ -127,6 +126,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
+	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
