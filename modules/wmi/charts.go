@@ -1273,7 +1273,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSCertificateRequest,
 		Dims: module.Dims{
-			{ID: "adcs_%s_cert_requests_total", Name: "request", Algo: module.Incremental},
+			{ID: "adcs_%s_cert_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adcsRequestPocessingTimeChart = module.Chart{
@@ -1290,14 +1290,14 @@ var (
 	}
 	adcsCertificateRetrievalsChart = module.Chart{
 		ID:       "adcs_%s_cert_retrievals",
-		Title:    "Total retrievals",
-		Units:    "requests/s",
+		Title:    "Total of certificate retrievals",
+		Units:    "retrievals/s",
 		Fam:      "adcs",
 		Ctx:      "wmi.adcs_cert_retrievals",
 		Type:     module.Line,
 		Priority: prioADCSCertificateRetrivals,
 		Dims: module.Dims{
-			{ID: "adcs_%s_cert_retrievals_total", Name: "certificate", Algo: module.Incremental},
+			{ID: "adcs_%s_cert_retrievals_total", Name: "retrievals", Algo: module.Incremental},
 		},
 	}
 	adcsCertificateRetrievalsTimeChart = module.Chart{
@@ -1321,7 +1321,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSFailedRequests,
 		Dims: module.Dims{
-			{ID: "adcs_%s_cert_failed_request_total", Name: "certificate", Algo: module.Incremental},
+			{ID: "adcs_%s_cert_failed_request_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adcsIssuedRequestChart = module.Chart{
@@ -1333,7 +1333,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSIssuedRequests,
 		Dims: module.Dims{
-			{ID: "adcs_%s_cert_issued_request_total", Name: "certificate", Algo: module.Incremental},
+			{ID: "adcs_%s_cert_issued_request_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adcsPendingRequestChart = module.Chart{
@@ -1345,7 +1345,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSPendingRequests,
 		Dims: module.Dims{
-			{ID: "adcs_%s_cert_pending_request_total", Name: "certificate", Algo: module.Incremental},
+			{ID: "adcs_%s_cert_pending_request_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adcsCryptoSigningTimeChart = module.Chart{
@@ -1362,7 +1362,7 @@ var (
 	}
 	adcsPolicyModuleProcessingTimeChart = module.Chart{
 		ID:       "adcs_%s_policy_module_proc_time",
-		Title:    "Last time elapsed for Policy Module Processing(PMP)",
+		Title:    "Last time elapsed for Policy Module Processing",
 		Units:    "seconds",
 		Fam:      "adcs",
 		Ctx:      "wmi.adcs_policy_module_proc_time",
@@ -1381,7 +1381,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSChallengeCertficateResponse,
 		Dims: module.Dims{
-			{ID: "adcs_%s_challenge_cert_response_total", Name: "challenge", Algo: module.Incremental},
+			{ID: "adcs_%s_challenge_cert_response_total", Name: "responses", Algo: module.Incremental},
 		},
 	}
 	adcsChallengeResponseProcessingTimeChart = module.Chart{
@@ -1405,7 +1405,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSSignedCertificateTimestampList,
 		Dims: module.Dims{
-			{ID: "adcs_%s_signed_cert_timestamp_list_total", Name: "certificate", Algo: module.Incremental},
+			{ID: "adcs_%s_signed_cert_timestamp_list_total", Name: "certificates", Algo: module.Incremental},
 		},
 	}
 	adcsSignedCertificateTimestampListProcessingChart = module.Chart{
