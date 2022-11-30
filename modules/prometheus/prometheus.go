@@ -8,6 +8,7 @@ import (
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -27,25 +28,26 @@ func New() *Prometheus {
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
-				Request: web.Request{
-					URL: "https://node.demo.do.prometheus.io/metrics",
-				},
+				//Request: web.Request{
+				//	URL: "https://node.demo.do.prometheus.io/metrics",
+				//},
 			},
 			MaxTSPerMetric: 200,
 		},
 		sb:     &strings.Builder{},
 		charts: &module.Charts{},
-		cache:  make(map[string]bool),
+		cache:  newCache(),
 	}
 }
 
 type Config struct {
 	web.HTTP        `yaml:",inline"`
-	Name            string `yaml:"name"`
-	Application     string `yaml:"app"`
-	BearerTokenFile string `yaml:"bearer_token_file"` // TODO: part of web.Request?
-	MaxTSPerMetric  int    `yaml:"max_time_series_per_metric"`
-	ExpectedPrefix  string `yaml:"expected_prefix"`
+	Name            string        `yaml:"name"`
+	Application     string        `yaml:"app"`
+	BearerTokenFile string        `yaml:"bearer_token_file"`
+	Selector        selector.Expr `yaml:"selector"`
+	MaxTSPerMetric  int           `yaml:"max_time_series_per_metric"`
+	ExpectedPrefix  string        `yaml:"expected_prefix"`
 }
 
 type Prometheus struct {
@@ -57,7 +59,7 @@ type Prometheus struct {
 	prom prometheus.Prometheus
 	sb   *strings.Builder
 
-	cache map[string]bool
+	cache *cache
 }
 
 func (p *Prometheus) Init() bool {

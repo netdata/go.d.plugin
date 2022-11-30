@@ -1,6 +1,7 @@
 package prometheus
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -9,13 +10,16 @@ import (
 )
 
 func (p *Prometheus) validateConfig() error {
+	if p.URL == "" {
+		return errors.New("'url' can not be empty")
+	}
 	return nil
 }
 
 func (p *Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
-	client, err := web.NewHTTPClient(p.Client)
+	httpClient, err := web.NewHTTPClient(p.Client)
 	if err != nil {
-		return nil, fmt.Errorf("creating HTTP client: %v", err)
+		return nil, fmt.Errorf("init HTTP client: %v", err)
 	}
 
 	req := p.Request.Copy()
@@ -27,5 +31,13 @@ func (p *Prometheus) initPrometheusClient() (prometheus.Prometheus, error) {
 		req.Headers["Authorization"] = "Bearer " + string(token)
 	}
 
-	return prometheus.New(client, req), nil
+	sr, err := p.Selector.Parse()
+	if err != nil {
+		return nil, fmt.Errorf("parsing selector: %v", err)
+	}
+
+	if sr != nil {
+		return prometheus.NewWithSelector(httpClient, req, sr), nil
+	}
+	return prometheus.New(httpClient, req), nil
 }
