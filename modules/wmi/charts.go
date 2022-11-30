@@ -1357,7 +1357,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADCSRCryptoSigningTime,
 		Dims: module.Dims{
-			{ID: "adcs_%s_req_crypto_signing_time_elapsed", Name: "period"},
+			{ID: "adcs_%s_crypto_signing_time_elapsed", Name: "period"},
 		},
 	}
 	adcsPolicyModuleProcessingTimeChart = module.Chart{

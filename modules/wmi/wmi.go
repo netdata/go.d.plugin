@@ -38,6 +38,7 @@ func New() *WMI {
 			thermalZones:   make(map[string]bool),
 			processes:      make(map[string]bool),
 			iis:            make(map[string]bool),
+			adcs:           make(map[string]bool),
 			services:       make(map[string]bool),
 			mssqlInstances: make(map[string]bool),
 			mssqlDBs:       make(map[string]bool),
@@ -71,6 +72,7 @@ type (
 		thermalZones   map[string]bool
 		processes      map[string]bool
 		iis            map[string]bool
+		adcs           map[string]bool
 		mssqlInstances map[string]bool
 		mssqlDBs       map[string]bool
 		services       map[string]bool
