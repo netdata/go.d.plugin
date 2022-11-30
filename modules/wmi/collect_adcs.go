@@ -24,79 +24,79 @@ func (w *WMI) collectADCS(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "adcs_"
 	for _, pm := range pms.FindByName(metricADCSRequestotal) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_requests_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSRequestProcessingTime) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_req_proc_time_elapsed"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSRetrievalTotal) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_retrievals_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSRetrievalProcessing) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_retrieval_time_elapsed"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSFailedRequest) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_failed_request_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSIssuedRequest) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_issued_request_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSPendingRequest) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_cert_pending_request_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSReqCryptoSigning) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_crypto_signing_time_elapsed"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSPolicyModuleProcessing) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_policy_mod_proc_time_elapsed"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSChalengeResponse) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_challenge_cert_response_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSChalengeResponseProcessing) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_challenge_response_proc_time_elapsed"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSSignedCertTimestampList) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_signed_cert_timestamp_list_total"] += int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricADCSSignedCertTimestampListProcessing) {
-		if name := pm.Labels.Get("cert_template"); name != "" {
+		if name := pm.Labels.Get("cert_template"); name != "" && name != "_Total" {
 			seen[name] = true
 			mx[px+name+"_signed_cert_timestamp_list_proc_elapsed"] += int64(pm.Value)
 		}
