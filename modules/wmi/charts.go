@@ -115,6 +115,20 @@ const (
 	prioADBindsTotal
 	prioADLDAPSearchesTotal
 
+	prioADCSCertificateRequest
+	prioADCSRequestProcessingTime
+	prioADCSCertificateRetrivals
+	prioADCSCertificateRetrievalsTime
+	prioADCSFailedRequests
+	prioADCSIssuedRequests
+	prioADCSPendingRequests
+	prioADCSRCryptoSigningTime
+	prioADCSRequestPolicyModuleProcessingTime
+	prioADCSChallengeCertficateResponse
+	prioADCSChallengeResponsesProcessingTime
+	prioADCSSignedCertificateTimestampList
+	prioADCSSignedCertificateTimestampListProcess
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -1233,6 +1247,181 @@ var (
 	}
 )
 
+// AD CS
+var (
+	adcsChartsTmpl = module.Charts{
+		adcsCertificateRequestsChart.Copy(),
+		adcsRequestPocessingTimeChart.Copy(),
+		adcsCertificateRetrievalsChart.Copy(),
+		adcsCertificateRetrievalsTimeChart.Copy(),
+		adcsFailedRequestChart.Copy(),
+		adcsIssuedRequestChart.Copy(),
+		adcsPendingRequestChart.Copy(),
+		adcsCryptoSigningTimeChart.Copy(),
+		adcsPolicyModuleProcessingTimeChart.Copy(),
+		adcsChalengeCertificateResponseChart.Copy(),
+		adcsChallengeResponseProcessingTimeChart.Copy(),
+		adcsSignedCertificateTimestampListChart.Copy(),
+		adcsSignedCertificateTimestampListProcessingChart.Copy(),
+	}
+	adcsCertificateRequestsChart = module.Chart{
+		ID:       "adcs_%s_cert_requests",
+		Title:    "Total certificate requests",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_requests",
+		Type:     module.Line,
+		Priority: prioADCSCertificateRequest,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_requests_total", Name: "request", Algo: module.Incremental},
+		},
+	}
+	adcsRequestPocessingTimeChart = module.Chart{
+		ID:       "adcs_%s_cert_req_proc_time",
+		Title:    "Last time elapsed for request",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_req_proc_time",
+		Type:     module.Line,
+		Priority: prioADCSRequestProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_req_proc_time_elapsed", Name: "period"},
+		},
+	}
+	adcsCertificateRetrievalsChart = module.Chart{
+		ID:       "adcs_%s_cert_retrievals",
+		Title:    "Total retrievals",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_retrievals",
+		Type:     module.Line,
+		Priority: prioADCSCertificateRetrivals,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_retrievals_total", Name: "certificate", Algo: module.Incremental},
+		},
+	}
+	adcsCertificateRetrievalsTimeChart = module.Chart{
+		ID:       "adcs_%s_cert_retrieval_time",
+		Title:    "Last time elapsed for certificate retrival",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_retrieval_time",
+		Type:     module.Line,
+		Priority: prioADCSCertificateRetrievalsTime,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_retrieval_time_elapsed", Name: "period"},
+		},
+	}
+	adcsFailedRequestChart = module.Chart{
+		ID:       "adcs_%s_cert_failed_request",
+		Title:    "Total failed certificate requests",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_failed_request",
+		Type:     module.Line,
+		Priority: prioADCSFailedRequests,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_failed_request_total", Name: "certificate", Algo: module.Incremental},
+		},
+	}
+	adcsIssuedRequestChart = module.Chart{
+		ID:       "adcs_%s_cert_issued_request",
+		Title:    "Total issued certificate requests",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_issued_request",
+		Type:     module.Line,
+		Priority: prioADCSIssuedRequests,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_issued_request_total", Name: "certificate", Algo: module.Incremental},
+		},
+	}
+	adcsPendingRequestChart = module.Chart{
+		ID:       "adcs_%s_cert_pending_request",
+		Title:    "Total pending certificate requests",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_pending_request",
+		Type:     module.Line,
+		Priority: prioADCSPendingRequests,
+		Dims: module.Dims{
+			{ID: "adcs_%s_cert_pending_request_total", Name: "certificate", Algo: module.Incremental},
+		},
+	}
+	adcsCryptoSigningTimeChart = module.Chart{
+		ID:       "adcs_%s_crypto_signing_time",
+		Title:    "Last time elapsed for signing",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_crypto_signing_time",
+		Type:     module.Line,
+		Priority: prioADCSRCryptoSigningTime,
+		Dims: module.Dims{
+			{ID: "adcs_%s_req_crypto_signing_time_elapsed", Name: "period"},
+		},
+	}
+	adcsPolicyModuleProcessingTimeChart = module.Chart{
+		ID:       "adcs_%s_policy_module_proc_time",
+		Title:    "Last time elapsed for Policy Module Processing(PMP)",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_policy_module_proc_time",
+		Type:     module.Line,
+		Priority: prioADCSRequestPolicyModuleProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_%s_policy_mod_proc_time_elapsed", Name: "period"},
+		},
+	}
+	adcsChalengeCertificateResponseChart = module.Chart{
+		ID:       "adcs_%s_challenge_cert_response",
+		Title:    "Total certification challenge response",
+		Units:    "response/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_response",
+		Type:     module.Line,
+		Priority: prioADCSChallengeCertficateResponse,
+		Dims: module.Dims{
+			{ID: "adcs_%s_challenge_cert_response_total", Name: "challenge", Algo: module.Incremental},
+		},
+	}
+	adcsChallengeResponseProcessingTimeChart = module.Chart{
+		ID:       "adcs_%s_challenge_response_proc_time",
+		Title:    "Last time elapsed for challenge response",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_challenge_response_proc_time",
+		Type:     module.Line,
+		Priority: prioADCSChallengeResponsesProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_%s_challenge_response_proc_time_elapsed", Name: "period"},
+		},
+	}
+	adcsSignedCertificateTimestampListChart = module.Chart{
+		ID:       "adcs_%s_signed_cert_timestamp",
+		Title:    "Total signed Certificate Timestamp List",
+		Units:    "certificates/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_signed_cert_timestamp_list",
+		Type:     module.Line,
+		Priority: prioADCSSignedCertificateTimestampList,
+		Dims: module.Dims{
+			{ID: "adcs_%s_signed_cert_timestamp_list_total", Name: "certificate", Algo: module.Incremental},
+		},
+	}
+	adcsSignedCertificateTimestampListProcessingChart = module.Chart{
+		ID:       "adcs_%s_signed_cert_timestamp_proc",
+		Title:    "Last time elapsed for Signed Certificate Timestamp",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_signed_cert_timestamp_proc",
+		Type:     module.Line,
+		Priority: prioADCSSignedCertificateTimestampListProcess,
+		Dims: module.Dims{
+			{ID: "adcs_%s_signed_cert_timestamp_list_proc_elapsed", Name: "period"},
+		},
+	}
+)
+
 // Logon
 var (
 	logonCharts = module.Charts{
@@ -1705,6 +1894,34 @@ func (w *WMI) addADCharts() {
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
+	}
+}
+
+func (w *WMI) addTemplateCertCharts(template string) {
+	charts := adcsChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, template)
+		chart.Labels = []module.Label{
+			{Key: "template", Value: template},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, template)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeTemplateCertCharts(template string) {
+	px := fmt.Sprintf("adcs_%s", template)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
 }
 
