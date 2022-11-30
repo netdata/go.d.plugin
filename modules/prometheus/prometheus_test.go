@@ -458,18 +458,6 @@ test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
 	}
 }
 
-//func preparePrometheus(t *testing.T, metrics [][]string) (*Prometheus, func()) {
-//	t.Helper()
-//	require.NotZero(t, metrics)
-//
-//	srv := prepareHTTPEndpoint(metrics)
-//	prom := New()
-//	prom.URL = srv.URL
-//	require.True(t, prom.Init())
-//
-//	return prom, srv.Close
-//}
-
 func removeObsoleteCharts(charts *module.Charts) {
 	var i int
 	for _, chart := range *charts {
