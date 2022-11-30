@@ -48,19 +48,117 @@ func TestPrometheus_Init(t *testing.T) {
 			}
 		})
 	}
-
-}
-
-func TestPrometheus_Charts(t *testing.T) {
-
 }
 
 func TestPrometheus_Cleanup(t *testing.T) {
+	assert.NotPanics(t, New().Cleanup)
 
+	prom := New()
+	prom.URL = "http://127.0.0.1"
+	require.True(t, prom.Init())
+	assert.NotPanics(t, prom.Cleanup)
 }
 
 func TestPrometheus_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func() (prom *Prometheus, cleanup func())
+		wantFail bool
+	}{
+		"success if endpoint returns valid metrics in prometheus format": {
+			wantFail: false,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`test_counter_no_meta_metric_1_total{label1="value1"} 11`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
 
+				return prom, srv.Close
+			},
+		},
+		"fail if metrics have more time series than the limit": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`
+test_counter_no_meta_metric_1_total{label1="value1"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 11
+`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.MaxTSPerMetric = 1
+
+				return prom, srv.Close
+			},
+		},
+		"fail if metrics have no expected prefix": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`test_counter_no_meta_metric_1_total{label1="value1"} 11`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.ExpectedPrefix = "prefix_"
+
+				return prom, srv.Close
+			},
+		},
+		"fail if endpoint returns data not in prometheus format": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte("hello and\n goodbye"))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+
+				return prom, srv.Close
+			},
+		},
+		"fail if connection refused": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				prom = New()
+				prom.URL = "http://127.0.0.1:38001/metrics"
+
+				return prom, func() {}
+			},
+		},
+		"fail if endpoint returns 404": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						w.WriteHeader(http.StatusNotFound)
+					}))
+				prom = New()
+				prom.URL = srv.URL
+
+				return prom, srv.Close
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			prom, cleanup := test.prepare()
+			defer cleanup()
+
+			require.True(t, prom.Init())
+
+			if test.wantFail {
+				assert.False(t, prom.Check())
+			} else {
+				assert.True(t, prom.Check())
+			}
+		})
+	}
 }
 
 func TestPrometheus_Collect(t *testing.T) {

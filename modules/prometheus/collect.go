@@ -43,7 +43,9 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		if strings.HasSuffix(mf.Name(), "_info") {
 			continue
 		}
-		if len(mf.Metrics()) > p.MaxTSPerMetric {
+		if p.MaxTSPerMetric > 0 && len(mf.Metrics()) > p.MaxTSPerMetric {
+			p.Debugf("metric '%s' time series (%d) > limit (%d), skipping it",
+				mf.Name(), len(mf.Metrics()), p.MaxTSPerMetric)
 			continue
 		}
 
