@@ -102,18 +102,17 @@ const (
 	prioServiceState
 	prioServiceStatus
 
-	prioADCompressedReplication
-	prioADUncompressedReplication
-	prioADInboundObjectsRemaining
-	prioADInboundObjectsApplied
-	prioADInboundObjectsFiltered
-	prioADInboundPropertiesApplied
-	prioADInboundPropertiesFiltered
-	prioADReplicationPendingSync
-	prioADReplicationSyncReq
-	prioADDSThreadsInUse
+	prioADDRAReplicationIntersiteCompressedTraffic
+	prioADDRAReplicationIntrasiteCompressedTraffic
+	prioADDRAReplicationSyncObjectsRemaining
+	prioADDRAReplicationPropertiesUpdated
+	prioADDRAReplicationPropertiesFiltered
+	prioADDRAReplicationObjectsFiltered
+	prioADReplicationPendingSyncs
+	prioADDRASyncRequests
+	prioADDirectoryServiceThreadsInUse
 	prioADLDAPBindTime
-	prioADLDAPBindTotal
+	prioADBindsTotal
 	prioADLDAPSearchesTotal
 
 	prioCollectorDuration
@@ -1083,138 +1082,153 @@ var (
 // AD
 var (
 	adCharts = module.Charts{
-		adCompressedReplication.Copy(),
-		adNotCompressedReplication.Copy(),
-		adInboundObjectRemaining.Copy(),
-		adObjectsFiltered.Copy(),
-		adPropertiesApplied.Copy(),
-		adReplicationPendingSync.Copy(),
-		adSyncRequestMade.Copy(),
-		adDirectoryServiceThread.Copy(),
-		adLDAPBindTime.Copy(),
-		adLDAPBindTotal.Copy(),
-		adLDAPBindSearches.Copy(),
+		adDRAReplicationIntersiteCompressedTrafficChart.Copy(),
+		adDRAReplicationIntrasiteCompressedTrafficChart.Copy(),
+		adDRAReplicationSyncObjectRemainingChart.Copy(),
+		adDRAReplicationObjectsFilteredChart.Copy(),
+		adDRAReplicationPropertiesUpdatedChart.Copy(),
+		adDRAReplicationPropertiesFilteredChart.Copy(),
+		adDRAReplicationPendingSyncsChart.Copy(),
+		adDRAReplicationSyncRequestsChart.Copy(),
+		adDirectoryServiceThreadsChart.Copy(),
+		adLDAPLastBindTimeChart.Copy(),
+		adBindsTotalChart.Copy(),
+		adLDAPSearchesChart.Copy(),
 	}
-	adCompressedReplication = module.Chart{
-		ID:       "ad_dra_compressed_bandwidth",
-		Title:    "Compressed DRA bandwidth",
+	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
+		ID:       "ad_dra_replication_intersite_compressed_traffic",
+		Title:    "DRA replication compressed traffic withing site",
 		Units:    "bytes/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_compressed_bandwidth",
-		Priority: prioADCompressedReplication,
+		Ctx:      "wmi.ad_dra_replication_intersite_compressed_traffic",
+		Priority: prioADDRAReplicationIntersiteCompressedTraffic,
+		Type:     module.Area,
 		Dims: module.Dims{
-			{ID: "ad_dra_compressed_bandwidth_inbound", Name: "inbound", Algo: module.Incremental},
-			{ID: "ad_dra_compressed_bandwidth_outbound", Name: "outbound", Algo: module.Incremental, Mul: -1},
+			{ID: "ad_replication_data_intersite_bytes_total_inbound", Name: "inbound", Algo: module.Incremental},
+			{ID: "ad_replication_data_intersite_bytes_total_outbound", Name: "outbound", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	adNotCompressedReplication = module.Chart{
-		ID:       "ad_dra_uncompressed",
-		Title:    "Uncompressed DRA inbound",
+	adDRAReplicationIntrasiteCompressedTrafficChart = module.Chart{
+		ID:       "ad_dra_replication_intrasite_compressed_traffic",
+		Title:    "DRA replication compressed traffic between sites",
 		Units:    "bytes/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_uncompressed",
-		Priority: prioADUncompressedReplication,
+		Ctx:      "wmi.ad_dra_replication_intrasite_compressed_traffic",
+		Priority: prioADDRAReplicationIntrasiteCompressedTraffic,
+		Type:     module.Area,
 		Dims: module.Dims{
-			{ID: "ad_dra_uncompressed_inbound", Name: "inbound", Algo: module.Incremental},
+			{ID: "ad_replication_data_intrasite_bytes_total_inbound", Name: "inbound", Algo: module.Incremental},
+			{ID: "ad_replication_data_intrasite_bytes_total_outbound", Name: "outbound", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	adInboundObjectRemaining = module.Chart{
-		ID:       "ad_dra_objects_remaining",
-		Title:    "DRA objects remaining",
+	adDRAReplicationSyncObjectRemainingChart = module.Chart{
+		ID:       "ad_dra_replication_sync_objects_remaining",
+		Title:    "DRA replication full sync objects remaining",
+		Units:    "objects",
+		Fam:      "ad",
+		Ctx:      "wmi.ad_dra_replication_sync_objects_remaining",
+		Priority: prioADDRAReplicationSyncObjectsRemaining,
+		Dims: module.Dims{
+			{ID: "ad_replication_inbound_sync_objects_remaining", Name: "inbound"},
+		},
+	}
+	adDRAReplicationObjectsFilteredChart = module.Chart{
+		ID:       "ad_dra_replication_objects_filtered",
+		Title:    "DRA replication objects filtered",
 		Units:    "objects/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_objects_remaining",
-		Priority: prioADInboundObjectsRemaining,
+		Ctx:      "wmi.ad_dra_replication_objects_filtered",
+		Priority: prioADDRAReplicationObjectsFiltered,
 		Dims: module.Dims{
-			{ID: "ad_dra_objects_remaining_inbound", Name: "inbound"},
+			{ID: "ad_replication_inbound_objects_filtered_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
-	adObjectsFiltered = module.Chart{
-		ID:       "ad_dra_objects_filtered",
-		Title:    "DRA inbound objects filtered",
-		Units:    "objects/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_objects_filtered",
-		Priority: prioADInboundObjectsFiltered,
-		Dims: module.Dims{
-			{ID: "ad_dra_objects_filtered_inbound", Name: "inbound", Algo: module.Incremental},
-		},
-	}
-	adPropertiesApplied = module.Chart{
-		ID:       "ad_dra_properties_applied",
-		Title:    "DRA properties applied",
+	adDRAReplicationPropertiesUpdatedChart = module.Chart{
+		ID:       "ad_dra_replication_properties_updated",
+		Title:    "DRA replication properties updated",
 		Units:    "properties/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_properties_applied",
-		Priority: prioADInboundObjectsApplied,
+		Ctx:      "wmi.ad_dra_replication_properties_updated",
+		Priority: prioADDRAReplicationPropertiesUpdated,
 		Dims: module.Dims{
-			{ID: "ad_dra_properties_applied_inbound", Name: "inbound", Algo: module.Incremental},
+			{ID: "ad_replication_inbound_properties_updated_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
-	adReplicationPendingSync = module.Chart{
-		ID:       "ad_dra_pending_sync",
-		Title:    "DRA pending sync",
-		Units:    "directory_sync",
+	adDRAReplicationPropertiesFilteredChart = module.Chart{
+		ID:       "ad_dra_replication_properties_filtered",
+		Title:    "DRA replication properties filtered",
+		Units:    "properties/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_pending_sync",
-		Priority: prioADReplicationPendingSync,
+		Ctx:      "wmi.ad_dra_replication_properties_filtered",
+		Priority: prioADDRAReplicationPropertiesFiltered,
 		Dims: module.Dims{
-			{ID: "ad_dra_pending_sync_directory", Name: "directory"},
+			{ID: "ad_replication_inbound_properties_filtered_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
-	adSyncRequestMade = module.Chart{
-		ID:       "ad_dra_sync_req_made",
-		Title:    "DRA pending sync",
-		Units:    "requests",
+	adDRAReplicationPendingSyncsChart = module.Chart{
+		ID:       "ad_dra_replication_pending_syncs",
+		Title:    "DRA replication pending syncs",
+		Units:    "syncs",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_sync_req_made",
-		Priority: prioADReplicationSyncReq,
+		Ctx:      "wmi.ad_dra_replication_pending_syncs",
+		Priority: prioADReplicationPendingSyncs,
 		Dims: module.Dims{
-			{ID: "ad_dra_sync_req_made", Name: "request"},
+			{ID: "ad_replication_pending_synchronizations", Name: "pending"},
 		},
 	}
-	adDirectoryServiceThread = module.Chart{
-		ID:       "ad_ds_thread",
-		Title:    "Directory Service Thread",
-		Units:    "requests",
+	adDRAReplicationSyncRequestsChart = module.Chart{
+		ID:       "ad_dra_replication_sync_requests",
+		Title:    "DRA replication sync requests",
+		Units:    "requests/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_ds_thread",
-		Priority: prioADDSThreadsInUse,
+		Ctx:      "wmi.ad_dra_replication_sync_requests",
+		Priority: prioADDRASyncRequests,
 		Dims: module.Dims{
-			{ID: "ad_ds_thread", Name: "thread"},
+			{ID: "ad_replication_sync_requests_total", Name: "request", Algo: module.Incremental},
 		},
 	}
-	adLDAPBindTime = module.Chart{
-		ID:       "ad_ldap_bind_time",
-		Title:    "Last successful bind time",
+	adDirectoryServiceThreadsChart = module.Chart{
+		ID:       "ad_ds_threads",
+		Title:    "Directory Service threads",
+		Units:    "threads",
+		Fam:      "ad",
+		Ctx:      "wmi.ad_ds_threads",
+		Priority: prioADDirectoryServiceThreadsInUse,
+		Dims: module.Dims{
+			{ID: "ad_directory_service_threads", Name: "in_use"},
+		},
+	}
+	adLDAPLastBindTimeChart = module.Chart{
+		ID:       "ad_ldap_last_bind_time",
+		Title:    "LDAP last successful bind time",
 		Units:    "seconds",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_ldap_bind_time",
+		Ctx:      "wmi.ad_ldap_last_bind_time",
 		Priority: prioADLDAPBindTime,
 		Dims: module.Dims{
-			{ID: "ad_ldap_bind_time", Name: "bind"},
+			{ID: "ad_ldap_last_bind_time_seconds", Name: "last_bind"},
 		},
 	}
-	adLDAPBindTotal = module.Chart{
-		ID:       "ad_ldap_bind_total",
-		Title:    "LDAP Successful bind",
-		Units:    "bind",
+	adBindsTotalChart = module.Chart{
+		ID:       "ad_binds",
+		Title:    "Successful binds",
+		Units:    "bind/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_ldap_bind_total",
-		Priority: prioADLDAPBindTotal,
+		Ctx:      "wmi.ad_binds",
+		Priority: prioADBindsTotal,
 		Dims: module.Dims{
-			{ID: "ad_ldap_bind_total", Name: "bind"},
+			{ID: "ad_binds_total", Name: "binds", Algo: module.Incremental},
 		},
 	}
-	adLDAPBindSearches = module.Chart{
-		ID:       "ad_ldap_bind_searches",
-		Title:    "LDAP Successful bind",
+	adLDAPSearchesChart = module.Chart{
+		ID:       "ad_ldap_searches",
+		Title:    "LDAP client search operations",
 		Units:    "searches/s",
 		Fam:      "ad",
-		Ctx:      "wmi.ad_ldap_bind_searches",
-		Priority: prioADLDAPBindTotal,
+		Ctx:      "wmi.ad_ldap_searches",
+		Priority: prioADLDAPSearchesTotal,
 		Dims: module.Dims{
-			{ID: "ad_ldap_bind_searches", Name: "search"},
+			{ID: "ad_ldap_searches_total", Name: "searches", Algo: module.Incremental},
 		},
 	}
 )
