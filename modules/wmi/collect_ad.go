@@ -25,7 +25,7 @@ const (
 	metricADLDAPSearchTotal                        = "windows_ad_ldap_searches_total"
 )
 
-func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Metrics) {
+func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Series) {
 	px := "ad_dra_"
 	if !w.cache.collection[collectorAD] {
 		w.cache.collection[collectorAD] = true
