@@ -103,6 +103,47 @@ process_start_time_seconds 1.667508736e+09
 # HELP process_virtual_memory_bytes Virtual memory size in bytes.
 # TYPE process_virtual_memory_bytes gauge
 process_virtual_memory_bytes 3.5569664e+07
+# HELP windows_ad_replication_inbound_objects_filtered_total
+# TYPE windows_ad_replication_inbound_objects_filtered_total counter
+windows_ad_replication_inbound_objects_filtered_total 0
+# HELP windows_ad_replication_inbound_properties_filtered_total
+# TYPE windows_ad_replication_inbound_properties_filtered_total counter
+windows_ad_replication_inbound_properties_filtered_total 0
+# HELP windows_ad_replication_inbound_properties_updated_total
+# TYPE windows_ad_replication_inbound_properties_updated_total counter
+windows_ad_replication_inbound_properties_updated_total 0
+# HELP windows_ad_replication_inbound_objects_updated_total
+# TYPE windows_ad_replication_inbound_objects_updated_total counter
+windows_ad_replication_inbound_objects_updated_total 0
+# HELP windows_ad_replication_inbound_sync_objects_remaining
+# TYPE windows_ad_replication_inbound_sync_objects_remaining gauge
+windows_ad_replication_inbound_sync_objects_remaining 0
+# HELP windows_ad_replication_data_intersite_bytes_total
+# TYPE windows_ad_replication_data_intersite_bytes_total counter
+windows_ad_replication_data_intersite_bytes_total{direction="inbound"} 0
+windows_ad_replication_data_intersite_bytes_total{direction="outbound"} 0
+# HELP windows_ad_replication_data_intrasite_bytes_total
+# TYPE windows_ad_replication_data_intrasite_bytes_total counter
+windows_ad_replication_data_intrasite_bytes_total{direction="inbound"} 0
+windows_ad_replication_data_intrasite_bytes_total{direction="outbound"} 0
+# HELP windows_ad_replication_pending_synchronizations
+# TYPE windows_ad_replication_pending_synchronizations gauge
+windows_ad_replication_pending_synchronizations 0
+# HELP windows_ad_replication_sync_requests_total
+# TYPE windows_ad_replication_sync_requests_total counter
+windows_ad_replication_sync_requests_total 0
+# HELP windows_ad_directory_service_threads
+# TYPE windows_ad_directory_service_threads gauge
+windows_ad_directory_service_threads 0
+# HELP windows_ad_ldap_last_bind_time_seconds
+# TYPE windows_ad_ldap_last_bind_time_seconds gauge
+windows_ad_ldap_last_bind_time_seconds 0
+# HELP windows_ad_binds_total
+# TYPE windows_ad_binds_total counter
+windows_ad_binds_total{bind_method="ldap"} 184
+# HELP windows_ad_ldap_searches_total
+# TYPE windows_ad_ldap_searches_total counter
+windows_ad_ldap_searches_total 1382
 # HELP windows_cpu_clock_interrupts_total Total number of received and serviced clock tick interrupts
 # TYPE windows_cpu_clock_interrupts_total counter
 windows_cpu_clock_interrupts_total{core="0,0"} 9.1949524e+07
@@ -186,6 +227,7 @@ windows_cpu_time_total{core="0,3",mode="user"} 3422.875
 windows_exporter_build_info{branch="heads/tags/v0.20.0",goversion="go1.19.1",revision="677a7c8d67deb99b92f4f24b8c890e0a4c152b0c",version="0.20.0"} 1
 # HELP windows_exporter_collector_duration_seconds windows_exporter: Duration of a collection.
 # TYPE windows_exporter_collector_duration_seconds gauge
+windows_exporter_collector_duration_seconds{collector="ad"} 0.7690505
 windows_exporter_collector_duration_seconds{collector="cpu"} 0.00052
 windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
@@ -200,6 +242,7 @@ windows_exporter_collector_duration_seconds{collector="system"} 0.0006105
 windows_exporter_collector_duration_seconds{collector="tcp"} 0
 # HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
 # TYPE windows_exporter_collector_success gauge
+windows_exporter_collector_success{collector="ad"} 1
 windows_exporter_collector_success{collector="cpu"} 1
 windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
@@ -214,6 +257,7 @@ windows_exporter_collector_success{collector="system"} 1
 windows_exporter_collector_success{collector="tcp"} 1
 # HELP windows_exporter_collector_timeout windows_exporter: Whether the collector timed out.
 # TYPE windows_exporter_collector_timeout gauge
+windows_exporter_collector_timeout{collector="ad"} 0
 windows_exporter_collector_timeout{collector="cpu"} 0
 windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0

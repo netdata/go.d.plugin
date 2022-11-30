@@ -25,6 +25,7 @@ The module collects metrics from the following collectors:
 - [process](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.process.md)
 - [service](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.service.md)
 - [mssql](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.mssql.md)
+- [ad](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.ad.md)
 
 ## Requirements
 
@@ -139,6 +140,18 @@ All metrics have "wmi." prefix.
 | mssql_database_log_flushes                                  |    database    |                                                                                        log                                                                                         |   flushes/s    |
 | mssql_database_transactions                                 |    database    |                                                                                    transactions                                                                                    | transactions/s |
 | mssql_instance_write_transactions                           |    database    |                                                                                       write                                                                                        | transactions/s |
+| ad_dra_replication_intersite_compressed_traffic             |     global     |                                                                                 inbound, outbound                                                                                  |    bytes/s     |
+| ad_dra_replication_intrasite_compressed_traffic             |     global     |                                                                                 inbound, outbound                                                                                  |    bytes/s     |
+| ad_dra_replication_sync_objects_remaining                   |     global     |                                                                                 inbound, outbound                                                                                  |    objects     |
+| ad_dra_replication_objects_filtered                         |     global     |                                                                                 inbound, outbound                                                                                  |   objects/s    |
+| ad_dra_replication_properties_updated                       |     global     |                                                                                 inbound, outbound                                                                                  |  properties/s  |
+| ad_dra_replication_properties_filtered                      |     global     |                                                                                 inbound, outbound                                                                                  |  properties/s  |
+| ad_dra_replication_pending_syncs                            |     global     |                                                                                      pending                                                                                       |     syncs      |
+| ad_dra_replication_sync_requests                            |     global     |                                                                                      requests                                                                                      |   requests/s   |
+| ad_ds_threads                                               |     global     |                                                                                       in_use                                                                                       |    threads     |
+| ad_ldap_last_bind_time                                      |     global     |                                                                                     last_bind                                                                                      |    seconds     |
+| ad_binds                                                    |     global     |                                                                                       binds                                                                                        |    binds/s     |
+| ad_ldap_searches                                            |     global     |                                                                                      searches                                                                                      |   searches/s   |
 
 ## Configuration
 
@@ -162,7 +175,7 @@ jobs:
 ```
 
 Hint: Use friendly server names for job names, as these will appear as "instances" in Netdata Cloud charts
-and in the right side menu of the agent UI charts.
+and on the right side menu of the agent UI charts.
 
 For all available options please see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/wmi.conf).
