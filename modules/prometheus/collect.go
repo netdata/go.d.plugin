@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
+
 	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/model/textparse"
 )
@@ -35,8 +36,11 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 
-	for name, mf := range mfs {
-		if strings.HasSuffix(name, "_info") {
+	p.resetCache()
+	defer p.removeStaleCharts()
+
+	for _, mf := range mfs {
+		if strings.HasSuffix(mf.Name(), "_info") {
 			continue
 		}
 		if len(mf.Metrics()) > p.MaxTSPerMetric {
@@ -68,8 +72,7 @@ func (p *Prometheus) collectGauge(mx map[string]int64, mf *prometheus.MetricFami
 
 		id := mf.Name() + p.joinLabels(m.Labels())
 
-		if !p.cache[id] {
-			p.cache[id] = true
+		if !p.cache.hasP(id) {
 			p.addGaugeChart(id, mf.Name(), mf.Help(), m.Labels())
 		}
 
@@ -85,8 +88,7 @@ func (p *Prometheus) collectCounter(mx map[string]int64, mf *prometheus.MetricFa
 
 		id := mf.Name() + p.joinLabels(m.Labels())
 
-		if !p.cache[id] {
-			p.cache[id] = true
+		if !p.cache.hasP(id) {
 			p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())
 		}
 
@@ -102,13 +104,12 @@ func (p *Prometheus) collectSummary(mx map[string]int64, mf *prometheus.MetricFa
 
 		id := mf.Name() + p.joinLabels(m.Labels())
 
-		if !p.cache[id] {
-			p.cache[id] = true
+		if !p.cache.hasP(id) {
 			p.addSummaryChart(id, mf.Name(), mf.Help(), m.Labels(), m.Summary().Quantiles())
 		}
 
 		for _, v := range m.Summary().Quantiles() {
-			dimID := fmt.Sprintf("%s_quantile=%s", id, strconv.FormatFloat(v.Quantile(), 'f', -1, 64))
+			dimID := fmt.Sprintf("%s_quantile=%s", id, formatFloat(v.Quantile()))
 			mx[dimID] = int64(v.Value() * precision)
 		}
 	}
@@ -122,42 +123,77 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, mf *prometheus.Metric
 
 		id := mf.Name() + p.joinLabels(m.Labels())
 
-		if !p.cache[id] {
-			p.cache[id] = true
+		if !p.cache.hasP(id) {
 			p.addHistogramChart(id, mf.Name(), mf.Help(), m.Labels(), m.Histogram().Buckets())
 		}
 
 		for _, v := range m.Histogram().Buckets() {
-			dimID := fmt.Sprintf("%s_bucket=%s", id, strconv.FormatFloat(v.UpperBound(), 'f', -1, 64))
+			dimID := fmt.Sprintf("%s_bucket=%s", id, formatFloat(v.UpperBound()))
 			mx[dimID] = int64(v.CumulativeCount())
 		}
 	}
 }
 
 func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Untyped() == nil || math.IsNaN(m.Untyped().Value()) {
+			continue
+		}
+		if strings.HasSuffix(mf.Name(), "_total") {
+			id := mf.Name() + p.joinLabels(m.Labels())
 
+			if !p.cache.hasP(id) {
+				p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())
+			}
+
+			mx[id] = int64(m.Untyped().Value() * precision)
+		}
+	}
 }
 
 func (p *Prometheus) joinLabels(labels labels.Labels) string {
 	p.sb.Reset()
 	for _, lbl := range labels {
-		name, value := lbl.Name, lbl.Value
-		if name == "" || value == "" {
+		name, val := lbl.Name, lbl.Value
+		if name == "" || val == "" {
 			continue
 		}
 
-		if strings.IndexByte(value, ' ') != -1 {
-			value = spaceReplacer.Replace(value)
+		if strings.IndexByte(val, ' ') != -1 {
+			val = spaceReplacer.Replace(val)
 		}
-		if strings.IndexByte(value, '\\') != -1 {
-			if value = decodeLabelValue(value); strings.IndexByte(value, '\\') != -1 {
-				value = backslashReplacer.Replace(value)
+		if strings.IndexByte(val, '\\') != -1 {
+			if val = decodeLabelValue(val); strings.IndexByte(val, '\\') != -1 {
+				val = backslashReplacer.Replace(val)
 			}
 		}
 
-		p.sb.Write([]byte("-" + name + "=" + value))
+		p.sb.Write([]byte("-" + name + "=" + val))
 	}
 	return p.sb.String()
+}
+
+func (p *Prometheus) resetCache() {
+	for _, v := range p.cache.entries {
+		v.seen = false
+	}
+}
+
+const maxNotSeenTimes = 10
+
+func (p *Prometheus) removeStaleCharts() {
+	for k, v := range p.cache.entries {
+		if v.seen {
+			continue
+		}
+		if v.notSeenTimes++; v.notSeenTimes >= maxNotSeenTimes {
+			for _, chart := range v.charts {
+				chart.MarkRemove()
+				chart.MarkNotCreated()
+			}
+			delete(p.cache.entries, k)
+		}
+	}
 }
 
 func decodeLabelValue(value string) string {
@@ -180,4 +216,8 @@ func hasPrefix(mf map[string]*prometheus.MetricFamily, prefix string) bool {
 		}
 	}
 	return false
+}
+
+func formatFloat(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }

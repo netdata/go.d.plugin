@@ -95,6 +95,7 @@ func (m *Metric) Gauge() *Gauge         { return m.gauge }
 func (m *Metric) Counter() *Counter     { return m.counter }
 func (m *Metric) Summary() *Summary     { return m.summary }
 func (m *Metric) Histogram() *Histogram { return m.histogram }
+func (m *Metric) Untyped() *Untyped     { return m.untyped }
 
 func (g Gauge) Value() float64   { return g.value }
 func (c Counter) Value() float64 { return c.value }

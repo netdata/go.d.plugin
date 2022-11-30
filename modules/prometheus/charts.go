@@ -2,7 +2,6 @@ package prometheus
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -45,7 +44,10 @@ func (p *Prometheus) addGaugeChart(id, name, help string, labels labels.Labels) 
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
+		return
 	}
+
+	p.cache.addChart(id, chart)
 }
 
 func (p *Prometheus) addCounterChart(id, name, help string, labels labels.Labels) {
@@ -82,7 +84,10 @@ func (p *Prometheus) addCounterChart(id, name, help string, labels labels.Labels
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
+		return
 	}
+
+	p.cache.addChart(id, chart)
 }
 
 func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels, quantiles []prometheus.Quantile) {
@@ -102,8 +107,10 @@ func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels
 		Ctx:      "prometheus." + name,
 		Priority: getChartPriority(name),
 	}
+
 	for _, v := range quantiles {
-		s := strconv.FormatFloat(v.Quantile(), 'f', -1, 64)
+		s := formatFloat(v.Quantile())
+
 		chart.Dims = append(chart.Dims, &module.Dim{
 			ID:   fmt.Sprintf("%s_quantile=%s", id, s),
 			Name: fmt.Sprintf("quantile_%s", s),
@@ -111,6 +118,7 @@ func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels
 			Div:  precision,
 		})
 	}
+
 	for _, lbl := range labels {
 		chart.Labels = append(chart.Labels, module.Label{
 			Key:   lbl.Name,
@@ -120,7 +128,10 @@ func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
+		return
 	}
+
+	p.cache.addChart(id, chart)
 }
 
 func (p *Prometheus) addHistogramChart(id, name, help string, labels labels.Labels, buckets []prometheus.Bucket) {
@@ -132,14 +143,17 @@ func (p *Prometheus) addHistogramChart(id, name, help string, labels labels.Labe
 		Ctx:      "prometheus." + name,
 		Priority: getChartPriority(name),
 	}
+
 	for _, v := range buckets {
-		s := strconv.FormatFloat(v.UpperBound(), 'f', -1, 64)
+		s := formatFloat(v.UpperBound())
+
 		chart.Dims = append(chart.Dims, &module.Dim{
 			ID:   fmt.Sprintf("%s_bucket=%s", id, s),
 			Name: fmt.Sprintf("bucket_%s", s),
 			Algo: module.Incremental,
 		})
 	}
+
 	for _, lbl := range labels {
 		chart.Labels = append(chart.Labels, module.Label{
 			Key:   lbl.Name,
@@ -149,7 +163,10 @@ func (p *Prometheus) addHistogramChart(id, name, help string, labels labels.Labe
 
 	if err := p.Charts().Add(chart); err != nil {
 		p.Warning(err)
+		return
 	}
+
+	p.cache.addChart(id, chart)
 }
 
 func getChartTitle(name, help string) string {

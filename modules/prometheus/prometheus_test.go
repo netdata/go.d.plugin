@@ -1,229 +1,384 @@
 package prometheus
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
+
+	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestPrometheus_Collect(t *testing.T) {
+func TestPrometheus_Init(t *testing.T) {
 	tests := map[string]struct {
-		input         [][]string
-		wantCharts    int
-		wantCollected map[string]int64
+		config   Config
+		wantFail bool
 	}{
-		"success on Gauge with metadata": {
-			input: [][]string{
-				{
-					`# HELP test_gauge_value Test gauge value.`,
-					`# TYPE test_gauge_value gauge`,
-					`test_gauge_value{labelA="valueA01",labelB="valueB01"} 1`,
-					`test_gauge_value{labelA="valueA02",labelB="valueB02"} 2`,
-					`test_gauge_value{labelA="valueA03",labelB="valueB03"} 3`,
-					`test_gauge_value{labelA="valueA04",labelB="valueB04"} 4`,
-				},
-			},
-			wantCharts: 4,
-			wantCollected: map[string]int64{
-				"test_gauge_value-labelA=valueA01-labelB=valueB01": 1000,
-				"test_gauge_value-labelA=valueA02-labelB=valueB02": 2000,
-				"test_gauge_value-labelA=valueA03-labelB=valueB03": 3000,
-				"test_gauge_value-labelA=valueA04-labelB=valueB04": 4000,
+		"non empty URL": {
+			wantFail: false,
+			config:   Config{HTTP: web.HTTP{Request: web.Request{URL: "http://127.0.0.1:9090/metric"}}},
+		},
+		"invalid selector syntax": {
+			wantFail: true,
+			config: Config{
+				HTTP:     web.HTTP{Request: web.Request{URL: "http://127.0.0.1:9090/metric"}},
+				Selector: selector.Expr{Allow: []string{`name{label=#"value"}`}},
 			},
 		},
-		"success on Counter with metadata": {
-			input: [][]string{
+		"default": {
+			wantFail: true,
+			config:   New().Config,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			prom := New()
+			prom.Config = test.config
+
+			if test.wantFail {
+				assert.False(t, prom.Init())
+			} else {
+				assert.True(t, prom.Init())
+			}
+		})
+	}
+
+}
+
+func TestPrometheus_Charts(t *testing.T) {
+
+}
+
+func TestPrometheus_Cleanup(t *testing.T) {
+
+}
+
+func TestPrometheus_Check(t *testing.T) {
+
+}
+
+func TestPrometheus_Collect(t *testing.T) {
+	type testCaseStep struct {
+		desc          string
+		input         string
+		wantCollected map[string]int64
+		wantCharts    int
+	}
+	tests := map[string]struct {
+		prepare func() *Prometheus
+		steps   []testCaseStep
+	}{
+		"Gauge": {
+			prepare: New,
+			steps: []testCaseStep{
 				{
-					`# HELP test_counter_value_total Test gauge value.`,
-					`# TYPE test_counter_value_total counter`,
-					`test_counter_value_total{labelA="valueA01",labelB="valueB01"} 1`,
-					`test_counter_value_total{labelA="valueA02",labelB="valueB02"} 2`,
-					`test_counter_value_total{labelA="valueA03",labelB="valueB03"} 3`,
-					`test_counter_value_total{labelA="valueA04",labelB="valueB04"} 4`,
+					desc: "Two first seen series, no meta series ignored",
+					input: `
+# HELP test_gauge_metric_1 Test Gauge Metric 1
+# TYPE test_gauge_metric_1 gauge
+test_gauge_metric_1{label1="value1"} 11
+test_gauge_metric_1{label1="value2"} 12
+test_gauge_no_meta_metric_1{label1="value1"} 11
+test_gauge_no_meta_metric_1{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_gauge_metric_1-label1=value1": 11000,
+						"test_gauge_metric_1-label1=value2": 12000,
+					},
+					wantCharts: 2,
 				},
-			},
-			wantCharts: 4,
-			wantCollected: map[string]int64{
-				"test_counter_value_total-labelA=valueA01-labelB=valueB01": 1000,
-				"test_counter_value_total-labelA=valueA02-labelB=valueB02": 2000,
-				"test_counter_value_total-labelA=valueA03-labelB=valueB03": 3000,
-				"test_counter_value_total-labelA=valueA04-labelB=valueB04": 4000,
+				{
+					desc: "One series removed",
+					input: `
+# HELP test_gauge_metric_1 Test Gauge Metric 1
+# TYPE test_gauge_metric_1 gauge
+test_gauge_metric_1{label1="value1"} 11
+`,
+					wantCollected: map[string]int64{
+						"test_gauge_metric_1-label1=value1": 11000,
+					},
+					wantCharts: 1,
+				},
+				{
+					desc: "One series (re)added",
+					input: `
+# HELP test_gauge_metric_1 Test Gauge Metric 1
+# TYPE test_gauge_metric_1 gauge
+test_gauge_metric_1{label1="value1"} 11
+test_gauge_metric_1{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_gauge_metric_1-label1=value1": 11000,
+						"test_gauge_metric_1-label1=value2": 12000,
+					},
+					wantCharts: 2,
+				},
 			},
 		},
-		"success on Summary with metadata": {
-			input: [][]string{
+		"Counter": {
+			prepare: New,
+			steps: []testCaseStep{
 				{
-					`# HELP test_summary_seconds Test summary value.`,
-					`# TYPE test_summary_seconds summary`,
-					`test_summary_seconds{interval="15s",quantile="0.01"} 14.999892842`,
-					`test_summary_seconds{interval="15s",quantile="0.05"} 14.999933467`,
-					`test_summary_seconds{interval="15s",quantile="0.5"} 15.000030499`,
-					`test_summary_seconds{interval="15s",quantile="0.9"} 15.000099345`,
-					`test_summary_seconds{interval="15s",quantile="0.99"} 15.000169848`,
-					`test_summary_seconds_sum{interval="15s"} 314505.6192476938`,
-					`test_summary_seconds_count{interval="15s"} 20967`,
-					`test_summary_seconds{interval="30s",quantile="0.01"} 14.999892842`,
-					`test_summary_seconds{interval="30s",quantile="0.05"} 14.999933467`,
-					`test_summary_seconds{interval="30s",quantile="0.5"} 15.000030499`,
-					`test_summary_seconds{interval="30s",quantile="0.9"} 15.000099345`,
-					`test_summary_seconds{interval="30s",quantile="0.99"} 15.000169848`,
-					`test_summary_seconds_sum{interval="30s"} 314505.6192476938`,
-					`test_summary_seconds_count{interval="30s"} 20967`,
+					desc: "Four first seen series, no meta series collected",
+					input: `
+# HELP test_counter_metric_1_total Test Counter Metric 1
+# TYPE test_counter_metric_1_total counter
+test_counter_metric_1_total{label1="value1"} 11
+test_counter_metric_1_total{label1="value2"} 12
+test_counter_no_meta_metric_1_total{label1="value1"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_counter_metric_1_total-label1=value1":         11000,
+						"test_counter_metric_1_total-label1=value2":         12000,
+						"test_counter_no_meta_metric_1_total-label1=value1": 11000,
+						"test_counter_no_meta_metric_1_total-label1=value2": 12000,
+					},
+					wantCharts: 4,
 				},
-			},
-			wantCharts: 2,
-			wantCollected: map[string]int64{
-				"test_summary_seconds-interval=15s_quantile=0.01": 14999,
-				"test_summary_seconds-interval=15s_quantile=0.05": 14999,
-				"test_summary_seconds-interval=15s_quantile=0.5":  15000,
-				"test_summary_seconds-interval=15s_quantile=0.9":  15000,
-				"test_summary_seconds-interval=15s_quantile=0.99": 15000,
-				"test_summary_seconds-interval=30s_quantile=0.01": 14999,
-				"test_summary_seconds-interval=30s_quantile=0.05": 14999,
-				"test_summary_seconds-interval=30s_quantile=0.5":  15000,
-				"test_summary_seconds-interval=30s_quantile=0.9":  15000,
-				"test_summary_seconds-interval=30s_quantile=0.99": 15000,
+				{
+					desc: "Two series removed",
+					input: `
+# HELP test_counter_metric_1_total Test Counter Metric 1
+# TYPE test_counter_metric_1_total counter
+test_counter_metric_1_total{label1="value1"} 11
+test_counter_no_meta_metric_1_total{label1="value1"} 11
+`,
+					wantCollected: map[string]int64{
+						"test_counter_metric_1_total-label1=value1":         11000,
+						"test_counter_no_meta_metric_1_total-label1=value1": 11000,
+					},
+					wantCharts: 2,
+				},
+				{
+					desc: "Two series (re)added",
+					input: `
+# HELP test_counter_metric_1_total Test Counter Metric 1
+# TYPE test_counter_metric_1_total counter
+test_counter_metric_1_total{label1="value1"} 11
+test_counter_metric_1_total{label1="value2"} 12
+test_counter_no_meta_metric_1_total{label1="value1"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_counter_metric_1_total-label1=value1":         11000,
+						"test_counter_metric_1_total-label1=value2":         12000,
+						"test_counter_no_meta_metric_1_total-label1=value1": 11000,
+						"test_counter_no_meta_metric_1_total-label1=value2": 12000,
+					},
+					wantCharts: 4,
+				},
 			},
 		},
-		"success on Histogram with metadata": {
-			input: [][]string{
+		"Summary": {
+			prepare: New,
+			steps: []testCaseStep{
 				{
-					`# HELP test_histogram_seconds Test histogram value.`,
-					`# TYPE test_histogram_seconds histogram`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.001"} 0`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.002"} 0`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.004"} 0`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.008"} 0`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.016"} 0`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.032"} 2`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.064"} 2`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.128"} 2`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.256"} 3`,
-					`test_histogram_seconds_bucket{verb="GET",le="0.512"} 3`,
-					`test_histogram_seconds_bucket{verb="GET",le="+Inf"} 3`,
-					`test_histogram_seconds_sum{verb="GET"} 0.28126861`,
-					`test_histogram_seconds_count{verb="GET"} 3`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.001"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.002"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.004"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.008"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.016"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.032"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.064"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.128"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.256"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="0.512"} 0`,
-					`test_histogram_seconds_bucket{verb="POST",le="+Inf"} 1`,
-					`test_histogram_seconds_sum{verb="POST"} 4.008446017`,
-					`test_histogram_seconds_count{verb="POST"} 1`,
+					desc: "Two first seen series, no meta series collected",
+					input: `
+# HELP test_summary_1_duration_microseconds Test Summary Metric 1
+# TYPE test_summary_1_duration_microseconds summary
+test_summary_1_duration_microseconds{label1="value1",quantile="0.5"} 4931.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.9"} 4932.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.99"} 4933.921
+test_summary_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_1_duration_microseconds_count{label1="value1"} 31
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.5"} 4931.921
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.9"} 4932.921
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.99"} 4933.921
+test_summary_no_meta_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
+`,
+					wantCollected: map[string]int64{
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+					},
+					wantCharts: 2,
+				},
+				{
+					desc: "One series removed",
+					input: `
+# HELP test_summary_1_duration_microseconds Test Summary Metric 1
+# TYPE test_summary_1_duration_microseconds summary
+test_summary_1_duration_microseconds{label1="value1",quantile="0.5"} 4931.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.9"} 4932.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.99"} 4933.921
+test_summary_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_1_duration_microseconds_count{label1="value1"} 31
+`,
+					wantCollected: map[string]int64{
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+					},
+					wantCharts: 1,
+				},
+				{
+					desc: "One series (re)added",
+					input: `
+# HELP test_summary_1_duration_microseconds Test Summary Metric 1
+# TYPE test_summary_1_duration_microseconds summary
+test_summary_1_duration_microseconds{label1="value1",quantile="0.5"} 4931.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.9"} 4932.921
+test_summary_1_duration_microseconds{label1="value1",quantile="0.99"} 4933.921
+test_summary_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_1_duration_microseconds_count{label1="value1"} 31
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.5"} 4931.921
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.9"} 4932.921
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.99"} 4933.921
+test_summary_no_meta_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
+`,
+					wantCollected: map[string]int64{
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+					},
+					wantCharts: 2,
 				},
 			},
-			wantCharts: 2,
-			wantCollected: map[string]int64{
-				"test_histogram_seconds-verb=GET_bucket=+Inf":   3,
-				"test_histogram_seconds-verb=GET_bucket=0.001":  0,
-				"test_histogram_seconds-verb=GET_bucket=0.002":  0,
-				"test_histogram_seconds-verb=GET_bucket=0.004":  0,
-				"test_histogram_seconds-verb=GET_bucket=0.008":  0,
-				"test_histogram_seconds-verb=GET_bucket=0.016":  0,
-				"test_histogram_seconds-verb=GET_bucket=0.032":  2,
-				"test_histogram_seconds-verb=GET_bucket=0.064":  2,
-				"test_histogram_seconds-verb=GET_bucket=0.128":  2,
-				"test_histogram_seconds-verb=GET_bucket=0.256":  3,
-				"test_histogram_seconds-verb=GET_bucket=0.512":  3,
-				"test_histogram_seconds-verb=POST_bucket=+Inf":  1,
-				"test_histogram_seconds-verb=POST_bucket=0.001": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.002": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.004": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.008": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.016": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.032": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.064": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.128": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.256": 0,
-				"test_histogram_seconds-verb=POST_bucket=0.512": 0,
+		},
+		"Histogram": {
+			prepare: New,
+			steps: []testCaseStep{
+				{
+					desc: "Two first seen series, no meta series collected",
+					input: `
+# HELP test_histogram_1_duration_seconds Test Histogram Metric 1
+# TYPE test_histogram_1_duration_seconds histogram
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.1"} 4
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.5"} 5
+test_histogram_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
+test_histogram_1_duration_seconds_sum{label1="value1"} 0.00147889
+test_histogram_1_duration_seconds_count{label1="value1"} 6
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="0.1"} 4
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="0.5"} 5
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
+test_histogram_no_meta_1_duration_seconds_sum{label1="value1"} 0.00147889
+test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
+`,
+					wantCollected: map[string]int64{
+						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf":         6,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":          4,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":          5,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=+Inf": 6,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.1":  4,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.5":  5,
+					},
+					wantCharts: 2,
+				},
+				{
+					desc: "One series removed",
+					input: `
+# HELP test_histogram_1_duration_seconds Test Histogram Metric 1
+# TYPE test_histogram_1_duration_seconds histogram
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.1"} 4
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.5"} 5
+test_histogram_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
+`,
+					wantCollected: map[string]int64{
+						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf": 6,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":  4,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":  5,
+					},
+					wantCharts: 1,
+				},
+				{
+					desc: "One series (re)added",
+					input: `
+# HELP test_histogram_1_duration_seconds Test Histogram Metric 1
+# TYPE test_histogram_1_duration_seconds histogram
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.1"} 4
+test_histogram_1_duration_seconds_bucket{label1="value1",le="0.5"} 5
+test_histogram_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
+test_histogram_1_duration_seconds_sum{label1="value1"} 0.00147889
+test_histogram_1_duration_seconds_count{label1="value1"} 6
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="0.1"} 4
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="0.5"} 5
+test_histogram_no_meta_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
+test_histogram_no_meta_1_duration_seconds_sum{label1="value1"} 0.00147889
+test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
+`,
+					wantCollected: map[string]int64{
+						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf":         6,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":          4,
+						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":          5,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=+Inf": 6,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.1":  4,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.5":  5,
+					},
+					wantCharts: 2,
+				},
 			},
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			prom, cleanup := preparePrometheus(t, test.input)
-			defer cleanup()
+			prom := test.prepare()
 
-			mx := prom.Collect()
-			//fmt.Println(mx)
-			//
-			//m := mx
-			//l := make([]string, 0)
-			//for k := range m {
-			//	l = append(l, k)
-			//}
-			//sort.Strings(l)
-			//for _, value := range l {
-			//	fmt.Println(fmt.Sprintf("\"%s\": %d,", value, m[value]))
-			//}
-			//return
+			var metrics []byte
+			srv := httptest.NewServer(http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					_, _ = w.Write(metrics)
+				}))
+			defer srv.Close()
 
-			require.Equal(t, test.wantCollected, mx)
-			if len(test.wantCollected) > 0 {
-				assert.Equal(t, test.wantCharts, len(*prom.Charts()))
+			prom.URL = srv.URL
+			require.True(t, prom.Init())
+
+			for num, step := range test.steps {
+				t.Run(fmt.Sprintf("step num %d ('%s')", num+1, step.desc), func(t *testing.T) {
+
+					metrics = []byte(step.input)
+
+					var mx map[string]int64
+
+					for i := 0; i < maxNotSeenTimes+1; i++ {
+						mx = prom.Collect()
+					}
+
+					assert.Equal(t, step.wantCollected, mx)
+					removeObsoleteCharts(prom.Charts())
+					assert.Len(t, *prom.Charts(), step.wantCharts)
+				})
 			}
 		})
 	}
 }
 
-func preparePrometheus(t *testing.T, metrics [][]string) (*Prometheus, func()) {
-	t.Helper()
-	require.NotZero(t, metrics)
+//func preparePrometheus(t *testing.T, metrics [][]string) (*Prometheus, func()) {
+//	t.Helper()
+//	require.NotZero(t, metrics)
+//
+//	srv := prepareHTTPEndpoint(metrics)
+//	prom := New()
+//	prom.URL = srv.URL
+//	require.True(t, prom.Init())
+//
+//	return prom, srv.Close
+//}
 
-	srv := preparePrometheusEndpoint(metrics)
-	prom := New()
-	prom.URL = srv.URL
-	require.True(t, prom.Init())
-
-	return prom, srv.Close
-}
-
-func preparePrometheusEndpoint(metrics [][]string) *httptest.Server {
-	var rv []string
-	for _, v := range metrics {
-		rv = append(rv, strings.Join(v, "\n")+"\n")
-	}
-
+func removeObsoleteCharts(charts *module.Charts) {
 	var i int
-	return httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			if i <= len(metrics)-1 {
-				_, _ = w.Write([]byte(rv[i]))
-			} else {
-				_, _ = w.Write([]byte(rv[len(rv)-1]))
-			}
+	for _, chart := range *charts {
+		if !chart.Obsolete {
+			(*charts)[i] = chart
 			i++
-		}))
+		}
+	}
+	*charts = (*charts)[:i]
 }
-
-//func genSimpleMetrics(num int) (metrics []string) {
-//	return genMetrics("netdata_generated_metric_count", 0, num)
-//}
-//
-//func genSimpleMetricsFrom(start, num int) (metrics []string) {
-//	return genMetrics("netdata_generated_metric_count", start, num)
-//}
-//
-//func genMetrics(name string, start, end int) (metrics []string) {
-//	var line string
-//	for i := start; i < start+end; i++ {
-//		if i%2 == 0 {
-//			line = fmt.Sprintf(`%s{number="%d",value="even"} %d`, name, i, i)
-//		} else {
-//			line = fmt.Sprintf(`%s{number="%d",value="odd"} %d`, name, i, i)
-//		}
-//		metrics = append(metrics, line)
-//	}
-//	return metrics
-//}
