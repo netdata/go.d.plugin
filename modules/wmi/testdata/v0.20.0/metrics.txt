@@ -103,6 +103,58 @@ process_start_time_seconds 1.667508736e+09
 # HELP process_virtual_memory_bytes Virtual memory size in bytes.
 # TYPE process_virtual_memory_bytes gauge
 process_virtual_memory_bytes 3.5569664e+07
+# HELP windows_adcs_challenge_response_processing_time_seconds Last time elapsed for challenge response
+# TYPE windows_adcs_challenge_response_processing_time_seconds gauge
+windows_adcs_challenge_response_processing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_challenge_response_processing_time_seconds{cert_template="DomainController"} 0
+# HELP windows_adcs_challenge_responses_total Total certificate challenge responses processed
+# TYPE windows_adcs_challenge_responses_total counter
+windows_adcs_challenge_responses_total{cert_template="Administrator"} 0
+windows_adcs_challenge_responses_total{cert_template="DomainController"} 0
+# HELP windows_adcs_failed_requests_total Total failed certificate requests processed
+# TYPE windows_adcs_failed_requests_total counter
+windows_adcs_failed_requests_total{cert_template="Administrator"} 0
+windows_adcs_failed_requests_total{cert_template="DomainController"} 0
+# HELP windows_adcs_issued_requests_total Total issued certificate requests processed
+# TYPE windows_adcs_issued_requests_total counter
+windows_adcs_issued_requests_total{cert_template="Administrator"} 0
+windows_adcs_issued_requests_total{cert_template="DomainController"} 1
+# HELP windows_adcs_pending_requests_total Total pending certificate requests processed
+# TYPE windows_adcs_pending_requests_total counter
+windows_adcs_pending_requests_total{cert_template="Administrator"} 0
+windows_adcs_pending_requests_total{cert_template="DomainController"} 0
+# HELP windows_adcs_request_cryptographic_signing_time_seconds Last time elapsed for signing operation request
+# TYPE windows_adcs_request_cryptographic_signing_time_seconds gauge
+windows_adcs_request_cryptographic_signing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_request_cryptographic_signing_time_seconds{cert_template="DomainController"} 0
+# HELP windows_adcs_request_policy_module_processing_time_seconds Last time elapsed for policy module processing request
+# TYPE windows_adcs_request_policy_module_processing_time_seconds gauge
+windows_adcs_request_policy_module_processing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_request_policy_module_processing_time_seconds{cert_template="DomainController"} 0.016
+# HELP windows_adcs_request_processing_time_seconds Last time elapsed for certificate requests
+# TYPE windows_adcs_request_processing_time_seconds gauge
+windows_adcs_request_processing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_request_processing_time_seconds{cert_template="DomainController"} 0.063
+# HELP windows_adcs_requests_total Total certificate requests processed
+# TYPE windows_adcs_requests_total counter
+windows_adcs_requests_total{cert_template="Administrator"} 0
+windows_adcs_requests_total{cert_template="DomainController"} 1
+# HELP windows_adcs_retrievals_processing_time_seconds Last time elapsed for certificate retrieval request
+# TYPE windows_adcs_retrievals_processing_time_seconds gauge
+windows_adcs_retrievals_processing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_retrievals_processing_time_seconds{cert_template="DomainController"} 0
+# HELP windows_adcs_retrievals_total Total certificate retrieval requests processed
+# TYPE windows_adcs_retrievals_total counter
+windows_adcs_retrievals_total{cert_template="Administrator"} 0
+windows_adcs_retrievals_total{cert_template="DomainController"} 0
+# HELP windows_adcs_signed_certificate_timestamp_list_processing_time_seconds Last time elapsed for Signed Certificate Timestamp List
+# TYPE windows_adcs_signed_certificate_timestamp_list_processing_time_seconds gauge
+windows_adcs_signed_certificate_timestamp_list_processing_time_seconds{cert_template="Administrator"} 0
+windows_adcs_signed_certificate_timestamp_list_processing_time_seconds{cert_template="DomainController"} 0
+# HELP windows_adcs_signed_certificate_timestamp_lists_total Total Signed Certificate Timestamp Lists processed
+# TYPE windows_adcs_signed_certificate_timestamp_lists_total counter
+windows_adcs_signed_certificate_timestamp_lists_total{cert_template="Administrator"} 0
+windows_adcs_signed_certificate_timestamp_lists_total{cert_template="DomainController"} 0
 # HELP windows_ad_replication_inbound_objects_filtered_total
 # TYPE windows_ad_replication_inbound_objects_filtered_total counter
 windows_ad_replication_inbound_objects_filtered_total 0
@@ -228,6 +280,7 @@ windows_exporter_build_info{branch="heads/tags/v0.20.0",goversion="go1.19.1",rev
 # HELP windows_exporter_collector_duration_seconds windows_exporter: Duration of a collection.
 # TYPE windows_exporter_collector_duration_seconds gauge
 windows_exporter_collector_duration_seconds{collector="ad"} 0.7690505
+windows_exporter_collector_duration_seconds{collector="adcs"} 0.0006833
 windows_exporter_collector_duration_seconds{collector="cpu"} 0.00052
 windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
@@ -243,6 +296,7 @@ windows_exporter_collector_duration_seconds{collector="tcp"} 0
 # HELP windows_exporter_collector_success windows_exporter: Whether the collector was successful.
 # TYPE windows_exporter_collector_success gauge
 windows_exporter_collector_success{collector="ad"} 1
+windows_exporter_collector_success{collector="adcs"} 1
 windows_exporter_collector_success{collector="cpu"} 1
 windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
@@ -258,6 +312,7 @@ windows_exporter_collector_success{collector="tcp"} 1
 # HELP windows_exporter_collector_timeout windows_exporter: Whether the collector timed out.
 # TYPE windows_exporter_collector_timeout gauge
 windows_exporter_collector_timeout{collector="ad"} 0
+windows_exporter_collector_timeout{collector="adcs"} 0
 windows_exporter_collector_timeout{collector="cpu"} 0
 windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0

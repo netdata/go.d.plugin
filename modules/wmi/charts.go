@@ -115,6 +115,20 @@ const (
 	prioADBindsTotal
 	prioADLDAPSearchesTotal
 
+	prioADCSCertTemplateRequests
+	prioADCSCertTemplateRequestProcessingTime
+	prioADCSCertTemplateRetrivals
+	prioADCSCertTemplateRetrievalProcessingTime
+	prioADCSCertTemplateFailedRequests
+	prioADCSCertTemplateIssuesRequests
+	prioADCSCertTemplatePendingRequests
+	prioADCSCertTemplateRequestCryptoSigningTime
+	prioADCSCertTemplateRequestPolicyModuleProcessingTime
+	prioADCSCertTemplateChallengeResponses
+	prioADCSCertTemplateChallengeResponseProcessingTime
+	prioADCSCertTemplateSignedCertificateTimestampLists
+	prioADCSCertTemplateSignedCertificateTimestampListProcessingTime
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -1233,6 +1247,169 @@ var (
 	}
 )
 
+// AD CS
+var (
+	adcsCertTemplateChartsTmpl = module.Charts{
+		adcsCertTemplateRequestsChartTmpl.Copy(),
+		adcsCertTemplateFailedRequestsChartTmpl.Copy(),
+		adcsCertTemplateIssuedRequestsChartTmpl.Copy(),
+		adcsCertTemplatePendingRequestsChartTmpl.Copy(),
+		adcsCertTemplateRequestProcessingTimeChartTmpl.Copy(),
+
+		adcsCertTemplateRetrievalsChartTmpl.Copy(),
+		adcsCertificateRetrievalsTimeChartTmpl.Copy(),
+		adcsCertTemplateRequestCryptoSigningTimeChartTmpl.Copy(),
+		adcsCertTemplateRequestPolicyModuleProcessingTimeChartTmpl.Copy(),
+		adcsCertTemplateChallengeResponseChartTmpl.Copy(),
+		adcsCertTemplateChallengeResponseProcessingTimeChartTmpl.Copy(),
+		adcsCertTemplateSignedCertificateTimestampListsChartTmpl.Copy(),
+		adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl.Copy(),
+	}
+	adcsCertTemplateRequestsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template%s_requests",
+		Title:    "Certificate requests processed",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_requests",
+		Priority: prioADCSCertTemplateRequests,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplateFailedRequestsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_failed_requests",
+		Title:    "Certificate failed requests processed",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_failed_requests",
+		Priority: prioADCSCertTemplateFailedRequests,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_failed_requests_total", Name: "failed", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplateIssuedRequestsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_issued_requests",
+		Title:    "Certificate issued requests processed",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_issued_requests",
+		Priority: prioADCSCertTemplateIssuesRequests,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_issued_requests_total", Name: "issued", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplatePendingRequestsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_pending_requests",
+		Title:    "Certificate pending requests processed",
+		Units:    "requests/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_pending_requests",
+		Priority: prioADCSCertTemplatePendingRequests,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_pending_requests_total", Name: "pending", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplateRequestProcessingTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_request_processing_time",
+		Title:    "Certificate last request processing time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_request_processing_time",
+		Priority: prioADCSCertTemplateRequestProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time"},
+		},
+	}
+	adcsCertTemplateRetrievalsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_retrievals",
+		Title:    "Total of certificate retrievals",
+		Units:    "retrievals/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_retrievals",
+		Priority: prioADCSCertTemplateRetrivals,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_retrievals_total", Name: "retrievals", Algo: module.Incremental},
+		},
+	}
+	adcsCertificateRetrievalsTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_retrievals_processing_time",
+		Title:    "Certificate last retrieval processing time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_retrieval_processing_time",
+		Priority: prioADCSCertTemplateRetrievalProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time"},
+		},
+	}
+	adcsCertTemplateRequestCryptoSigningTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_request_cryptographic_signing_time",
+		Title:    "Certificate last signing operation request time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_request_cryptographic_signing_time",
+		Priority: prioADCSCertTemplateRequestCryptoSigningTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_request_cryptographic_signing_time_seconds", Name: "singing_time"},
+		},
+	}
+	adcsCertTemplateRequestPolicyModuleProcessingTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_request_policy_module_processing_time",
+		Title:    "Certificate last policy module processing request time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_request_policy_module_processing",
+		Priority: prioADCSCertTemplateRequestPolicyModuleProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time"},
+		},
+	}
+	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_challenge_responses",
+		Title:    "Certificate challenge responses",
+		Units:    "responses/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_challenge_responses",
+		Priority: prioADCSCertTemplateChallengeResponses,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplateChallengeResponseProcessingTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_challenge_response_processing_time",
+		Title:    "Certificate last challenge response time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_challenge_response_processing_time",
+		Priority: prioADCSCertTemplateChallengeResponseProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_challenge_response_processing_time_seconds", Name: "processing_time"},
+		},
+	}
+	adcsCertTemplateSignedCertificateTimestampListsChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_signed_certificate_timestamp_lists",
+		Title:    "Certificate Signed Certificate Timestamp Lists processed",
+		Units:    "lists/s",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_signed_certificate_timestamp_lists",
+		Priority: prioADCSCertTemplateSignedCertificateTimestampLists,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_lists_total", Name: "processed", Algo: module.Incremental},
+		},
+	}
+	adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl = module.Chart{
+		ID:       "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time",
+		Title:    "Certificate last Signed Certificate Timestamp List process time",
+		Units:    "seconds",
+		Fam:      "adcs",
+		Ctx:      "wmi.adcs_cert_template_signed_certificate_timestamp_list_processing_time",
+		Priority: prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time"},
+		},
+	}
+)
+
 // Logon
 var (
 	logonCharts = module.Charts{
@@ -1705,6 +1882,34 @@ func (w *WMI) addADCharts() {
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
+	}
+}
+
+func (w *WMI) addCertificateTemplateCharts(template string) {
+	charts := adcsCertTemplateChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, template)
+		chart.Labels = []module.Label{
+			{Key: "cert_template", Value: template},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, template)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeCertificateTemplateCharts(template string) {
+	px := fmt.Sprintf("adcs_cert_template_%s", template)
+	for _, chart := range *w.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
 	}
 }
 
