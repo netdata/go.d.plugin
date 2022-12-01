@@ -14,6 +14,8 @@ const (
 	prioClientConnectionsCount
 
 	prioSSLHandshakesRate
+	prioSSLHandshakesFailuresRate
+	prioSSLVerificationErrorsRate
 	prioSSLSessionReusesRate
 
 	prioHTTPRequestsRate
@@ -83,6 +85,8 @@ var (
 		clientConnectionsRateChart.Copy(),
 		clientConnectionsCountChart.Copy(),
 		sslHandshakesRateChart.Copy(),
+		sslHandshakesFailuresRateChart.Copy(),
+		sslVerificationErrorsRateChart.Copy(),
 		sslSessionReusesRateChart.Copy(),
 		httpRequestsRateChart.Copy(),
 		httpRequestsCountChart.Copy(),
@@ -123,6 +127,37 @@ var (
 		Dims: module.Dims{
 			{ID: "ssl_handshakes", Name: "successful", Algo: module.Incremental},
 			{ID: "ssl_handshakes_failed", Name: "failed", Algo: module.Incremental},
+		},
+	}
+	sslHandshakesFailuresRateChart = module.Chart{
+		ID:       "ssl_handshakes_failures_rate",
+		Title:    "SSL handshakes failures rate",
+		Units:    "failures/s",
+		Fam:      "ssl",
+		Ctx:      "nginxplus.ssl_handshakes_failures_rate",
+		Priority: prioSSLHandshakesFailuresRate,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "ssl_no_common_protocol", Name: "no_common_protocol", Algo: module.Incremental},
+			{ID: "ssl_no_common_cipher", Name: "no_common_cipher", Algo: module.Incremental},
+			{ID: "ssl_handshake_timeout", Name: "timeout", Algo: module.Incremental},
+			{ID: "ssl_peer_rejected_cert", Name: "peer_rejected_cert", Algo: module.Incremental},
+		},
+	}
+	sslVerificationErrorsRateChart = module.Chart{
+		ID:       "ssl_verification_errors_rate",
+		Title:    "SSL verification errors rate",
+		Units:    "errors/s",
+		Fam:      "ssl",
+		Ctx:      "nginxplus.ssl_verification_errors_rate",
+		Priority: prioSSLVerificationErrorsRate,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "ssl_verify_failures_no_cert", Name: "no_cert", Algo: module.Incremental},
+			{ID: "ssl_verify_failures_expired_cert", Name: "expired_cert", Algo: module.Incremental},
+			{ID: "ssl_verify_failures_revoked_cert", Name: "revoked_cert", Algo: module.Incremental},
+			{ID: "ssl_verify_failures_hostname_mismatch", Name: "hostname_mismatch", Algo: module.Incremental},
+			{ID: "ssl_verify_failures_other", Name: "other", Algo: module.Incremental},
 		},
 	}
 	sslSessionReusesRateChart = module.Chart{

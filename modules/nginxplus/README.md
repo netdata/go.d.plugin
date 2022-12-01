@@ -40,6 +40,8 @@ Labels per scope:
 | client_connections_rate                            |         global         |                            accepted, dropped                             | connections/s |
 | client_connections_count                           |         global         |                               active, idle                               |  connections  |
 | ssl_handshakes_rate                                |         global         |                            successful, failed                            | handshakes/s  |
+| ssl_handshakes_failures_rate                       |         global         |    no_common_protocol, no_common_cipher, timeout, peer_rejected_cert     |  failures/s   |
+| ssl_verification_errors_rate                       |         global         |      no_cert, expired_cert, revoked_cert, hostname_mismatch, other       |   errors/s    |
 | ssl_session_reuses_rate                            |         global         |                               ssl_session                                |   reuses/s    |
 | http_requests_rate                                 |         global         |                                 requests                                 |  requests/s   |
 | http_requests_count                                |         global         |                                 requests                                 |   requests    |

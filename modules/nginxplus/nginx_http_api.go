@@ -29,6 +29,17 @@ type (
 		Handshakes       int64 `json:"handshakes"`
 		HandshakesFailed int64 `json:"handshakes_failed"`
 		SessionReuses    int64 `json:"session_reuses"`
+		NoCommonProtocol int64 `json:"no_common_protocol"`
+		NoCommonCipher   int64 `json:"no_common_cipher"`
+		HandshakeTimeout int64 `json:"handshake_timeout"`
+		PeerRejectedCert int64 `json:"peer_rejected_cert"`
+		VerifyFailures   struct {
+			NoCert           int64 `json:"no_cert"`
+			ExpiredCert      int64 `json:"expired_cert"`
+			RevokedCert      int64 `json:"revoked_cert"`
+			HostnameMismatch int64 `json:"hostname_mismatch"`
+			Other            int64 `json:"other"`
+		} `json:"verify_failures"`
 	}
 )
 
