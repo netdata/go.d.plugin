@@ -117,7 +117,7 @@ const (
 
 	prioADCSCertTemplateRequests
 	prioADCSCertTemplateRequestProcessingTime
-	prioADCSCertTemplateRetrivals
+	prioADCSCertTemplateRetrievals
 	prioADCSCertTemplateRetrievalProcessingTime
 	prioADCSCertTemplateFailedRequests
 	prioADCSCertTemplateIssuesRequests
@@ -1317,7 +1317,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_request_processing_time",
 		Priority: prioADCSCertTemplateRequestProcessingTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time"},
+			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateRetrievalsChartTmpl = module.Chart{
@@ -1326,7 +1326,7 @@ var (
 		Units:    "retrievals/s",
 		Fam:      "adcs",
 		Ctx:      "wmi.adcs_cert_template_retrievals",
-		Priority: prioADCSCertTemplateRetrivals,
+		Priority: prioADCSCertTemplateRetrievals,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_total", Name: "retrievals", Algo: module.Incremental},
 		},
@@ -1339,7 +1339,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_retrieval_processing_time",
 		Priority: prioADCSCertTemplateRetrievalProcessingTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time"},
+			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateRequestCryptoSigningTimeChartTmpl = module.Chart{
@@ -1350,7 +1350,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_request_cryptographic_signing_time",
 		Priority: prioADCSCertTemplateRequestCryptoSigningTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_request_cryptographic_signing_time_seconds", Name: "singing_time"},
+			{ID: "adcs_cert_template_%s_request_cryptographic_signing_time_seconds", Name: "singing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateRequestPolicyModuleProcessingTimeChartTmpl = module.Chart{
@@ -1361,7 +1361,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_request_policy_module_processing",
 		Priority: prioADCSCertTemplateRequestPolicyModuleProcessingTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time"},
+			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
@@ -1383,7 +1383,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_challenge_response_processing_time",
 		Priority: prioADCSCertTemplateChallengeResponseProcessingTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_challenge_response_processing_time_seconds", Name: "processing_time"},
+			{ID: "adcs_cert_template_%s_challenge_response_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateSignedCertificateTimestampListsChartTmpl = module.Chart{
@@ -1405,7 +1405,7 @@ var (
 		Ctx:      "wmi.adcs_cert_template_signed_certificate_timestamp_list_processing_time",
 		Priority: prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time"},
+			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 )

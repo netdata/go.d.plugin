@@ -47,7 +47,11 @@ func (w *WMI) collectADCS(mx map[string]int64, pms prometheus.Series) {
 		if tmpl := pm.Labels.Get("cert_template"); tmpl != "" && tmpl != "_Total" {
 			seen[tmpl] = true
 			name := strings.TrimPrefix(pm.Name(), "windows_adcs_")
-			mx["adcs_cert_template_"+tmpl+"_"+name] += int64(pm.Value)
+			v := pm.Value
+			if strings.HasSuffix(pm.Name(), "_seconds") {
+				v *= precision
+			}
+			mx["adcs_cert_template_"+tmpl+"_"+name] += int64(v)
 		}
 	}
 
