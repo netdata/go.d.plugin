@@ -262,7 +262,7 @@ func TestNginxPlus_Collect(t *testing.T) {
 				"ssl_session_reuses":                                                                     13096060,
 				"ssl_verify_failures_expired_cert":                                                       0,
 				"ssl_verify_failures_hostname_mismatch":                                                  0,
-				"ssl_verify_failures_hostname_other":                                                     0,
+				"ssl_verify_failures_other":                                                              0,
 				"ssl_verify_failures_no_cert":                                                            0,
 				"ssl_verify_failures_revoked_cert":                                                       0,
 				"stream_server_zone_tcp_server_bytes_received":                                           0,
