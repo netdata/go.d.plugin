@@ -72,6 +72,15 @@ func (n *NginxPlus) collectSSL(mx map[string]int64, ms *nginxMetrics) {
 	mx["ssl_handshakes"] = ms.ssl.Handshakes
 	mx["ssl_handshakes_failed"] = ms.ssl.HandshakesFailed
 	mx["ssl_session_reuses"] = ms.ssl.SessionReuses
+	mx["ssl_no_common_protocol"] = ms.ssl.NoCommonProtocol
+	mx["ssl_no_common_cipher"] = ms.ssl.NoCommonCipher
+	mx["ssl_handshake_timeout"] = ms.ssl.HandshakeTimeout
+	mx["ssl_peer_rejected_cert"] = ms.ssl.PeerRejectedCert
+	mx["ssl_verify_failures_no_cert"] = ms.ssl.VerifyFailures.NoCert
+	mx["ssl_verify_failures_expired_cert"] = ms.ssl.VerifyFailures.ExpiredCert
+	mx["ssl_verify_failures_revoked_cert"] = ms.ssl.VerifyFailures.RevokedCert
+	mx["ssl_verify_failures_hostname_mismatch"] = ms.ssl.VerifyFailures.HostnameMismatch
+	mx["ssl_verify_failures_hostname_other"] = ms.ssl.VerifyFailures.Other
 }
 
 func (n *NginxPlus) collectHTTPRequests(mx map[string]int64, ms *nginxMetrics) {
