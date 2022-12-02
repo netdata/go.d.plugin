@@ -62,15 +62,16 @@ func (p *promTextParser) parseToSeries(text []byte) (Series, error) {
 
 		switch entry {
 		case textparse.EntrySeries:
-			var lbs labels.Labels
-			parser.Metric(&lbs)
+			p.currSeries = p.currSeries[:0]
 
-			if p.sr != nil && !p.sr.Matches(lbs) {
+			parser.Metric(&p.currSeries)
+
+			if p.sr != nil && !p.sr.Matches(p.currSeries) {
 				continue
 			}
 
 			_, _, val := parser.Series()
-			p.series.Add(SeriesSample{lbs, val})
+			p.series.Add(SeriesSample{Labels: copyLabels(p.currSeries), Value: val})
 		}
 	}
 
