@@ -129,15 +129,14 @@ const (
 	prioADCSCertTemplateSignedCertificateTimestampLists
 	prioADCSCertTemplateSignedCertificateTimestampListProcessingTime
 
-	prioADFSLoginConnectionFailures
+	prioADFSADLoginConnectionFailures
 	prioADFSCertificateAuthentications
 	prioADFSDBArtifactFailure
 	prioADFSDBArtifactQueryTimeSeconds
 	prioADFSDBConfigFailure
 	prioADFSDBConfigQueryTimeSeconds
 	prioADFSDeviceAuthentications
-	prioADFSExternalAuthenticationsFailure
-	prioADFSExternalAuthenticationsSuccess
+	prioADFSExternalAuthentications
 	prioADFSExtranetAccountLookups
 	prioADFSFederatedAuthentications
 	prioADFSFederationMetadataRequests
@@ -1450,6 +1449,145 @@ var (
 		Priority: prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time", Div: precision},
+		},
+	}
+)
+
+// AD FS
+var (
+	adfsCharts = module.Charts{
+		adfsADLoginConnectionFailure.Copy(),
+		adfsCertificateAuthentations.Copy(),
+		adfsDBArtifactFailure.Copy(),
+		adfsDBArtifactQueryTimeSeconds.Copy(),
+		adfsDBConfigFailure.Copy(),
+		adfsDBConfigQueryTimeSeconds.Copy(),
+		adfsDeviceAuthentications.Copy(),
+		adfsExternalAuthentications.Copy(),
+		adfsFederatedAuhentications.Copy(),
+		adfsFederationMetadataRequests.Copy(),
+	}
+
+	adfsADLoginConnectionFailure = module.Chart{
+		ID:       "adfs_ad_login_connection_failure",
+		Title:    "Total number of connection failures",
+		Units:    "connections/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_ad_login_connection_failure",
+		Type:     module.Line,
+		Priority: prioADFSADLoginConnectionFailures,
+		Dims: module.Dims{
+			{ID: "adfs_ad_login_connection_failure_total", Name: "connections", Algo: module.Incremental},
+		},
+	}
+	adfsCertificateAuthentations = module.Chart{
+		ID:       "adfs_certificate_authentications",
+		Title:    "Total number of User Certificate Authentications",
+		Units:    "authenticantions/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_certificate_authentications",
+		Type:     module.Line,
+		Priority: prioADFSCertificateAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_certificate_authentications_total", Name: "authentications", Algo: module.Incremental},
+		},
+	}
+
+	adfsDBArtifactFailure = module.Chart{
+		ID:       "adfs_db_artifact_failure",
+		Title:    "Number of failures connection to artifact database",
+		Units:    "connections/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_db_artifact_failure",
+		Type:     module.Line,
+		Priority: prioADFSDBArtifactFailure,
+		Dims: module.Dims{
+			{ID: "adfs_db_artifact_failure_total", Name: "connections", Algo: module.Incremental},
+		},
+	}
+	adfsDBArtifactQueryTimeSeconds = module.Chart{
+		ID:       "adfs_db_artifact_query_time_seconds",
+		Title:    "Time take for an artifact database query",
+		Units:    "seconds/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_db_artifact_query_time_seconds",
+		Type:     module.Line,
+		Priority: prioADFSDBArtifactQueryTimeSeconds,
+		Dims: module.Dims{
+			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "period", Algo: module.Incremental},
+		},
+	}
+	adfsDBConfigFailure = module.Chart{
+		ID:       "adfs_db_config_failure",
+		Title:    "Total number of Failures connections to the configuration database",
+		Units:    "connections/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_db_config_failure",
+		Type:     module.Line,
+		Priority: prioADFSDBConfigFailure,
+		Dims: module.Dims{
+			{ID: "adfs_db_config_failure_total", Name: "connections", Algo: module.Incremental},
+		},
+	}
+	adfsDBConfigQueryTimeSeconds = module.Chart{
+		ID:       "adfs_db_config_query_time_seconds",
+		Title:    "Time taken for a configuration database query.",
+		Units:    "connections/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_db_config_query_time_seconds",
+		Type:     module.Line,
+		Priority: prioADFSDBConfigQueryTimeSeconds,
+		Dims: module.Dims{
+			{ID: "adfs_db_config_query_time_seconds_total", Name: "connections", Algo: module.Incremental},
+		},
+	}
+	adfsDeviceAuthentications = module.Chart{
+		ID:       "adfs_device_authentications",
+		Title:    "Total number of device authentications",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_device_authentications",
+		Type:     module.Line,
+		Priority: prioADFSDeviceAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_device_authentications_total", Name: "authentications", Algo: module.Incremental},
+		},
+	}
+	adfsExternalAuthentications = module.Chart{
+		ID:       "adfs_external_authentications",
+		Title:    "Total authentications from external MFA providers.",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_device_authentications",
+		Type:     module.Line,
+		Priority: prioADFSExternalAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_external_authentications_failure_total", Name: "failure", Algo: module.Incremental},
+			{ID: "adfs_external_authentications_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
+	adfsFederatedAuhentications = module.Chart{
+		ID:       "adfs_federated_authentications",
+		Title:    "Authetications from Federated Sources",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_federated_authentications",
+		Type:     module.Line,
+		Priority: prioADFSFederatedAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_federated_authentications_total", Name: "authentications", Algo: module.Incremental},
+		},
+	}
+	adfsFederationMetadataRequests = module.Chart{
+		ID:       "adfs_federation_metadata_requests",
+		Title:    "Authetications from Federated Sources",
+		Units:    "requests/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_federated_authentications",
+		Type:     module.Line,
+		Priority: prioADFSFederationMetadataRequests,
+		Dims: module.Dims{
+			{ID: "adfs_federation_metadata_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 )
