@@ -2215,6 +2215,14 @@ func (w *WMI) addLogonCharts() {
 	}
 }
 
+func (w *WMI) addADFSCharts() {
+	charts := adfsCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
 func (w *WMI) addThermalZoneCharts(zone string) {
 	charts := thermalzoneChartsTmpl.Copy()
 
