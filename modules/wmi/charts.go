@@ -153,17 +153,14 @@ const (
 	prioADFSOauthTokenRequestsSuccess
 	prioADFSPassiveRequests
 	prioADFSPassportAuthentications
-	prioADFSPasswordChangeFailed
-	prioADFSPasswordChangeSucceeded
-	prioADFSSamlpTokenRequestsSuccess
-	prioADFSSSOAuthenticationsFailure
-	prioADFSSSOAuthenticationsSuccess
+	prioADFSPasswordChange
+	prioADFSSamlpTokenRequests
+	prioADFSSSOAuthentications
 	prioADFSTokenRequests
-	prioADFSUserpasswordAuthenticationsFailure
-	prioADFSUserpasswordAuthenticationsSuccess
+	prioADFSUserpasswordAuthentications
 	prioADFSWindowsIntegratedAuthentications
-	prioADFSWsfedTokenRequestsSuccess
-	prioADFSWstrustTokenRequestsSuccess
+	prioADFSWSFedTokenRequestsSuccess
+	prioADFSWStrustTokenRequestsSuccess
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -1144,6 +1141,17 @@ var (
 		adLDAPLastBindTimeChart.Copy(),
 		adBindsTotalChart.Copy(),
 		adLDAPSearchesChart.Copy(),
+
+		adfsPassiveRequests.Copy(),
+		adfsPassportAuthentications.Copy(),
+		adfsPasswordChange.Copy(),
+		adfsSamlpTokenRequests.Copy(),
+		adfsSSOAuthentications.Copy(),
+		adfsTokenRequests.Copy(),
+		adfsUserPasswordAuthenication.Copy(),
+		adfsWindowsIntegratedAuthentications.Copy(),
+		adfsWSFedTokenRequestsSuccess.Copy(),
+		adfsWSTrustTokenRequestsSuccess.Copy(),
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
 		ID:       "ad_dra_replication_intersite_compressed_traffic",
@@ -1717,7 +1725,7 @@ var (
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_password_grant_requests",
 		Type:     module.Line,
-		Priority: prioADFSOauthClientWindowsAuthentications,
+		Priority: prioADFSOauthPasswordGrantRequests,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_password_grant_requests_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_password_grant_requests_success_total", Name: "success", Algo: module.Incremental},
@@ -1730,9 +1738,133 @@ var (
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_token_requests_success",
 		Type:     module.Line,
-		Priority: prioADFSOauthClientWindowsAuthentications,
+		Priority: prioADFSOauthTokenRequestsSuccess,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
+		},
+	}
+
+	adfsPassiveRequests = module.Chart{
+		ID:       "adfs_passive_requests",
+		Title:    "Total number of passive requests.",
+		Units:    "requests/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_passive_requests",
+		Type:     module.Line,
+		Priority: prioADFSPassiveRequests,
+		Dims: module.Dims{
+			{ID: "adfs_passive_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	adfsPassportAuthentications = module.Chart{
+		ID:       "adfs_passport_authentications",
+		Title:    "Total number of authentications from Microsoft Passport.",
+		Units:    "requests/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_passport_authentications",
+		Type:     module.Line,
+		Priority: prioADFSPassportAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_passport_authentications_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	adfsPasswordChange = module.Chart{
+		ID:       "adfs_password_change",
+		Title:    "Total number of password change.",
+		Units:    "requests/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_password_change",
+		Type:     module.Line,
+		Priority: prioADFSPasswordChange,
+		Dims: module.Dims{
+			{ID: "adfs_password_change_failure_total", Name: "failure", Algo: module.Incremental},
+			{ID: "adfs_password_change_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
+	adfsSamlpTokenRequests = module.Chart{
+		ID:       "adfs_samlp_token_requests_success",
+		Title:    "Total number of successful RP tokens issued over SAML-P protocol.",
+		Units:    "rp_tokens/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_samlp_token_requests_success",
+		Type:     module.Line,
+		Priority: prioADFSSamlpTokenRequests,
+		Dims: module.Dims{
+			{ID: "adfs_samlp_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
+		},
+	}
+	adfsSSOAuthentications = module.Chart{
+		ID:       "adfs_sso_authentications",
+		Title:    "Total number of SSO authentications.",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_sso_authentications",
+		Type:     module.Line,
+		Priority: prioADFSSSOAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
+			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
+	adfsTokenRequests = module.Chart{
+		ID:       "adfs_token_requests",
+		Title:    "Total number of requested access token.",
+		Units:    "requests/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_token_requests",
+		Type:     module.Line,
+		Priority: prioADFSSamlpTokenRequests,
+		Dims: module.Dims{
+			{ID: "adfs_token_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	adfsUserPasswordAuthenication = module.Chart{
+		ID:       "adfs_sso_authentications",
+		Title:    "Total number of AD U/P authentications.",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_sso_authentications",
+		Type:     module.Line,
+		Priority: prioADFSUserpasswordAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
+			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
+	adfsWindowsIntegratedAuthentications = module.Chart{
+		ID:       "adfs_windows_integrated_authentications",
+		Title:    "Total number of Windows Integrated Authentications.",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_windows_integrated_authentications",
+		Type:     module.Line,
+		Priority: prioADFSWindowsIntegratedAuthentications,
+		Dims: module.Dims{
+			{ID: "adfs_windows_integrated_authentications_total", Name: "authentications", Algo: module.Incremental},
+		},
+	}
+	adfsWSFedTokenRequestsSuccess = module.Chart{
+		ID:       "adfs_wsfed_token_requests_success",
+		Title:    "Total number of Windows Integrated Authentications.",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_wsfed_token_requests_success",
+		Type:     module.Line,
+		Priority: prioADFSWSFedTokenRequestsSuccess,
+		Dims: module.Dims{
+			{ID: "adfs_wsfed_token_requests_success_total", Name: "authentications", Algo: module.Incremental},
+		},
+	}
+	adfsWSTrustTokenRequestsSuccess = module.Chart{
+		ID:       "adfs_wstrust_token_requests_success",
+		Title:    "Total number of successful RP tokens issued over WS-Trust.",
+		Units:    "rp_tokens/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_wstrust_token_requests_success",
+		Type:     module.Line,
+		Priority: prioADFSWStrustTokenRequestsSuccess,
+		Dims: module.Dims{
+			{ID: "adfs_wstrust_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
 		},
 	}
 )
