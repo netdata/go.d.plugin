@@ -89,7 +89,7 @@ func (w *WMI) collectADFS(mx map[string]int64, pms prometheus.Series) {
 		mx["adfs_federation_metadata_requests_total"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADFSFederatedAuthentications); pm.Len() > 0 {
-		mx["adfs_oauth_authorization_requests_total"] = int64(pm.Max())
+		mx["adfs_federated_authentications_total"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADFSFederationMetadataRequests); pm.Len() > 0 {
 		mx["adfs_federation_metadata_requests_total"] = int64(pm.Max())
@@ -114,7 +114,7 @@ func (w *WMI) collectADFS(mx map[string]int64, pms prometheus.Series) {
 		mx["adfs_oauth_client_privkey_jwt_authentications_failure_total"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADFSOauthClientPrivKeyJTWAuthenticationSuccess); pm.Len() > 0 {
-		mx["adfs_oauth_client_privkey_jwt_authentications_failure_total"] = int64(pm.Max())
+		mx["adfs_oauth_client_privkey_jwt_authentications_success_total"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricADFSOauthClientSecretBasicAuthenticationsFailure); pm.Len() > 0 {
 		mx["adfs_oauth_client_secret_basic_authentications_failure_total"] = int64(pm.Max())
