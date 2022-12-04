@@ -1527,7 +1527,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADFSDBArtifactQueryTimeSeconds,
 		Dims: module.Dims{
-			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "period", Algo: module.Incremental},
+			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "query_time", Algo: module.Incremental},
 		},
 	}
 	adfsDBConfigFailure = module.Chart{
@@ -1545,13 +1545,13 @@ var (
 	adfsDBConfigQueryTimeSeconds = module.Chart{
 		ID:       "adfs_db_config_query_time_seconds",
 		Title:    "Time taken for a configuration database query.",
-		Units:    "connections/s",
+		Units:    "seconds",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_db_config_query_time_seconds",
 		Type:     module.Line,
 		Priority: prioADFSDBConfigQueryTimeSeconds,
 		Dims: module.Dims{
-			{ID: "adfs_db_config_query_time_seconds_total", Name: "connections", Algo: module.Incremental},
+			{ID: "adfs_db_config_query_time_seconds_total", Name: "query_time", Algo: module.Incremental},
 		},
 	}
 	adfsDeviceAuthentications = module.Chart{
