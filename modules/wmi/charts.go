@@ -1777,7 +1777,7 @@ var (
 		Type:     module.Line,
 		Priority: prioADFSPasswordChange,
 		Dims: module.Dims{
-			{ID: "adfs_password_change_failure_total", Name: "failure", Algo: module.Incremental},
+			{ID: "adfs_password_change_failed_total", Name: "failed", Algo: module.Incremental},
 			{ID: "adfs_password_change_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}

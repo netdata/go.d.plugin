@@ -149,4 +149,44 @@ func (w *WMI) collectADFS(mx map[string]int64, pms prometheus.Series) {
 	if pm := pms.FindByName(metricADFSOauthTokenRequestsSuccess); pm.Len() > 0 {
 		mx["adfs_oauth_token_requests_success_total"] = int64(pm.Max())
 	}
+
+	if pm := pms.FindByName(metricADFSPassiveRequest); pm.Len() > 0 {
+		mx["adfs_passive_requests_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSPasswortAuthentications); pm.Len() > 0 {
+		mx["adfs_passport_authentications_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSPasswordChangeFailed); pm.Len() > 0 {
+		mx["adfs_password_change_failed_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSWPasswordChangeSucceeded); pm.Len() > 0 {
+		mx["adfs_password_change_success_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSSamlpToeknRequestsSuccess); pm.Len() > 0 {
+		mx["adfs_samlp_token_requests_success_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSSSOAuthenticationsFailure); pm.Len() > 0 {
+		mx["adfs_sso_authentications_failure_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSSSOAuthenticationsSuccess); pm.Len() > 0 {
+		mx["adfs_sso_authentications_success_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSTokenRequests); pm.Len() > 0 {
+		mx["adfs_token_requests_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSUserPasswordAuthenticationsFailure); pm.Len() > 0 {
+		mx["adfs_sso_authentications_failure_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSUserPasswordAuthenticationsSuccess); pm.Len() > 0 {
+		mx["adfs_sso_authentications_success_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSWindowsIntegratedAuthentications); pm.Len() > 0 {
+		mx["adfs_windows_integrated_authentications_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSWSFedTokenRequestsSuccess); pm.Len() > 0 {
+		mx["adfs_wsfed_token_requests_success_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADFSWSTrustTokenRequestsSuccess); pm.Len() > 0 {
+		mx["adfs_wstrust_token_requests_success_total"] = int64(pm.Max())
+	}
 }
