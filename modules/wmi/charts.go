@@ -1141,17 +1141,6 @@ var (
 		adLDAPLastBindTimeChart.Copy(),
 		adBindsTotalChart.Copy(),
 		adLDAPSearchesChart.Copy(),
-
-		adfsPassiveRequests.Copy(),
-		adfsPassportAuthentications.Copy(),
-		adfsPasswordChange.Copy(),
-		adfsSamlpTokenRequests.Copy(),
-		adfsSSOAuthentications.Copy(),
-		adfsTokenRequests.Copy(),
-		adfsUserPasswordAuthenication.Copy(),
-		adfsWindowsIntegratedAuthentications.Copy(),
-		adfsWSFedTokenRequestsSuccess.Copy(),
-		adfsWSTrustTokenRequestsSuccess.Copy(),
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
 		ID:       "ad_dra_replication_intersite_compressed_traffic",
@@ -1308,18 +1297,6 @@ var (
 		adcsCertTemplateChallengeResponseProcessingTimeChartTmpl.Copy(),
 		adcsCertTemplateSignedCertificateTimestampListsChartTmpl.Copy(),
 		adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl.Copy(),
-
-		adfsOAuthAuhorizationRequests.Copy(),
-		adfsOAuthClientAuthentication.Copy(),
-		adfsOAuthClientCredentials.Copy(),
-		adfsOAuthClientPrivKeyJwtAuthentication.Copy(),
-		adfsOAuthClientSecretBasicAuthentication.Copy(),
-		adfsOAuthClientSecretPostAuthentications.Copy(),
-		adfsOAuthClientWindowsAuthentications.Copy(),
-		adfsOAuthLogonCertificateRequestsFailure.Copy(),
-		adfsOAuthLogonCertificatetokenRequestsSuccess.Copy(),
-		adfsOAuthPasswordGrantRequests.Copy(),
-		adfsOAuthTokenRequests.Copy(),
 	}
 	adcsCertTemplateRequestsChartTmpl = module.Chart{
 		ID:       "adcs_cert_template%s_requests",
@@ -1479,6 +1456,29 @@ var (
 		adfsExternalAuthentications.Copy(),
 		adfsFederatedAuhentications.Copy(),
 		adfsFederationMetadataRequests.Copy(),
+
+		adfsOAuthAuhorizationRequests.Copy(),
+		adfsOAuthClientAuthentication.Copy(),
+		adfsOAuthClientCredentials.Copy(),
+		adfsOAuthClientPrivKeyJwtAuthentication.Copy(),
+		adfsOAuthClientSecretBasicAuthentication.Copy(),
+		adfsOAuthClientSecretPostAuthentications.Copy(),
+		adfsOAuthClientWindowsAuthentications.Copy(),
+		adfsOAuthLogonCertificateRequestsFailure.Copy(),
+		adfsOAuthLogonCertificatetokenRequestsSuccess.Copy(),
+		adfsOAuthPasswordGrantRequests.Copy(),
+		adfsOAuthTokenRequests.Copy(),
+
+		adfsPassiveRequests.Copy(),
+		adfsPassportAuthentications.Copy(),
+		adfsPasswordChange.Copy(),
+		adfsSamlpTokenRequests.Copy(),
+		adfsSSOAuthentications.Copy(),
+		adfsTokenRequests.Copy(),
+		adfsUserPasswordAuthenication.Copy(),
+		adfsWindowsIntegratedAuthentications.Copy(),
+		adfsWSFedTokenRequestsSuccess.Copy(),
+		adfsWSTrustTokenRequestsSuccess.Copy(),
 	}
 
 	adfsADLoginConnectionFailure = module.Chart{
@@ -1662,7 +1662,7 @@ var (
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_client_secret_basic_authentications",
 		Type:     module.Line,
-		Priority: prioADFSOauthClientPrivkeyJwtAuthentication,
+		Priority: prioADFSOauthClientSecretBasicAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_secret_basic_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_basic_authentications_success_total", Name: "success", Algo: module.Incremental},
@@ -1675,7 +1675,7 @@ var (
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_client_secret_post_authentications",
 		Type:     module.Line,
-		Priority: prioADFSOauthClientSecretBasicAuthentications,
+		Priority: prioADFSOauthClientSecretPostAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_secret_post_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_post_authentications_success_total", Name: "success", Algo: module.Incremental},
@@ -1813,7 +1813,7 @@ var (
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_token_requests",
 		Type:     module.Line,
-		Priority: prioADFSSamlpTokenRequests,
+		Priority: prioADFSTokenRequests,
 		Dims: module.Dims{
 			{ID: "adfs_token_requests_total", Name: "requests", Algo: module.Incremental},
 		},
