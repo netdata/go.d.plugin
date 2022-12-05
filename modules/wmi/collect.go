@@ -11,6 +11,7 @@ const precision = 1000
 const (
 	collectorAD          = "ad"
 	collectorADCS        = "adcs"
+	collectorADFS        = "adfs"
 	collectorCPU         = "cpu"
 	collectorMemory      = "memory"
 	collectorNet         = "net"
@@ -108,6 +109,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectAD(mx, pms)
 		case collectorADCS:
 			w.collectADCS(mx, pms)
+		case collectorADFS:
+			w.collectADFS(mx, pms)
 		}
 	}
 }
