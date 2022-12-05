@@ -28,7 +28,7 @@ const (
 	metricADFSOauthClientCredentialsFailureTotal                    = "windows_adfs_oauth_client_credentials_failure_total"
 	metricADFSOauthClientCredentialsSuccessTotal                    = "windows_adfs_oauth_client_credentials_success_total"
 	metricADFSOauthClientPrivKeyJTWAuthenticationFailureTotal       = "windows_adfs_oauth_client_privkey_jtw_authentication_failure_total"
-	metricADFSOauthClientPrivKeyJTWAuthenticationSuccessTotal       = "windows_adfs_oauth_client_privkey_jwt_authentications_success_total"
+	metricADFSOauthClientPrivKeyJWTAuthenticationSuccessTotal       = "windows_adfs_oauth_client_privkey_jwt_authentications_success_total"
 	metricADFSOauthClientSecretBasicAuthenticationsFailureTotal     = "windows_adfs_oauth_client_secret_basic_authentications_failure_total"
 	metricADFSADFSOauthClientSecretBasicAuthenticationsSuccessTotal = "windows_adfs_oauth_client_secret_basic_authentications_success_total"
 	metricADFSOauthClientSecretPostAuthenticationsFailureTotal      = "windows_adfs_oauth_client_secret_post_authentications_failure_total"
@@ -75,7 +75,7 @@ var adfsMetrics = []string{
 	metricADFSOauthClientCredentialsFailureTotal,
 	metricADFSOauthClientCredentialsSuccessTotal,
 	metricADFSOauthClientPrivKeyJTWAuthenticationFailureTotal,
-	metricADFSOauthClientPrivKeyJTWAuthenticationSuccessTotal,
+	metricADFSOauthClientPrivKeyJWTAuthenticationSuccessTotal,
 	metricADFSOauthClientSecretBasicAuthenticationsFailureTotal,
 	metricADFSADFSOauthClientSecretBasicAuthenticationsSuccessTotal,
 	metricADFSOauthClientSecretPostAuthenticationsFailureTotal,
