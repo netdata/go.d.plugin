@@ -131,36 +131,34 @@ const (
 
 	prioADFSADLoginConnectionFailures
 	prioADFSCertificateAuthentications
-	prioADFSDBArtifactFailure
+	prioADFSDBArtifactFailures
 	prioADFSDBArtifactQueryTimeSeconds
-	prioADFSDBConfigFailure
+	prioADFSDBConfigFailures
 	prioADFSDBConfigQueryTimeSeconds
 	prioADFSDeviceAuthentications
 	prioADFSExternalAuthentications
-	prioADFSExtranetAccountLookups
 	prioADFSFederatedAuthentications
 	prioADFSFederationMetadataRequests
 	prioADFSOauthAuthorizationRequests
-	prioADFSOauthClientAuthentication
+	prioADFSOauthClientAuthentications
 	prioADFSOauthClientCredentials
 	prioADFSOauthClientPrivkeyJwtAuthentication
 	prioADFSOauthClientSecretBasicAuthentications
 	prioADFSOauthClientSecretPostAuthentications
 	prioADFSOauthClientWindowsAuthentications
-	prioADFSOauthLogonCertificateRequestsFailure
-	prioADFSOauthLogonCertificateTokenRequestsSuccess
+	prioADFSOauthLogonCertificateRequests
 	prioADFSOauthPasswordGrantRequests
 	prioADFSOauthTokenRequestsSuccess
 	prioADFSPassiveRequests
 	prioADFSPassportAuthentications
-	prioADFSPasswordChange
-	prioADFSSamlpTokenRequests
+	prioADFSPasswordChangeRequests
+	prioADFSSAMLPTokenRequests
 	prioADFSSSOAuthentications
 	prioADFSTokenRequests
-	prioADFSUserpasswordAuthentications
+	prioADFSUserPasswordAuthentications
 	prioADFSWindowsIntegratedAuthentications
 	prioADFSWSFedTokenRequestsSuccess
-	prioADFSWStrustTokenRequestsSuccess
+	prioADFSWSTrustTokenRequestsSuccess
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -1446,425 +1444,384 @@ var (
 // AD FS
 var (
 	adfsCharts = module.Charts{
-		adfsADLoginConnectionFailure.Copy(),
-		adfsCertificateAuthentations.Copy(),
-		adfsDBArtifactFailure.Copy(),
-		adfsDBArtifactQueryTimeSeconds.Copy(),
-		adfsDBConfigFailure.Copy(),
-		adfsDBConfigQueryTimeSeconds.Copy(),
-		adfsDeviceAuthentications.Copy(),
-		adfsExternalAuthentications.Copy(),
-		adfsFederatedAuhentications.Copy(),
-		adfsFederationMetadataRequests.Copy(),
+		adfsADLoginConnectionFailuresChart.Copy(),
+		adfsCertificateAuthenticationsChart.Copy(),
+		adfsDBArtifactFailuresChart.Copy(),
+		adfsDBArtifactQueryTimeSecondsChart.Copy(),
+		adfsDBConfigFailuresChart.Copy(),
+		adfsDBConfigQueryTimeSecondsChart.Copy(),
+		adfsDeviceAuthenticationsChart.Copy(),
+		adfsExternalAuthenticationsChart.Copy(),
+		adfsFederatedAuthenticationsChart.Copy(),
+		adfsFederationMetadataRequestsChart.Copy(),
 
-		adfsOAuthAuhorizationRequests.Copy(),
-		adfsOAuthClientAuthentication.Copy(),
-		adfsOAuthClientCredentials.Copy(),
-		adfsOAuthClientPrivKeyJwtAuthentication.Copy(),
-		adfsOAuthClientSecretBasicAuthentication.Copy(),
-		adfsOAuthClientSecretPostAuthentications.Copy(),
-		adfsOAuthClientWindowsAuthentications.Copy(),
-		adfsOAuthLogonCertificateRequestsFailure.Copy(),
-		adfsOAuthLogonCertificatetokenRequestsSuccess.Copy(),
-		adfsOAuthPasswordGrantRequests.Copy(),
-		adfsOAuthTokenRequests.Copy(),
+		adfsOAuthAuthorizationRequestsChart.Copy(),
+		adfsOAuthClientAuthenticationsChart.Copy(),
+		adfsOAuthClientCredentialRequestsChart.Copy(),
+		adfsOAuthClientPrivKeyJwtAuthenticationsChart.Copy(),
+		adfsOAuthClientSecretBasicAuthenticationsChart.Copy(),
+		adfsOAuthClientSecretPostAuthenticationsChart.Copy(),
+		adfsOAuthClientWindowsAuthenticationsChart.Copy(),
+		adfsOAuthLogonCertificateRequestsChart.Copy(),
+		adfsOAuthPasswordGrantRequestsChart.Copy(),
+		adfsOAuthTokenRequestsChart.Copy(),
 
-		adfsPassiveRequests.Copy(),
-		adfsPassportAuthentications.Copy(),
-		adfsPasswordChange.Copy(),
-		adfsSamlpTokenRequests.Copy(),
-		adfsSSOAuthentications.Copy(),
-		adfsTokenRequests.Copy(),
-		adfsUserPasswordAuthenication.Copy(),
-		adfsWindowsIntegratedAuthentications.Copy(),
-		adfsWSFedTokenRequestsSuccess.Copy(),
-		adfsWSTrustTokenRequestsSuccess.Copy(),
+		adfsPassiveRequestsChart.Copy(),
+		adfsPassportAuthenticationsChart.Copy(),
+		adfsPasswordChangeChart.Copy(),
+		adfsSAMLPTokenRequestsChart.Copy(),
+		adfsSSOAuthenticationsChart.Copy(),
+		adfsTokenRequestsChart.Copy(),
+		adfsUserPasswordAuthenticationsChart.Copy(),
+		adfsWindowsIntegratedAuthenticationsChart.Copy(),
+		adfsWSFedTokenRequestsSuccessChart.Copy(),
+		adfsWSTrustTokenRequestsSuccessChart.Copy(),
 	}
 
-	adfsADLoginConnectionFailure = module.Chart{
-		ID:       "adfs_ad_login_connection_failure",
-		Title:    "Total number of connection failures",
-		Units:    "connections/s",
+	adfsADLoginConnectionFailuresChart = module.Chart{
+		ID:       "adfs_ad_login_connection_failures",
+		Title:    "Connection failures",
+		Units:    "failures/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_ad_login_connection_failure",
-		Type:     module.Line,
+		Ctx:      "wmi.adfs_ad_login_connection_failures",
 		Priority: prioADFSADLoginConnectionFailures,
 		Dims: module.Dims{
-			{ID: "adfs_ad_login_connection_failure_total", Name: "connections", Algo: module.Incremental},
+			{ID: "adfs_ad_login_connection_failures_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
-	adfsCertificateAuthentations = module.Chart{
+	adfsCertificateAuthenticationsChart = module.Chart{
 		ID:       "adfs_certificate_authentications",
-		Title:    "Total number of User Certificate Authentications",
-		Units:    "authenticantions/s",
+		Title:    "User Certificate authentications",
+		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_certificate_authentications",
-		Type:     module.Line,
 		Priority: prioADFSCertificateAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_certificate_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
 
-	adfsDBArtifactFailure = module.Chart{
-		ID:       "adfs_db_artifact_failure",
-		Title:    "Number of failures connection to artifact database",
-		Units:    "connections/s",
+	adfsDBArtifactFailuresChart = module.Chart{
+		ID:       "adfs_db_artifact_failures",
+		Title:    "Connection failures to the artifact database",
+		Units:    "failures/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_artifact_failure",
-		Type:     module.Line,
-		Priority: prioADFSDBArtifactFailure,
+		Ctx:      "wmi.adfs_db_artifact_failures",
+		Priority: prioADFSDBArtifactFailures,
 		Dims: module.Dims{
-			{ID: "adfs_db_artifact_failure_total", Name: "connections", Algo: module.Incremental},
+			{ID: "adfs_db_artifact_failure_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
-	adfsDBArtifactQueryTimeSeconds = module.Chart{
+	adfsDBArtifactQueryTimeSecondsChart = module.Chart{
 		ID:       "adfs_db_artifact_query_time_seconds",
-		Title:    "Time take for an artifact database query",
+		Title:    "Time taken for an artifact database query",
 		Units:    "seconds/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_db_artifact_query_time_seconds",
-		Type:     module.Line,
 		Priority: prioADFSDBArtifactQueryTimeSeconds,
 		Dims: module.Dims{
-			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "query_time", Algo: module.Incremental},
+			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "query_time", Algo: module.Incremental, Div: precision},
 		},
 	}
-	adfsDBConfigFailure = module.Chart{
-		ID:       "adfs_db_config_failure",
-		Title:    "Total number of Failures connections to the configuration database",
-		Units:    "connections/s",
+	adfsDBConfigFailuresChart = module.Chart{
+		ID:       "adfs_db_config_failures",
+		Title:    "Connection failures to the configuration database",
+		Units:    "failures/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_config_failure",
-		Type:     module.Line,
-		Priority: prioADFSDBConfigFailure,
+		Ctx:      "wmi.adfs_db_config_failures",
+		Priority: prioADFSDBConfigFailures,
 		Dims: module.Dims{
-			{ID: "adfs_db_config_failure_total", Name: "connections", Algo: module.Incremental},
+			{ID: "adfs_db_config_failure_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
-	adfsDBConfigQueryTimeSeconds = module.Chart{
+	adfsDBConfigQueryTimeSecondsChart = module.Chart{
 		ID:       "adfs_db_config_query_time_seconds",
-		Title:    "Time taken for a configuration database query.",
-		Units:    "seconds",
+		Title:    "Time taken for a configuration database query",
+		Units:    "seconds/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_db_config_query_time_seconds",
-		Type:     module.Line,
 		Priority: prioADFSDBConfigQueryTimeSeconds,
 		Dims: module.Dims{
-			{ID: "adfs_db_config_query_time_seconds_total", Name: "query_time", Algo: module.Incremental},
+			{ID: "adfs_db_config_query_time_seconds_total", Name: "query_time", Algo: module.Incremental, Div: precision},
 		},
 	}
-	adfsDeviceAuthentications = module.Chart{
+	adfsDeviceAuthenticationsChart = module.Chart{
 		ID:       "adfs_device_authentications",
-		Title:    "Total number of device authentications",
+		Title:    "Device authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_device_authentications",
-		Type:     module.Line,
 		Priority: prioADFSDeviceAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_device_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
-	adfsExternalAuthentications = module.Chart{
+	adfsExternalAuthenticationsChart = module.Chart{
 		ID:       "adfs_external_authentications",
-		Title:    "Total authentications from external MFA providers.",
+		Title:    "Authentications from external MFA providers",
 		Units:    "authentications/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_device_authentications",
-		Type:     module.Line,
+		Ctx:      "wmi.adfs_external_authentications",
 		Priority: prioADFSExternalAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_external_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_external_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_external_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsFederatedAuhentications = module.Chart{
+	adfsFederatedAuthenticationsChart = module.Chart{
 		ID:       "adfs_federated_authentications",
-		Title:    "Authetications from Federated Sources",
+		Title:    "Authentications from Federated Sources",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_federated_authentications",
-		Type:     module.Line,
 		Priority: prioADFSFederatedAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_federated_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
-	adfsFederationMetadataRequests = module.Chart{
+	adfsFederationMetadataRequestsChart = module.Chart{
 		ID:       "adfs_federation_metadata_requests",
-		Title:    "Authetications from Federated Sources",
+		Title:    "Federation Metadata requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_federated_authentications",
-		Type:     module.Line,
+		Ctx:      "wmi.adfs_federation_metadata_requests",
 		Priority: prioADFSFederationMetadataRequests,
 		Dims: module.Dims{
 			{ID: "adfs_federation_metadata_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 
-	adfsOAuthAuhorizationRequests = module.Chart{
+	adfsOAuthAuthorizationRequestsChart = module.Chart{
 		ID:       "adfs_oauth_authorization_requests",
-		Title:    "Total Incoming Requests to the OAuth Authorization",
+		Title:    "Incoming requests to the OAuth Authorization endpoint",
 		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_authorization_requests",
-		Type:     module.Line,
 		Priority: prioADFSOauthAuthorizationRequests,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_authorization_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthClientAuthentication = module.Chart{
-		ID:       "adfs_oauth_client_authentication",
-		Title:    "Total authentications from external MFA providers.",
+	adfsOAuthClientAuthenticationsChart = module.Chart{
+		ID:       "adfs_oauth_client_authentications",
+		Title:    "OAuth client authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_authentication",
-		Type:     module.Line,
-		Priority: prioADFSOauthClientAuthentication,
+		Ctx:      "wmi.adfs_oauth_client_authentications",
+		Priority: prioADFSOauthClientAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_client_authentication_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_authentication_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_authentication_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthClientCredentials = module.Chart{
-		ID:       "adfs_oauth_client_credentials",
-		Title:    "Total number of failed OAuth Client Credentials.",
-		Units:    "credentials/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_credentials",
-		Type:     module.Line,
-		Priority: prioADFSOauthClientCredentials,
-		Dims: module.Dims{
-			{ID: "adfs_oauth_client_credentials_failure_total", Name: "failure", Algo: module.Incremental},
-			{ID: "adfs_oauth_client_credentials_success_total", Name: "success", Algo: module.Incremental},
-		},
-	}
-	adfsOAuthClientPrivKeyJwtAuthentication = module.Chart{
-		ID:       "adfs_oauth_client_privkey_jwt_authentications",
-		Title:    "Total Incoming Requests to the OAuth Authorization",
+	adfsOAuthClientCredentialRequestsChart = module.Chart{
+		ID:       "adfs_oauth_client_credentials_requests",
+		Title:    "OAuth client credentials requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_privkey_jwt_authentications",
-		Type:     module.Line,
-		Priority: prioADFSOauthClientPrivkeyJwtAuthentication,
+		Ctx:      "wmi.adfs_oauth_client_credentials_requests",
+		Priority: prioADFSOauthClientCredentials,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_client_privkey_jwt_authentications_failure_total", Name: "failure", Algo: module.Incremental},
-			{ID: "adfs_oauth_client_privkey_jwt_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_credentials_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_credentials_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthClientSecretBasicAuthentication = module.Chart{
+	adfsOAuthClientPrivKeyJwtAuthenticationsChart = module.Chart{
+		ID:       "adfs_oauth_client_privkey_jwt_authentications",
+		Title:    "OAuth client private key JWT authentications",
+		Units:    "authentications/s",
+		Fam:      "adfs",
+		Ctx:      "wmi.adfs_oauth_client_privkey_jwt_authentications",
+		Priority: prioADFSOauthClientPrivkeyJwtAuthentication,
+		Dims: module.Dims{
+			{ID: "adfs_oauth_client_privkey_jwt_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_privkey_jtw_authentication_failure_total", Name: "failure", Algo: module.Incremental},
+		},
+	}
+	adfsOAuthClientSecretBasicAuthenticationsChart = module.Chart{
 		ID:       "adfs_oauth_client_secret_basic_authentications",
-		Title:    "Total number of Oauth Client Secret Basic Authentication.",
+		Title:    "OAuth client secret basic authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_client_secret_basic_authentications",
 		Type:     module.Line,
 		Priority: prioADFSOauthClientSecretBasicAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_client_secret_basic_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_basic_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_secret_basic_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthClientSecretPostAuthentications = module.Chart{
+	adfsOAuthClientSecretPostAuthenticationsChart = module.Chart{
 		ID:       "adfs_oauth_client_secret_post_authentications",
-		Title:    "Total number of Oauth Client Secret Post Authentication.",
+		Title:    "OAuth client secret post authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_client_secret_post_authentications",
-		Type:     module.Line,
 		Priority: prioADFSOauthClientSecretPostAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_client_secret_post_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_post_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_secret_post_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthClientWindowsAuthentications = module.Chart{
+	adfsOAuthClientWindowsAuthenticationsChart = module.Chart{
 		ID:       "adfs_oauth_client_windows_authentications",
-		Title:    "Total number of Oauth Client Secret Basic Authentication.",
+		Title:    "OAuth client windows integrated authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_client_windows_authentications",
-		Type:     module.Line,
 		Priority: prioADFSOauthClientWindowsAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_client_windows_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_windows_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_client_windows_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthLogonCertificateRequestsFailure = module.Chart{
-		ID:       "adfs_oauth_logon_certificate_requests_failure",
-		Title:    "Total number of failed Oauth Logon Certificate Requests.",
+	adfsOAuthLogonCertificateRequestsChart = module.Chart{
+		ID:       "adfs_oauth_logon_certificate_requests",
+		Title:    "OAuth logon certificate requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_logon_certificate_requests_failure",
-		Type:     module.Line,
-		Priority: prioADFSOauthLogonCertificateRequestsFailure,
+		Ctx:      "wmi.adfs_oauth_logon_certificate_requests",
+		Priority: prioADFSOauthLogonCertificateRequests,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_logon_certificate_requests_failure_total", Name: "requests", Algo: module.Incremental},
+			{ID: "adfs_oauth_logon_certificate_token_requests_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_logon_certificate_requests_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthLogonCertificatetokenRequestsSuccess = module.Chart{
-		ID:       "adfs_oauth_logon_certificate_token_requests_success",
-		Title:    "Total of successful RP tokens issued.",
-		Units:    "RP_tokens/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_logon_certificate_token_requests_success",
-		Type:     module.Line,
-		Priority: prioADFSOauthLogonCertificateTokenRequestsSuccess,
-		Dims: module.Dims{
-			{ID: "adfs_oauth_logon_certificate_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
-		},
-	}
-	adfsOAuthPasswordGrantRequests = module.Chart{
+	adfsOAuthPasswordGrantRequestsChart = module.Chart{
 		ID:       "adfs_oauth_password_grant_requests",
-		Title:    "Total number of Oauth Password Grant Requests.",
+		Title:    "OAuth password grant requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_password_grant_requests",
-		Type:     module.Line,
 		Priority: prioADFSOauthPasswordGrantRequests,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_password_grant_requests_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_oauth_password_grant_requests_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_oauth_password_grant_requests_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsOAuthTokenRequests = module.Chart{
+	adfsOAuthTokenRequestsChart = module.Chart{
 		ID:       "adfs_oauth_token_requests_success",
-		Title:    "Total number of successful RP tokens issued over OAUTH protocol.",
-		Units:    "rp_tokens/s",
+		Title:    "Successful RP token requests over OAuth protocol",
+		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_oauth_token_requests_success",
-		Type:     module.Line,
 		Priority: prioADFSOauthTokenRequestsSuccess,
 		Dims: module.Dims{
-			{ID: "adfs_oauth_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
+			{ID: "adfs_oauth_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
 
-	adfsPassiveRequests = module.Chart{
+	adfsPassiveRequestsChart = module.Chart{
 		ID:       "adfs_passive_requests",
-		Title:    "Total number of passive requests.",
+		Title:    "Passive requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_passive_requests",
-		Type:     module.Line,
 		Priority: prioADFSPassiveRequests,
 		Dims: module.Dims{
-			{ID: "adfs_passive_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "adfs_passive_requests_total", Name: "passive", Algo: module.Incremental},
 		},
 	}
-	adfsPassportAuthentications = module.Chart{
+	adfsPassportAuthenticationsChart = module.Chart{
 		ID:       "adfs_passport_authentications",
-		Title:    "Total number of authentications from Microsoft Passport.",
-		Units:    "requests/s",
+		Title:    "Microsoft Passport SSO authentications",
+		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_passport_authentications",
-		Type:     module.Line,
 		Priority: prioADFSPassportAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_passport_authentications_total", Name: "requests", Algo: module.Incremental},
+			{ID: "adfs_passport_authentications_total", Name: "passport", Algo: module.Incremental},
 		},
 	}
-	adfsPasswordChange = module.Chart{
-		ID:       "adfs_password_change",
-		Title:    "Total number of password change.",
+	adfsPasswordChangeChart = module.Chart{
+		ID:       "adfs_password_change_requests",
+		Title:    "Password change requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_password_change",
-		Type:     module.Line,
-		Priority: prioADFSPasswordChange,
+		Ctx:      "wmi.adfs_password_change_requests",
+		Priority: prioADFSPasswordChangeRequests,
 		Dims: module.Dims{
+			{ID: "adfs_password_change_succeeded_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_password_change_failed_total", Name: "failed", Algo: module.Incremental},
-			{ID: "adfs_password_change_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
-	adfsSamlpTokenRequests = module.Chart{
+	adfsSAMLPTokenRequestsChart = module.Chart{
 		ID:       "adfs_samlp_token_requests_success",
-		Title:    "Total number of successful RP tokens issued over SAML-P protocol.",
-		Units:    "rp_tokens/s",
+		Title:    "Successful RP token requests over SAML-P protocol",
+		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_samlp_token_requests_success",
-		Type:     module.Line,
-		Priority: prioADFSSamlpTokenRequests,
+		Priority: prioADFSSAMLPTokenRequests,
 		Dims: module.Dims{
-			{ID: "adfs_samlp_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
+			{ID: "adfs_samlp_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
-	adfsSSOAuthentications = module.Chart{
+	adfsSSOAuthenticationsChart = module.Chart{
 		ID:       "adfs_sso_authentications",
-		Title:    "Total number of SSO authentications.",
+		Title:    "SSO authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_sso_authentications",
-		Type:     module.Line,
 		Priority: prioADFSSSOAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsTokenRequests = module.Chart{
+	adfsTokenRequestsChart = module.Chart{
 		ID:       "adfs_token_requests",
-		Title:    "Total number of requested access token.",
+		Title:    "Token access requests",
 		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_token_requests",
-		Type:     module.Line,
 		Priority: prioADFSTokenRequests,
 		Dims: module.Dims{
 			{ID: "adfs_token_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
-	adfsUserPasswordAuthenication = module.Chart{
-		ID:       "adfs_sso_authentications",
-		Title:    "Total number of AD U/P authentications.",
+	adfsUserPasswordAuthenticationsChart = module.Chart{
+		ID:       "adfs_userpassword_authentications",
+		Title:    "AD U/P authentications",
 		Units:    "authentications/s",
 		Fam:      "adfs",
-		Ctx:      "wmi.adfs_sso_authentications",
-		Type:     module.Line,
-		Priority: prioADFSUserpasswordAuthentications,
+		Ctx:      "wmi.adfs_userpassword_authentications",
+		Priority: prioADFSUserPasswordAuthentications,
 		Dims: module.Dims{
-			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
+			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
-	adfsWindowsIntegratedAuthentications = module.Chart{
+	adfsWindowsIntegratedAuthenticationsChart = module.Chart{
 		ID:       "adfs_windows_integrated_authentications",
-		Title:    "Total number of Windows Integrated Authentications.",
+		Title:    "f Windows integrated authentications using Kerberos or NTLM",
 		Units:    "authentications/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_windows_integrated_authentications",
-		Type:     module.Line,
 		Priority: prioADFSWindowsIntegratedAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_windows_integrated_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
-	adfsWSFedTokenRequestsSuccess = module.Chart{
+	adfsWSFedTokenRequestsSuccessChart = module.Chart{
 		ID:       "adfs_wsfed_token_requests_success",
-		Title:    "Total number of Windows Integrated Authentications.",
-		Units:    "authentications/s",
+		Title:    "Successful RP token requests over WS-Fed protocol",
+		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_wsfed_token_requests_success",
-		Type:     module.Line,
 		Priority: prioADFSWSFedTokenRequestsSuccess,
 		Dims: module.Dims{
-			{ID: "adfs_wsfed_token_requests_success_total", Name: "authentications", Algo: module.Incremental},
+			{ID: "adfs_wsfed_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
-	adfsWSTrustTokenRequestsSuccess = module.Chart{
+	adfsWSTrustTokenRequestsSuccessChart = module.Chart{
 		ID:       "adfs_wstrust_token_requests_success",
-		Title:    "Total number of successful RP tokens issued over WS-Trust.",
-		Units:    "rp_tokens/s",
+		Title:    "Successful RP token requests over WS-Trust protocol",
+		Units:    "requests/s",
 		Fam:      "adfs",
 		Ctx:      "wmi.adfs_wstrust_token_requests_success",
-		Type:     module.Line,
-		Priority: prioADFSWStrustTokenRequestsSuccess,
+		Priority: prioADFSWSTrustTokenRequestsSuccess,
 		Dims: module.Dims{
-			{ID: "adfs_wstrust_token_requests_success_total", Name: "rp_tokens", Algo: module.Incremental},
+			{ID: "adfs_wstrust_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
 )
