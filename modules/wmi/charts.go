@@ -262,6 +262,20 @@ const (
 	prioADFSTokenRequests
 	prioADFSWSFedTokenRequestsSuccess
 
+	prioExchangeActiveSyncPingCMDsPending
+	prioExchangeActiveSyncRequests
+	prioExchangeActiveSyncSyncCMDs
+	prioExchangeAutoDiscoverRequests
+	prioExchangeAvailServiceRequests
+	prioExchangeOWACurrentUniqueUsers
+	prioExchangeOWARequestsTotal
+	prioExchangeRPCActiveUserCount
+	prioExchangeRPCAvgLatency
+	prioExchangeRPCConnection
+	prioExchangeRPCOperations
+	prioExchangeRPCRequests
+	prioExchangeRpcUserCount
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -2097,6 +2111,168 @@ var (
 		Priority:   prioADFSWSFedTokenRequestsSuccess,
 		Dims: module.Dims{
 			{ID: "adfs_wsfed_token_requests_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
+)
+
+// Exchange
+var (
+	exchangeCharts = module.Charts{
+		exchangeActiveSyncPingCMDsPendingChart.Copy(),
+		exchangeActiveSyncRequestsChart.Copy(),
+		exchangeActiveSyncCMDsChart.Copy(),
+		exchangeAutoDiscoverRequestsChart.Copy(),
+		exchangeAvailableServiceRequestsChart.Copy(),
+		exchangeOWACurrentUniqueUsersChart.Copy(),
+		exchangeOWARequestsChart.Copy(),
+		exchangeRPCActiveUsersCountChart.Copy(),
+		exchangeRPCAvgLatencyChart.Copy(),
+		exchangeRPCConnectionChart.Copy(),
+		exchangeRPCOperationsChart.Copy(),
+		exchangeRPCRequestsChart.Copy(),
+		exchangeRPCUserChart.Copy(),
+	}
+	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
+		ID:       "windows_exchange_activesync_ping_cmds_pending",
+		Title:    "Ping commands pending in queue.",
+		Units:    "commands",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_activesync_ping_cmds_pending",
+		Priority: prioExchangeActiveSyncPingCMDsPending,
+		Dims: module.Dims{
+			{ID: "windows_exchange_activesync_ping_cmds_pending_total", Name: "commands"},
+		},
+	}
+	exchangeActiveSyncRequestsChart = module.Chart{
+		ID:       "windows_exchange_activesync_requests",
+		Title:    "HTTP requests received from ASP.NET.",
+		Units:    "requests/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_activesync_requests",
+		Priority: prioExchangeActiveSyncRequests,
+		Dims: module.Dims{
+			{ID: "windows_exchange_activesync_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	exchangeActiveSyncCMDsChart = module.Chart{
+		ID:       "windows_exchange_activesync_sync_cmds",
+		Title:    "Sync commands processed per second.",
+		Units:    "commands/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_activesync_sync_cmds",
+		Priority: prioExchangeActiveSyncSyncCMDs,
+		Dims: module.Dims{
+			{ID: "windows_exchange_activesync_sync_cmds_total", Name: "commands", Algo: module.Incremental},
+		},
+	}
+	exchangeAutoDiscoverRequestsChart = module.Chart{
+		ID:       "windows_exchange_autodiscover_requests",
+		Title:    "Number of autodiscover service requests proccessed.",
+		Units:    "requests/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_autodiscover_requests",
+		Priority: prioExchangeAutoDiscoverRequests,
+		Dims: module.Dims{
+			{ID: "windows_exchange_autodiscover_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	exchangeAvailableServiceRequestsChart = module.Chart{
+		ID:       "windows_exchange_avail_service_requests_per_sec",
+		Title:    "Resquests serviced per second.",
+		Units:    "requests/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_avail_service_requests_per_sec",
+		Priority: prioExchangeAvailServiceRequests,
+		Dims: module.Dims{
+			{ID: "windows_exchange_avail_service_requests_per_sec_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	exchangeOWACurrentUniqueUsersChart = module.Chart{
+		ID:       "windows_exchange_owa_current_unique_users",
+		Title:    "Number of Unique Users Currently logged on to Outlook Web App.",
+		Units:    "logins",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_owa_current_unique_users",
+		Priority: prioExchangeOWACurrentUniqueUsers,
+		Dims: module.Dims{
+			{ID: "windows_exchange_owa_current_unique_users_total", Name: "logins"},
+		},
+	}
+	exchangeOWARequestsChart = module.Chart{
+		ID:       "windows_exchange_owa_requests_total",
+		Title:    "Number of requests handled by Outlook Web App.",
+		Units:    "requests/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_owa_requests_total",
+		Priority: prioExchangeOWARequestsTotal,
+		Dims: module.Dims{
+			{ID: "windows_exchange_owa_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	exchangeRPCActiveUsersCountChart = module.Chart{
+		ID:       "windows_exchange_rpc_active_user",
+		Title:    "Unique users showing activity in the last 2 minutes.",
+		Units:    "users",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_active_user_count",
+		Priority: prioExchangeRPCActiveUserCount,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_active_user_count", Name: "users"},
+		},
+	}
+	exchangeRPCAvgLatencyChart = module.Chart{
+		ID:       "windows_exchange_rpc_avg_latency",
+		Title:    "Unique users showing activity in the last 2 minutes.",
+		Units:    "seconds",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_avg_latency",
+		Priority: prioExchangeRPCAvgLatency,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_avg_latency_sec", Name: "latency", Div: 1000},
+		},
+	}
+	exchangeRPCConnectionChart = module.Chart{
+		ID:       "windows_exchange_rpc_connection",
+		Title:    "Client connections maintained.",
+		Units:    "clients",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_connection",
+		Priority: prioExchangeRPCConnection,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_connection_count", Name: "clients"},
+		},
+	}
+	exchangeRPCOperationsChart = module.Chart{
+		ID:       "windows_exchange_rpc_operations",
+		Title:    "Client Requests being processed.",
+		Units:    "requests/s",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_operations",
+		Priority: prioExchangeRPCOperations,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_operations_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	exchangeRPCRequestsChart = module.Chart{
+		ID:       "windows_exchange_rpc_requests",
+		Title:    "Number of clients requests currently being processed.",
+		Units:    "requests",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_requests",
+		Priority: prioExchangeRPCOperations,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_requests_total", Name: "requests"},
+		},
+	}
+	exchangeRPCUserChart = module.Chart{
+		ID:       "windows_exchange_rpc_user",
+		Title:    "Number of users.",
+		Units:    "users",
+		Fam:      "exchange",
+		Ctx:      "wmi.windows_exchange_rpc_user_count",
+		Priority: prioExchangeRPCOperations,
+		Dims: module.Dims{
+			{ID: "windows_exchange_rpc_user_count", Name: "users"},
 		},
 	}
 )
