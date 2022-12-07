@@ -13,6 +13,7 @@ const (
 	collectorADCS                           = "adcs"
 	collectorADFS                           = "adfs"
 	collectorCPU                            = "cpu"
+	collectorExchange    = "exchange"
 	collectorMemory                         = "memory"
 	collectorNet                            = "net"
 	collectorLogicalDisk                    = "logical_disk"
@@ -135,6 +136,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectNetFrameworkCLRRemoting(mx, pms)
 		case collectorNetFrameworkCLRSecurity:
 			w.collectNetFrameworkCLRSecurity(mx, pms)
+		case collectorExchange:
+			w.collectADFS(mx, pms)
 		}
 	}
 }

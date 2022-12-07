@@ -2184,7 +2184,7 @@ var (
 		Ctx:      "wmi.windows_exchange_avail_service_requests_per_sec",
 		Priority: prioExchangeAvailServiceRequests,
 		Dims: module.Dims{
-			{ID: "windows_exchange_avail_service_requests_per_sec_total", Name: "requests", Algo: module.Incremental},
+			{ID: "windows_exchange_avail_service_requests_per_sec_total", Name: "requests", Algo: module.Incremental, Div: precision},
 		},
 	}
 	exchangeOWACurrentUniqueUsersChart = module.Chart{
@@ -2228,7 +2228,7 @@ var (
 		Ctx:      "wmi.windows_exchange_rpc_avg_latency",
 		Priority: prioExchangeRPCAvgLatency,
 		Dims: module.Dims{
-			{ID: "windows_exchange_rpc_avg_latency_sec", Name: "latency", Div: 1000},
+			{ID: "windows_exchange_rpc_avg_latency_sec", Name: "latency", Div: precision},
 		},
 	}
 	exchangeRPCConnectionChart = module.Chart{
@@ -3225,6 +3225,14 @@ func (w *WMI) addLogonCharts() {
 
 func (w *WMI) addADFSCharts() {
 	charts := adfsCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addExchangeCharts() {
+	charts := exchangeCharts.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
