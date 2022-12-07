@@ -137,7 +137,7 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 		case collectorNetFrameworkCLRSecurity:
 			w.collectNetFrameworkCLRSecurity(mx, pms)
 		case collectorExchange:
-			w.collectADFS(mx, pms)
+			w.collectExchange(mx, pms)
 		}
 	}
 }
