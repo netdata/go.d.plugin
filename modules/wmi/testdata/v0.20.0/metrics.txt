@@ -403,6 +403,45 @@ windows_cpu_time_total{core="0,3",mode="idle"} 159527.546875
 windows_cpu_time_total{core="0,3",mode="interrupt"} 44.484375
 windows_cpu_time_total{core="0,3",mode="privileged"} 1760.828125
 windows_cpu_time_total{core="0,3",mode="user"} 3422.875
+# HELP windows_exchange_activesync_ping_cmds_pending Number of ping commands currently pending in the queue
+# TYPE windows_exchange_activesync_ping_cmds_pending gauge
+windows_exchange_activesync_ping_cmds_pending 0
+# HELP windows_exchange_activesync_requests_total Num HTTP requests received from the client via ASP.NET per sec. Shows Current user load
+# TYPE windows_exchange_activesync_requests_total counter
+windows_exchange_activesync_requests_total 14
+# HELP windows_exchange_activesync_sync_cmds_total Number of sync commands processed per second. Clients use this command to synchronize items within a folder
+# TYPE windows_exchange_activesync_sync_cmds_total counter
+windows_exchange_activesync_sync_cmds_total 0
+# HELP windows_exchange_autodiscover_requests_total Number of autodiscover service requests processed each second
+# TYPE windows_exchange_autodiscover_requests_total counter
+windows_exchange_autodiscover_requests_total 1
+# HELP windows_exchange_avail_service_requests_per_sec Number of requests serviced per second
+# TYPE windows_exchange_avail_service_requests_per_sec counter
+windows_exchange_avail_service_requests_per_sec 0
+# HELP windows_exchange_owa_current_unique_users Number of unique users currently logged on to Outlook Web App
+# TYPE windows_exchange_owa_current_unique_users gauge
+windows_exchange_owa_current_unique_users 0
+# HELP windows_exchange_owa_requests_total Number of requests handled by Outlook Web App per second
+# TYPE windows_exchange_owa_requests_total counter
+windows_exchange_owa_requests_total 0
+# HELP windows_exchange_rpc_active_user_count Number of unique users that have shown some kind of activity in the last 2 minutes
+# TYPE windows_exchange_rpc_active_user_count gauge
+windows_exchange_rpc_active_user_count 0
+# HELP windows_exchange_rpc_avg_latency_sec The latency (sec), averaged for the past 1024 packets
+# TYPE windows_exchange_rpc_avg_latency_sec gauge
+windows_exchange_rpc_avg_latency_sec 0.001
+# HELP windows_exchange_rpc_connection_count Total number of client connections maintained
+# TYPE windows_exchange_rpc_connection_count gauge
+windows_exchange_rpc_connection_count 0
+# HELP windows_exchange_rpc_operations_total The rate at which RPC operations occur
+# TYPE windows_exchange_rpc_operations_total counter
+windows_exchange_rpc_operations_total 9
+# HELP windows_exchange_rpc_requests Number of client requests currently being processed by  the RPC Client Access service
+# TYPE windows_exchange_rpc_requests gauge
+windows_exchange_rpc_requests 0
+# HELP windows_exchange_rpc_user_count Number of users
+# TYPE windows_exchange_rpc_user_count gauge
+windows_exchange_rpc_user_count 0
 # HELP windows_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, and goversion from which windows_exporter was built.
 # TYPE windows_exporter_build_info gauge
 windows_exporter_build_info{branch="heads/tags/v0.20.0",goversion="go1.19.1",revision="677a7c8d67deb99b92f4f24b8c890e0a4c152b0c",version="0.20.0"} 1
@@ -412,6 +451,7 @@ windows_exporter_collector_duration_seconds{collector="ad"} 0.7690505
 windows_exporter_collector_duration_seconds{collector="adcs"} 0.0006833
 windows_exporter_collector_duration_seconds{collector="adfs"} 0.0031012
 windows_exporter_collector_duration_seconds{collector="cpu"} 0.00052
+windows_exporter_collector_duration_seconds{collector="exchange"} 0.0334467
 windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
 windows_exporter_collector_duration_seconds{collector="logon"} 0.1139134
@@ -437,6 +477,7 @@ windows_exporter_collector_success{collector="ad"} 1
 windows_exporter_collector_success{collector="adcs"} 1
 windows_exporter_collector_success{collector="adfs"} 1
 windows_exporter_collector_success{collector="cpu"} 1
+windows_exporter_collector_success{collector="exchange"} 1
 windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
 windows_exporter_collector_success{collector="logon"} 1
@@ -462,6 +503,7 @@ windows_exporter_collector_timeout{collector="ad"} 0
 windows_exporter_collector_timeout{collector="adcs"} 0
 windows_exporter_collector_timeout{collector="adfs"} 0
 windows_exporter_collector_timeout{collector="cpu"} 0
+windows_exporter_collector_timeout{collector="exchange"} 0
 windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0
 windows_exporter_collector_timeout{collector="logon"} 0
