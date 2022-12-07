@@ -2133,14 +2133,14 @@ var (
 		exchangeRPCUserChart.Copy(),
 	}
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
-		ID:       "exchange_activesync_ping_cmds_pending",
+		ID:       "exchange_activesync_ping_cmds",
 		Title:    "Ping commands pending in queue.",
 		Units:    "commands",
 		Fam:      "exchange",
-		Ctx:      "wmi.exchange_activesync_ping_cmds_pending",
+		Ctx:      "wmi.exchange_activesync_ping_cmds",
 		Priority: prioExchangeActiveSyncPingCMDsPending,
 		Dims: module.Dims{
-			{ID: "exchange_activesync_ping_cmds_pending_total", Name: "commands"},
+			{ID: "exchange_activesync_ping_cmds_pending", Name: "commands"},
 		},
 	}
 	exchangeActiveSyncRequestsChart = module.Chart{
@@ -2177,25 +2177,25 @@ var (
 		},
 	}
 	exchangeAvailableServiceRequestsChart = module.Chart{
-		ID:       "exchange_avail_service_requests_per_sec",
+		ID:       "exchange_avail_service_requests",
 		Title:    "Resquests serviced per second.",
 		Units:    "requests/s",
 		Fam:      "exchange",
-		Ctx:      "wmi.exchange_avail_service_requests_per_sec",
+		Ctx:      "wmi.exchange_avail_service_requests",
 		Priority: prioExchangeAvailServiceRequests,
 		Dims: module.Dims{
-			{ID: "exchange_avail_service_requests_per_sec_total", Name: "requests", Algo: module.Incremental, Div: precision},
+			{ID: "exchange_avail_service_requests_per_sec", Name: "requests", Algo: module.Incremental, Div: precision},
 		},
 	}
 	exchangeOWACurrentUniqueUsersChart = module.Chart{
-		ID:       "exchange_owa_current_unique_users",
+		ID:       "exchange_owa_current_unique_users_counter",
 		Title:    "Number of Unique Users Currently logged on to Outlook Web App.",
 		Units:    "logins",
 		Fam:      "exchange",
-		Ctx:      "wmi.exchange_owa_current_unique_users",
+		Ctx:      "wmi.exchange_owa_current_unique_users_counter",
 		Priority: prioExchangeOWACurrentUniqueUsers,
 		Dims: module.Dims{
-			{ID: "exchange_owa_current_unique_users_total", Name: "logins"},
+			{ID: "exchange_owa_current_unique_users", Name: "logins"},
 		},
 	}
 	exchangeOWARequestsChart = module.Chart{
@@ -2254,14 +2254,14 @@ var (
 		},
 	}
 	exchangeRPCRequestsChart = module.Chart{
-		ID:       "exchange_rpc_requests",
+		ID:       "exchange_rpc_requests_total",
 		Title:    "Number of clients requests currently being processed.",
 		Units:    "requests",
 		Fam:      "exchange",
-		Ctx:      "wmi.exchange_rpc_requests",
+		Ctx:      "wmi.exchange_rpc_requests_total",
 		Priority: prioExchangeRPCOperations,
 		Dims: module.Dims{
-			{ID: "exchange_rpc_requests_total", Name: "requests"},
+			{ID: "exchange_rpc_requests", Name: "requests"},
 		},
 	}
 	exchangeRPCUserChart = module.Chart{
