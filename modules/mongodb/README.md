@@ -1,8 +1,11 @@
 <!--
 title: "MongoDB monitoring with Netdata"
 description: "Monitor the health and performance of MongoDB with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/mongodb/README.md
-sidebar_label: "MongoDB"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/mongodb/README.md"
+sidebar_label: "mongodb-go.d.plugin (Recommended)"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Databases"
 -->
 
 # MongoDB monitoring with Netdata

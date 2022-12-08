@@ -1,8 +1,11 @@
 <!--
 title: "HAProxy monitoring with Netdata"
 description: "Monitor the health and performance of HAProxy with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/haproxy/README.md
-sidebar_label: "HAProxy"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/haproxy/README.md"
+sidebar_label: "haproxy-go.d.plugin (Recommended)"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # HAProxy monitoring with Netdata

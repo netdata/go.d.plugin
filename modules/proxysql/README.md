@@ -1,8 +1,11 @@
 <!--
 title: "ProxySQL monitoring with Netdata"
 description: "Monitor connections, slow queries, lagging, backends status and more with zero configuration and per-second metric granularity."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/proxysql/README.md
-sidebar_label: "ProxySQL"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/proxysql/README.md"
+sidebar_label: "proxysql-go.d.plugin (Recommended)"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Databases"
 -->
 
 # ProxySQL monitoring with Netdata

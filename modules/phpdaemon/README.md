@@ -1,8 +1,11 @@
 <!--
 title: "phpDaemon monitoring with Netdata"
 description: "Monitor the health and performance of phpDaemon workers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/phpdaemon/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/phpdaemon/README.md"
 sidebar_label: "phpDaemon"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Apm"
 -->
 
 # phpDaemon monitoring with Netdata

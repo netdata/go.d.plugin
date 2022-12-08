@@ -1,8 +1,11 @@
 <!--
 title: "Java Spring Boot 2 application monitoring with Netdata"
 description: "Monitor the health and performance of Spring Boot 2-compatible apps with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/springboot2/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/springboot2/README.md"
 sidebar_label: "Java Spring Boot 2 applications"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Apm"
 -->
 
 # Java Spring Boot 2 application monitoring with Netdata

@@ -1,8 +1,11 @@
 <!--
 title: "Dnsmasq DHCP monitoring with Netdata"
 description: "Monitor the health and performance of Dnsmasq DHCP servers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq_dhcp/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq_dhcp/README.md"
 sidebar_label: "Dnsmasq DHCP"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Networking"
 -->
 
 # Dnsmasq DHCP monitoring with Netdata

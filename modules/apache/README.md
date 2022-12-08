@@ -1,8 +1,11 @@
 <!--
 title: "Apache monitoring with Netdata"
 description: "Monitor the health and performance of Apache web servers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/apache/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/apache/README.md"
 sidebar_label: "Apache"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # Apache monitoring with Netdata

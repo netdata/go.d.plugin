@@ -1,7 +1,10 @@
 <!--
 title: "NGINX VTS monitoring"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/nginxvts/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/nginxvts/README.md"
 sidebar_label: "NGINX VTS"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # NGINX VTS monitoring with Netdata

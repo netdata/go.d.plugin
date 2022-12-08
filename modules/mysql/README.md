@@ -1,8 +1,11 @@
 <!--
 title: "MySQL monitoring with Netdata"
 description: "Monitor connections, slow queries, InnoDB memory and disk utilization, locks, and more with zero configuration and per-second metric granularity."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/mysql/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/mysql/README.md"
 sidebar_label: "MySQL"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Databases"
 -->
 
 # MySQL monitoring with Netdata

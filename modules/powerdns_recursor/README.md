@@ -1,8 +1,11 @@
 <!--
 title: "PowerDNS Recursor monitoring with Netdata"
 description: "Monitor the health and performance of PowerDNS recursor instances with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/powerdns_recursor/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/powerdns_recursor/README.md"
 sidebar_label: "PowerDNS Recursor"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Devices"
 -->
 
 # PowerDNS Recursor monitoring with Netdata

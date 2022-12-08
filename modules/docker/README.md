@@ -1,8 +1,11 @@
 <!--
 title: "Docker monitoring with Netdata"
 description: "Monitor Docker containers health metrics and data usage metrics."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/docker/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/docker/README.md"
 sidebar_label: "Docker"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Virtualized environments/Containers"
 -->
 
 # Docker monitoring with Netdata

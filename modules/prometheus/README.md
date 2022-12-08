@@ -1,8 +1,11 @@
 <!--
 title: "Prometheus endpoint monitoring with Netdata"
 description: "Monitor the health and performance of 600+ services that support the Prometheus metrics with Netdata's per-second frequency and zero configuration."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/README.md"
 sidebar_label: "Prometheus endpoints"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Extended metric collection"
 -->
 
 # Prometheus endpoint monitoring with Netdata

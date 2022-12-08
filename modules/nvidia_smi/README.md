@@ -1,8 +1,11 @@
 <!--
 title: "Nvidia GPU monitoring with Netdata"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/nvidia_smi/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/nvidia_smi/README.md"
 description: "Monitors performance metrics using the nvidia-smi CLI tool."
-sidebar_label: "Nvidia GPUs"
+sidebar_label: "nvidia_smi-go.d.plugin (Recommended)"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Devices"
 -->
 
 # Nvidia GPU monitoring with Netdata

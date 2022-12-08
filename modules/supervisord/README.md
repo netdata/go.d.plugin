@@ -1,8 +1,11 @@
 <!--
 title: "Supervisord monitoring with Netdata"
 description: "Monitor the processes running by Supervisor with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/supervisord/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/supervisord/README.md"
 sidebar_label: "Supervisord"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Virtualized environments/Virtualize hosts"
 -->
 
 # Supervisord monitoring with Netdata

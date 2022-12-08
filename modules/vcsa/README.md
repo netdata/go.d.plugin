@@ -1,8 +1,11 @@
 <!--
 title: "vCenter Server Appliance monitoring with Netdata"
 description: "Monitor the health and performance of vCenter appliances with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/blob/master/modules/vcsa/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/blob/master/modules/vcsa/README.md"
 sidebar_label: "vCenter Server Appliance"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Virtualized environments/Virtualize hosts"
 -->
 
 # vCenter Server Appliance monitoring with Netdata

@@ -1,8 +1,11 @@
 <!--
 title: "CockroachDB monitoring with Netdata"
 description: "Monitor the health and performance of CockroachDB databases with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/cockroachdb/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/cockroachdb/README.md"
 sidebar_label: "CockroachDB"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Databases"
 -->
 
 # CockroachDB monitoring with Netdata

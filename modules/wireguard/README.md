@@ -1,8 +1,11 @@
 <!--
 title: "WireGuard monitoring with Netdata"
 description: "Monitor WireGuard VPN network interfaces and peers traffic."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/wireguard/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/wireguard/README.md"
 sidebar_label: "WireGuard"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Networking"
 -->
 
 # WireGuard monitoring with Netdata

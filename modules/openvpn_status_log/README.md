@@ -1,7 +1,10 @@
 <!--
 title: "OpenVPN monitoring with Netdata(based on status log)"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/openvpn_status_log/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/openvpn_status_log/README.md"
 sidebar_label: "OpenVPN(StatusLog)"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Networking"
 -->
 
 # OpenVPN monitoring with Netdata

@@ -1,8 +1,11 @@
 <!--
 title: "PHP-FPM monitoring with Netdata"
 description: "Monitor the health and performance of PHP-FPM instances with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/phpfpm/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/phpfpm/README.md"
 sidebar_label: "PHP-FPM"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # PHP-FPM monitoring with Netdata

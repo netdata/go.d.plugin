@@ -1,7 +1,10 @@
 <!--
 title: "SNMP device monitoring with Netdata"
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/snmp/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/snmp/README.md"
 sidebar_label: "SNMP"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Remotes"
 -->
 
 # SNMP device monitoring with Netdata

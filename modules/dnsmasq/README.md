@@ -1,8 +1,11 @@
 <!--
 title: "Dnsmasq DNS Forwarder"
 description: "Monitor the health and performance of Dnsmasq DNS forwarders with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq/README.md"
 sidebar_label: "Dnsmasq DNS Forwarder"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Networking"
 -->
 
 # Dnsmasq DNS Forwarder

@@ -1,8 +1,11 @@
 <!--
 title: "Logstash monitoring with Netdata"
 description: "Monitor the health and performance of Logstash instances with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/logstash/README.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/logstash/README.md"
 sidebar_label: "Logstash"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Apm"
 -->
 
 # Logstash monitoring with Netdata
