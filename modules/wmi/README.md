@@ -38,6 +38,7 @@ The module collects metrics from the following collectors:
 - [netframework_clrlocksandthreads](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrlocksandthreads.md)
 - [netframework_clrmemory](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrmemory.md)
 - [netframework_clrremoting](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrremoting.md)
+- [exchange](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.exchange.md)
 
 ## Requirements
 
@@ -269,6 +270,19 @@ Labels per scope:
 | netframework.clrsecurity_checks_time                                 |       process        |                                                                                        time                                                                                        |    percentage     |
 | netframework.clrsecurity_stack_walk_depth                            |       process        |                                                                                       stack                                                                                        |       depth       |
 | netframework.clrsecurity_runtime_checks                              |       process        |                                                                                      runtime                                                                                       |     checks/s      |
+| exchange_activesync_ping_cmds_pending                                |        global        |                                                                                      commands                                                                                      |    commands/s     |
+| exchange_activesync_requests_total                                   |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_activesync_sync_cmds_total                                  |        global        |                                                                                      commands                                                                                      |    commands/s     |
+| exchange_autodiscover_requests_total                                 |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_avail_service_requests_per_sec                              |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_owa_current_unique_users                                    |        global        |                                                                                       logins                                                                                       |     logins/s      |
+| exchange_owa_requests_total                                          |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_rpc_active_user_count                                       |        global        |                                                                                        users                                                                                       |      users        |
+| exchange_rpc_avg_latency_sec                                         |        global        |                                                                                       seconds                                                                                      |     latency       |
+| exchange_rpc_connection_count                                        |        global        |                                                                                       clients                                                                                      |     clients       |
+| exchange_rpc_operations_total                                        |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_rpc_requests                                                |        global        |                                                                                      requests                                                                                      |    requests/s     |
+| exchange_rpc_users                                                   |        global        |                                                                                        users                                                                                       |      users        |
 
 ## Configuration
 
