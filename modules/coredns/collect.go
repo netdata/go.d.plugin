@@ -48,7 +48,7 @@ type requestMetricsNames struct {
 }
 
 func (cd *CoreDNS) collect() (map[string]int64, error) {
-	raw, err := cd.prom.Scrape()
+	raw, err := cd.prom.ScrapeSeries()
 
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (cd *CoreDNS) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
+func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Series) {
 	version := cd.parseVersion(raw)
 	if version == nil {
 		return
@@ -109,7 +109,7 @@ func (cd *CoreDNS) updateVersionDependentMetrics(raw prometheus.Metrics) {
 	}
 }
 
-func (cd *CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
+func (cd *CoreDNS) parseVersion(raw prometheus.Series) *semver.Version {
 	var versionStr string
 	for _, metric := range raw.FindByName("coredns_build_info") {
 		versionStr = metric.Labels.Get("version")
@@ -127,11 +127,11 @@ func (cd *CoreDNS) parseVersion(raw prometheus.Metrics) *semver.Version {
 	return &version
 }
 
-func (cd *CoreDNS) collectPanic(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPanic(mx *metrics, raw prometheus.Series) {
 	mx.Panic.Set(raw.FindByName(cd.metricNames.panicCountTotal).Max())
 }
 
-func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestCountTotal) {
 		var (
 			family = metric.Labels.Get("family")
@@ -161,7 +161,7 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 	}
 }
 
-//func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//func (cd *CoreDNS) collectSummaryRequestsDuration(mx *metrics, raw prometheus.Series) {
 //	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
 //		var (
 //			server = metric.Labels.Get("server")
@@ -179,7 +179,7 @@ func (cd *CoreDNS) collectSummaryRequests(mx *metrics, raw prometheus.Metrics) {
 //	processRequestDuration(&mx.Summary.Request)
 //}
 
-func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestTypeCountTotal) {
 		var (
 			server = metric.Labels.Get("server")
@@ -196,7 +196,7 @@ func (cd *CoreDNS) collectSummaryRequestsPerType(mx *metrics, raw prometheus.Met
 	}
 }
 
-func (cd *CoreDNS) collectSummaryResponsesPerRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectSummaryResponsesPerRcode(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.responseRcodeCountTotal) {
 		var (
 			rcode  = metric.Labels.Get("rcode")
@@ -215,7 +215,7 @@ func (cd *CoreDNS) collectSummaryResponsesPerRcode(mx *metrics, raw prometheus.M
 
 // Per Server
 
-func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestCountTotal) {
 		var (
 			family = metric.Labels.Get("family")
@@ -260,7 +260,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 	}
 }
 
-//func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//func (cd *CoreDNS) collectPerServerRequestsDuration(mx *metrics, raw prometheus.Series) {
 //	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
 //		var (
 //			server = metric.Labels.Get("server")
@@ -297,7 +297,7 @@ func (cd *CoreDNS) collectPerServerRequests(mx *metrics, raw prometheus.Metrics)
 //	}
 //}
 
-func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestTypeCountTotal) {
 		var (
 			server = metric.Labels.Get("server")
@@ -331,7 +331,7 @@ func (cd *CoreDNS) collectPerServerRequestPerType(mx *metrics, raw prometheus.Me
 	}
 }
 
-func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.responseRcodeCountTotal) {
 		var (
 			rcode  = metric.Labels.Get("rcode")
@@ -367,7 +367,7 @@ func (cd *CoreDNS) collectPerServerResponsePerRcode(mx *metrics, raw prometheus.
 
 // Per Zone
 
-func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestCountTotal) {
 		var (
 			family = metric.Labels.Get("family")
@@ -404,7 +404,7 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 	}
 }
 
-//func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Metrics) {
+//func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Series) {
 //	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
 //		var (
 //			zone  = metric.Labels.Get("zone")
@@ -440,7 +440,7 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Metrics) {
 //	}
 //}
 
-func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestTypeCountTotal) {
 		var (
 			typ   = metric.Labels.Get("type")
@@ -473,7 +473,7 @@ func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Met
 	}
 }
 
-func (cd *CoreDNS) collectPerZoneResponsesPerRcode(mx *metrics, raw prometheus.Metrics) {
+func (cd *CoreDNS) collectPerZoneResponsesPerRcode(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.responseRcodeCountTotal) {
 		var (
 			rcode = metric.Labels.Get("rcode")

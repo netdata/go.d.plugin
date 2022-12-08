@@ -35,6 +35,7 @@ Go.d.plugin is shipped with Netdata.
 | [activemq](https://github.com/netdata/go.d.plugin/tree/master/modules/activemq)                     |           ActiveMQ            |
 | [apache](https://github.com/netdata/go.d.plugin/tree/master/modules/apache)                         |            Apache             |
 | [bind](https://github.com/netdata/go.d.plugin/tree/master/modules/bind)                             |           ISC Bind            |
+| [cassandra](https://github.com/netdata/go.d.plugin/tree/master/modules/cassandra)                   |           Cassandra           |
 | [chrony](https://github.com/netdata/go.d.plugin/tree/master/modules/chrony)                         |            Chrony             |
 | [cockroachdb](https://github.com/netdata/go.d.plugin/tree/master/modules/cockroachdb)               |          CockroachDB          |
 | [consul](https://github.com/netdata/go.d.plugin/tree/master/modules/consul)                         |            Consul             |
@@ -68,7 +69,9 @@ Go.d.plugin is shipped with Netdata.
 | [mongoDB](https://github.com/netdata/go.d.plugin/tree/master/modules/mongodb)                       |            MongoDB            |
 | [mysql](https://github.com/netdata/go.d.plugin/tree/master/modules/mysql)                           |             MySQL             |
 | [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx)                           |             NGINX             |
+| [nginxplus](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxplus)                   |          NGINX Plus           |
 | [nginxvts](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxvts)                     |           NGINX VTS           |
+| [nvme](https://github.com/netdata/go.d.plugin/tree/master/modules/nvme)                             |         NVMe devices          |
 | [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)                       |            OpenVPN            |
 | [openvpn_status_log](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn_status_log) |            OpenVPN            |
 | [pgbouncer](https://github.com/netdata/go.d.plugin/tree/master/modules/pgbouncer)                   |           PgBouncer           |
@@ -76,6 +79,7 @@ Go.d.plugin is shipped with Netdata.
 | [phpfpm](https://github.com/netdata/go.d.plugin/tree/master/modules/phpfpm)                         |            PHP-FPM            |
 | [pihole](https://github.com/netdata/go.d.plugin/tree/master/modules/pihole)                         |            Pi-hole            |
 | [pika](https://github.com/netdata/go.d.plugin/tree/master/modules/pika)                             |             Pika              |
+| [ping](https://github.com/netdata/go.d.plugin/tree/master/modules/ping)                             |       Any network host        |
 | [prometheus](https://github.com/netdata/go.d.plugin/tree/master/modules/prometheus)                 |    Any Prometheus Endpoint    |
 | [portcheck](https://github.com/netdata/go.d.plugin/tree/master/modules/portcheck)                   |       Any TCP Endpoint        |
 | [postgres](https://github.com/netdata/go.d.plugin/tree/master/modules/postgres)                     |          PostgreSQL           |
@@ -138,7 +142,7 @@ forums. We have a whole [category](https://community.netdata.cloud/c/agent-devel
   locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
 - Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
 - Add your module to the [modules](https://github.com/netdata/go.d.plugin/tree/master/modules) directory.
-- Import the module in the [init.go](https://github.com/netdata/go.d.plugin/blob/master/cmd/godplugin/init.go).
+- Import the module in [`modules/init.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/init.go).
 - To build it, run `make` from the plugin root dir. This will create a new `go.d.plugin` binary that includes your newly
   developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
 - Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same

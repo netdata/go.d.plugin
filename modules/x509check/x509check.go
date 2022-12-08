@@ -3,7 +3,6 @@
 package x509check
 
 import (
-	"errors"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -14,15 +13,13 @@ import (
 )
 
 func init() {
-	creator := module.Creator{
+	cfssllog.Level = cfssllog.LevelFatal
+	module.Register("x509check", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 60,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	cfssllog.Level = cfssllog.LevelFatal
-	module.Register("x509check", creator)
+	})
 }
 
 func New() *X509Check {
@@ -47,36 +44,25 @@ type Config struct {
 type X509Check struct {
 	module.Base
 	Config `yaml:",inline"`
+	charts *module.Charts
 	prov   provider
-}
-
-func (x X509Check) validateConfig() error {
-	if x.Source == "" {
-		return errors.New("source is not set")
-	}
-	return nil
-}
-
-func (x *X509Check) initProvider() error {
-	p, err := newProvider(x.Config)
-	if err != nil {
-		return err
-	}
-
-	x.prov = p
-	return nil
 }
 
 func (x *X509Check) Init() bool {
 	if err := x.validateConfig(); err != nil {
-		x.Errorf("error on validating config: %v", err)
+		x.Errorf("config validation: %v", err)
 		return false
 	}
 
-	if err := x.initProvider(); err != nil {
-		x.Errorf("error on initializing certificate provider: %v", err)
+	prov, err := x.initProvider()
+	if err != nil {
+		x.Errorf("certificate provider init: %v", err)
 		return false
 	}
+	x.prov = prov
+
+	x.charts = x.initCharts()
+
 	return true
 }
 
@@ -84,11 +70,8 @@ func (x *X509Check) Check() bool {
 	return len(x.Collect()) > 0
 }
 
-func (x X509Check) Charts() *Charts {
-	if x.CheckRevocation {
-		return withRevocationCharts.Copy()
-	}
-	return charts.Copy()
+func (x *X509Check) Charts() *module.Charts {
+	return x.charts
 }
 
 func (x *X509Check) Collect() map[string]int64 {
@@ -103,4 +86,4 @@ func (x *X509Check) Collect() map[string]int64 {
 	return mx
 }
 
-func (X509Check) Cleanup() {}
+func (x *X509Check) Cleanup() {}

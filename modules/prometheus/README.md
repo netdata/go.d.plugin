@@ -54,6 +54,15 @@ jobs:
     url: http://203.0.113.0:9182/metrics
 ```
 
+Here is an example pulling from the [Prometheus demo site](https://demo.do.prometheus.io/) node
+exporter [endpoint](https://node.demo.do.prometheus.io/metrics):
+
+```yaml
+jobs:
+  - name: node_exporter_demo
+    url: https://node.demo.do.prometheus.io/metrics
+```
+
 ### Dimension algorithm
 
 `incremental` algorithm (values displayed as rate) used when:

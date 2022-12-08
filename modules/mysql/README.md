@@ -58,6 +58,7 @@ All metrics have "mysql." prefix.
 | queries                             |   global   |                                                          queries, questions, slow_queries                                                           |   queries/s    |
 | queries_type                        |   global   |                                                       select, delete, update, insert, replace                                                       |   queries/s    |
 | handlers                            |   global   | commit, delete, prepare, read_first, read_key, read_next, read_prev, read_rnd, read_rnd_next, rollback, savepoint, savepointrollback, update, write |   handlers/s   |
+| table_open_cache_overflows          |   global   |                                                                     open_cache                                                                      |  overflows/s   |
 | table_locks                         |   global   |                                                                  immediate, waited                                                                  |    locks/s     |
 | join_issues                         |   global   |                                                full_join, full_range_join, range, range_check, scan                                                 |    joins/s     |
 | sort_issues                         |   global   |                                                              merge_passes, range, scan                                                              |    issues/s    |

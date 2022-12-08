@@ -7,26 +7,20 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestNew(t *testing.T) {
-	x509Check := New()
-
-	assert.Implements(t, (*module.Module)(nil), x509Check)
-}
-
 func TestX509Check_Cleanup(t *testing.T) {
-	New().Cleanup()
+	assert.NotPanics(t, New().Cleanup)
 }
 
 func TestX509Check_Charts(t *testing.T) {
 	x509Check := New()
-
+	x509Check.Source = "https://example.com"
+	require.True(t, x509Check.Init())
 	assert.NotNil(t, x509Check.Charts())
 }
 
@@ -112,6 +106,8 @@ func TestX509Check_Check_ReturnsFalseOnProviderError(t *testing.T) {
 
 func TestX509Check_Collect(t *testing.T) {
 	x509Check := New()
+	x509Check.Source = "https://example.com"
+	require.True(t, x509Check.Init())
 	x509Check.prov = &mockProvider{certs: []*x509.Certificate{{}}}
 
 	collected := x509Check.Collect()

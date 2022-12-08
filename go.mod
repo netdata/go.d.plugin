@@ -10,12 +10,12 @@ require (
 	github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a
 	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudflare/cfssl v1.6.3
-	github.com/coreos/go-systemd/v22 v22.4.0
-	github.com/docker/docker v20.10.18+incompatible
+	github.com/coreos/go-systemd/v22 v22.5.0
+	github.com/docker/docker v20.10.21+incompatible
 	github.com/facebook/time v0.0.0-20220713141651-bfc62ed6ec5f
-	github.com/fsnotify/fsnotify v1.5.4
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/godbus/dbus/v5 v5.1.0
 	github.com/gofrs/flock v0.8.1
 	github.com/golang/mock v1.6.0
@@ -23,25 +23,26 @@ require (
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/likexian/whois v1.14.2
-	github.com/likexian/whois-parser v1.24.1
+	github.com/likexian/whois v1.14.4
+	github.com/likexian/whois-parser v1.24.2
 	github.com/mattn/go-isatty v0.0.16
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.50
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/prometheus/prometheus v0.36.2
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	github.com/valyala/fastjson v1.6.3
 	github.com/vmware/govmomi v0.22.2
-	go.mongodb.org/mongo-driver v1.10.3
-	golang.org/x/text v0.3.7
+	go.mongodb.org/mongo-driver v1.11.0
+	golang.org/x/text v0.5.0
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20220504211119-3d4a969bb56b
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.25.2
-	k8s.io/apimachinery v0.25.2
-	k8s.io/client-go v0.25.2
+	k8s.io/api v0.25.4
+	k8s.io/apimachinery v0.25.4
+	k8s.io/client-go v0.25.4
 	layeh.com/radius v0.0.0-20190322222518-890bc1058917
 )
 
@@ -85,7 +86,7 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.2.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grafana/regexp v0.0.0-20220304095617-2e8d9baf4ac2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
@@ -124,8 +125,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.2 // indirect
-	github.com/prometheus/client_model v0.2.0 // indirect
-	github.com/prometheus/common v0.35.0 // indirect
+	github.com/prometheus/client_model v0.3.0 // indirect
+	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -155,13 +156,13 @@ require (
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20220824171710-5757bc0c5503 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
-	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/term v0.2.0 // indirect
 	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65 // indirect
-	golang.org/x/tools v0.1.10 // indirect
+	golang.org/x/tools v0.1.12 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20220407013110-ef5c587f782d // indirect
 	google.golang.org/appengine v1.6.7 // indirect

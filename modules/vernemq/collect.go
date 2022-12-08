@@ -10,12 +10,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-func isValidVerneMQMetrics(pms prometheus.Metrics) bool {
+func isValidVerneMQMetrics(pms prometheus.Series) bool {
 	return pms.FindByName(metricPUBLISHError).Len() > 0 && pms.FindByName(metricRouterSubscriptions).Len() > 0
 }
 
 func (v *VerneMQ) collect() (map[string]int64, error) {
-	pms, err := v.prom.Scrape()
+	pms, err := v.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (v *VerneMQ) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (v *VerneMQ) collectVerneMQ(pms prometheus.Metrics) map[string]float64 {
+func (v *VerneMQ) collectVerneMQ(pms prometheus.Series) map[string]float64 {
 	mx := make(map[string]float64)
 	collectSockets(mx, pms)
 	collectQueues(mx, pms)
@@ -51,7 +51,7 @@ func (v *VerneMQ) collectVerneMQ(pms prometheus.Metrics) map[string]float64 {
 	return mx
 }
 
-func (v *VerneMQ) collectCONNECT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectCONNECT(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricCONNECTReceived,
 		metricCONNACKSent,
@@ -59,7 +59,7 @@ func (v *VerneMQ) collectCONNECT(mx map[string]float64, pms prometheus.Metrics) 
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectDISCONNECT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectDISCONNECT(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricDISCONNECTReceived,
 		metricDISCONNECTSent,
@@ -67,7 +67,7 @@ func (v *VerneMQ) collectDISCONNECT(mx map[string]float64, pms prometheus.Metric
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectPUBLISH(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectPUBLISH(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricPUBACKReceived,
 		metricPUBACKSent,
@@ -92,7 +92,7 @@ func (v *VerneMQ) collectPUBLISH(mx map[string]float64, pms prometheus.Metrics) 
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectSUBSCRIBE(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricSUBSCRIBEReceived,
 		metricSUBACKSent,
@@ -102,7 +102,7 @@ func (v *VerneMQ) collectSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectUNSUBSCRIBE(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectUNSUBSCRIBE(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricUNSUBSCRIBEReceived,
 		metricUNSUBACKSent,
@@ -111,7 +111,7 @@ func (v *VerneMQ) collectUNSUBSCRIBE(mx map[string]float64, pms prometheus.Metri
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectPING(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectPING(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricPINGREQReceived,
 		metricPINGRESPSent,
@@ -119,7 +119,7 @@ func (v *VerneMQ) collectPING(mx map[string]float64, pms prometheus.Metrics) {
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectAUTH(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectAUTH(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricAUTHReceived,
 		metricAUTHSent,
@@ -127,12 +127,12 @@ func (v *VerneMQ) collectAUTH(mx map[string]float64, pms prometheus.Metrics) {
 	v.collectMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectMQTTInvalidMsgSize(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectMQTTInvalidMsgSize(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByName(metricMQTTInvalidMsgSizeError)
 	v.collectMQTT(mx, pms)
 }
 
-func collectSockets(mx map[string]float64, pms prometheus.Metrics) {
+func collectSockets(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricSocketClose,
 		metricSocketCloseTimeout,
@@ -144,7 +144,7 @@ func collectSockets(mx map[string]float64, pms prometheus.Metrics) {
 	mx["open_sockets"] = mx[metricSocketOpen] - mx[metricSocketClose]
 }
 
-func collectQueues(mx map[string]float64, pms prometheus.Metrics) {
+func collectQueues(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricQueueInitializedFromStorage,
 		metricQueueMessageDrop,
@@ -159,7 +159,7 @@ func collectQueues(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectSubscriptions(mx map[string]float64, pms prometheus.Metrics) {
+func collectSubscriptions(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricRouterMatchesLocal,
 		metricRouterMatchesRemote,
@@ -169,7 +169,7 @@ func collectSubscriptions(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectErlangVM(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectErlangVM(mx map[string]float64, pms prometheus.Series) {
 	v.collectSchedulersUtilization(mx, pms)
 	pms = pms.FindByNames(
 		metricSystemContextSwitches,
@@ -187,7 +187,7 @@ func (v *VerneMQ) collectErlangVM(mx map[string]float64, pms prometheus.Metrics)
 	collectNonMQTT(mx, pms)
 }
 
-func (v *VerneMQ) collectSchedulersUtilization(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectSchedulersUtilization(mx map[string]float64, pms prometheus.Series) {
 	for _, pm := range pms {
 		if isSchedulerUtilizationMetric(pm) {
 			mx[pm.Name()] += pm.Value
@@ -196,7 +196,7 @@ func (v *VerneMQ) collectSchedulersUtilization(mx map[string]float64, pms promet
 	}
 }
 
-func collectBandwidth(mx map[string]float64, pms prometheus.Metrics) {
+func collectBandwidth(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricBytesReceived,
 		metricBytesSent,
@@ -204,7 +204,7 @@ func collectBandwidth(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectRetain(mx map[string]float64, pms prometheus.Metrics) {
+func collectRetain(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricRetainMemory,
 		metricRetainMessages,
@@ -212,7 +212,7 @@ func collectRetain(mx map[string]float64, pms prometheus.Metrics) {
 	collectNonMQTT(mx, pms)
 }
 
-func collectCluster(mx map[string]float64, pms prometheus.Metrics) {
+func collectCluster(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricClusterBytesDropped,
 		metricClusterBytesReceived,
@@ -224,18 +224,18 @@ func collectCluster(mx map[string]float64, pms prometheus.Metrics) {
 	mx["netsplit_unresolved"] = mx[metricNetSplitDetected] - mx[metricNetSplitResolved]
 }
 
-func collectUptime(mx map[string]float64, pms prometheus.Metrics) {
+func collectUptime(mx map[string]float64, pms prometheus.Series) {
 	pms = pms.FindByName(metricSystemWallClock)
 	collectNonMQTT(mx, pms)
 }
 
-func collectNonMQTT(mx map[string]float64, pms prometheus.Metrics) {
+func collectNonMQTT(mx map[string]float64, pms prometheus.Series) {
 	for _, pm := range pms {
 		mx[pm.Name()] += pm.Value
 	}
 }
 
-func (v *VerneMQ) collectMQTT(mx map[string]float64, pms prometheus.Metrics) {
+func (v *VerneMQ) collectMQTT(mx map[string]float64, pms prometheus.Series) {
 	for _, pm := range pms {
 		if !isMQTTMetric(pm) {
 			continue
@@ -257,15 +257,15 @@ func (v *VerneMQ) collectMQTT(mx map[string]float64, pms prometheus.Metrics) {
 	}
 }
 
-func isMQTTMetric(pm prometheus.Metric) bool {
+func isMQTTMetric(pm prometheus.SeriesSample) bool {
 	return strings.HasPrefix(pm.Name(), "mqtt_")
 }
 
-func isSchedulerUtilizationMetric(pm prometheus.Metric) bool {
+func isSchedulerUtilizationMetric(pm prometheus.SeriesSample) bool {
 	return strings.HasPrefix(pm.Name(), "system_utilization_scheduler_")
 }
 
-func reasonCodeLabelValue(pm prometheus.Metric) string {
+func reasonCodeLabelValue(pm prometheus.SeriesSample) string {
 	if v := pm.Labels.Get("reason_code"); v != "" {
 		return v
 	}
@@ -273,7 +273,7 @@ func reasonCodeLabelValue(pm prometheus.Metric) string {
 	return pm.Labels.Get("return_code")
 }
 
-func versionLabelValue(pm prometheus.Metric) string {
+func versionLabelValue(pm prometheus.SeriesSample) string {
 	return pm.Labels.Get("mqtt_version")
 }
 

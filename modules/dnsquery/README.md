@@ -10,15 +10,20 @@ learn_rel_path: "References/Collectors references/Networking"
 
 # DNS query monitoring with Netdata
 
-This module provides DNS query RTT in milliseconds.
+This module provides DNS query round-trip time (RTT).
 
 ## Metrics
 
-All metrics have "dnsquery." prefix.
+All metrics have "dns_query." prefix.
 
-| Metric     | Scope  |             Dimensions             | Units |
-|------------|:------:|:----------------------------------:|:-----:|
-| query_time | global | <i>a dimension per name server</i> |  ms   |
+Labels per scope:
+
+- server: server, network, record_type.
+
+| Metric       | Scope  |            Dimensions             |  Units  |
+|--------------|:------:|:---------------------------------:|:-------:|
+| query_time   | server |            query_time             | seconds |
+| query_status | server | success, network_error, dns_error | seconds |
 
 ## Configuration
 
@@ -35,6 +40,9 @@ Here is an example:
 ```yaml
 jobs:
   - name: job1
+    record_types:
+      - A
+      - AAAA
     domains:
       - google.com
       - github.com

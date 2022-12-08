@@ -573,8 +573,9 @@ SELECT current_database()                                   as datname,
        autovacuum_count,
        analyze_count,
        autoanalyze_count,
-       pg_total_relation_size(schemaname || '.' || relname) as total_relation_size
-FROM pg_stat_user_tables;
+       pg_total_relation_size(quote_ident(schemaname) || '.' || quote_ident(relname)) as total_relation_size
+FROM pg_stat_user_tables
+WHERE has_schema_privilege(schemaname, 'USAGE');
 `
 }
 
@@ -591,7 +592,8 @@ SELECT current_database()                                       AS datname,
        toast_blks_hit * current_setting('block_size')::numeric  AS toast_blks_hit_bytes,
        tidx_blks_read * current_setting('block_size')::numeric  AS tidx_blks_read_bytes,
        tidx_blks_hit * current_setting('block_size')::numeric   AS tidx_blks_hit_bytes
-FROM pg_statio_user_tables;
+FROM pg_statio_user_tables
+WHERE has_schema_privilege(schemaname, 'USAGE');
 `
 }
 
@@ -608,8 +610,9 @@ SELECT current_database()                                as datname,
        idx_scan,
        idx_tup_read,
        idx_tup_fetch,
-       pg_relation_size(quote_ident(indexrelname)::text) as size
-FROM pg_stat_user_indexes;
+       pg_relation_size(quote_ident(schemaname) || '.' || quote_ident(indexrelname)::text) as size
+FROM pg_stat_user_indexes
+WHERE has_schema_privilege(schemaname, 'USAGE');
 `
 }
 

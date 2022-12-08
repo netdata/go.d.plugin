@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -34,6 +35,8 @@ func shouldObsoleteCharts() bool {
 var writeLock = &sync.Mutex{}
 
 var reSpace = regexp.MustCompile(`\s+`)
+
+var ndInternalMonitoringDisabled = os.Getenv("NETDATA_INTERNALS_MONITORING") == "NO"
 
 func newRuntimeChart(pluginName string) *Chart {
 	// this is needed to keep the same name as we had before https://github.com/netdata/go.d.plugin/issues/650
@@ -337,7 +340,7 @@ func (j *Job) collect() (result map[string]int64) {
 }
 
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
-	if !j.runChart.created {
+	if !ndInternalMonitoringDisabled && !j.runChart.created {
 		j.runChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
 		j.createChart(j.runChart)
 	}
@@ -372,7 +375,9 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	if updated == 0 {
 		return false
 	}
-	j.updateChart(j.runChart, map[string]int64{"time": elapsed}, sinceLastRun)
+	if !ndInternalMonitoringDisabled {
+		j.updateChart(j.runChart, map[string]int64{"time": elapsed}, sinceLastRun)
+	}
 	return true
 }
 

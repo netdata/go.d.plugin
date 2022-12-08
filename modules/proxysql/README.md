@@ -16,7 +16,7 @@ This module monitors one or more ProxySQL servers, depending on your configurati
 
 ## Metrics
 
-All metrics have "postgres." prefix.
+All metrics have "proxysql." prefix.
 
 Labels per scope:
 

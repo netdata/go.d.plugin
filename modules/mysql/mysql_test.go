@@ -400,6 +400,7 @@ func TestMySQL_Collect(t *testing.T) {
 					mx := my.Collect()
 
 					expected := map[string]int64{
+
 						"aborted_connects":                        2,
 						"binlog_cache_disk_use":                   0,
 						"binlog_cache_use":                        0,
@@ -508,6 +509,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   60,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        2000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     1666,
 						"threads_cached":                          0,
 						"threads_connected":                       1,
@@ -688,6 +690,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   60,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        2000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     1666,
 						"threads_cached":                          0,
 						"threads_connected":                       1,
@@ -871,6 +874,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   60,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        2000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     1666,
 						"threads_cached":                          0,
 						"threads_connected":                       1,
@@ -1048,6 +1052,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   60,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        2000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     1666,
 						"threads_cached":                          0,
 						"threads_connected":                       1,
@@ -1225,6 +1230,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   17,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        2000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     4000,
 						"threads_cached":                          0,
 						"threads_connected":                       1,
@@ -1417,6 +1423,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                 6,
 						"table_locks_waited":                    0,
 						"table_open_cache":                      4000,
+						"table_open_cache_overflows":            0,
 						"thread_cache_misses":                   800,
 						"threads_cached":                        1,
 						"threads_connected":                     1,
@@ -1546,6 +1553,7 @@ func TestMySQL_Collect(t *testing.T) {
 						"table_locks_immediate":                   3371,
 						"table_locks_waited":                      0,
 						"table_open_cache":                        4000,
+						"table_open_cache_overflows":              0,
 						"thread_cache_misses":                     2307,
 						"threads_cached":                          1,
 						"threads_connected":                       2,

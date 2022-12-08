@@ -23,7 +23,7 @@ const (
 	prefixEntrypointOpenConn  = "entrypoint_open_connections_"
 )
 
-func isTraefikMetrics(pms prometheus.Metrics) bool {
+func isTraefikMetrics(pms prometheus.Series) bool {
 	for _, pm := range pms {
 		if strings.HasPrefix(pm.Name(), "traefik_") {
 			return true
@@ -33,7 +33,7 @@ func isTraefikMetrics(pms prometheus.Metrics) bool {
 }
 
 func (t *Traefik) collect() (map[string]int64, error) {
-	pms, err := t.prom.Scrape()
+	pms, err := t.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (t *Traefik) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (t *Traefik) collectEntrypointRequestsTotal(mx map[string]int64, pms prometheus.Metrics) {
+func (t *Traefik) collectEntrypointRequestsTotal(mx map[string]int64, pms prometheus.Series) {
 	if pms = pms.FindByName(metricEntrypointRequestsTotal); pms.Len() == 0 {
 		return
 	}
@@ -82,7 +82,7 @@ func (t *Traefik) collectEntrypointRequestsTotal(mx map[string]int64, pms promet
 	}
 }
 
-func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prometheus.Metrics) {
+func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prometheus.Series) {
 	if pms = pms.FindByNames(
 		metricEntrypointRequestDurationSecondsCount,
 		metricEntrypointRequestDurationSecondsSum,
@@ -134,7 +134,7 @@ func (t *Traefik) collectEntrypointRequestDuration(mx map[string]int64, pms prom
 	}
 }
 
-func (t *Traefik) collectEntrypointOpenConnections(mx map[string]int64, pms prometheus.Metrics) {
+func (t *Traefik) collectEntrypointOpenConnections(mx map[string]int64, pms prometheus.Series) {
 	if pms = pms.FindByName(metricEntrypointOpenConnections); pms.Len() == 0 {
 		return
 	}

@@ -23,6 +23,17 @@ To find out more about these metrics and why they are important to monitor, read
 - User with granted `pg_monitor`
   or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
 
+Without additional configuration Netdata will attempt to use the default postgres user - but a separate netdata user can be created for this purpose. If you have PostgreSQL 10+ and want to use Netdata to monitor statistics normally reserved for superusers grant the netdata user pg_monitor permissions. Some of the advanced metrics also require additional permissions as mentioned in [metrics](#metrics).
+
+To create the `netdata` user with these permissions, execute the following in the psql session, as a user with CREATEROLE priviliges:
+
+```postgresql
+CREATE USER netdata;
+GRANT pg_monitor TO netdata;
+```
+
+After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://learn.netdata.cloud/docs/configure/start-stop-restart) for your system
+
 ## Metrics
 
 - all metrics have "postgres." prefix.

@@ -106,6 +106,7 @@ var globalStatusKeys = map[string]bool{
 	"Handler_write":                         true,
 	"Table_locks_immediate":                 true,
 	"Table_locks_waited":                    true,
+	"Table_open_cache_overflows":            true,
 	"Select_full_join":                      true,
 	"Select_full_range_join":                true,
 	"Select_range":                          true,

@@ -14,6 +14,7 @@ const (
 	prioQueries
 	prioQueriesType
 	prioHandlers
+	prioTableOpenCacheOverflows
 	prioTableLocks
 	prioTableJoinIssues
 	prioTableSortIssues
@@ -143,7 +144,7 @@ var (
 		Dims: module.Dims{
 			{ID: "queries", Name: "queries", Algo: module.Incremental},
 			{ID: "questions", Name: "questions", Algo: module.Incremental},
-			{ID: "slow_queries", Name: "slow queries", Algo: module.Incremental},
+			{ID: "slow_queries", Name: "slow_queries", Algo: module.Incremental},
 		},
 	}
 	chartQueriesType = module.Chart{
@@ -184,6 +185,17 @@ var (
 			{ID: "handler_savepoint_rollback", Name: "savepointrollback", Algo: module.Incremental},
 			{ID: "handler_update", Name: "update", Algo: module.Incremental},
 			{ID: "handler_write", Name: "write", Algo: module.Incremental},
+		},
+	}
+	chartTableOpenCacheOverflows = module.Chart{
+		ID:       "table_open_cache_overflows",
+		Title:    "Table open cache overflows",
+		Units:    "overflows/s",
+		Fam:      "open cache",
+		Ctx:      "mysql.table_open_cache_overflows",
+		Priority: prioTableOpenCacheOverflows,
+		Dims: module.Dims{
+			{ID: "table_open_cache_overflows", Name: "open_cache", Algo: module.Incremental},
 		},
 	}
 	chartTableLocks = module.Chart{
@@ -1216,6 +1228,12 @@ func (m *MySQL) addQCacheCharts() {
 
 func (m *MySQL) addGaleraCharts() {
 	if err := m.Charts().Add(*chartsGalera.Copy()...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *MySQL) addTableOpenCacheOverflowChart() {
+	if err := m.Charts().Add(chartTableOpenCacheOverflows.Copy()); err != nil {
 		m.Warning(err)
 	}
 }

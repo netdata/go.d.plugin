@@ -9,12 +9,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-func validCockroachDBMetrics(scraped prometheus.Metrics) bool {
+func validCockroachDBMetrics(scraped prometheus.Series) bool {
 	return scraped.FindByName("sql_restart_savepoint_count_internal").Len() > 0
 }
 
 func (c *CockroachDB) collect() (map[string]int64, error) {
-	scraped, err := c.prom.Scrape()
+	scraped, err := c.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (c *CockroachDB) collect() (map[string]int64, error) {
 
 const precision = 1000
 
-func collectScraped(scraped prometheus.Metrics, metricList []string) map[string]float64 {
+func collectScraped(scraped prometheus.Series, metricList []string) map[string]float64 {
 	mx := make(map[string]float64)
 	for _, name := range metricList {
 		if ms := scraped.FindByName(name); ms.Len() == 1 {

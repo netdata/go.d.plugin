@@ -25,15 +25,10 @@ jobs:
       - name: Go vet
         run: go vet ./...
       - name: Set up gotestfmt
-        uses: haveyoudebuggedit/gotestfmt-action@v2
+        uses: gotesttools/gotestfmt-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Go test
         run: |
           set -euo pipefail
           go test -json ./... -race -count=1 2>&1 | gotestfmt
-      - name: Golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-check

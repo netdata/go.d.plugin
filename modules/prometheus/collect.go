@@ -1,13 +1,14 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 package prometheus
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 
+	"github.com/prometheus/prometheus/model/labels"
 	"github.com/prometheus/prometheus/model/textparse"
 )
 
@@ -15,103 +16,210 @@ const (
 	precision = 1000
 )
 
-// TODO: proper cleanup stale charts
 func (p *Prometheus) collect() (map[string]int64, error) {
-	pms, err := p.prom.Scrape()
+	mfs, err := p.prom.Scrape()
 	if err != nil {
 		return nil, err
 	}
 
-	defer func() { p.firstCollect = false }()
-
-	if pms.Len() == 0 {
-		p.Warningf("endpoint '%s' returned 0 time series", p.URL)
+	if mfs.Len() == 0 {
+		p.Warningf("endpoint '%s' returned 0 metric families", p.URL)
 		return nil, nil
 	}
 
 	if p.ExpectedPrefix != "" {
-		if !hasMetricWithPrefix(pms, p.ExpectedPrefix) {
-			return nil, fmt.Errorf("endpoint '%s' returned metrics without expected prefix (%s)",
-				p.URL, p.ExpectedPrefix)
+		if !hasPrefix(mfs, p.ExpectedPrefix) {
+			return nil, fmt.Errorf("'%s' metrics have no expected prefix (%s)", p.URL, p.ExpectedPrefix)
 		}
 		p.ExpectedPrefix = ""
 	}
 
-	if pms.Len() > p.MaxTS {
-		p.Warningf("endpoint '%s' returned %d time series, limit is %d", p.URL, pms.Len(), p.MaxTS)
-		if p.firstCollect {
-			return nil, nil
-		}
-		cur, end, name := p.MaxTS-1, pms.Len()-1, pms[p.MaxTS-1].Name()
-		for ; name == pms[cur].Name() && cur < end; cur++ {
-		}
-		pms = pms[:cur]
-	}
-
-	names, metricSet := p.buildMetricSet(pms)
-	meta := p.prom.Metadata()
 	mx := make(map[string]int64)
 
-	for _, name := range names {
-		metrics := metricSet[name]
-		if len(metrics) == 0 || p.skipMetrics[name] {
+	p.resetCache()
+	defer p.removeStaleCharts()
+
+	for _, mf := range mfs {
+		if strings.HasSuffix(mf.Name(), "_info") {
+			continue
+		}
+		if p.MaxTSPerMetric > 0 && len(mf.Metrics()) > p.MaxTSPerMetric {
+			p.Debugf("metric '%s' time series (%d) > limit (%d), skipping it",
+				mf.Name(), len(mf.Metrics()), p.MaxTSPerMetric)
 			continue
 		}
 
-		switch meta.Type(name) {
-		case textparse.MetricTypeGauge, textparse.MetricTypeCounter:
-			p.collectAny(mx, metrics, meta)
+		switch mf.Type() {
+		case textparse.MetricTypeGauge:
+			p.collectGauge(mx, mf)
+		case textparse.MetricTypeCounter:
+			p.collectCounter(mx, mf)
 		case textparse.MetricTypeSummary:
-			p.collectSummary(mx, metrics, meta)
+			p.collectSummary(mx, mf)
 		case textparse.MetricTypeHistogram:
-			p.collectHistogram(mx, metrics, meta)
+			p.collectHistogram(mx, mf)
 		case textparse.MetricTypeUnknown:
-			p.collectUnknown(mx, metrics, meta)
+			p.collectUntyped(mx, mf)
 		}
 	}
-	p.Debugf("time series: %d, metrics: %d, charts: %d", len(pms), len(names), len(*p.Charts()))
-	mx["series"] = int64(len(pms))
-	mx["metrics"] = int64(len(names))
-	mx["charts"] = int64(len(*p.Charts()))
+
 	return mx, nil
 }
 
-// TODO: should be done by prom pkg
-func (p *Prometheus) buildMetricSet(pms prometheus.Metrics) (names []string, metrics map[string]prometheus.Metrics) {
-	names = make([]string, 0, len(pms))
-	metrics = make(map[string]prometheus.Metrics)
-
-	for _, pm := range pms {
-		if _, ok := metrics[pm.Name()]; !ok {
-			names = append(names, pm.Name())
+func (p *Prometheus) collectGauge(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Gauge() == nil || math.IsNaN(m.Gauge().Value()) {
+			continue
 		}
-		metrics[pm.Name()] = append(metrics[pm.Name()], pm)
-	}
 
-	var i int
-	for _, name := range names {
-		if len(metrics[name]) > p.MaxTSPerMetric {
-			delete(metrics, name)
-		} else {
-			names[i] = name
-			i++
+		id := mf.Name() + p.joinLabels(m.Labels())
+
+		if !p.cache.hasP(id) {
+			p.addGaugeChart(id, mf.Name(), mf.Help(), m.Labels())
 		}
+
+		mx[id] = int64(m.Gauge().Value() * precision)
 	}
-	return names[:i], metrics
 }
 
-func (p Prometheus) application() string {
-	if p.Application != "" {
-		return p.Application
+func (p *Prometheus) collectCounter(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Counter() == nil || math.IsNaN(m.Counter().Value()) {
+			continue
+		}
+
+		id := mf.Name() + p.joinLabels(m.Labels())
+
+		if !p.cache.hasP(id) {
+			p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())
+		}
+
+		mx[id] = int64(m.Counter().Value() * precision)
 	}
-	return p.Name
 }
 
-func hasMetricWithPrefix(pms prometheus.Metrics, prefix string) bool {
-	for _, pm := range pms {
-		if strings.HasPrefix(pm.Name(), prefix) {
+func (p *Prometheus) collectSummary(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Summary() == nil || len(m.Summary().Quantiles()) == 0 {
+			continue
+		}
+
+		id := mf.Name() + p.joinLabels(m.Labels())
+
+		if !p.cache.hasP(id) {
+			p.addSummaryChart(id, mf.Name(), mf.Help(), m.Labels(), m.Summary().Quantiles())
+		}
+
+		for _, v := range m.Summary().Quantiles() {
+			dimID := fmt.Sprintf("%s_quantile=%s", id, formatFloat(v.Quantile()))
+			mx[dimID] = int64(v.Value() * precision)
+		}
+	}
+}
+
+func (p *Prometheus) collectHistogram(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Histogram() == nil || len(m.Histogram().Buckets()) == 0 {
+			continue
+		}
+
+		id := mf.Name() + p.joinLabels(m.Labels())
+
+		if !p.cache.hasP(id) {
+			p.addHistogramChart(id, mf.Name(), mf.Help(), m.Labels(), m.Histogram().Buckets())
+		}
+
+		for _, v := range m.Histogram().Buckets() {
+			dimID := fmt.Sprintf("%s_bucket=%s", id, formatFloat(v.UpperBound()))
+			mx[dimID] = int64(v.CumulativeCount())
+		}
+	}
+}
+
+func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFamily) {
+	for _, m := range mf.Metrics() {
+		if m.Untyped() == nil || math.IsNaN(m.Untyped().Value()) {
+			continue
+		}
+		if strings.HasSuffix(mf.Name(), "_total") {
+			id := mf.Name() + p.joinLabels(m.Labels())
+
+			if !p.cache.hasP(id) {
+				p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())
+			}
+
+			mx[id] = int64(m.Untyped().Value() * precision)
+		}
+	}
+}
+
+func (p *Prometheus) joinLabels(labels labels.Labels) string {
+	p.sb.Reset()
+	for _, lbl := range labels {
+		name, val := lbl.Name, lbl.Value
+		if name == "" || val == "" {
+			continue
+		}
+
+		if strings.IndexByte(val, ' ') != -1 {
+			val = spaceReplacer.Replace(val)
+		}
+		if strings.IndexByte(val, '\\') != -1 {
+			if val = decodeLabelValue(val); strings.IndexByte(val, '\\') != -1 {
+				val = backslashReplacer.Replace(val)
+			}
+		}
+
+		p.sb.Write([]byte("-" + name + "=" + val))
+	}
+	return p.sb.String()
+}
+
+func (p *Prometheus) resetCache() {
+	for _, v := range p.cache.entries {
+		v.seen = false
+	}
+}
+
+const maxNotSeenTimes = 10
+
+func (p *Prometheus) removeStaleCharts() {
+	for k, v := range p.cache.entries {
+		if v.seen {
+			continue
+		}
+		if v.notSeenTimes++; v.notSeenTimes >= maxNotSeenTimes {
+			for _, chart := range v.charts {
+				chart.MarkRemove()
+				chart.MarkNotCreated()
+			}
+			delete(p.cache.entries, k)
+		}
+	}
+}
+
+func decodeLabelValue(value string) string {
+	v, err := strconv.Unquote("\"" + value + "\"")
+	if err != nil {
+		return value
+	}
+	return v
+}
+
+var (
+	spaceReplacer     = strings.NewReplacer(" ", "_")
+	backslashReplacer = strings.NewReplacer(`\`, "_")
+)
+
+func hasPrefix(mf map[string]*prometheus.MetricFamily, prefix string) bool {
+	for name := range mf {
+		if strings.HasPrefix(name, prefix) {
 			return true
 		}
 	}
 	return false
+}
+
+func formatFloat(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }

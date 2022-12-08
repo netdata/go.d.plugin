@@ -9,8 +9,6 @@ import (
 )
 
 const (
-	collectorLogDisks = "logical_disk"
-
 	metricLDReadBytesTotal    = "windows_logical_disk_read_bytes_total"
 	metricLDWriteBytesTotal   = "windows_logical_disk_write_bytes_total"
 	metricLDReadsTotal        = "windows_logical_disk_reads_total"
@@ -21,72 +19,77 @@ const (
 	metricLDWriteLatencyTotal = "windows_logical_disk_write_latency_seconds_total"
 )
 
-var ldMetricNames = []string{
-	metricLDReadBytesTotal,
-	metricLDWriteBytesTotal,
-	metricLDReadsTotal,
-	metricLDWritesTotal,
-	metricLDSizeBytes,
-	metricLDFreeBytes,
-	metricLDReadLatencyTotal,
-	metricLDWriteLatencyTotal,
-}
-
-func doCollectLogicalDisk(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorLogDisks)
-	return enabled && success
-}
-
-func collectLogicalDisk(pms prometheus.Metrics) *logicalDiskMetrics {
-	if !doCollectLogicalDisk(pms) {
-		return nil
-	}
-
-	dm := &logicalDiskMetrics{}
-	for _, name := range ldMetricNames {
-		collectLogicalDiskMetric(dm, pms, name)
-	}
-
-	for _, v := range dm.Volumes {
-		v.UsedSpace = v.TotalSpace - v.FreeSpace
-	}
-	return dm
-}
-
-func collectLogicalDiskMetric(dm *logicalDiskMetrics, pms prometheus.Metrics, name string) {
-	var vol *volume
-
-	for _, pm := range pms.FindByName(name) {
-		volumeID := pm.Labels.Get("volume")
-		if volumeID == "" || strings.HasPrefix(volumeID, "HarddiskVolume") {
-			continue
+func (w *WMI) collectLogicalDisk(mx map[string]int64, pms prometheus.Series) {
+	seen := make(map[string]bool)
+	px := "logical_disk_"
+	for _, pm := range pms.FindByName(metricLDReadBytesTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_read_bytes_total"] = int64(pm.Value)
 		}
-
-		if vol == nil || vol.ID != volumeID {
-			vol = dm.Volumes.get(volumeID)
-		}
-
-		assignVolumeMetric(vol, name, pm.Value)
 	}
-}
+	for _, pm := range pms.FindByName(metricLDWriteBytesTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_write_bytes_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDReadsTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_reads_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDWritesTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_writes_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDSizeBytes) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_total_space"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDFreeBytes) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_free_space"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDReadLatencyTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_read_latency"] = int64(pm.Value * precision)
+		}
+	}
+	for _, pm := range pms.FindByName(metricLDWriteLatencyTotal) {
+		vol := pm.Labels.Get("volume")
+		if vol != "" && !strings.HasPrefix(vol, "HarddiskVolume") {
+			seen[vol] = true
+			mx[px+vol+"_write_latency"] = int64(pm.Value * precision)
+		}
+	}
 
-func assignVolumeMetric(vol *volume, name string, value float64) {
-	switch name {
-	case metricLDReadBytesTotal:
-		vol.ReadBytesTotal = value
-	case metricLDWriteBytesTotal:
-		vol.WriteBytesTotal = value
-	case metricLDReadsTotal:
-		vol.ReadsTotal = value
-	case metricLDWritesTotal:
-		vol.WritesTotal = value
-	case metricLDSizeBytes:
-		vol.TotalSpace = value
-	case metricLDFreeBytes:
-		vol.FreeSpace = value
-	case metricLDReadLatencyTotal:
-		vol.ReadLatency = value
-	case metricLDWriteLatencyTotal:
-		vol.WriteLatency = value
+	for disk := range seen {
+		if !w.cache.volumes[disk] {
+			w.cache.volumes[disk] = true
+			w.addDiskCharts(disk)
+		}
+		mx[px+disk+"_used_space"] = mx[px+disk+"_total_space"] - mx[px+disk+"_free_space"]
+	}
+	for disk := range w.cache.volumes {
+		if !seen[disk] {
+			delete(w.cache.volumes, disk)
+			w.removeDiskCharts(disk)
+		}
 	}
 }

@@ -3,276 +3,280 @@
 package pihole
 
 import (
-	"errors"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"testing"
 
-	"github.com/netdata/go.d.plugin/modules/pihole/client"
+	"github.com/netdata/go.d.plugin/pkg/web"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 const (
-	testSetupVarsPathOK    = "testdata/setupVars.conf"
-	testSetupVarsPathWrong = "testdata/wrong.conf"
-	testWebPassword        = "1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b"
+	pathSetupVarsOK    = "testdata/setupVars.conf"
+	pathSetupVarsWrong = "testdata/wrong.conf"
 )
 
-func newTestJob() *Pihole {
-	job := New()
-	job.SetupVarsPath = testSetupVarsPathOK
-
-	return job
-}
-
-func TestNew(t *testing.T) {
-	job := New()
-
-	assert.IsType(t, (*Pihole)(nil), job)
-	assert.Equal(t, defaultURL, job.URL)
-	assert.Equal(t, defaultHTTPTimeout, job.Timeout.Duration)
-	assert.Equal(t, defaultSetupVarsPath, job.SetupVarsPath)
-	assert.Equal(t, defaultTopClients, job.TopClientsEntries)
-	assert.Equal(t, defaultTopItems, job.TopItemsEntries)
-}
+var (
+	dataEmptyResp                     = []byte("[]")
+	dataSummaryRawResp, _             = os.ReadFile("testdata/summaryRaw.json")
+	dataGetQueryTypesResp, _          = os.ReadFile("testdata/getQueryTypes.json")
+	dataGetForwardDestinationsResp, _ = os.ReadFile("testdata/getForwardDestinations.json")
+	dataTopClientsResp, _             = os.ReadFile("testdata/topClients.json")
+	dataTopItemsResp, _               = os.ReadFile("testdata/topItems.json")
+)
 
 func TestPihole_Init(t *testing.T) {
-	job := newTestJob()
+	tests := map[string]struct {
+		wantFail bool
+		config   Config
+	}{
+		"success with default": {
+			wantFail: false,
+			config:   New().Config,
+		},
+		"fail when URL not set": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{URL: ""},
+				},
+			},
+		},
+	}
 
-	assert.True(t, job.Init())
-	assert.Equal(t, job.Password, testWebPassword)
-	assert.NotNil(t, job.client)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			p := New()
+			p.Config = test.config
 
-	job = newTestJob()
-
-	job.SetupVarsPath = testSetupVarsPathWrong
-	assert.True(t, job.Init())
+			if test.wantFail {
+				assert.False(t, p.Init())
+			} else {
+				assert.True(t, p.Init())
+			}
+		})
+	}
 }
 
 func TestPihole_Check(t *testing.T) {
-	job := newTestJob()
-
-	assert.True(t, job.Init())
-
-	job.client = newOKTestPiholeClient()
-	assert.True(t, job.Check())
-}
-
-func TestPihole_Check_WrongVersion(t *testing.T) {
-	job := newTestJob()
-
-	require.True(t, job.Init())
-
-	job.client = &testPiholeAPIClient{
-		version: func() (i int, e error) { return supportedAPIVersion + 1, nil },
+	tests := map[string]struct {
+		wantFail bool
+		prepare  func(t *testing.T) (p *Pihole, cleanup func())
+	}{
+		"success with web password": {
+			wantFail: false,
+			prepare:  caseSuccessWithWebPassword,
+		},
+		"success without web password": {
+			wantFail: false,
+			prepare:  caseSuccessNoWebPassword,
+		},
+		"fail on unsupported version": {
+			wantFail: true,
+			prepare:  caseFailUnsupportedVersion,
+		},
 	}
-	assert.False(t, job.Check())
-}
 
-func TestPihole_Check_NoData(t *testing.T) {
-	job := newTestJob()
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			p, cleanup := test.prepare(t)
+			defer cleanup()
 
-	require.True(t, job.Init())
-
-	job.client = &testPiholeAPIClient{
-		version: func() (i int, e error) { return supportedAPIVersion, nil },
+			if test.wantFail {
+				assert.False(t, p.Check())
+			} else {
+				assert.True(t, p.Check())
+			}
+		})
 	}
-	assert.False(t, job.Check())
 }
 
 func TestPihole_Charts(t *testing.T) {
-	job := newTestJob()
-
-	require.True(t, job.Init())
-	job.client = newOKTestPiholeClient()
-	require.True(t, job.Check())
-	assert.Len(t, *job.Charts(), len(charts)+len(authCharts)+3) // 3 top* charts, added during check
-
-	job = newTestJob()
-
-	job.SetupVarsPath = testSetupVarsPathWrong
-	require.True(t, job.Init())
-	job.client = newOKTestPiholeClient()
-	require.True(t, job.Check())
-	assert.Len(t, *job.Charts(), len(charts))
+	assert.NotNil(t, New().Charts())
 }
-
-func TestPihole_Cleanup(t *testing.T) { assert.NotPanics(t, newTestJob().Cleanup) }
 
 func TestPihole_Collect(t *testing.T) {
-	job := newTestJob()
-
-	require.True(t, job.Init())
-	job.client = newOKTestPiholeClient()
-	require.True(t, job.Check())
-	require.NotNil(t, job.Charts())
-
-	expected := map[string]int64{
-		"A":                    0,
-		"AAAA":                 0,
-		"ANY":                  0,
-		"PTR":                  0,
-		"SOA":                  0,
-		"SRV":                  0,
-		"TXT":                  0,
-		"ads_blocked_today":    0,
-		"ads_percentage_today": 0,
-		// "blocklist_last_update": 1561019970,
-		"destination_d1":        3329,
-		"destination_d2":        6659,
-		"dns_queries_today":     0,
-		"domains_being_blocked": 0,
-		"file_exists":           0,
-		"queries_cached":        0,
-		"queries_forwarded":     0,
-		"status":                0,
-		"top_blocked_domain_a1": 33,
-		"top_blocked_domain_a2": 66,
-		"top_client_c1":         33,
-		"top_client_c2":         66,
-		"top_perm_domain_q1":    33,
-		"top_perm_domain_q2":    66,
-		"unique_clients":        0,
-	}
-
-	//collected := job.Collect()
-	// expected["blocklist_last_update"] = collected["blocklist_last_update"]
-
-	assert.Equal(t, expected, job.Collect())
-}
-
-func TestPihole_Collect_OnlySummary(t *testing.T) {
-	job := newTestJob()
-
-	require.True(t, job.Init())
-
-	c := newOKTestPiholeClient()
-	c.queryTypes = nil
-	c.forwardDest = nil
-	c.topClients = nil
-	c.topItems = nil
-	job.client = c
-
-	require.True(t, job.Check())
-	require.NotNil(t, job.Charts())
-
-	expected := map[string]int64{
-		"ads_blocked_today":    0,
-		"ads_percentage_today": 0,
-		// "blocklist_last_update": 1561019970,
-		"dns_queries_today":     0,
-		"domains_being_blocked": 0,
-		"file_exists":           0,
-		"queries_cached":        0,
-		"queries_forwarded":     0,
-		"status":                0,
-		"unique_clients":        0,
-	}
-
-	//collected := job.Collect()
-	//expected["blocklist_last_update"] = collected["blocklist_last_update"]
-
-	assert.Equal(t, expected, job.Collect())
-}
-
-func TestPihole_Collect_NoData(t *testing.T) {
-	job := newTestJob()
-
-	require.True(t, job.Init())
-
-	job.client = newOKTestPiholeClient()
-	require.True(t, job.Check())
-	require.NotNil(t, job.Charts())
-
-	job.client = &testPiholeAPIClient{}
-	assert.Nil(t, job.Collect())
-}
-
-func newOKTestPiholeClient() *testPiholeAPIClient {
-	return &testPiholeAPIClient{
-		version: func() (int, error) {
-			return supportedAPIVersion, nil
+	tests := map[string]struct {
+		prepare       func(t *testing.T) (p *Pihole, cleanup func())
+		wantMetrics   map[string]int64
+		wantNumCharts int
+	}{
+		"success with web password": {
+			prepare:       caseSuccessWithWebPassword,
+			wantNumCharts: len(baseCharts) + 2,
+			wantMetrics: map[string]int64{
+				"A":                        1229,
+				"AAAA":                     1229,
+				"ANY":                      100,
+				"PTR":                      7143,
+				"SOA":                      100,
+				"SRV":                      100,
+				"TXT":                      100,
+				"ads_blocked_today":        1,
+				"ads_blocked_today_perc":   33333,
+				"ads_percentage_today":     100,
+				"blocking_status_disabled": 0,
+				"blocking_status_enabled":  1,
+				"blocklist_last_update":    106273651,
+				"destination_blocked":      220,
+				"destination_cached":       8840,
+				"destination_other":        940,
+				"dns_queries_today":        1,
+				"domains_being_blocked":    1,
+				"queries_cached":           1,
+				"queries_cached_perc":      33333,
+				"queries_forwarded":        1,
+				"queries_forwarded_perc":   33333,
+				"unique_clients":           1,
+			},
 		},
-		summary: func() (*client.SummaryRaw, error) {
-			return &client.SummaryRaw{}, nil
+		"success without web password": {
+			prepare:       caseSuccessNoWebPassword,
+			wantNumCharts: len(baseCharts),
+			wantMetrics: map[string]int64{
+				"ads_blocked_today":        1,
+				"ads_blocked_today_perc":   33333,
+				"ads_percentage_today":     100,
+				"blocking_status_disabled": 0,
+				"blocking_status_enabled":  1,
+				"blocklist_last_update":    106273651,
+				"dns_queries_today":        1,
+				"domains_being_blocked":    1,
+				"queries_cached":           1,
+				"queries_cached_perc":      33333,
+				"queries_forwarded":        1,
+				"queries_forwarded_perc":   33333,
+				"unique_clients":           1,
+			},
 		},
-		queryTypes: func() (*client.QueryTypes, error) {
-			return &client.QueryTypes{}, nil
-		},
-		forwardDest: func() (*[]client.ForwardDestination, error) {
-			return &[]client.ForwardDestination{
-				{Name: "d1", Percent: 33.3},
-				{Name: "d2", Percent: 66.6},
-			}, nil
-		},
-		topClients: func() (*[]client.TopClient, error) {
-			return &[]client.TopClient{
-				{Name: "c1", Requests: 33},
-				{Name: "c2", Requests: 66},
-			}, nil
-		},
-		topItems: func() (*client.TopItems, error) {
-			return &client.TopItems{
-				TopQueries: []client.TopQuery{
-					{Name: "q1", Hits: 33},
-					{Name: "q2", Hits: 66},
-				},
-				TopAds: []client.TopAdvertisement{
-					{Name: "a1", Hits: 33},
-					{Name: "a2", Hits: 66},
-				},
-			}, nil
+		"fail on unsupported version": {
+			prepare:     caseFailUnsupportedVersion,
+			wantMetrics: nil,
 		},
 	}
-}
 
-type testPiholeAPIClient struct {
-	version     func() (int, error)
-	summary     func() (*client.SummaryRaw, error)
-	queryTypes  func() (*client.QueryTypes, error)
-	forwardDest func() (*[]client.ForwardDestination, error)
-	topClients  func() (*[]client.TopClient, error)
-	topItems    func() (*client.TopItems, error)
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			p, cleanup := test.prepare(t)
+			defer cleanup()
 
-func (t testPiholeAPIClient) Version() (int, error) {
-	if t.version == nil {
-		return 0, errors.New("version is <nil>")
+			mx := p.Collect()
+
+			copyBlockListLastUpdate(mx, test.wantMetrics)
+			require.Equal(t, test.wantMetrics, mx)
+			if len(test.wantMetrics) > 0 {
+				assert.Len(t, *p.Charts(), test.wantNumCharts)
+			}
+		})
 	}
-	return t.version()
 }
 
-func (t testPiholeAPIClient) SummaryRaw() (*client.SummaryRaw, error) {
-	if t.summary == nil {
-		return nil, errors.New("summary is <nil>")
-	}
-	return t.summary()
+func caseSuccessWithWebPassword(t *testing.T) (*Pihole, func()) {
+	p, srv := New(), mockPiholeServer{}.newHTTPServer()
+
+	p.SetupVarsPath = pathSetupVarsOK
+	p.URL = srv.URL
+
+	require.True(t, p.Init())
+
+	return p, srv.Close
 }
 
-func (t testPiholeAPIClient) QueryTypes() (*client.QueryTypes, error) {
-	if t.queryTypes == nil {
-		return nil, errors.New("queryTypes is <nil>")
-	}
-	return t.queryTypes()
+func caseSuccessNoWebPassword(t *testing.T) (*Pihole, func()) {
+	p, srv := New(), mockPiholeServer{}.newHTTPServer()
+
+	p.SetupVarsPath = pathSetupVarsWrong
+	p.URL = srv.URL
+
+	require.True(t, p.Init())
+
+	return p, srv.Close
 }
 
-func (t testPiholeAPIClient) ForwardDestinations() (*[]client.ForwardDestination, error) {
-	if t.forwardDest == nil {
-		return nil, errors.New("forwardDest is <nil>")
-	}
-	return t.forwardDest()
+func caseFailUnsupportedVersion(t *testing.T) (*Pihole, func()) {
+	p, srv := New(), mockPiholeServer{
+		unsupportedVersion: true,
+	}.newHTTPServer()
+
+	p.SetupVarsPath = pathSetupVarsOK
+	p.URL = srv.URL
+
+	require.True(t, p.Init())
+
+	return p, srv.Close
 }
 
-func (t testPiholeAPIClient) TopClients(_ int) (*[]client.TopClient, error) {
-	if t.topClients == nil {
-		return nil, errors.New("topClients is <nil>")
-	}
-	return t.topClients()
+type mockPiholeServer struct {
+	unsupportedVersion bool
+	errOnAPIVersion    bool
+	errOnSummary       bool
+	errOnQueryTypes    bool
+	errOnGetForwardDst bool
+	errOnTopClients    bool
+	errOnTopItems      bool
 }
 
-func (t testPiholeAPIClient) TopItems(_ int) (*client.TopItems, error) {
-	if t.topItems == nil {
-		return nil, errors.New("topItems is <nil>")
+func (m mockPiholeServer) newHTTPServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != urlPathAPI || len(r.URL.Query()) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+
+		if r.URL.Query().Has(urlQueryKeyAPIVersion) {
+			if m.errOnAPIVersion {
+				w.WriteHeader(http.StatusNotFound)
+			} else if m.unsupportedVersion {
+				_, _ = w.Write([]byte(fmt.Sprintf(`{"version": %d}`, wantAPIVersion+1)))
+			} else {
+				_, _ = w.Write([]byte(fmt.Sprintf(`{"version": %d}`, wantAPIVersion)))
+			}
+			return
+		}
+
+		if r.URL.Query().Has(urlQueryKeySummaryRaw) {
+			if m.errOnSummary {
+				w.WriteHeader(http.StatusNotFound)
+			} else {
+				_, _ = w.Write(dataSummaryRawResp)
+			}
+			return
+		}
+
+		if r.URL.Query().Get(urlQueryKeyAuth) == "" {
+			_, _ = w.Write(dataEmptyResp)
+			return
+		}
+
+		data := dataEmptyResp
+		isErr := false
+		switch {
+		case r.URL.Query().Has(urlQueryKeyGetQueryTypes):
+			data, isErr = dataGetQueryTypesResp, m.errOnQueryTypes
+		case r.URL.Query().Has(urlQueryKeyGetForwardDestinations):
+			data, isErr = dataGetForwardDestinationsResp, m.errOnGetForwardDst
+		case r.URL.Query().Has(urlQueryKeyTopClients):
+			data, isErr = dataTopClientsResp, m.errOnTopClients
+		case r.URL.Query().Has(urlQueryKeyTopItems):
+			data, isErr = dataTopItemsResp, m.errOnTopItems
+		}
+
+		if isErr {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			_, _ = w.Write(data)
+		}
+	}))
+}
+
+func copyBlockListLastUpdate(dst, src map[string]int64) {
+	k := "blocklist_last_update"
+	if v, ok := src[k]; ok {
+		if _, ok := dst[k]; ok {
+			dst[k] = v
+		}
 	}
-	return t.topItems()
 }

@@ -3,41 +3,36 @@
 package wmi
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"strings"
+
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 )
 
 const (
-	collectorThermalzone = "thermalzone"
-
 	metricThermalzoneTemperatureCelsius = "windows_thermalzone_temperature_celsius"
 )
 
-func doCollectThermalzone(pms prometheus.Metrics) bool {
-	enabled, success := checkCollector(pms, collectorThermalzone)
-	return enabled && success
-}
-
-func collectThermalzone(pms prometheus.Metrics) *thermalZoneMetrics {
-	if !doCollectThermalzone(pms) {
-		return nil
-	}
-
-	tzm := &thermalZoneMetrics{}
-	var tzone *thermalZone
+func (w *WMI) collectThermalzone(mx map[string]int64, pms prometheus.Series) {
+	seen := make(map[string]bool)
 	for _, pm := range pms.FindByName(metricThermalzoneTemperatureCelsius) {
-		zoneName := cleanZoneName(pm.Labels.Get("name"))
-		if zoneName == "" {
-			continue
+		if name := cleanZoneName(pm.Labels.Get("name")); name != "" {
+			seen[name] = true
+			mx["thermalzone_"+name+"_temperature"] = int64(pm.Value)
 		}
-
-		if tzone == nil || tzone.ID != zoneName {
-			tzone = tzm.Zones.get(zoneName)
-		}
-
-		tzone.Temperature = pm.Value
 	}
-	return tzm
+
+	for zone := range seen {
+		if !w.cache.thermalZones[zone] {
+			w.cache.thermalZones[zone] = true
+			w.addThermalZoneCharts(zone)
+		}
+	}
+	for zone := range w.cache.thermalZones {
+		if !seen[zone] {
+			delete(w.cache.thermalZones, zone)
+			w.removeThermalZoneCharts(zone)
+		}
+	}
 }
 
 func cleanZoneName(name string) string {

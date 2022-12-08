@@ -13,7 +13,7 @@ import (
 )
 
 func (kp *KubeProxy) collect() (map[string]int64, error) {
-	raw, err := kp.prom.Scrape()
+	raw, err := kp.prom.ScrapeSeries()
 
 	if err != nil {
 		return nil, err
@@ -28,13 +28,13 @@ func (kp *KubeProxy) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
-func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Metrics, mx *metrics) {
+func (kp *KubeProxy) collectSyncProxyRules(raw prometheus.Series, mx *metrics) {
 	m := raw.FindByName("kubeproxy_sync_proxy_rules_latency_microseconds_count")
 	mx.SyncProxyRules.Count.Set(m.Max())
 	kp.collectSyncProxyRulesLatency(raw, mx)
 }
 
-func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *metrics) {
+func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Series, mx *metrics) {
 	metricName := "kubeproxy_sync_proxy_rules_latency_microseconds_bucket"
 	latency := &mx.SyncProxyRules.Latency
 
@@ -94,7 +94,7 @@ func (kp *KubeProxy) collectSyncProxyRulesLatency(raw prometheus.Metrics, mx *me
 	latency.LE2000.Sub(latency.LE1000.Value())
 }
 
-func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *metrics) {
+func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Series, mx *metrics) {
 	metricName := "rest_client_requests_total"
 	chart := kp.charts.Get("rest_client_requests_by_code")
 
@@ -127,7 +127,7 @@ func (kp *KubeProxy) collectRESTClientHTTPRequests(raw prometheus.Metrics, mx *m
 	}
 }
 
-func (kp *KubeProxy) collectHTTPRequestDuration(raw prometheus.Metrics, mx *metrics) {
+func (kp *KubeProxy) collectHTTPRequestDuration(raw prometheus.Series, mx *metrics) {
 	// Summary
 	for _, metric := range raw.FindByName("http_request_duration_microseconds") {
 		if math.IsNaN(metric.Value) {

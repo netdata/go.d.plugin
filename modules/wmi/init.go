@@ -4,22 +4,23 @@ package wmi
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (w WMI) validateConfig() error {
+func (w *WMI) validateConfig() error {
 	if w.URL == "" {
 		return errors.New("'url' is not set")
 	}
 	return nil
 }
 
-func (w WMI) initPrometheusClient() (prometheus.Prometheus, error) {
-	client, err := web.NewHTTPClient(w.Client)
-	if err != nil {
-		return nil, err
-	}
+func (w *WMI) initHTTPClient() (*http.Client, error) {
+	return web.NewHTTPClient(w.Client)
+}
+
+func (w *WMI) initPrometheusClient(client *http.Client) (prometheus.Prometheus, error) {
 	return prometheus.New(client, w.Request), nil
 }

@@ -3,65 +3,124 @@
 package wmi
 
 import (
-	"errors"
-
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
-	"github.com/netdata/go.d.plugin/pkg/stm"
-
-	"github.com/prometheus/prometheus/model/labels"
 )
 
-func isValidWindowsExporterMetrics(pms prometheus.Metrics) bool {
-	return pms.FindByName(metricCollectorSuccess).Len() > 0
-}
+const precision = 1000
+
+const (
+	collectorAD          = "ad"
+	collectorADCS        = "adcs"
+	collectorADFS        = "adfs"
+	collectorCPU         = "cpu"
+	collectorMemory      = "memory"
+	collectorNet         = "net"
+	collectorLogicalDisk = "logical_disk"
+	collectorOS          = "os"
+	collectorSystem      = "system"
+	collectorLogon       = "logon"
+	collectorThermalZone = "thermalzone"
+	collectorTCP         = "tcp"
+	collectorIIS         = "iis"
+	collectorMSSQL       = "mssql"
+	collectorProcess     = "process"
+	collectorService     = "service"
+)
 
 func (w *WMI) collect() (map[string]int64, error) {
-	pms, err := w.prom.Scrape()
+	pms, err := w.prom.ScrapeSeries()
 	if err != nil {
 		return nil, err
 	}
 
-	if !isValidWindowsExporterMetrics(pms) {
-		return nil, errors.New("collected metrics aren't windows_exporter metrics")
+	mx := make(map[string]int64)
+	w.collectMetrics(mx, pms)
+
+	if hasKey(mx, "os_visible_memory_bytes", "memory_available_bytes") {
+		mx["memory_used_bytes"] = 0 +
+			mx["os_visible_memory_bytes"] -
+			mx["memory_available_bytes"]
+	}
+	if hasKey(mx, "os_paging_limit_bytes", "os_paging_free_bytes") {
+		mx["os_paging_used_bytes"] = 0 +
+			mx["os_paging_limit_bytes"] -
+			mx["os_paging_free_bytes"]
+	}
+	if hasKey(mx, "os_visible_memory_bytes", "os_physical_memory_free_bytes") {
+		mx["os_visible_memory_used_bytes"] = 0 +
+			mx["os_visible_memory_bytes"] -
+			mx["os_physical_memory_free_bytes"]
+	}
+	if hasKey(mx, "memory_commit_limit", "memory_committed_bytes") {
+		mx["memory_not_committed_bytes"] = 0 +
+			mx["memory_commit_limit"] -
+			mx["memory_committed_bytes"]
+	}
+	if hasKey(mx, "memory_standby_cache_reserve_bytes", "memory_standby_cache_normal_priority_bytes", "memory_standby_cache_core_bytes") {
+		mx["memory_standby_cache_total"] = 0 +
+			mx["memory_standby_cache_reserve_bytes"] +
+			mx["memory_standby_cache_normal_priority_bytes"] +
+			mx["memory_standby_cache_core_bytes"]
+	}
+	if hasKey(mx, "memory_standby_cache_total", "memory_modified_page_list_bytes") {
+		mx["memory_cache_total"] = 0 +
+			mx["memory_standby_cache_total"] +
+			mx["memory_modified_page_list_bytes"]
 	}
 
-	mx := collect(pms)
-	w.updateCharts(mx)
-
-	return stm.ToMap(mx), nil
+	return mx, nil
 }
 
-func collect(pms prometheus.Metrics) *metrics {
-	mx := metrics{
-		CPU:         collectCPU(pms),
-		Memory:      collectMemory(pms),
-		Net:         collectNet(pms),
-		LogicalDisk: collectLogicalDisk(pms),
-		OS:          collectOS(pms),
-		System:      collectSystem(pms),
-		Logon:       collectLogon(pms),
-		ThermalZone: collectThermalzone(pms),
-		Collectors:  collectCollection(pms),
-	}
+func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
+	w.collectCollector(mx, pms)
+	for _, pm := range pms.FindByName(metricCollectorSuccess) {
+		if pm.Value == 0 {
+			continue
+		}
 
-	if mx.hasOS() && mx.hasMemory() {
-		v := mx.OS.VisibleMemoryBytes - mx.Memory.AvailableBytes
-		mx.Memory.UsedBytes = &v
+		switch pm.Labels.Get("collector") {
+		case collectorCPU:
+			w.collectCPU(mx, pms)
+		case collectorMemory:
+			w.collectMemory(mx, pms)
+		case collectorNet:
+			w.collectNet(mx, pms)
+		case collectorLogicalDisk:
+			w.collectLogicalDisk(mx, pms)
+		case collectorOS:
+			w.collectOS(mx, pms)
+		case collectorSystem:
+			w.collectSystem(mx, pms)
+		case collectorLogon:
+			w.collectLogon(mx, pms)
+		case collectorThermalZone:
+			w.collectThermalzone(mx, pms)
+		case collectorTCP:
+			w.collectTCP(mx, pms)
+		case collectorProcess:
+			w.collectProcess(mx, pms)
+		case collectorService:
+			w.collectService(mx, pms)
+		case collectorIIS:
+			w.collectIIS(mx, pms)
+		case collectorMSSQL:
+			w.collectMSSQL(mx, pms)
+		case collectorAD:
+			w.collectAD(mx, pms)
+		case collectorADCS:
+			w.collectADCS(mx, pms)
+		case collectorADFS:
+			w.collectADFS(mx, pms)
+		}
 	}
-	if mx.hasOS() {
-		mx.OS.PagingUsedBytes = mx.OS.PagingLimitBytes - mx.OS.PagingFreeBytes
-		mx.OS.VisibleMemoryUsedBytes = mx.OS.VisibleMemoryBytes - mx.OS.PhysicalMemoryFreeBytes
-	}
-	return &mx
 }
 
-func checkCollector(pms prometheus.Metrics, name string) (enabled, success bool) {
-	m, err := labels.NewMatcher(labels.MatchEqual, "collector", name)
-	if err != nil {
-		panic(err)
+func hasKey(mx map[string]int64, key string, keys ...string) bool {
+	_, ok := mx[key]
+	switch len(keys) {
+	case 0:
+		return ok
+	default:
+		return ok && hasKey(mx, keys[0], keys[1:]...)
 	}
-
-	pms = pms.FindByName(metricCollectorSuccess)
-	ms := pms.Match(m)
-	return ms.Len() > 0, ms.Max() == 1
 }
