@@ -32,8 +32,10 @@ func (p *Postgres) doQueryGlobalMetrics() error {
 			return fmt.Errorf("querying autovacuum workers error: %v", err)
 		}
 	}
-	if err := p.doQueryXactQueryRunningTime(); err != nil {
-		return err
+	if p.pgVersion >= pgVersion10 {
+		if err := p.doQueryXactQueryRunningTime(); err != nil {
+			return fmt.Errorf("querying xact/query running time: %v", err)
+		}
 	}
 
 	if !p.isSuperUser() {

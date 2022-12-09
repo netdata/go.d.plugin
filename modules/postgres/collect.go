@@ -74,6 +74,14 @@ func (p *Postgres) collect() (map[string]int64, error) {
 
 	p.resetMetrics()
 
+	if p.pgVersion >= pgVersion10 {
+		// need 'backend_type' in pg_stat_activity
+		p.addXactQueryRunningTimeChartsOnce.Do(func() {
+			p.addTransactionsRunTimeHistogramChart()
+			p.addQueriesRunTimeHistogramChart()
+		})
+	}
+
 	if err := p.doQueryGlobalMetrics(); err != nil {
 		return nil, err
 	}
