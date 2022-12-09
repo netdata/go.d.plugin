@@ -36,6 +36,10 @@ The mode can be changed in the module [configuration file](#Configuration).
 
 All metrics have "ping." prefix.
 
+Labels per scope:
+
+- host: host.
+
 | Metric           | Scope |   Dimensions   |    Units     |
 |------------------|:-----:|:--------------:|:------------:|
 | host_rtt         | host  | min, max, avg  | milliseconds |
