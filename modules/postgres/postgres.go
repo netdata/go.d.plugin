@@ -4,6 +4,7 @@ package postgres
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -38,8 +39,9 @@ func New() *Postgres {
 			replApps:  make(map[string]*replStandbyAppMetrics),
 			replSlots: make(map[string]*replSlotMetrics),
 		},
-		recheckSettingsEvery: time.Minute * 30,
-		doSlowEvery:          time.Minute * 5,
+		recheckSettingsEvery:              time.Minute * 30,
+		doSlowEvery:                       time.Minute * 5,
+		addXactQueryRunningTimeChartsOnce: &sync.Once{},
 	}
 }
 
@@ -64,6 +66,8 @@ type (
 		superUser      *bool
 		pgIsInRecovery *bool
 		pgVersion      int
+
+		addXactQueryRunningTimeChartsOnce *sync.Once
 
 		dbSr matcher.Matcher
 
@@ -97,10 +101,7 @@ func (p *Postgres) Init() bool {
 	p.dbSr = sr
 
 	p.mx.xactTimeHist = metrics.NewHistogramWithRangeBuckets(p.XactTimeHistogram)
-	p.addTransactionsRunTimeHistogramChart()
-
 	p.mx.queryTimeHist = metrics.NewHistogramWithRangeBuckets(p.QueryTimeHistogram)
-	p.addQueriesRunTimeHistogramChart()
 
 	return true
 }
