@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -28,7 +30,7 @@ func (p *Prometheus) addGaugeChart(id, name, help string, labels labels.Labels) 
 		Title:    getChartTitle(name, help),
 		Units:    units,
 		Fam:      getChartFamily(name),
-		Ctx:      "prometheus." + name,
+		Ctx:      getChartContext(p.application(), name),
 		Type:     cType,
 		Priority: getChartPriority(name),
 		Dims: module.Dims{
@@ -69,7 +71,7 @@ func (p *Prometheus) addCounterChart(id, name, help string, labels labels.Labels
 		Title:    getChartTitle(name, help),
 		Units:    units,
 		Fam:      getChartFamily(name),
-		Ctx:      "prometheus." + name,
+		Ctx:      getChartContext(p.application(), name),
 		Type:     cType,
 		Priority: getChartPriority(name),
 		Dims: module.Dims{
@@ -90,7 +92,7 @@ func (p *Prometheus) addCounterChart(id, name, help string, labels labels.Labels
 	p.cache.addChart(id, chart)
 }
 
-func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels, quantiles []prometheus.Quantile) {
+func (p *Prometheus) addSummaryCharts(id, name, help string, labels labels.Labels, quantiles []prometheus.Quantile) {
 	units := getChartUnits(name)
 
 	switch units {
@@ -99,74 +101,132 @@ func (p *Prometheus) addSummaryChart(id, name, help string, labels labels.Labels
 		units += "/s"
 	}
 
-	chart := &module.Chart{
-		ID:       id,
-		Title:    getChartTitle(name, help),
-		Units:    units,
-		Fam:      getChartFamily(name),
-		Ctx:      "prometheus." + name,
-		Priority: getChartPriority(name),
+	charts := module.Charts{
+		{
+			ID:       id,
+			Title:    getChartTitle(name, help),
+			Units:    units,
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name),
+			Priority: getChartPriority(name),
+			Dims: func() (dims module.Dims) {
+				for _, v := range quantiles {
+					s := formatFloat(v.Quantile())
+					dims = append(dims, &module.Dim{
+						ID:   fmt.Sprintf("%s_quantile=%s", id, s),
+						Name: fmt.Sprintf("quantile_%s", s),
+						Div:  precision * precision,
+					})
+				}
+				return dims
+			}(),
+		},
+		{
+			ID:       id + "_sum",
+			Title:    getChartTitle(name, help),
+			Units:    units,
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name) + "_sum",
+			Priority: getChartPriority(name),
+			Dims: module.Dims{
+				{ID: id + "_sum", Algo: module.Incremental, Div: precision},
+			},
+		},
+		{
+			ID:       id + "_count",
+			Title:    getChartTitle(name, help),
+			Units:    "events/s",
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name) + "_count",
+			Priority: getChartPriority(name),
+			Dims: module.Dims{
+				{ID: id + "_count", Algo: module.Incremental},
+			},
+		},
 	}
 
-	for _, v := range quantiles {
-		s := formatFloat(v.Quantile())
-
-		chart.Dims = append(chart.Dims, &module.Dim{
-			ID:   fmt.Sprintf("%s_quantile=%s", id, s),
-			Name: fmt.Sprintf("quantile_%s", s),
-			Algo: module.Incremental,
-			Div:  precision,
-		})
+	for _, chart := range charts {
+		for _, lbl := range labels {
+			chart.Labels = append(chart.Labels, module.Label{Key: lbl.Name, Value: lbl.Value})
+		}
+		if err := p.Charts().Add(chart); err != nil {
+			p.Warning(err)
+			continue
+		}
+		p.cache.addChart(id, chart)
 	}
-
-	for _, lbl := range labels {
-		chart.Labels = append(chart.Labels, module.Label{
-			Key:   lbl.Name,
-			Value: lbl.Value,
-		})
-	}
-
-	if err := p.Charts().Add(chart); err != nil {
-		p.Warning(err)
-		return
-	}
-
-	p.cache.addChart(id, chart)
 }
 
-func (p *Prometheus) addHistogramChart(id, name, help string, labels labels.Labels, buckets []prometheus.Bucket) {
-	chart := &module.Chart{
-		ID:       id,
-		Title:    getChartTitle(name, help),
-		Units:    "observations/s",
-		Fam:      getChartFamily(name),
-		Ctx:      "prometheus." + name,
-		Priority: getChartPriority(name),
+func (p *Prometheus) addHistogramCharts(id, name, help string, labels labels.Labels, buckets []prometheus.Bucket) {
+	units := getChartUnits(name)
+
+	switch units {
+	case "seconds", "time":
+	default:
+		units += "/s"
 	}
 
-	for _, v := range buckets {
-		s := formatFloat(v.UpperBound())
-
-		chart.Dims = append(chart.Dims, &module.Dim{
-			ID:   fmt.Sprintf("%s_bucket=%s", id, s),
-			Name: fmt.Sprintf("bucket_%s", s),
-			Algo: module.Incremental,
-		})
+	charts := module.Charts{
+		{
+			ID:       id,
+			Title:    getChartTitle(name, help),
+			Units:    "observations/s",
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name),
+			Priority: getChartPriority(name),
+			Dims: func() (dims module.Dims) {
+				for _, v := range buckets {
+					s := formatFloat(v.UpperBound())
+					dims = append(dims, &module.Dim{
+						ID:   fmt.Sprintf("%s_bucket=%s", id, s),
+						Name: fmt.Sprintf("bucket_%s", s),
+						Algo: module.Incremental,
+					})
+				}
+				return dims
+			}(),
+		},
+		{
+			ID:       id + "_sum",
+			Title:    getChartTitle(name, help),
+			Units:    units,
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name) + "_sum",
+			Priority: getChartPriority(name),
+			Dims: module.Dims{
+				{ID: id + "_sum", Algo: module.Incremental, Div: precision},
+			},
+		},
+		{
+			ID:       id + "_count",
+			Title:    getChartTitle(name, help),
+			Units:    "events/s",
+			Fam:      getChartFamily(name),
+			Ctx:      getChartContext(p.application(), name) + "_count",
+			Priority: getChartPriority(name),
+			Dims: module.Dims{
+				{ID: id + "_count", Algo: module.Incremental},
+			},
+		},
 	}
 
-	for _, lbl := range labels {
-		chart.Labels = append(chart.Labels, module.Label{
-			Key:   lbl.Name,
-			Value: lbl.Value,
-		})
+	for _, chart := range charts {
+		for _, lbl := range labels {
+			chart.Labels = append(chart.Labels, module.Label{Key: lbl.Name, Value: lbl.Value})
+		}
+		if err := p.Charts().Add(chart); err != nil {
+			p.Warning(err)
+			continue
+		}
+		p.cache.addChart(id, chart)
 	}
+}
 
-	if err := p.Charts().Add(chart); err != nil {
-		p.Warning(err)
-		return
+func (p *Prometheus) application() string {
+	if p.Application != "" {
+		return p.Application
 	}
-
-	p.cache.addChart(id, chart)
+	return p.Name
 }
 
 func getChartTitle(name, help string) string {
@@ -178,6 +238,13 @@ func getChartTitle(name, help string) string {
 	help = strings.TrimSuffix(help, ".")
 
 	return help
+}
+
+func getChartContext(app, name string) string {
+	if app == "" {
+		return fmt.Sprintf("prometheus.%s", name)
+	}
+	return fmt.Sprintf("prometheus.%s.%s", app, name)
 }
 
 func getChartFamily(metric string) (fam string) {

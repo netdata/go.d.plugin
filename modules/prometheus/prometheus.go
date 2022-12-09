@@ -3,7 +3,6 @@
 package prometheus
 
 import (
-	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -15,7 +14,7 @@ import (
 func init() {
 	module.Register("prometheus", module.Creator{
 		Defaults: module.Defaults{
-			UpdateEvery: 5,
+			UpdateEvery: 10,
 		},
 		Create: func() module.Module { return New() },
 	})
@@ -26,15 +25,12 @@ func New() *Prometheus {
 		Config: Config{
 			HTTP: web.HTTP{
 				Client: web.Client{
-					Timeout: web.Duration{Duration: time.Second * 5},
+					Timeout: web.Duration{Duration: time.Second * 10},
 				},
-				//Request: web.Request{
-				//	URL: "https://node.demo.do.prometheus.io/metrics",
-				//},
 			},
+			MaxTS:          2000,
 			MaxTSPerMetric: 200,
 		},
-		sb:     &strings.Builder{},
 		charts: &module.Charts{},
 		cache:  newCache(),
 	}
@@ -42,12 +38,15 @@ func New() *Prometheus {
 
 type Config struct {
 	web.HTTP        `yaml:",inline"`
-	Name            string        `yaml:"name"`
-	Application     string        `yaml:"app"`
-	BearerTokenFile string        `yaml:"bearer_token_file"`
-	Selector        selector.Expr `yaml:"selector"`
-	MaxTSPerMetric  int           `yaml:"max_time_series_per_metric"`
-	ExpectedPrefix  string        `yaml:"expected_prefix"`
+	Name            string `yaml:"name"`
+	Application     string `yaml:"app"`
+	BearerTokenFile string `yaml:"bearer_token_file"`
+
+	Selector selector.Expr `yaml:"selector"`
+
+	ExpectedPrefix string `yaml:"expected_prefix"`
+	MaxTS          int    `yaml:"max_time_series"`
+	MaxTSPerMetric int    `yaml:"max_time_series_per_metric"`
 }
 
 type Prometheus struct {
@@ -56,9 +55,7 @@ type Prometheus struct {
 
 	charts *module.Charts
 
-	prom prometheus.Prometheus
-	sb   *strings.Builder
-
+	prom  prometheus.Prometheus
 	cache *cache
 }
 

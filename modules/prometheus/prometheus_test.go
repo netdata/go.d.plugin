@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -77,7 +79,24 @@ func TestPrometheus_Check(t *testing.T) {
 				return prom, srv.Close
 			},
 		},
-		"fail if metrics have more time series than the limit": {
+		"fail if the total num of metrics exceeds the limit": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`
+test_counter_no_meta_metric_1_total{label1="value1"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 11
+`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.MaxTS = 1
+
+				return prom, srv.Close
+			},
+		},
+		"fail if the num time series in the metric exceeds the limit": {
 			wantFail: true,
 			prepare: func() (prom *Prometheus, cleanup func()) {
 				srv := httptest.NewServer(http.HandlerFunc(
@@ -294,14 +313,18 @@ test_summary_no_meta_1_duration_microseconds_sum{label1="value1"} 283201.29
 test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
 `,
 					wantCollected: map[string]int64{
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+						"test_summary_1_duration_microseconds-label1=value1_count":                 31,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921000,
+						"test_summary_1_duration_microseconds-label1=value1_sum":                   283201290,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_count":         31,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_sum":           283201290,
 					},
-					wantCharts: 2,
+					wantCharts: 6,
 				},
 				{
 					desc: "One series removed",
@@ -315,11 +338,13 @@ test_summary_1_duration_microseconds_sum{label1="value1"} 283201.29
 test_summary_1_duration_microseconds_count{label1="value1"} 31
 `,
 					wantCollected: map[string]int64{
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+						"test_summary_1_duration_microseconds-label1=value1_count":         31,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":  4931921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":  4932921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99": 4933921000,
+						"test_summary_1_duration_microseconds-label1=value1_sum":           283201290,
 					},
-					wantCharts: 1,
+					wantCharts: 3,
 				},
 				{
 					desc: "One series (re)added",
@@ -338,14 +363,18 @@ test_summary_no_meta_1_duration_microseconds_sum{label1="value1"} 283201.29
 test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
 `,
 					wantCollected: map[string]int64{
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921,
-						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921,
-						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921,
+						"test_summary_1_duration_microseconds-label1=value1_count":                 31,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.5":          4931921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.9":          4932921000,
+						"test_summary_1_duration_microseconds-label1=value1_quantile=0.99":         4933921000,
+						"test_summary_1_duration_microseconds-label1=value1_sum":                   283201290,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_count":         31,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.5":  4931921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.9":  4932921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_quantile=0.99": 4933921000,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_sum":           283201290,
 					},
-					wantCharts: 2,
+					wantCharts: 6,
 				},
 			},
 		},
@@ -372,11 +401,15 @@ test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
 						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf":         6,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":          4,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":          5,
+						"test_histogram_1_duration_seconds-label1=value1_count":               6,
+						"test_histogram_1_duration_seconds-label1=value1_sum":                 1,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=+Inf": 6,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.1":  4,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.5":  5,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_count":       6,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_sum":         1,
 					},
-					wantCharts: 2,
+					wantCharts: 6,
 				},
 				{
 					desc: "One series removed",
@@ -391,8 +424,10 @@ test_histogram_1_duration_seconds_bucket{label1="value1",le="+Inf"} 6
 						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf": 6,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":  4,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":  5,
+						"test_histogram_1_duration_seconds-label1=value1_count":       0,
+						"test_histogram_1_duration_seconds-label1=value1_sum":         0,
 					},
-					wantCharts: 1,
+					wantCharts: 3,
 				},
 				{
 					desc: "One series (re)added",
@@ -414,11 +449,15 @@ test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
 						"test_histogram_1_duration_seconds-label1=value1_bucket=+Inf":         6,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.1":          4,
 						"test_histogram_1_duration_seconds-label1=value1_bucket=0.5":          5,
+						"test_histogram_1_duration_seconds-label1=value1_count":               6,
+						"test_histogram_1_duration_seconds-label1=value1_sum":                 1,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=+Inf": 6,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.1":  4,
 						"test_histogram_no_meta_1_duration_seconds-label1=value1_bucket=0.5":  5,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_count":       6,
+						"test_histogram_no_meta_1_duration_seconds-label1=value1_sum":         1,
 					},
-					wantCharts: 2,
+					wantCharts: 6,
 				},
 			},
 		},

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package prometheus
 
 import (
@@ -34,6 +36,13 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 		p.ExpectedPrefix = ""
 	}
 
+	if p.MaxTS > 0 {
+		if n := calcMetrics(mfs); n > p.MaxTS {
+			return nil, fmt.Errorf("'%s' num of time series (%d) > limit (%d)", p.URL, n, p.MaxTS)
+		}
+		p.MaxTS = 0
+	}
+
 	mx := make(map[string]int64)
 
 	p.resetCache()
@@ -44,7 +53,7 @@ func (p *Prometheus) collect() (map[string]int64, error) {
 			continue
 		}
 		if p.MaxTSPerMetric > 0 && len(mf.Metrics()) > p.MaxTSPerMetric {
-			p.Debugf("metric '%s' time series (%d) > limit (%d), skipping it",
+			p.Debugf("metric '%s' num of time series (%d) > limit (%d), skipping it",
 				mf.Name(), len(mf.Metrics()), p.MaxTSPerMetric)
 			continue
 		}
@@ -107,13 +116,16 @@ func (p *Prometheus) collectSummary(mx map[string]int64, mf *prometheus.MetricFa
 		id := mf.Name() + p.joinLabels(m.Labels())
 
 		if !p.cache.hasP(id) {
-			p.addSummaryChart(id, mf.Name(), mf.Help(), m.Labels(), m.Summary().Quantiles())
+			p.addSummaryCharts(id, mf.Name(), mf.Help(), m.Labels(), m.Summary().Quantiles())
 		}
 
 		for _, v := range m.Summary().Quantiles() {
 			dimID := fmt.Sprintf("%s_quantile=%s", id, formatFloat(v.Quantile()))
-			mx[dimID] = int64(v.Value() * precision)
+			mx[dimID] = int64(v.Value() * precision * precision)
 		}
+
+		mx[id+"_sum"] = int64(m.Summary().Sum() * precision)
+		mx[id+"_count"] = int64(m.Summary().Count())
 	}
 }
 
@@ -126,13 +138,16 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, mf *prometheus.Metric
 		id := mf.Name() + p.joinLabels(m.Labels())
 
 		if !p.cache.hasP(id) {
-			p.addHistogramChart(id, mf.Name(), mf.Help(), m.Labels(), m.Histogram().Buckets())
+			p.addHistogramCharts(id, mf.Name(), mf.Help(), m.Labels(), m.Histogram().Buckets())
 		}
 
 		for _, v := range m.Histogram().Buckets() {
 			dimID := fmt.Sprintf("%s_bucket=%s", id, formatFloat(v.UpperBound()))
 			mx[dimID] = int64(v.CumulativeCount())
 		}
+
+		mx[id+"_sum"] = int64(m.Histogram().Sum() * precision)
+		mx[id+"_count"] = int64(m.Histogram().Count())
 	}
 }
 
@@ -154,7 +169,7 @@ func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFa
 }
 
 func (p *Prometheus) joinLabels(labels labels.Labels) string {
-	p.sb.Reset()
+	var sb strings.Builder
 	for _, lbl := range labels {
 		name, val := lbl.Name, lbl.Value
 		if name == "" || val == "" {
@@ -170,9 +185,9 @@ func (p *Prometheus) joinLabels(labels labels.Labels) string {
 			}
 		}
 
-		p.sb.Write([]byte("-" + name + "=" + val))
+		sb.WriteString("-" + name + "=" + val)
 	}
-	return p.sb.String()
+	return sb.String()
 }
 
 func (p *Prometheus) resetCache() {
@@ -218,6 +233,14 @@ func hasPrefix(mf map[string]*prometheus.MetricFamily, prefix string) bool {
 		}
 	}
 	return false
+}
+
+func calcMetrics(mfs prometheus.MetricFamilies) int {
+	var n int
+	for _, mf := range mfs {
+		n += len(mf.Metrics())
+	}
+	return n
 }
 
 func formatFloat(v float64) string {
