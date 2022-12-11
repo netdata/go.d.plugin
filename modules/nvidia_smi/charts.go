@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package nvidia_smi
 
 import (
@@ -22,20 +24,32 @@ const (
 	prioGPUPerformanceState
 )
 
-var gpuCharts = module.Charts{
-	gpuPCIBandwidthUsageChartTmpl.Copy(),
-	gpuFanSpeedPercChartTmpl.Copy(),
-	gpuUtilizationChartTmpl.Copy(),
-	gpuMemUtilizationChartTmpl.Copy(),
-	gpuDecoderUtilizationChartTmpl.Copy(),
-	gpuEncoderUtilizationChartTmpl.Copy(),
-	gpuFrameBufferMemoryUsageChartTmpl.Copy(),
-	gpuBAR1MemoryUsageChartTmpl.Copy(),
-	gpuTemperatureChartTmpl.Copy(),
-	gpuClockFreqChartTmpl.Copy(),
-	gpuPowerDrawChartTmpl.Copy(),
-	gpuPerformanceStateChartTmpl.Copy(),
-}
+var (
+	gpuXMLCharts = module.Charts{
+		gpuPCIBandwidthUsageChartTmpl.Copy(),
+		gpuFanSpeedPercChartTmpl.Copy(),
+		gpuUtilizationChartTmpl.Copy(),
+		gpuMemUtilizationChartTmpl.Copy(),
+		gpuDecoderUtilizationChartTmpl.Copy(),
+		gpuEncoderUtilizationChartTmpl.Copy(),
+		gpuFrameBufferMemoryUsageChartTmpl.Copy(),
+		gpuBAR1MemoryUsageChartTmpl.Copy(),
+		gpuTemperatureChartTmpl.Copy(),
+		gpuClockFreqChartTmpl.Copy(),
+		gpuPowerDrawChartTmpl.Copy(),
+		gpuPerformanceStateChartTmpl.Copy(),
+	}
+	gpuCSVCharts = module.Charts{
+		gpuFanSpeedPercChartTmpl.Copy(),
+		gpuUtilizationChartTmpl.Copy(),
+		gpuMemUtilizationChartTmpl.Copy(),
+		gpuFrameBufferMemoryUsageChartTmpl.Copy(),
+		gpuTemperatureChartTmpl.Copy(),
+		gpuClockFreqChartTmpl.Copy(),
+		gpuPowerDrawChartTmpl.Copy(),
+		gpuPerformanceStateChartTmpl.Copy(),
+	}
+)
 
 var (
 	gpuPCIBandwidthUsageChartTmpl = module.Chart{
@@ -197,8 +211,8 @@ var (
 	}
 )
 
-func newGPUCharts(gpu xmlGPUInfo) *module.Charts {
-	charts := gpuCharts.Copy()
+func (nv *NvidiaSMI) addGPUXMLCharts(gpu xmlGPUInfo) {
+	charts := gpuXMLCharts.Copy()
 	if !isValidValue(gpu.FanSpeed) {
 		_ = charts.Remove(gpuFanSpeedPercChartTmpl.ID)
 	}
@@ -209,19 +223,38 @@ func newGPUCharts(gpu xmlGPUInfo) *module.Charts {
 	for _, c := range *charts {
 		c.ID = fmt.Sprintf(c.ID, strings.ToLower(gpu.UUID))
 		c.Labels = []module.Label{
+			// csv output has no 'product_brand'
 			{Key: "product_name", Value: gpu.ProductName},
-			{Key: "product_brand", Value: gpu.ProductBrand},
 		}
 		for _, d := range c.Dims {
 			d.ID = fmt.Sprintf(d.ID, gpu.UUID)
 		}
 	}
 
-	return charts
+	if err := nv.Charts().Add(*charts...); err != nil {
+		nv.Warning(err)
+	}
 }
 
-func (nv *NvidiaSMI) addGPUCharts(gpu xmlGPUInfo) {
-	charts := newGPUCharts(gpu)
+func (nv *NvidiaSMI) addGPUCSVCharts(gpu csvGPUInfo) {
+	charts := gpuCSVCharts.Copy()
+
+	if !isValidValue(gpu.fanSpeed) {
+		_ = charts.Remove(gpuFanSpeedPercChartTmpl.ID)
+	}
+	if !isValidValue(gpu.powerDraw) {
+		_ = charts.Remove(gpuPowerDrawChartTmpl.ID)
+	}
+
+	for _, c := range *charts {
+		c.ID = fmt.Sprintf(c.ID, strings.ToLower(gpu.uuid))
+		c.Labels = []module.Label{
+			{Key: "product_name", Value: gpu.name},
+		}
+		for _, d := range c.Dims {
+			d.ID = fmt.Sprintf(d.ID, gpu.uuid)
+		}
+	}
 
 	if err := nv.Charts().Add(*charts...); err != nil {
 		nv.Warning(err)
