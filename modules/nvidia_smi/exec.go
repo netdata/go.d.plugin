@@ -31,15 +31,12 @@ func (e *nvidiaSMIExec) queryGPUInfoXML() ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 
-	args := []string{
-		"-q",
-		"-x",
-	}
-	e.Debugf("executing '%s %s'", e.binPath, strings.Join(args, " "))
+	cmd := exec.CommandContext(ctx, e.binPath, "-q", "-x")
 
-	bs, err := exec.CommandContext(ctx, e.binPath, args...).Output()
+	e.Debugf("executing '%s'", cmd)
+	bs, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("error on '%s %s': %v", e.binPath, strings.Join(args, " "), err)
+		return nil, fmt.Errorf("error on '%s': %v", cmd, err)
 	}
 
 	return bs, nil
@@ -53,15 +50,13 @@ func (e *nvidiaSMIExec) queryGPUInfoCSV(properties []string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 
-	args := []string{
-		"--query-gpu=" + strings.Join(properties, ","),
-		"--format=csv,nounits",
-	}
-	e.Debugf("executing '%s %s'", e.binPath, strings.Join(args, " "))
+	cmd := exec.CommandContext(ctx, e.binPath, "--query-gpu="+strings.Join(properties, ","), "--format=csv,nounits")
 
-	bs, err := exec.CommandContext(ctx, e.binPath, args...).Output()
+	e.Debugf("executing '%s'", cmd)
+
+	bs, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("error on '%s %s': %v", e.binPath, strings.Join(args, " "), err)
+		return nil, fmt.Errorf("error on '%s': %v", cmd, err)
 	}
 
 	return bs, nil
@@ -71,14 +66,12 @@ func (e *nvidiaSMIExec) queryHelpQueryGPU() ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 
-	args := []string{
-		"--help-query-gpu",
-	}
-	e.Debugf("executing '%s %s'", e.binPath, strings.Join(args, " "))
+	cmd := exec.CommandContext(ctx, e.binPath, "--help-query-gpu")
 
-	bs, err := exec.CommandContext(ctx, e.binPath, args...).Output()
+	e.Debugf("executing '%s'", cmd)
+	bs, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("error on '%s %s': %v", e.binPath, strings.Join(args, " "), err)
+		return nil, fmt.Errorf("error on '%s': %v", cmd, err)
 	}
 
 	return bs, err
