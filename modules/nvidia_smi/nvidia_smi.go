@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package nvidia_smi
 
 import (
@@ -11,7 +13,7 @@ func init() {
 	module.Register("nvidia_smi", module.Creator{
 		Defaults: module.Defaults{
 			Disabled:    true,
-			UpdateEvery: 5,
+			UpdateEvery: 10,
 		},
 		Create: func() module.Module { return New() },
 	})
@@ -20,7 +22,8 @@ func init() {
 func New() *NvidiaSMI {
 	return &NvidiaSMI{
 		Config: Config{
-			Timeout: web.Duration{Duration: time.Second * 5},
+			Timeout:      web.Duration{Duration: time.Second * 5},
+			UseCSVFormat: true,
 		},
 		binName: "nvidia-smi",
 		charts:  &module.Charts{},
@@ -30,8 +33,9 @@ func New() *NvidiaSMI {
 }
 
 type Config struct {
-	Timeout    web.Duration
-	BinaryPath string `yaml:"binary_path"`
+	Timeout      web.Duration
+	BinaryPath   string `yaml:"binary_path"`
+	UseCSVFormat bool   `yaml:"use_csv_format"`
 }
 
 type (
@@ -44,10 +48,14 @@ type (
 		binName string
 		exec    nvidiaSMI
 
+		gpuQueryProperties []string
+
 		gpus map[string]bool
 	}
 	nvidiaSMI interface {
-		queryXML() ([]byte, error)
+		queryGPUInfoXML() ([]byte, error)
+		queryGPUInfoCSV(properties []string) ([]byte, error)
+		queryHelpQueryGPU() ([]byte, error)
 	}
 )
 

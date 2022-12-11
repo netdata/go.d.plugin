@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package nvidia_smi
 
 import (
@@ -16,5 +18,5 @@ func (nv *NvidiaSMI) initNvidiaSMIExec() (nvidiaSMI, error) {
 		binPath = path
 	}
 
-	return newNvidiaSMIExec(binPath, nv.Config)
+	return newNvidiaSMIExec(binPath, nv.Config, nv.Logger)
 }
