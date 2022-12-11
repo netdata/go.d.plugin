@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package logstash
 
 // https://www.elastic.co/guide/en/logstash/current/node-stats-api.html

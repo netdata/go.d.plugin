@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package postgres
 
 import "github.com/netdata/go.d.plugin/pkg/metrics"
