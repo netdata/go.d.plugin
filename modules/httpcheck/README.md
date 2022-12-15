@@ -16,6 +16,10 @@ This module monitors one or more http servers availability and response time.
 
 All metrics have "httpcheck." prefix.
 
+Labels per scope:
+
+- global: url.
+
 | Metric          | Scope  |                        Dimensions                        |   Units    |
 |-----------------|:------:|:--------------------------------------------------------:|:----------:|
 | response_time   | global |                           time                           |     ms     |

@@ -56,6 +56,11 @@ To create the `netdata` user:
 
 All metrics have "pgbouncer." prefix.
 
+Labels per scope:
+
+- global: no labels.
+- database: database, postgres_database.
+
 | Metric                            |  Scope   |            Dimensions             |     Units      |
 |-----------------------------------|:--------:|:---------------------------------:|:--------------:|
 | client_connections_utilization    |  global  |               used                |   percentage   |

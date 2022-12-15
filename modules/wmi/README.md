@@ -63,6 +63,18 @@ Each Windows host (data collection job) will be identifiable as an "instance" in
 
 All metrics have "wmi." prefix.
 
+Labels per scope:
+
+- global: no labels.
+- logical disk: disk.
+- network device: nic.
+- thermalzone: thermalzone.
+- website: website.
+- mssql instance: mssql_instance.
+- database: mssql_instance, database.
+- certificate template: cert_template.
+- service: service.
+
 | Metric                                                               |        Scope         |                                                                                     Dimensions                                                                                     |       Units       |
 |----------------------------------------------------------------------|:--------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------:|
 | cpu_utilization_total                                                |        global        |                                                                          dpc, user, privileged, interrupt                                                                          |    percentage     |
