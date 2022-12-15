@@ -27,6 +27,11 @@ This module monitors WireGuard VPN network interfaces and peers traffic.
 
 All metrics have "wireguard." prefix.
 
+Labels per scope:
+
+- device: device.
+- peer: device, public_key.
+
 | Metric                    | Scope  |    Dimensions     |  Units  |
 |---------------------------|:------:|:-----------------:|:-------:|
 | device_peers              | device |       peers       |  peers  |

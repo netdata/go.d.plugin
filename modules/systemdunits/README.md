@@ -32,6 +32,10 @@ the [official documentation](https://www.freedesktop.org/software/systemd/man/sy
 
 All metrics have "systemd." prefix.
 
+Labels per scope:
+
+- unit: unit_name.
+
 | Metric               | Scope |                     Dimensions                     | Units |
 |----------------------|:-----:|:--------------------------------------------------:|:-----:|
 | service_unit_state   | unit  | active, inactive, activating, deactivating, failed | state |

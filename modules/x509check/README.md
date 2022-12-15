@@ -16,6 +16,10 @@ This module checks the time until a x509 certificate expiration and its revocati
 
 All metrics have "x509." prefix.
 
+Labels per scope:
+
+- global: source.
+
 | Metric                | Scope  | Dimensions |  Units  |
 |-----------------------|:------:|:----------:|:-------:|
 | time_until_expiration | global |   expiry   | seconds |

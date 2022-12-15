@@ -52,6 +52,12 @@ All metrics have "mysql." prefix.
 - userstats_* metrics need [User Statistics](https://mariadb.com/kb/en/user-statistics/#enabling-the-plugin) plugin
   enabled. MariaDB and Percona MySQL only.
 
+Labels per scope:
+
+- global: no labels.
+- connection: no labels.
+- user: user.
+
 | Metric                              |   Scope    |                                                                     Dimensions                                                                      |     Units      |
 |-------------------------------------|:----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
 | net                                 |   global   |                                                                       in, out                                                                       |   kilobits/s   |

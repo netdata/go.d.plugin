@@ -19,12 +19,16 @@ This module monitors `Dnsmasq DHCP` leases database.
 
 All metrics have "dnsmasq_dhcp." prefix.
 
+Labels per scope:
+
+- dhcp range: dhcp_range.
+
 | Metric                      |   Scope    | Dimensions |   Units    |
 |-----------------------------|:----------:|:----------:|:----------:|
 | dhcp_ranges                 |   global   | ipv4, ipv6 |   ranges   |
 | dhcp_hosts                  |   global   | ipv4, ipv6 |   hosts    |
-| dhcp_range_utilization      | dhcp_range |    used    | percentage |
-| dhcp_range_allocated_leases | dhcp_range | allocated  |   leases   |
+| dhcp_range_utilization      | dhcp range |    used    | percentage |
+| dhcp_range_allocated_leases | dhcp range | allocated  |   leases   |
 
 ## Auto-detection
 

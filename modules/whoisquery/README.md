@@ -16,6 +16,10 @@ This collector module checks the remaining time until a domain is expired.
 
 All metrics have "whoisquery." prefix.
 
+Labels per scope:
+
+- global: domain.
+
 | Metric                | Scope  | Dimensions |  Units  |
 |-----------------------|:------:|:----------:|:-------:|
 | time_until_expiration | global |   expiry   | seconds |

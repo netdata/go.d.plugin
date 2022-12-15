@@ -19,10 +19,15 @@ This module monitors `Consul` health checks.
 
 All metrics have "consul." prefix.
 
-| Metric                      | Scope |               Dimensions                | Units  |
-|-----------------------------|:-----:|:---------------------------------------:|:------:|
-| service_health_check_status | check | passing, maintenance, warning, critical | status |
-| unbound_health_check_status | check | passing, maintenance, warning, critical | status |
+Labels per scope:
+
+- service check: node, service.
+- unbound check: node.
+
+| Metric                      |     Scope     |               Dimensions                | Units  |
+|-----------------------------|:-------------:|:---------------------------------------:|:------:|
+| service_health_check_status | service check | passing, maintenance, warning, critical | status |
+| unbound_health_check_status | unbound check | passing, maintenance, warning, critical | status |
 
 ## Configuration
 

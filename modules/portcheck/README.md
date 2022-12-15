@@ -16,6 +16,10 @@ This module monitors one or more TCP services availability and response time.
 
 All metrics have "portcheck." prefix.
 
+Labels per scope:
+
+- global: host, port.
+
 | Metric         | Scope  |        Dimensions        |  Units  |
 |----------------|:------:|:------------------------:|:-------:|
 | status         | global | success, failed, timeout | boolean |
