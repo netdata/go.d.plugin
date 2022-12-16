@@ -120,8 +120,10 @@ func (p *Prometheus) collectSummary(mx map[string]int64, mf *prometheus.MetricFa
 		}
 
 		for _, v := range m.Summary().Quantiles() {
-			dimID := fmt.Sprintf("%s_quantile=%s", id, formatFloat(v.Quantile()))
-			mx[dimID] = int64(v.Value() * precision * precision)
+			if !math.IsNaN(v.Value()) {
+				dimID := fmt.Sprintf("%s_quantile=%s", id, formatFloat(v.Quantile()))
+				mx[dimID] = int64(v.Value() * precision * precision)
+			}
 		}
 
 		mx[id+"_sum"] = int64(m.Summary().Sum() * precision)
@@ -142,8 +144,10 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, mf *prometheus.Metric
 		}
 
 		for _, v := range m.Histogram().Buckets() {
-			dimID := fmt.Sprintf("%s_bucket=%s", id, formatFloat(v.UpperBound()))
-			mx[dimID] = int64(v.CumulativeCount())
+			if !math.IsNaN(v.CumulativeCount()) {
+				dimID := fmt.Sprintf("%s_bucket=%s", id, formatFloat(v.UpperBound()))
+				mx[dimID] = int64(v.CumulativeCount())
+			}
 		}
 
 		mx[id+"_sum"] = int64(m.Histogram().Sum() * precision)
