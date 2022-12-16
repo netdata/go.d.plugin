@@ -129,7 +129,7 @@ func (p *Prometheus) addSummaryCharts(id, name, help string, labels labels.Label
 			Ctx:      getChartContext(p.application(), name) + "_sum",
 			Priority: getChartPriority(name),
 			Dims: module.Dims{
-				{ID: id + "_sum", Algo: module.Incremental, Div: precision},
+				{ID: id + "_sum", Name: name + "_sum", Algo: module.Incremental, Div: precision},
 			},
 		},
 		{
@@ -140,7 +140,7 @@ func (p *Prometheus) addSummaryCharts(id, name, help string, labels labels.Label
 			Ctx:      getChartContext(p.application(), name) + "_count",
 			Priority: getChartPriority(name),
 			Dims: module.Dims{
-				{ID: id + "_count", Algo: module.Incremental},
+				{ID: id + "_count", Name: name + "_count", Algo: module.Incremental},
 			},
 		},
 	}
@@ -194,7 +194,7 @@ func (p *Prometheus) addHistogramCharts(id, name, help string, labels labels.Lab
 			Ctx:      getChartContext(p.application(), name) + "_sum",
 			Priority: getChartPriority(name),
 			Dims: module.Dims{
-				{ID: id + "_sum", Algo: module.Incremental, Div: precision},
+				{ID: id + "_sum", Name: name + "_sum", Algo: module.Incremental, Div: precision},
 			},
 		},
 		{
@@ -205,7 +205,7 @@ func (p *Prometheus) addHistogramCharts(id, name, help string, labels labels.Lab
 			Ctx:      getChartContext(p.application(), name) + "_count",
 			Priority: getChartPriority(name),
 			Dims: module.Dims{
-				{ID: id + "_count", Algo: module.Incremental},
+				{ID: id + "_count", Name: name + "_count", Algo: module.Incremental},
 			},
 		},
 	}

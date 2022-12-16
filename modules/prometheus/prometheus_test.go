@@ -378,6 +378,35 @@ test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
 				},
 			},
 		},
+		"Summary with NaN": {
+			prepare: New,
+			steps: []testCaseStep{
+				{
+					desc: "Two first seen series, no meta series collected",
+					input: `
+# HELP test_summary_1_duration_microseconds Test Summary Metric 1
+# TYPE test_summary_1_duration_microseconds summary
+test_summary_1_duration_microseconds{label1="value1",quantile="0.5"} NaN
+test_summary_1_duration_microseconds{label1="value1",quantile="0.9"} NaN
+test_summary_1_duration_microseconds{label1="value1",quantile="0.99"} NaN
+test_summary_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_1_duration_microseconds_count{label1="value1"} 31
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.5"} NaN
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.9"} NaN
+test_summary_no_meta_1_duration_microseconds{label1="value1",quantile="0.99"} NaN
+test_summary_no_meta_1_duration_microseconds_sum{label1="value1"} 283201.29
+test_summary_no_meta_1_duration_microseconds_count{label1="value1"} 31
+`,
+					wantCollected: map[string]int64{
+						"test_summary_1_duration_microseconds-label1=value1_count":         31,
+						"test_summary_1_duration_microseconds-label1=value1_sum":           283201290,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_count": 31,
+						"test_summary_no_meta_1_duration_microseconds-label1=value1_sum":   283201290,
+					},
+					wantCharts: 6,
+				},
+			},
+		},
 		"Histogram": {
 			prepare: New,
 			steps: []testCaseStep{
