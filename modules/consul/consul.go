@@ -4,19 +4,23 @@ package consul
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
+	"github.com/blang/semver/v4"
+
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/pkg/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("consul", module.Creator{
+		Defaults: module.Defaults{
+			UpdateEvery: 1,
+		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("consul", creator)
+	})
 }
 
 func New() *Consul {
@@ -27,16 +31,16 @@ func New() *Consul {
 				Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
 			},
 		},
-		checks: make(map[string]bool),
-		charts: globalCharts.Copy(),
+		charts:              &module.Charts{},
+		addGlobalChartsOnce: &sync.Once{},
+		checks:              make(map[string]bool),
 	}
 }
 
 type Config struct {
 	web.HTTP `yaml:",inline"`
 
-	ACLToken       string `yaml:"acl_token"`
-	ChecksSelector string `yaml:"checks_selector"`
+	ACLToken string `yaml:"acl_token"`
 }
 
 type Consul struct {
@@ -44,12 +48,16 @@ type Consul struct {
 
 	Config `yaml:",inline"`
 
-	charts *module.Charts
+	charts              *module.Charts
+	addGlobalChartsOnce *sync.Once
 
 	httpClient *http.Client
+	prom       prometheus.Prometheus
 
-	checks   map[string]bool
-	checksSr matcher.Matcher
+	cfg     *consulConfig
+	version *semver.Version
+
+	checks map[string]bool
 }
 
 func (c *Consul) Init() bool {
@@ -65,12 +73,12 @@ func (c *Consul) Init() bool {
 	}
 	c.httpClient = httpClient
 
-	sr, err := c.initChecksSelector()
+	prom, err := c.initPrometheusClient(httpClient)
 	if err != nil {
-		c.Errorf("init checks filter: %v", err)
+		c.Errorf("init Prometheus client: %v", err)
 		return false
 	}
-	c.checksSr = sr
+	c.prom = prom
 
 	return true
 }

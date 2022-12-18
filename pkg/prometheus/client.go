@@ -103,7 +103,7 @@ func (p *prometheus) fetch(w io.Writer) error {
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("server returned HTTP status %s", resp.Status)
+		return fmt.Errorf("server '%s' returned HTTP status code %d (%s)", req.URL, resp.StatusCode, resp.Status)
 	}
 
 	if resp.Header.Get("Content-Encoding") != "gzip" {
