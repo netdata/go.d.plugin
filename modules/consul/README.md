@@ -32,8 +32,9 @@ All metrics have "consul." prefix.
 
 Labels per scope:
 
-- node check: node, check_name.
-- service check: node, check_name, service_name.
+- global: datacenter, node_name.
+- node check: datacenter, node_name, check_name.
+- service check: datacenter, node_name, check_name, service_name.
 
 | Metric                            |     Scope     |                Dimensions                 |     Units     | Server | Client |
 |-----------------------------------|:-------------:|:-----------------------------------------:|:-------------:|:------:|:------:|
