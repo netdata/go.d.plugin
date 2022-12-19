@@ -444,28 +444,34 @@ func (c *Consul) addGlobalCharts() {
 		return
 	}
 
+	var charts *module.Charts
+
 	if !c.cfg.Config.Server {
-		if err := c.Charts().Add(*clientCharts.Copy()...); err != nil {
-			c.Warning(err)
+		charts = clientCharts.Copy()
+	} else {
+		charts = serverCharts.Copy()
+
+		// can't really rely on checking if a response contains a metric due to retention of some metrics
+		// https://github.com/hashicorp/go-metrics/blob/b6d5c860c07ef6eeec89f4a662c7b452dd4d0c93/prometheus/prometheus.go#L75-L76
+		if c.version != nil {
+			if c.version.LT(semver.Version{Major: 1, Minor: 13, Patch: 0}) {
+				_ = charts.Remove(raftThreadMainSaturationPercChart.ID)
+				_ = charts.Remove(raftThreadFSMSaturationPercChart.ID)
+			}
+			if c.version.LT(semver.Version{Major: 1, Minor: 11, Patch: 0}) {
+				_ = charts.Remove(kvsApplyTimeChart.ID)
+				_ = charts.Remove(kvsApplyOperationsRateChart.ID)
+				_ = charts.Remove(txnApplyTimeChart.ID)
+				_ = charts.Remove(txnApplyOperationsRateChart.ID)
+				_ = charts.Remove(raftBoltDBFreelistBytesChart.ID)
+			}
 		}
-		return
 	}
 
-	charts := serverCharts.Copy()
-
-	// can't really rely on checking if a response contains a metric due to retention of some metrics
-	// https://github.com/hashicorp/go-metrics/blob/b6d5c860c07ef6eeec89f4a662c7b452dd4d0c93/prometheus/prometheus.go#L75-L76
-	if c.version != nil {
-		if c.version.LT(semver.Version{Major: 1, Minor: 13, Patch: 0}) {
-			_ = charts.Remove(raftThreadMainSaturationPercChart.ID)
-			_ = charts.Remove(raftThreadFSMSaturationPercChart.ID)
-		}
-		if c.version.LT(semver.Version{Major: 1, Minor: 11, Patch: 0}) {
-			_ = charts.Remove(kvsApplyTimeChart.ID)
-			_ = charts.Remove(kvsApplyOperationsRateChart.ID)
-			_ = charts.Remove(txnApplyTimeChart.ID)
-			_ = charts.Remove(txnApplyOperationsRateChart.ID)
-			_ = charts.Remove(raftBoltDBFreelistBytesChart.ID)
+	for _, chart := range *charts {
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: c.cfg.Config.Datacenter},
+			{Key: "node_name", Value: c.cfg.Config.NodeName},
 		}
 	}
 
@@ -478,7 +484,7 @@ func newServiceHealthCheckChart(check *agentCheck) *module.Chart {
 	chart := serviceHealthCheckStatusChartTmpl.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 	chart.Labels = []module.Label{
-		{Key: "node", Value: check.Node},
+		{Key: "node_name", Value: check.Node},
 		{Key: "check_name", Value: check.Name},
 		{Key: "service_name", Value: check.ServiceName},
 	}
@@ -492,7 +498,7 @@ func newNodeHealthCheckChart(check *agentCheck) *module.Chart {
 	chart := nodeHealthCheckStatusChartTmpl.Copy()
 	chart.ID = fmt.Sprintf(chart.ID, check.CheckID)
 	chart.Labels = []module.Label{
-		{Key: "node", Value: check.Node},
+		{Key: "node_name", Value: check.Node},
 		{Key: "check_name", Value: check.Name},
 	}
 	for _, d := range chart.Dims {
@@ -509,6 +515,11 @@ func (c *Consul) addHealthCheckCharts(check *agentCheck) {
 	} else {
 		chart = newNodeHealthCheckChart(check)
 	}
+
+	chart.Labels = append(chart.Labels, module.Label{
+		Key:   "datacenter",
+		Value: c.cfg.Config.Datacenter,
+	})
 
 	if err := c.Charts().Add(chart); err != nil {
 		c.Warning(err)

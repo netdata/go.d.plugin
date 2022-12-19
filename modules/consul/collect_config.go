@@ -12,7 +12,6 @@ const (
 )
 
 type consulConfig struct {
-	// TODO: add Datacenter,NodeName as chart labels?
 	Config struct {
 		Datacenter        string
 		PrimaryDatacenter string
