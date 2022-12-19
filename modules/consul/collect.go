@@ -11,17 +11,36 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+const (
+	precision = 1000
+)
+
 func (c *Consul) collect() (map[string]int64, error) {
+	if c.cfg == nil {
+		if err := c.collectConfiguration(); err != nil {
+			return nil, err
+		}
+
+		c.addGlobalChartsOnce.Do(c.addGlobalCharts)
+	}
+
 	mx := make(map[string]int64)
 
-	if err := c.collectAgentChecks(mx); err != nil {
+	if err := c.collectChecks(mx); err != nil {
 		return nil, err
 	}
-	if err := c.collectAgentMetrics(mx); err != nil {
-		return nil, err
+
+	if c.isTelemetryPrometheusEnabled() {
+		if err := c.collectMetricsPrometheus(mx); err != nil {
+			return nil, err
+		}
 	}
 
 	return mx, nil
+}
+
+func (c *Consul) isTelemetryPrometheusEnabled() bool {
+	return c.cfg.DebugConfig.Telemetry.PrometheusOpts.Expiration != "0s"
 }
 
 func (c *Consul) doOKDecode(urlPath string, in interface{}) error {

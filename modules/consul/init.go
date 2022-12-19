@@ -5,8 +5,9 @@ package consul
 import (
 	"errors"
 	"net/http"
+	"net/url"
 
-	"github.com/netdata/go.d.plugin/pkg/matcher"
+	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -21,10 +22,20 @@ func (c *Consul) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(c.Client)
 }
 
-func (c *Consul) initChecksSelector() (matcher.Matcher, error) {
-	if c.ChecksSelector == "" {
-		return matcher.TRUE(), nil
-	}
+const urlPathAgentMetrics = "/v1/agent/metrics"
 
-	return matcher.NewSimplePatternsMatcher(c.ChecksSelector)
+func (c *Consul) initPrometheusClient(httpClient *http.Client) (prometheus.Prometheus, error) {
+	r, err := web.NewHTTPRequest(c.Request.Copy())
+	if err != nil {
+		return nil, err
+	}
+	r.URL.Path = urlPathAgentMetrics
+	r.URL.RawQuery = url.Values{
+		"format": []string{"prometheus"},
+	}.Encode()
+
+	req := c.Request.Copy()
+	req.URL = r.URL.String()
+
+	return prometheus.New(httpClient, req), nil
 }

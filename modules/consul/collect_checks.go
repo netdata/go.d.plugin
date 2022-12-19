@@ -2,6 +2,11 @@
 
 package consul
 
+const (
+	// https://www.consul.io/api-docs/agent/check#list-checks
+	urlPathAgentChecks = "/v1/agent/checks"
+)
+
 type agentCheck struct {
 	Node        string
 	CheckID     string
@@ -12,10 +17,7 @@ type agentCheck struct {
 	ServiceTags []string
 }
 
-// https://www.consul.io/api-docs/agent/check#list-checks
-const urlPathAgentChecks = "/v1/agent/checks"
-
-func (c *Consul) collectAgentChecks(mx map[string]int64) error {
+func (c *Consul) collectChecks(mx map[string]int64) error {
 	var checks map[string]*agentCheck
 
 	if err := c.doOKDecode(urlPathAgentChecks, &checks); err != nil {
@@ -23,11 +25,6 @@ func (c *Consul) collectAgentChecks(mx map[string]int64) error {
 	}
 
 	for id, check := range checks {
-		if !c.checksSr.MatchString(id) {
-			c.Debugf("check with id '%s' does not match the selector ('%s'), skipping it", id, c.ChecksSelector)
-			continue
-		}
-
 		if !c.checks[id] {
 			c.checks[id] = true
 			c.addHealthCheckCharts(check)
