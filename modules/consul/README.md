@@ -58,8 +58,8 @@ Labels per scope:
 | raft_leader_elections_rate        |    global     |                  leader                   |  elections/s  |      yes      |       yes       |   no   |
 | raft_leadership_transitions_rate  |    global     |                leadership                 | transitions/s |      yes      |       yes       |   no   |
 | server_leadership_status          |    global     |            leader, not_leader             |    status     |      yes      |       yes       |   no   |
-| raft_thread_main_saturation_perc  |    global     |                saturation                 |  percentage   |      yes      |       yes       |   no   |
-| raft_thread_fsm_saturation_perc   |    global     |                saturation                 |  percentage   |      yes      |       yes       |   no   |
+| raft_thread_main_saturation_perc  |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
+| raft_thread_fsm_saturation_perc   |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
 | raft_fsm_last_restore_duration    |    global     |           last_restore_duration           |      ms       |      yes      |       yes       |   no   |
 | raft_leader_oldest_log_age        |    global     |              oldest_log_age               |    seconds    |      yes      |       no        |   no   |
 | raft_rpc_install_snapshot_time    |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      no       |       yes       |   no   |
