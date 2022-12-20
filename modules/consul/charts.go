@@ -289,7 +289,9 @@ var (
 		Ctx:      "consul.raft_thread_main_saturation_perc",
 		Priority: prioRaftThreadMainSaturation,
 		Dims: module.Dims{
-			{ID: "raft_thread_main_saturation_sum", Name: "saturation", Algo: module.Incremental, Div: precision},
+			{ID: "raft_thread_main_saturation_quantile=0.5", Name: "quantile_0.5", Div: precision * 10},
+			{ID: "raft_thread_main_saturation_quantile=0.9", Name: "quantile_0.9", Div: precision * 10},
+			{ID: "raft_thread_main_saturation_quantile=0.99", Name: "quantile_0.99", Div: precision * 10},
 		},
 	}
 	raftThreadFSMSaturationPercChart = module.Chart{
@@ -300,7 +302,9 @@ var (
 		Ctx:      "consul.raft_thread_fsm_saturation_perc",
 		Priority: prioRaftThreadFSMSaturation,
 		Dims: module.Dims{
-			{ID: "raft_thread_fsm_saturation_sum", Name: "saturation", Algo: module.Incremental, Div: precision},
+			{ID: "raft_thread_fsm_saturation_quantile=0.5", Name: "quantile_0.5", Div: precision * 10},
+			{ID: "raft_thread_fsm_saturation_quantile=0.9", Name: "quantile_0.9", Div: precision * 10},
+			{ID: "raft_thread_fsm_saturation_quantile=0.99", Name: "quantile_0.99", Div: precision * 10},
 		},
 	}
 
