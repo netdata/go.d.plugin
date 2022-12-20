@@ -60,18 +60,25 @@ var (
 		memorySysChart.Copy(),
 		gcPauseTimeChart.Copy(),
 	}
-	serverCharts = module.Charts{
+
+	serverLeaderCharts = module.Charts{
+		raftCommitTimeChart.Copy(),
+		raftLeaderLastContactTimeChart.Copy(),
+		raftCommitsRateChart.Copy(),
+		raftLeaderOldestLogAgeChart.Copy(),
+	}
+	serverFollowerCharts = module.Charts{
+		raftRPCInstallSnapshotTimeChart.Copy(),
+	}
+	serverCommonCharts = module.Charts{
 		kvsApplyTimeChart.Copy(),
 		kvsApplyOperationsRateChart.Copy(),
 		txnApplyTimeChart.Copy(),
 		txnApplyOperationsRateChart.Copy(),
-		raftCommitTimeChart.Copy(),
-		raftCommitsRateChart.Copy(),
 
 		autopilotHealthStatusChart.Copy(),
 		autopilotFailureTolerance.Copy(),
 
-		raftLeaderLastContactTimeChart.Copy(),
 		raftLeaderElectionsRateChart.Copy(),
 		raftLeadershipTransitionsRateChart.Copy(),
 		serverLeadershipStatusChart.Copy(),
@@ -84,8 +91,6 @@ var (
 		raftThreadFSMSaturationPercChart.Copy(),
 
 		raftFSMLastRestoreDurationChart.Copy(),
-		raftLeaderOldestLogAgeChart.Copy(),
-		raftRPCInstallSnapshotTimeChart.Copy(),
 
 		raftBoltDBFreelistBytesChart.Copy(),
 		raftBoltDBLogsPerBatchChart.Copy(),
@@ -449,7 +454,7 @@ func (c *Consul) addGlobalCharts() {
 	if !c.cfg.Config.Server {
 		charts = clientCharts.Copy()
 	} else {
-		charts = serverCharts.Copy()
+		charts = serverCommonCharts.Copy()
 
 		// can't really rely on checking if a response contains a metric due to retention of some metrics
 		// https://github.com/hashicorp/go-metrics/blob/b6d5c860c07ef6eeec89f4a662c7b452dd4d0c93/prometheus/prometheus.go#L75-L76
@@ -537,4 +542,48 @@ func (c *Consul) removeHealthCheckCharts(checkID string) {
 
 	chart.MarkRemove()
 	chart.MarkNotCreated()
+}
+
+func (c *Consul) addLeaderCharts() {
+	charts := serverLeaderCharts.Copy()
+
+	if err := c.Charts().Add(*charts...); err != nil {
+		c.Warning(err)
+	}
+}
+
+func (c *Consul) removeLeaderCharts() {
+	s := make(map[string]bool)
+	for _, v := range serverLeaderCharts {
+		s[v.ID] = true
+	}
+
+	for _, v := range *c.Charts() {
+		if s[v.ID] {
+			v.MarkRemove()
+			v.MarkNotCreated()
+		}
+	}
+}
+
+func (c *Consul) addFollowerCharts() {
+	charts := serverFollowerCharts.Copy()
+
+	if err := c.Charts().Add(*charts...); err != nil {
+		c.Warning(err)
+	}
+}
+
+func (c *Consul) removeFollowerCharts() {
+	s := make(map[string]bool)
+	for _, v := range serverFollowerCharts {
+		s[v.ID] = true
+	}
+
+	for _, v := range *c.Charts() {
+		if s[v.ID] {
+			v.MarkRemove()
+			v.MarkNotCreated()
+		}
+	}
 }

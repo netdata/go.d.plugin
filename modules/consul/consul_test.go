@@ -130,7 +130,7 @@ func TestConsul_Collect(t *testing.T) {
 	}{
 		"success on response from Consul v1.13.2 server": {
 			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCharts) + 3 + 1, // 3 node, 1 service check
+			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
@@ -214,7 +214,7 @@ func TestConsul_Collect(t *testing.T) {
 		},
 		"success on response from Consul v1.13.2 server with enabled hostname": {
 			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCharts) + 3 + 1, // 3 node, 1 service check
+			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,

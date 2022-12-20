@@ -57,7 +57,9 @@ type Consul struct {
 	cfg     *consulConfig
 	version *semver.Version
 
-	checks map[string]bool
+	hasLeaderCharts   bool
+	hasFollowerCharts bool
+	checks            map[string]bool
 }
 
 func (c *Consul) Init() bool {
