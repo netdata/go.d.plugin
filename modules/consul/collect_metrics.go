@@ -40,6 +40,25 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 		c.collectGauge(mx, mfs, "raft_fsm_lastRestoreDuration")
 		c.collectGauge(mx, mfs, "raft_leader_oldestLogAge") // make sense for leader only
 		c.collectGauge(mx, mfs, "raft_boltdb_freelistBytes")
+
+		if isLeader, ok := c.isLeader(mfs); ok {
+			if isLeader && !c.hasLeaderCharts {
+				c.addLeaderCharts()
+				c.hasLeaderCharts = true
+			}
+			if !isLeader && c.hasLeaderCharts {
+				c.removeLeaderCharts()
+				c.hasLeaderCharts = false
+			}
+			if !isLeader && !c.hasFollowerCharts {
+				c.addFollowerCharts()
+				c.hasFollowerCharts = true
+			}
+			if isLeader && c.hasFollowerCharts {
+				c.removeFollowerCharts()
+				c.hasFollowerCharts = false
+			}
+		}
 	}
 
 	c.collectCounter(mx, mfs, "client_rpc", 1)
@@ -50,6 +69,18 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 	c.collectGauge(mx, mfs, "runtime_total_gc_pause_ns")
 
 	return nil
+}
+
+func (c *Consul) isLeader(mfs prometheus.MetricFamilies) (bool, bool) {
+	mf := mfs.GetGauge(c.promMetricNameWithHostname("server_isLeader"))
+	if mf == nil {
+		mf = mfs.GetGauge(c.promMetricName("server_isLeader"))
+	}
+	if mf == nil {
+		return false, false
+	}
+
+	return mf.Metrics()[0].Gauge().Value() == 1, true
 }
 
 func (c *Consul) collectGauge(mx map[string]int64, mfs prometheus.MetricFamilies, name string) {
