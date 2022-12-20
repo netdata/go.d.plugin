@@ -158,11 +158,13 @@ func (c *Consul) promMetricName(name string) string {
 	return px + "_" + name
 }
 
+var forbiddenCharsReplacer = strings.NewReplacer(" ", "_", ".", "_", "=", "_", "-", "_", "/", "_")
+
 // controlled by 'disable_hostname'
 // https://developer.hashicorp.com/consul/docs/agent/config/config-files#telemetry-disable_hostname
 func (c *Consul) promMetricNameWithHostname(name string) string {
 	px := c.cfg.DebugConfig.Telemetry.MetricsPrefix
-	node := strings.ReplaceAll(c.cfg.Config.NodeName, "-", "_")
+	node := forbiddenCharsReplacer.Replace(c.cfg.Config.NodeName)
 
 	return px + "_" + node + "_" + name
 }
