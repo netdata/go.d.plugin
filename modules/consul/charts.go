@@ -547,6 +547,13 @@ func (c *Consul) removeHealthCheckCharts(checkID string) {
 func (c *Consul) addLeaderCharts() {
 	charts := serverLeaderCharts.Copy()
 
+	for _, chart := range *charts {
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: c.cfg.Config.Datacenter},
+			{Key: "node_name", Value: c.cfg.Config.NodeName},
+		}
+	}
+
 	if err := c.Charts().Add(*charts...); err != nil {
 		c.Warning(err)
 	}
@@ -568,6 +575,13 @@ func (c *Consul) removeLeaderCharts() {
 
 func (c *Consul) addFollowerCharts() {
 	charts := serverFollowerCharts.Copy()
+
+	for _, chart := range *charts {
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: c.cfg.Config.Datacenter},
+			{Key: "node_name", Value: c.cfg.Config.NodeName},
+		}
+	}
 
 	if err := c.Charts().Add(*charts...); err != nil {
 		c.Warning(err)
