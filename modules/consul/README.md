@@ -36,36 +36,41 @@ Labels per scope:
 - node check: datacenter, node_name, check_name.
 - service check: datacenter, node_name, check_name, service_name.
 
-| Metric                            |     Scope     |                Dimensions                 |     Units     | Server Leader | Server Follower | Client |
-|-----------------------------------|:-------------:|:-----------------------------------------:|:-------------:|:-------------:|:---------------:|:------:|
-| node_health_check_status          |  node check   |  passing, maintenance, warning, critical  |    status     |      yes      |       yes       |  yes   |
-| service_health_check_status       | service check |  passing, maintenance, warning, critical  |    status     |      yes      |       yes       |  yes   |
-| client_rpc_requests_rate          |    global     |                    rpc                    |  requests/s   |      yes      |       yes       |  yes   |
-| client_rpc_requests_exceeded_rate |    global     |                 exceeded                  |  requests/s   |      yes      |       yes       |  yes   |
-| client_rpc_requests_failed_rate   |    global     |                  failed                   |  requests/s   |      yes      |       yes       |  yes   |
-| memory_allocated                  |    global     |                 allocated                 |     bytes     |      yes      |       yes       |  yes   |
-| memory_sys                        |    global     |                    sys                    |     bytes     |      yes      |       yes       |  yes   |
-| gc_pause_time                     |    global     |                 gc_pause                  |    seconds    |      yes      |       yes       |  yes   |
-| kvs_apply_time                    |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
-| kvs_apply_operations_rate         |    global     |                 kvs_apply                 |     ops/s     |      yes      |       yes       |   no   |
-| txn_apply_time                    |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
-| txn_apply_operations_rate         |    global     |                 txn_apply                 |     ops/s     |      yes      |       yes       |   no   |
-| raft_commit_time                  |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
-| raft_commits_rate                 |    global     |                  commits                  |   commits/s   |      yes      |       no        |   no   |
-| autopilot_health_status           |    global     |            healthy, unhealthy             |    status     |      yes      |       yes       |   no   |
-| autopilot_failure_tolerance       |    global     |             failure_tolerance             |    servers    |      yes      |       yes       |   no   |
-| raft_leader_last_contact_time     |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
-| raft_leader_elections_rate        |    global     |                  leader                   |  elections/s  |      yes      |       yes       |   no   |
-| raft_leadership_transitions_rate  |    global     |                leadership                 | transitions/s |      yes      |       yes       |   no   |
-| server_leadership_status          |    global     |            leader, not_leader             |    status     |      yes      |       yes       |   no   |
-| raft_thread_main_saturation_perc  |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
-| raft_thread_fsm_saturation_perc   |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
-| raft_fsm_last_restore_duration    |    global     |           last_restore_duration           |      ms       |      yes      |       yes       |   no   |
-| raft_leader_oldest_log_age        |    global     |              oldest_log_age               |    seconds    |      yes      |       no        |   no   |
-| raft_rpc_install_snapshot_time    |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      no       |       yes       |   no   |
-| raft_boltdb_freelist_bytes        |    global     |                 freelist                  |     bytes     |      yes      |       yes       |   no   |
-| raft_boltdb_logs_per_batch_rate   |    global     |                  written                  |    logs/s     |      yes      |       yes       |   no   |
-| raft_boltdb_store_logs_time       |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
+| Metric                                 |     Scope     |                Dimensions                 |     Units     | Server Leader | Server Follower | Client |
+|----------------------------------------|:-------------:|:-----------------------------------------:|:-------------:|:-------------:|:---------------:|:------:|
+| node_health_check_status               |  node check   |  passing, maintenance, warning, critical  |    status     |      yes      |       yes       |  yes   |
+| service_health_check_status            | service check |  passing, maintenance, warning, critical  |    status     |      yes      |       yes       |  yes   |
+| client_rpc_requests_rate               |    global     |                    rpc                    |  requests/s   |      yes      |       yes       |  yes   |
+| client_rpc_requests_exceeded_rate      |    global     |                 exceeded                  |  requests/s   |      yes      |       yes       |  yes   |
+| client_rpc_requests_failed_rate        |    global     |                  failed                   |  requests/s   |      yes      |       yes       |  yes   |
+| memory_allocated                       |    global     |                 allocated                 |     bytes     |      yes      |       yes       |  yes   |
+| memory_sys                             |    global     |                    sys                    |     bytes     |      yes      |       yes       |  yes   |
+| gc_pause_time                          |    global     |                 gc_pause                  |    seconds    |      yes      |       yes       |  yes   |
+| kvs_apply_time                         |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
+| kvs_apply_operations_rate              |    global     |                 kvs_apply                 |     ops/s     |      yes      |       yes       |   no   |
+| txn_apply_time                         |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
+| txn_apply_operations_rate              |    global     |                 txn_apply                 |     ops/s     |      yes      |       yes       |   no   |
+| raft_commit_time                       |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
+| raft_commits_rate                      |    global     |                  commits                  |   commits/s   |      yes      |       no        |   no   |
+| autopilot_health_status                |    global     |            healthy, unhealthy             |    status     |      yes      |       yes       |   no   |
+| autopilot_failure_tolerance            |    global     |             failure_tolerance             |    servers    |      yes      |       yes       |   no   |
+| autopilot_server_health_status         |    global     |            healthy, unhealthy             |    status     |      yes      |       yes       |   no   |
+| autopilot_server_stable_time           |    global     |                  stable                   |    seconds    |      yes      |       yes       |   no   |
+| autopilot_server_serf_status           |    global     |        active, failed, left, none         |    status     |      yes      |       yes       |   no   |
+| autopilot_server_voter_status          |    global     |             voter, not_voter              |    status     |      yes      |       yes       |   no   |
+| raft_leader_last_contact_time          |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
+| raft_follower_last_contact_leader_time |    global     |            leader_last_contact            |      ms       |      no       |       yes       |   no   |
+| raft_leader_elections_rate             |    global     |                  leader                   |  elections/s  |      yes      |       yes       |   no   |
+| raft_leadership_transitions_rate       |    global     |                leadership                 | transitions/s |      yes      |       yes       |   no   |
+| server_leadership_status               |    global     |            leader, not_leader             |    status     |      yes      |       yes       |   no   |
+| raft_thread_main_saturation_perc       |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
+| raft_thread_fsm_saturation_perc        |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |  percentage   |      yes      |       yes       |   no   |
+| raft_fsm_last_restore_duration         |    global     |           last_restore_duration           |      ms       |      yes      |       yes       |   no   |
+| raft_leader_oldest_log_age             |    global     |              oldest_log_age               |    seconds    |      yes      |       no        |   no   |
+| raft_rpc_install_snapshot_time         |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      no       |       yes       |   no   |
+| raft_boltdb_freelist_bytes             |    global     |                 freelist                  |     bytes     |      yes      |       yes       |   no   |
+| raft_boltdb_logs_per_batch_rate        |    global     |                  written                  |    logs/s     |      yes      |       yes       |   no   |
+| raft_boltdb_store_logs_time            |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
 
 ## Configuration
 

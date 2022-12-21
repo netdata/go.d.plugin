@@ -21,11 +21,16 @@ const (
 
 	prioServerLeadershipStatus
 	prioRaftLeaderLastContactTime
+	prioRaftFollowerLastContactLeaderTime
 	prioRaftLeaderElections
 	prioRaftLeadershipTransitions
 
-	prioAutopilotHealthStatus
+	prioAutopilotClusterHealthStatus
 	prioAutopilotFailureTolerance
+	prioAutopilotServerHealthStatus
+	prioAutopilotServerStableTime
+	prioAutopilotServerSerfStatus
+	prioAutopilotServerVoterStatus
 
 	prioRPCRequests
 	prioRPCRequestsExceeded
@@ -68,6 +73,7 @@ var (
 		raftLeaderOldestLogAgeChart.Copy(),
 	}
 	serverFollowerCharts = module.Charts{
+		raftFollowerLastContactLeaderTimeChart.Copy(),
 		raftRPCInstallSnapshotTimeChart.Copy(),
 	}
 	serverCommonCharts = module.Charts{
@@ -76,8 +82,12 @@ var (
 		txnApplyTimeChart.Copy(),
 		txnApplyOperationsRateChart.Copy(),
 
-		autopilotHealthStatusChart.Copy(),
+		autopilotClusterHealthStatusChart.Copy(),
 		autopilotFailureTolerance.Copy(),
+		autopilotServerHealthStatusChart.Copy(),
+		autopilotServerStableTimeChart.Copy(),
+		autopilotServerSerfStatusChart.Copy(),
+		autopilotServerVoterStatusChart.Copy(),
 
 		raftLeaderElectionsRateChart.Copy(),
 		raftLeadershipTransitionsRateChart.Copy(),
@@ -175,13 +185,13 @@ var (
 		},
 	}
 
-	autopilotHealthStatusChart = module.Chart{
+	autopilotClusterHealthStatusChart = module.Chart{
 		ID:       "autopilot_health_status",
-		Title:    "Autopilot health status",
+		Title:    "Autopilot cluster health status",
 		Units:    "status",
 		Fam:      "autopilot",
 		Ctx:      "consul.autopilot_health_status",
-		Priority: prioAutopilotHealthStatus,
+		Priority: prioAutopilotClusterHealthStatus,
 		Dims: module.Dims{
 			{ID: "autopilot_healthy_yes", Name: "healthy"},
 			{ID: "autopilot_healthy_no", Name: "unhealthy"},
@@ -189,13 +199,62 @@ var (
 	}
 	autopilotFailureTolerance = module.Chart{
 		ID:       "autopilot_failure_tolerance",
-		Title:    "Autopilot failure tolerance",
+		Title:    "Autopilot cluster failure tolerance",
 		Units:    "servers",
 		Fam:      "autopilot",
 		Ctx:      "consul.autopilot_failure_tolerance",
 		Priority: prioAutopilotFailureTolerance,
 		Dims: module.Dims{
 			{ID: "autopilot_failure_tolerance", Name: "failure_tolerance"},
+		},
+	}
+	autopilotServerHealthStatusChart = module.Chart{
+		ID:       "autopilot_server_health_status",
+		Title:    "Autopilot server health status",
+		Units:    "status",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_server_health_status",
+		Priority: prioAutopilotServerHealthStatus,
+		Dims: module.Dims{
+			{ID: "autopilot_server_healthy_yes", Name: "healthy"},
+			{ID: "autopilot_server_healthy_no", Name: "unhealthy"},
+		},
+	}
+	autopilotServerStableTimeChart = module.Chart{
+		ID:       "autopilot_server_stable_time",
+		Title:    "Autopilot server stable time",
+		Units:    "seconds",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_server_stable_time",
+		Priority: prioAutopilotServerStableTime,
+		Dims: module.Dims{
+			{ID: "autopilot_server_stable_time", Name: "stable"},
+		},
+	}
+	autopilotServerSerfStatusChart = module.Chart{
+		ID:       "autopilot_server_serf_status",
+		Title:    "Autopilot server Serf status",
+		Units:    "status",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_server_serf_status",
+		Priority: prioAutopilotServerSerfStatus,
+		Dims: module.Dims{
+			{ID: "autopilot_server_sefStatus_alive", Name: "alive"},
+			{ID: "autopilot_server_sefStatus_failed", Name: "failed"},
+			{ID: "autopilot_server_sefStatus_left", Name: "left"},
+			{ID: "autopilot_server_sefStatus_none", Name: "none"},
+		},
+	}
+	autopilotServerVoterStatusChart = module.Chart{
+		ID:       "autopilot_server_voter_status",
+		Title:    "Autopilot server Raft voting membership",
+		Units:    "status",
+		Fam:      "autopilot",
+		Ctx:      "consul.autopilot_server_voter_status",
+		Priority: prioAutopilotServerVoterStatus,
+		Dims: module.Dims{
+			{ID: "autopilot_server_voter_yes", Name: "voter"},
+			{ID: "autopilot_server_voter_no", Name: "not_voter"},
 		},
 	}
 
@@ -210,6 +269,17 @@ var (
 			{ID: "raft_leader_lastContact_quantile=0.5", Name: "quantile_0.5", Div: precision * precision},
 			{ID: "raft_leader_lastContact_quantile=0.9", Name: "quantile_0.9", Div: precision * precision},
 			{ID: "raft_leader_lastContact_quantile=0.99", Name: "quantile_0.99", Div: precision * precision},
+		},
+	}
+	raftFollowerLastContactLeaderTimeChart = module.Chart{
+		ID:       "raft_follower_last_contact_leader_time",
+		Title:    "Raft follower last contact with the leader time",
+		Units:    "ms",
+		Fam:      "leadership changes",
+		Ctx:      "consul.raft_follower_last_contact_leader_time",
+		Priority: prioRaftFollowerLastContactLeaderTime,
+		Dims: module.Dims{
+			{ID: "autopilot_server_lastContact_leader", Name: "leader_last_contact"},
 		},
 	}
 	raftLeaderElectionsRateChart = module.Chart{
