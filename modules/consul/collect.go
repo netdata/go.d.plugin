@@ -30,6 +30,12 @@ func (c *Consul) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
+	if c.cfg.Config.Server {
+		if err := c.collectAutopilotHealth(mx); err != nil {
+			return nil, err
+		}
+	}
+
 	if c.isTelemetryPrometheusEnabled() {
 		if err := c.collectMetricsPrometheus(mx); err != nil {
 			return nil, err

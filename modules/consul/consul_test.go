@@ -23,6 +23,7 @@ var (
 	dataV1132ServerSelfWithHostname, _        = os.ReadFile("testdata/v1.13.2/server_v1-agent-self_with_hostname.json")
 	dataV1132ServerPromMetrics, _             = os.ReadFile("testdata/v1.13.2/server_v1-agent-metrics.txt")
 	dataV1132ServerPromMetricsWithHostname, _ = os.ReadFile("testdata/v1.13.2/server_v1-agent-metrics_with_hostname.txt")
+	dataV1132ServerOperatorAutopilotHealth, _ = os.ReadFile("testdata/v1.13.2/server_v1-operator-autopilot-health.json")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -35,6 +36,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV1132ServerSelfDisabledPrometheus":  dataV1132ServerSelfDisabledPrometheus,
 		"dataV1132ServerPromMetrics":             dataV1132ServerPromMetrics,
 		"dataV1132ServerPromMetricsWithHostname": dataV1132ServerPromMetricsWithHostname,
+		"dataV1132ServerOperatorAutopilotHealth": dataV1132ServerOperatorAutopilotHealth,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -135,6 +137,16 @@ func TestConsul_Collect(t *testing.T) {
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
 				"autopilot_healthy_yes":                     1,
+				"autopilot_server_healthy_no":               0,
+				"autopilot_server_healthy_yes":              1,
+				"autopilot_server_lastContact_leader":       13,
+				"autopilot_server_sefStatus_alive":          1,
+				"autopilot_server_sefStatus_failed":         0,
+				"autopilot_server_sefStatus_left":           0,
+				"autopilot_server_sefStatus_none":           0,
+				"autopilot_server_stable_time":              109161,
+				"autopilot_server_voter_no":                 0,
+				"autopilot_server_voter_yes":                1,
 				"client_rpc":                                6838,
 				"client_rpc_exceeded":                       0,
 				"client_rpc_failed":                         0,
@@ -219,6 +231,16 @@ func TestConsul_Collect(t *testing.T) {
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
 				"autopilot_healthy_yes":                     1,
+				"autopilot_server_healthy_no":               0,
+				"autopilot_server_healthy_yes":              1,
+				"autopilot_server_lastContact_leader":       13,
+				"autopilot_server_sefStatus_alive":          1,
+				"autopilot_server_sefStatus_failed":         0,
+				"autopilot_server_sefStatus_left":           0,
+				"autopilot_server_sefStatus_none":           0,
+				"autopilot_server_stable_time":              109180,
+				"autopilot_server_voter_no":                 0,
+				"autopilot_server_voter_yes":                1,
 				"client_rpc":                                6838,
 				"client_rpc_exceeded":                       0,
 				"client_rpc_failed":                         0,
@@ -300,6 +322,15 @@ func TestConsul_Collect(t *testing.T) {
 			prepare:         caseConsulV1132ServerWithDisabledPrometheus,
 			wantNumOfCharts: 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
+				"autopilot_server_healthy_no":           0,
+				"autopilot_server_healthy_yes":          1,
+				"autopilot_server_lastContact_leader":   13,
+				"autopilot_server_sefStatus_alive":      1,
+				"autopilot_server_sefStatus_failed":     0,
+				"autopilot_server_sefStatus_left":       0,
+				"autopilot_server_sefStatus_none":       0,
+				"autopilot_server_voter_no":             0,
+				"autopilot_server_voter_yes":            1,
 				"health_check_chk1_critical_status":     0,
 				"health_check_chk1_maintenance_status":  0,
 				"health_check_chk1_passing_status":      1,
@@ -370,6 +401,9 @@ func TestConsul_Collect(t *testing.T) {
 
 			mx := consul.Collect()
 
+			delete(mx, "autopilot_server_stable_time")
+			delete(test.wantMetrics, "autopilot_server_stable_time")
+
 			require.Equal(t, test.wantMetrics, mx)
 			if len(test.wantMetrics) > 0 {
 				assert.Equal(t, test.wantNumOfCharts, len(*consul.Charts()))
@@ -389,6 +423,8 @@ func caseConsulV1132ServerResponse(t *testing.T) (*Consul, func()) {
 				_, _ = w.Write(datav1132Checks)
 			case r.URL.Path == urlPathAgentMetrics && r.URL.RawQuery == "format=prometheus":
 				_, _ = w.Write(dataV1132ServerPromMetrics)
+			case r.URL.Path == urlPathOperationAutopilotHealth:
+				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
@@ -413,6 +449,8 @@ func caseConsulV1132ServerWithHostnameResponse(t *testing.T) (*Consul, func()) {
 				_, _ = w.Write(datav1132Checks)
 			case r.URL.Path == urlPathAgentMetrics && r.URL.RawQuery == "format=prometheus":
 				_, _ = w.Write(dataV1132ServerPromMetricsWithHostname)
+			case r.URL.Path == urlPathOperationAutopilotHealth:
+				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
@@ -430,11 +468,13 @@ func caseConsulV1132ServerWithDisabledPrometheus(t *testing.T) (*Consul, func())
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			switch {
-			case r.URL.Path == urlPathAgentSelf:
+			switch r.URL.Path {
+			case urlPathAgentSelf:
 				_, _ = w.Write(dataV1132ServerSelfDisabledPrometheus)
-			case r.URL.Path == urlPathAgentChecks:
+			case urlPathAgentChecks:
 				_, _ = w.Write(datav1132Checks)
+			case urlPathOperationAutopilotHealth:
+				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
