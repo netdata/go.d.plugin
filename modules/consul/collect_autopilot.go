@@ -37,6 +37,7 @@ func (c *Consul) collectAutopilotHealth(mx map[string]int64) error {
 			mx["autopilot_server_sefStatus_left"] = boolToInt(srv.SerfStatus == "left")
 			mx["autopilot_server_sefStatus_failed"] = boolToInt(srv.SerfStatus == "failed")
 			mx["autopilot_server_sefStatus_none"] = boolToInt(srv.SerfStatus == "none")
+			// https://github.com/hashicorp/raft-autopilot/blob/d936f51c374c3b7902d5e4fdafe9f7d8d199ea53/types.go#L110
 			mx["autopilot_server_healthy_yes"] = boolToInt(srv.Healthy)
 			mx["autopilot_server_healthy_no"] = boolToInt(!srv.Healthy)
 			mx["autopilot_server_voter_yes"] = boolToInt(srv.Voter)
