@@ -49,7 +49,7 @@ func (c *Consul) isTelemetryPrometheusEnabled() bool {
 	return c.cfg.DebugConfig.Telemetry.PrometheusOpts.Expiration != "0s"
 }
 
-func (c *Consul) doOKDecode(urlPath string, in interface{}) error {
+func (c *Consul) doOKDecode(urlPath string, in interface{}, statusCodes ...int) error {
 	req, err := web.NewHTTPRequest(c.Request.Copy())
 	if err != nil {
 		return fmt.Errorf("error on creating request: %v", err)
@@ -67,7 +67,12 @@ func (c *Consul) doOKDecode(urlPath string, in interface{}) error {
 
 	defer closeBody(resp)
 
-	if resp.StatusCode != http.StatusOK {
+	codes := map[int]bool{http.StatusOK: true}
+	for _, v := range statusCodes {
+		codes[v] = true
+	}
+
+	if !codes[resp.StatusCode] {
 		return fmt.Errorf("%s returned HTTP status %d", req.URL, resp.StatusCode)
 	}
 

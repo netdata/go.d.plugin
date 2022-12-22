@@ -2,7 +2,10 @@
 
 package consul
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 const (
 	// https://developer.hashicorp.com/consul/api-docs/operator/autopilot#read-health
@@ -24,7 +27,10 @@ type autopilotHealth struct {
 func (c *Consul) collectAutopilotHealth(mx map[string]int64) error {
 	var health autopilotHealth
 
-	if err := c.doOKDecode(urlPathOperationAutopilotHealth, &health); err != nil {
+	// The HTTP status code will indicate the health of the cluster.
+	// If Healthy is true, then a status of 200 will be returned.
+	// If Healthy is false, then a status of 429 will be returned.
+	if err := c.doOKDecode(urlPathOperationAutopilotHealth, &health, http.StatusTooManyRequests); err != nil {
 		return err
 	}
 
@@ -42,9 +48,7 @@ func (c *Consul) collectAutopilotHealth(mx map[string]int64) error {
 			mx["autopilot_server_healthy_no"] = boolToInt(!srv.Healthy)
 			mx["autopilot_server_voter_yes"] = boolToInt(srv.Voter)
 			mx["autopilot_server_voter_no"] = boolToInt(!srv.Voter)
-			if srv.Healthy {
-				mx["autopilot_server_stable_time"] = int64(time.Now().Sub(srv.StableSince).Seconds())
-			}
+			mx["autopilot_server_stable_time"] = int64(time.Now().Sub(srv.StableSince).Seconds())
 			if !srv.Leader {
 				if v, err := time.ParseDuration(srv.LastContact); err == nil {
 					mx["autopilot_server_lastContact_leader"] = v.Milliseconds()
