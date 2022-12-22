@@ -23,7 +23,7 @@ Labels per scope:
 | Metric       | Scope  |            Dimensions             |  Units  |
 |--------------|:------:|:---------------------------------:|:-------:|
 | query_time   | server |            query_time             | seconds |
-| query_status | server | success, network_error, dns_error | seconds |
+| query_status | server | success, network_error, dns_error | status  |
 
 ## Configuration
 
