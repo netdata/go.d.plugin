@@ -34,7 +34,6 @@ func (c *Consul) collectAutopilotHealth(mx map[string]int64) error {
 	}
 
 	for _, srv := range health.Servers {
-		c.Infof("my id: '%s', compare with: '%s'", c.cfg.Config.NodeID, srv.ID)
 		if srv.ID == c.cfg.Config.NodeID {
 			// SerfStatus: alive, left, failed or none:
 			// https://github.com/hashicorp/consul/blob/c7ef04c5979dbc311ff3c67b7bf3028a93e8b0f1/agent/consul/operator_autopilot_endpoint.go#L124-L133
