@@ -21,6 +21,13 @@ Consul Agent.
 - Consul
   with [enabled](https://developer.hashicorp.com/consul/docs/agent/config/config-files#telemetry-prometheus_retention_time)
   Prometheus telemetry.
+- When authentication is enabled, the following ACLs are required:
+    - `operator:read` (for querying
+      autopilot [health status](https://developer.hashicorp.com/consul/api-docs/operator/autopilot#read-health)).
+    - `node:read`, `service:read` (for
+      querying [checks](https://developer.hashicorp.com/consul/api-docs/agent/check#list-checks)).
+    - `agent:read` (for querying [metrics](https://developer.hashicorp.com/consul/api-docs/agent#view-metrics)
+      and [configuration](https://developer.hashicorp.com/consul/api-docs/agent#read-configuration)).
 
 ## Metrics
 
