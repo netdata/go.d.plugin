@@ -26,8 +26,10 @@ Consul Agent.
       autopilot [health status](https://developer.hashicorp.com/consul/api-docs/operator/autopilot#read-health)).
     - `node:read`, `service:read` (for
       querying [checks](https://developer.hashicorp.com/consul/api-docs/agent/check#list-checks)).
-    - `agent:read` (for querying [metrics](https://developer.hashicorp.com/consul/api-docs/agent#view-metrics)
-      and [configuration](https://developer.hashicorp.com/consul/api-docs/agent#read-configuration)).
+    - `agent:read` (for
+      querying [configuration](https://developer.hashicorp.com/consul/api-docs/agent#read-configuration),
+      [metrics](https://developer.hashicorp.com/consul/api-docs/agent#view-metrics),
+      and [lan coordinates](https://developer.hashicorp.com/consul/api-docs/coordinate#read-lan-coordinates-for-all-nodes)).
 
 ## Metrics
 
@@ -63,6 +65,7 @@ Labels per scope:
 | autopilot_server_stable_time           |    global     |                  stable                   |    seconds    |      yes      |       yes       |   no   |
 | autopilot_server_serf_status           |    global     |        active, failed, left, none         |    status     |      yes      |       yes       |   no   |
 | autopilot_server_voter_status          |    global     |             voter, not_voter              |    status     |      yes      |       yes       |   no   |
+| network_lan_rtt                        |    global     |               min, max, avg               |      ms       |      yes      |       yes       |   no   |
 | raft_commit_time                       |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
 | raft_commits_rate                      |    global     |                  commits                  |   commits/s   |      yes      |       no        |   no   |
 | raft_leader_last_contact_time          |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       no        |   no   |
