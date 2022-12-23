@@ -71,6 +71,7 @@ Go.d.plugin is shipped with Netdata.
 | [nginx](https://github.com/netdata/go.d.plugin/tree/master/modules/nginx)                           |             NGINX             |
 | [nginxplus](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxplus)                   |          NGINX Plus           |
 | [nginxvts](https://github.com/netdata/go.d.plugin/tree/master/modules/nginxvts)                     |           NGINX VTS           |
+| [ntpd](https://github.com/netdata/go.d.plugin/tree/master/modules/ntpd)                             |          NTP daemon           |
 | [nvme](https://github.com/netdata/go.d.plugin/tree/master/modules/nvme)                             |         NVMe devices          |
 | [openvpn](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn)                       |            OpenVPN            |
 | [openvpn_status_log](https://github.com/netdata/go.d.plugin/tree/master/modules/openvpn_status_log) |            OpenVPN            |
