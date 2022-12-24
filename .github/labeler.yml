@@ -10,16 +10,16 @@
 #
 # Please keep the labels sorted and deduplicated.
 
-area/agent: 
+area/agent:
   - agent/**
   - cli/**
   - logger/**
 
-area/build: 
+area/build:
   - hack/**
   - Makefile
 
-area/ci: 
+area/ci:
   - .circleci/**
   - .github/**
   - .travis/**
@@ -30,7 +30,7 @@ area/ci:
 area/conf: 
   - config/**
 
-area/docs: 
+area/docs:
   - "**/*.md"
   - "*.md"
 
@@ -38,5 +38,5 @@ area/modules:
   - modules/**
   - config/go.d/*.conf
 
-area/pkg: 
+area/pkg:
   - pkg/**
