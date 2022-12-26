@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/iprange"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
@@ -20,7 +21,7 @@ func New() *NTPd {
 		Config: Config{
 			Address:      "127.0.0.1:123",
 			Timeout:      web.Duration{Duration: time.Second * 3},
-			CollectPeers: true,
+			CollectPeers: false,
 		},
 		charts:         systemCharts.Copy(),
 		newClient:      newNTPClient,
@@ -45,10 +46,11 @@ type (
 		newClient func(c Config) (ntpConn, error)
 		client    ntpConn
 
-		findPeersTime  time.Time
-		findPeersEvery time.Duration
-		peerAddr       map[string]bool
-		peerIDs        []uint16
+		findPeersTime    time.Time
+		findPeersEvery   time.Duration
+		peerAddr         map[string]bool
+		peerIDs          []uint16
+		peerIPAddrFilter iprange.Pool
 	}
 	ntpConn interface {
 		systemInfo() (map[string]string, error)
@@ -63,6 +65,15 @@ func (n *NTPd) Init() bool {
 		n.Error("config validation: 'address' can not be empty")
 		return false
 	}
+
+	txt := "0.0.0.0 127.0.0.0/8"
+	r, err := iprange.ParseRanges(txt)
+	if err != nil {
+		n.Errorf("error on parse ip range '%s': %v", txt, err)
+		return false
+	}
+
+	n.peerIPAddrFilter = r
 
 	return true
 }

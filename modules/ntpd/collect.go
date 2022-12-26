@@ -4,6 +4,7 @@ package ntpd
 
 import (
 	"fmt"
+	"net"
 	"strconv"
 	"time"
 )
@@ -125,8 +126,7 @@ func (n *NTPd) findPeers() error {
 		}
 
 		addr, ok := info["srcadr"]
-		// TODO: need to filter out 127.*
-		if !ok || addr == "0.0.0.0" {
+		if ip := net.ParseIP(addr); !ok || ip == nil || n.peerIPAddrFilter.Contains(ip) {
 			n.Debugf("skipping NTP peer id='%d', srcadr='%s'", id, addr)
 			continue
 		}
