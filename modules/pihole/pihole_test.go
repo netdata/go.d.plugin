@@ -25,8 +25,6 @@ var (
 	dataSummaryRawResp, _             = os.ReadFile("testdata/summaryRaw.json")
 	dataGetQueryTypesResp, _          = os.ReadFile("testdata/getQueryTypes.json")
 	dataGetForwardDestinationsResp, _ = os.ReadFile("testdata/getForwardDestinations.json")
-	dataTopClientsResp, _             = os.ReadFile("testdata/topClients.json")
-	dataTopItemsResp, _               = os.ReadFile("testdata/topItems.json")
 )
 
 func TestPihole_Init(t *testing.T) {
@@ -71,9 +69,9 @@ func TestPihole_Check(t *testing.T) {
 			wantFail: false,
 			prepare:  caseSuccessWithWebPassword,
 		},
-		"success without web password": {
-			wantFail: false,
-			prepare:  caseSuccessNoWebPassword,
+		"fail without web password": {
+			wantFail: true,
+			prepare:  caseFailNoWebPassword,
 		},
 		"fail on unsupported version": {
 			wantFail: true,
@@ -134,24 +132,9 @@ func TestPihole_Collect(t *testing.T) {
 				"unique_clients":           1,
 			},
 		},
-		"success without web password": {
-			prepare:       caseSuccessNoWebPassword,
-			wantNumCharts: len(baseCharts),
-			wantMetrics: map[string]int64{
-				"ads_blocked_today":        1,
-				"ads_blocked_today_perc":   33333,
-				"ads_percentage_today":     100,
-				"blocking_status_disabled": 0,
-				"blocking_status_enabled":  1,
-				"blocklist_last_update":    106273651,
-				"dns_queries_today":        1,
-				"domains_being_blocked":    1,
-				"queries_cached":           1,
-				"queries_cached_perc":      33333,
-				"queries_forwarded":        1,
-				"queries_forwarded_perc":   33333,
-				"unique_clients":           1,
-			},
+		"fail without web password": {
+			prepare:     caseFailNoWebPassword,
+			wantMetrics: nil,
 		},
 		"fail on unsupported version": {
 			prepare:     caseFailUnsupportedVersion,
@@ -176,7 +159,7 @@ func TestPihole_Collect(t *testing.T) {
 }
 
 func caseSuccessWithWebPassword(t *testing.T) (*Pihole, func()) {
-	p, srv := New(), mockPiholeServer{}.newHTTPServer()
+	p, srv := New(), mockPiholeServer{}.newPiholeHTTPServer()
 
 	p.SetupVarsPath = pathSetupVarsOK
 	p.URL = srv.URL
@@ -186,8 +169,8 @@ func caseSuccessWithWebPassword(t *testing.T) (*Pihole, func()) {
 	return p, srv.Close
 }
 
-func caseSuccessNoWebPassword(t *testing.T) (*Pihole, func()) {
-	p, srv := New(), mockPiholeServer{}.newHTTPServer()
+func caseFailNoWebPassword(t *testing.T) (*Pihole, func()) {
+	p, srv := New(), mockPiholeServer{}.newPiholeHTTPServer()
 
 	p.SetupVarsPath = pathSetupVarsWrong
 	p.URL = srv.URL
@@ -198,9 +181,7 @@ func caseSuccessNoWebPassword(t *testing.T) (*Pihole, func()) {
 }
 
 func caseFailUnsupportedVersion(t *testing.T) (*Pihole, func()) {
-	p, srv := New(), mockPiholeServer{
-		unsupportedVersion: true,
-	}.newHTTPServer()
+	p, srv := New(), mockPiholeServer{unsupportedVersion: true}.newPiholeHTTPServer()
 
 	p.SetupVarsPath = pathSetupVarsOK
 	p.URL = srv.URL
@@ -220,10 +201,15 @@ type mockPiholeServer struct {
 	errOnTopItems      bool
 }
 
-func (m mockPiholeServer) newHTTPServer() *httptest.Server {
+func (m mockPiholeServer) newPiholeHTTPServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != urlPathAPI || len(r.URL.Query()) == 0 {
 			w.WriteHeader(http.StatusBadRequest)
+		}
+
+		if r.URL.Query().Get(urlQueryKeyAuth) == "" {
+			_, _ = w.Write(dataEmptyResp)
+			return
 		}
 
 		if r.URL.Query().Has(urlQueryKeyAPIVersion) {
@@ -246,11 +232,6 @@ func (m mockPiholeServer) newHTTPServer() *httptest.Server {
 			return
 		}
 
-		if r.URL.Query().Get(urlQueryKeyAuth) == "" {
-			_, _ = w.Write(dataEmptyResp)
-			return
-		}
-
 		data := dataEmptyResp
 		isErr := false
 		switch {
@@ -258,10 +239,6 @@ func (m mockPiholeServer) newHTTPServer() *httptest.Server {
 			data, isErr = dataGetQueryTypesResp, m.errOnQueryTypes
 		case r.URL.Query().Has(urlQueryKeyGetForwardDestinations):
 			data, isErr = dataGetForwardDestinationsResp, m.errOnGetForwardDst
-		case r.URL.Query().Has(urlQueryKeyTopClients):
-			data, isErr = dataTopClientsResp, m.errOnTopClients
-		case r.URL.Query().Has(urlQueryKeyTopItems):
-			data, isErr = dataTopItemsResp, m.errOnTopItems
 		}
 
 		if isErr {

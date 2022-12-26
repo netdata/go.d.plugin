@@ -24,8 +24,6 @@ const (
 	urlQueryKeySummaryRaw             = "summaryRaw"
 	urlQueryKeyGetQueryTypes          = "getQueryTypes"          // need auth
 	urlQueryKeyGetForwardDestinations = "getForwardDestinations" // need auth
-	urlQueryKeyTopItems               = "topItems"               // need auth
-	urlQueryKeyTopClients             = "topClients"             // need auth
 )
 
 const (
@@ -116,10 +114,7 @@ func (p *Pihole) queryMetrics(pmx *piholeMetrics, doConcurrently bool) {
 	wg := &sync.WaitGroup{}
 
 	wrap := func(call task) task {
-		return func(metrics *piholeMetrics) {
-			call(metrics)
-			wg.Done()
-		}
+		return func(metrics *piholeMetrics) { call(metrics); wg.Done() }
 	}
 
 	for _, task := range tasks {
@@ -144,6 +139,7 @@ func (p *Pihole) querySummary(pmx *piholeMetrics) {
 
 	req.URL.Path = urlPathAPI
 	req.URL.RawQuery = url.Values{
+		urlQueryKeyAuth:       []string{p.Password},
 		urlQueryKeySummaryRaw: []string{"true"},
 	}.Encode()
 
@@ -210,6 +206,7 @@ func (p *Pihole) queryAPIVersion() (int, error) {
 
 	req.URL.Path = urlPathAPI
 	req.URL.RawQuery = url.Values{
+		urlQueryKeyAuth:       []string{p.Password},
 		urlQueryKeyAPIVersion: []string{"true"},
 	}.Encode()
 
