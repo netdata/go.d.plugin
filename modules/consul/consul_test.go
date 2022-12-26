@@ -24,6 +24,7 @@ var (
 	dataV1132ServerPromMetrics, _             = os.ReadFile("testdata/v1.13.2/server_v1-agent-metrics.txt")
 	dataV1132ServerPromMetricsWithHostname, _ = os.ReadFile("testdata/v1.13.2/server_v1-agent-metrics_with_hostname.txt")
 	dataV1132ServerOperatorAutopilotHealth, _ = os.ReadFile("testdata/v1.13.2/server_v1-operator-autopilot-health.json")
+	dataV1132ServerCoordinateNodes, _         = os.ReadFile("testdata/v1.13.2/server_v1-coordinate-nodes.json")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -37,6 +38,7 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV1132ServerPromMetrics":             dataV1132ServerPromMetrics,
 		"dataV1132ServerPromMetricsWithHostname": dataV1132ServerPromMetricsWithHostname,
 		"dataV1132ServerOperatorAutopilotHealth": dataV1132ServerOperatorAutopilotHealth,
+		"dataV1132ServerCoordinateNodes":         dataV1132ServerCoordinateNodes,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -144,7 +146,7 @@ func TestConsul_Collect(t *testing.T) {
 				"autopilot_server_sefStatus_failed":         0,
 				"autopilot_server_sefStatus_left":           0,
 				"autopilot_server_sefStatus_none":           0,
-				"autopilot_server_stable_time":              109161,
+				"autopilot_server_stable_time":              265849,
 				"autopilot_server_voter_no":                 0,
 				"autopilot_server_voter_yes":                1,
 				"client_rpc":                                6838,
@@ -171,6 +173,11 @@ func TestConsul_Collect(t *testing.T) {
 				"kvs_apply_quantile=0.9":                    0,
 				"kvs_apply_quantile=0.99":                   0,
 				"kvs_apply_sum":                             0,
+				"network_lan_rtt_avg":                       737592,
+				"network_lan_rtt_count":                     2,
+				"network_lan_rtt_max":                       991168,
+				"network_lan_rtt_min":                       484017,
+				"network_lan_rtt_sum":                       1475185,
 				"raft_apply":                                10681000,
 				"raft_boltdb_freelistBytes":                 11264,
 				"raft_boltdb_logsPerBatch_count":            12360,
@@ -238,7 +245,7 @@ func TestConsul_Collect(t *testing.T) {
 				"autopilot_server_sefStatus_failed":         0,
 				"autopilot_server_sefStatus_left":           0,
 				"autopilot_server_sefStatus_none":           0,
-				"autopilot_server_stable_time":              109180,
+				"autopilot_server_stable_time":              265825,
 				"autopilot_server_voter_no":                 0,
 				"autopilot_server_voter_yes":                1,
 				"client_rpc":                                6838,
@@ -265,6 +272,11 @@ func TestConsul_Collect(t *testing.T) {
 				"kvs_apply_quantile=0.9":                    0,
 				"kvs_apply_quantile=0.99":                   0,
 				"kvs_apply_sum":                             0,
+				"network_lan_rtt_avg":                       737592,
+				"network_lan_rtt_count":                     2,
+				"network_lan_rtt_max":                       991168,
+				"network_lan_rtt_min":                       484017,
+				"network_lan_rtt_sum":                       1475185,
 				"raft_apply":                                10681000,
 				"raft_boltdb_freelistBytes":                 11264,
 				"raft_boltdb_logsPerBatch_count":            12360,
@@ -329,6 +341,7 @@ func TestConsul_Collect(t *testing.T) {
 				"autopilot_server_sefStatus_failed":     0,
 				"autopilot_server_sefStatus_left":       0,
 				"autopilot_server_sefStatus_none":       0,
+				"autopilot_server_stable_time":          265805,
 				"autopilot_server_voter_no":             0,
 				"autopilot_server_voter_yes":            1,
 				"health_check_chk1_critical_status":     0,
@@ -347,6 +360,11 @@ func TestConsul_Collect(t *testing.T) {
 				"health_check_mysql_maintenance_status": 0,
 				"health_check_mysql_passing_status":     0,
 				"health_check_mysql_warning_status":     0,
+				"network_lan_rtt_avg":                   737592,
+				"network_lan_rtt_count":                 2,
+				"network_lan_rtt_max":                   991168,
+				"network_lan_rtt_min":                   484017,
+				"network_lan_rtt_sum":                   1475185,
 			},
 		},
 		"success on response from Consul v1.13.2 client": {
@@ -425,6 +443,8 @@ func caseConsulV1132ServerResponse(t *testing.T) (*Consul, func()) {
 				_, _ = w.Write(dataV1132ServerPromMetrics)
 			case r.URL.Path == urlPathOperationAutopilotHealth:
 				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
+			case r.URL.Path == urlPathCoordinateNodes:
+				_, _ = w.Write(dataV1132ServerCoordinateNodes)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
@@ -451,6 +471,8 @@ func caseConsulV1132ServerWithHostnameResponse(t *testing.T) (*Consul, func()) {
 				_, _ = w.Write(dataV1132ServerPromMetricsWithHostname)
 			case r.URL.Path == urlPathOperationAutopilotHealth:
 				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
+			case r.URL.Path == urlPathCoordinateNodes:
+				_, _ = w.Write(dataV1132ServerCoordinateNodes)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}
@@ -475,6 +497,8 @@ func caseConsulV1132ServerWithDisabledPrometheus(t *testing.T) (*Consul, func())
 				_, _ = w.Write(datav1132Checks)
 			case urlPathOperationAutopilotHealth:
 				_, _ = w.Write(dataV1132ServerOperatorAutopilotHealth)
+			case urlPathCoordinateNodes:
+				_, _ = w.Write(dataV1132ServerCoordinateNodes)
 			default:
 				w.WriteHeader(http.StatusNotFound)
 			}

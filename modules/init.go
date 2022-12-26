@@ -43,6 +43,7 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/nginx"
 	_ "github.com/netdata/go.d.plugin/modules/nginxplus"
 	_ "github.com/netdata/go.d.plugin/modules/nginxvts"
+	_ "github.com/netdata/go.d.plugin/modules/ntpd"
 	_ "github.com/netdata/go.d.plugin/modules/nvidia_smi"
 	_ "github.com/netdata/go.d.plugin/modules/nvme"
 	_ "github.com/netdata/go.d.plugin/modules/openvpn"

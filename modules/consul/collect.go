@@ -34,6 +34,9 @@ func (c *Consul) collect() (map[string]int64, error) {
 		if err := c.collectAutopilotHealth(mx); err != nil {
 			return nil, err
 		}
+		if err := c.collectNetworkRTT(mx); err != nil {
+			return nil, err
+		}
 	}
 
 	if c.isTelemetryPrometheusEnabled() {

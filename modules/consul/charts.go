@@ -32,6 +32,8 @@ const (
 	prioAutopilotServerSerfStatus
 	prioAutopilotServerVoterStatus
 
+	prioNetworkLanRTT
+
 	prioRPCRequests
 	prioRPCRequestsExceeded
 	prioRPCRequestsFailed
@@ -92,6 +94,8 @@ var (
 		raftLeaderElectionsRateChart.Copy(),
 		raftLeadershipTransitionsRateChart.Copy(),
 		serverLeadershipStatusChart.Copy(),
+
+		networkLanRTTChart.Copy(),
 
 		clientRPCRequestsRateChart.Copy(),
 		clientRPCRequestsExceededRateChart.Copy(),
@@ -314,6 +318,21 @@ var (
 		Dims: module.Dims{
 			{ID: "server_isLeader_yes", Name: "leader"},
 			{ID: "server_isLeader_no", Name: "not_leader"},
+		},
+	}
+
+	networkLanRTTChart = module.Chart{
+		ID:       "network_lan_rtt",
+		Title:    "Network lan RTT",
+		Units:    "ms",
+		Fam:      "network rtt",
+		Ctx:      "consul.network_lan_rtt",
+		Type:     module.Area,
+		Priority: prioNetworkLanRTT,
+		Dims: module.Dims{
+			{ID: "network_lan_rtt_min", Name: "min", Div: 1e6},
+			{ID: "network_lan_rtt_max", Name: "max", Div: 1e6},
+			{ID: "network_lan_rtt_avg", Name: "avg", Div: 1e6},
 		},
 	}
 
