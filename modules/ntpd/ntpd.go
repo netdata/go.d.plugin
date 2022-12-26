@@ -70,6 +70,7 @@ func (n *NTPd) Init() bool {
 	r, err := iprange.ParseRanges(txt)
 	if err != nil {
 		n.Errorf("error on parse ip range '%s': %v", txt, err)
+		return false
 	}
 
 	n.peerIPAddrFilter = r
