@@ -282,23 +282,11 @@ SELECT application_name,
                    END,
                sent_location)   AS sent_delta,
        pg_xlog_location_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_xlog_receive_location()
-                   ELSE pg_current_xlog_location()
-                   END,
-               write_location)  AS write_delta,
+               sent_location, write_location)  AS write_delta,
        pg_xlog_location_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_xlog_receive_location()
-                   ELSE pg_current_xlog_location()
-                   END,
-               flush_location)  AS flush_delta,
+               write_location, flush_location)  AS flush_delta,
        pg_xlog_location_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_xlog_receive_location()
-                   ELSE pg_current_xlog_location()
-                   END,
-               replay_location) AS replay_delta
+               flush_location, replay_location) AS replay_delta
 FROM pg_stat_replication psr
 WHERE application_name IS NOT NULL;
 `
@@ -312,23 +300,11 @@ SELECT application_name,
                    END,
                sent_lsn)   AS sent_delta,
        pg_wal_lsn_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_wal_receive_lsn()
-                   ELSE pg_current_wal_lsn()
-                   END,
-               write_lsn)  AS write_delta,
+               sent_lsn, write_lsn)  AS write_delta,
        pg_wal_lsn_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_wal_receive_lsn()
-                   ELSE pg_current_wal_lsn()
-                   END,
-               flush_lsn)  AS flush_delta,
+               write_lsn, flush_lsn)  AS flush_delta,
        pg_wal_lsn_diff(
-               CASE pg_is_in_recovery()
-                   WHEN true THEN pg_last_wal_receive_lsn()
-                   ELSE pg_current_wal_lsn()
-                   END,
-               replay_lsn) AS replay_delta
+               flush_lsn, replay_lsn) AS replay_delta
 FROM pg_stat_replication
 WHERE application_name IS NOT NULL;
 `
