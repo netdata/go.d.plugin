@@ -36,33 +36,26 @@ func New() *Elasticsearch {
 			DoClusterHealth: true,
 			DoIndicesStats:  false,
 		},
-		collectedIndices: make(map[string]bool),
+		indices: make(map[string]bool),
 	}
 }
 
-type (
-	Config struct {
-		web.HTTP        `yaml:",inline"`
-		DoNodeStats     bool `yaml:"collect_node_stats"`
-		DoClusterHealth bool `yaml:"collect_cluster_health"`
-		DoClusterStats  bool `yaml:"collect_cluster_stats"`
-		DoIndicesStats  bool `yaml:"collect_indices_stats"`
-	}
-	Elasticsearch struct {
-		module.Base
-		Config `yaml:",inline"`
+type Config struct {
+	web.HTTP        `yaml:",inline"`
+	DoNodeStats     bool `yaml:"collect_node_stats"`
+	DoClusterHealth bool `yaml:"collect_cluster_health"`
+	DoClusterStats  bool `yaml:"collect_cluster_stats"`
+	DoIndicesStats  bool `yaml:"collect_indices_stats"`
+}
 
-		httpClient       *http.Client
-		charts           *module.Charts
-		collectedIndices map[string]bool
-	}
-)
+type Elasticsearch struct {
+	module.Base
+	Config `yaml:",inline"`
 
-func (es *Elasticsearch) Cleanup() {
-	if es.httpClient == nil {
-		return
-	}
-	es.httpClient.CloseIdleConnections()
+	httpClient *http.Client
+	charts     *module.Charts
+
+	indices map[string]bool
 }
 
 func (es *Elasticsearch) Init() bool {
@@ -97,7 +90,7 @@ func (es *Elasticsearch) Check() bool {
 	return len(es.Collect()) > 0
 }
 
-func (es *Elasticsearch) Charts() *Charts {
+func (es *Elasticsearch) Charts() *module.Charts {
 	return es.charts
 }
 
@@ -111,4 +104,10 @@ func (es *Elasticsearch) Collect() map[string]int64 {
 		return nil
 	}
 	return mx
+}
+
+func (es *Elasticsearch) Cleanup() {
+	if es.httpClient != nil {
+		es.httpClient.CloseIdleConnections()
+	}
 }

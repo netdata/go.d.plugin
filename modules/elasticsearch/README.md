@@ -27,6 +27,11 @@ Each endpoint can be enabled/disabled in the module configuration file.
 
 All metrics have "elasticsearch." prefix.
 
+Labels per scope:
+
+- global: no labels.
+- index: index.
+
 | Metric                                   | Scope  |                                                                             Dimensions                                                                              |    Units     |
 |------------------------------------------|:------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------:|
 | node_indices_indexing                    | global |                                                                                index                                                                                | operations/s |
@@ -61,11 +66,7 @@ All metrics have "elasticsearch." prefix.
 | http_connections                         | global |                                                                                open                                                                                 | connections  |
 | breakers_trips                           | global |                                            requests, fielddata, in_flight_requests, model_inference, accounting, parent                                             |   trips/s    |
 | http_connections                         | global |                                                                                open                                                                                 | connections  |
-| node_index_health                        | global |                                                                    <i>a dimension per index</i>                                                                     |    status    |
-| node_index_shards_count                  | global |                                                                    <i>a dimension per index</i>                                                                     |    shards    |
-| node_index_docs_count                    | global |                                                                    <i>a dimension per index</i>                                                                     |     docs     |
-| node_index_store_size                    | global |                                                                    <i>a dimension per index</i>                                                                     |    bytes     |
-| cluster_health_status                    | global |                                                                               status                                                                                |    status    |
+| cluster_health_status                    | global |                                                                         green, yellow, red                                                                          |    status    |
 | cluster_number_of_nodes                  | global |                                                                          nodes, data_nodes                                                                          |    nodes     |
 | cluster_shards_count                     | global |                                          active_primary, active, relocating, initializing, unassigned, delayed_unaasigned                                           |    shards    |
 | cluster_pending_tasks                    | global |                                                                               pending                                                                               |    tasks     |
@@ -76,6 +77,10 @@ All metrics have "elasticsearch." prefix.
 | cluster_indices_store_size               | global |                                                                                size                                                                                 |    bytes     |
 | cluster_indices_query_cache              | global |                                                                              hit, miss                                                                              |   events/s   |
 | cluster_nodes_by_role_count              | global |                                           coordinating_only, data, ingest, master, ml, remote_cluster_client, voting_only                                           |    nodes     |
+| node_index_health                        | index  |                                                                         green, yellow, red                                                                          |    status    |
+| node_index_shards_count                  | index  |                                                                               shards                                                                                |    shards    |
+| node_index_docs_count                    | index  |                                                                                docs                                                                                 |     docs     |
+| node_index_store_size                    | index  |                                                                             store_size                                                                              |    bytes     |
 
 ## Configuration
 

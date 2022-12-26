@@ -14,8 +14,6 @@ import (
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
 	"github.com/netdata/go.d.plugin/pkg/web"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 const (
@@ -31,122 +29,183 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 		return nil, nil
 	}
 
-	collected := make(map[string]int64)
-	es.collectLocalNodeStats(collected, ms)
-	es.collectClusterHealth(collected, ms)
-	es.collectClusterStats(collected, ms)
-	es.collectLocalIndicesStats(collected, ms)
+	mx := make(map[string]int64)
 
-	return collected, nil
+	es.collectLocalNodeStats(mx, ms)
+	es.collectClusterHealth(mx, ms)
+	es.collectClusterStats(mx, ms)
+	es.collectLocalIndicesStats(mx, ms)
+
+	return mx, nil
 }
 
-func (Elasticsearch) collectLocalNodeStats(collected map[string]int64, ms *esMetrics) {
+func (es *Elasticsearch) collectLocalNodeStats(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasLocalNodeStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.LocalNodeStats), "node")
+	merge(mx, stm.ToMap(ms.LocalNodeStats), "node")
 }
 
-func (Elasticsearch) collectClusterHealth(collected map[string]int64, ms *esMetrics) {
+func (es *Elasticsearch) collectClusterHealth(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterHealth() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.ClusterHealth), "cluster")
-	collected["cluster_status"] = convertHealthStatus(ms.ClusterHealth.Status)
+	merge(mx, stm.ToMap(ms.ClusterHealth), "cluster")
+	mx["cluster_status_green"] = boolToInt(ms.ClusterHealth.Status == "green")
+	mx["cluster_status_yellow"] = boolToInt(ms.ClusterHealth.Status == "yellow")
+	mx["cluster_status_red"] = boolToInt(ms.ClusterHealth.Status == "red")
 }
 
-func (Elasticsearch) collectClusterStats(collected map[string]int64, ms *esMetrics) {
+func (es *Elasticsearch) collectClusterStats(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterStats() {
 		return
 	}
-	merge(collected, stm.ToMap(ms.ClusterStats), "cluster")
+	merge(mx, stm.ToMap(ms.ClusterStats), "cluster")
 }
 
 func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasLocalIndicesStats() {
 		return
 	}
-	seen := make(map[string]struct{})
-	for _, index := range ms.LocalIndicesStats {
-		seen[index.Index] = struct{}{}
-		if !es.collectedIndices[index.Index] {
-			es.collectedIndices[index.Index] = true
-			es.addIndexToCharts(index.Index)
+
+	seen := make(map[string]bool)
+
+	for _, v := range ms.LocalIndicesStats {
+		seen[v.Index] = true
+
+		if !es.indices[v.Index] {
+			es.indices[v.Index] = true
+			es.addIndexCharts(v.Index)
 		}
-		mx[indexDimID(index.Index, "health")] = convertHealthStatus(index.Health)
-		mx[indexDimID(index.Index, "shards_count")] = strToInt(index.Rep)
-		mx[indexDimID(index.Index, "docs_count")] = strToInt(index.DocsCount)
-		mx[indexDimID(index.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(index.StoreSize)
+
+		mx[indexDimID(v.Index, "health_green")] = boolToInt(v.Health == "green")
+		mx[indexDimID(v.Index, "health_yellow")] = boolToInt(v.Health == "yellow")
+		mx[indexDimID(v.Index, "health_red")] = boolToInt(v.Health == "red")
+		mx[indexDimID(v.Index, "shards_count")] = strToInt(v.Rep)
+		mx[indexDimID(v.Index, "docs_count")] = strToInt(v.DocsCount)
+		mx[indexDimID(v.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(v.StoreSize)
 	}
-	for index := range es.collectedIndices {
-		if _, ok := seen[index]; !ok {
-			delete(es.collectedIndices, index)
-			es.removeIndexFromCharts(index)
+
+	for v := range es.indices {
+		if !seen[v] {
+			delete(es.indices, v)
+			es.removeIndexCharts(v)
 		}
 	}
 }
 
-func (es *Elasticsearch) addIndexToCharts(index string) {
-	for _, chart := range *es.Charts() {
-		dim := module.Dim{Name: index}
-		switch chart.ID {
-		case "node_index_health":
-			dim.ID = indexDimID(index, "health")
-		case "node_index_shards_count":
-			dim.ID = indexDimID(index, "shards_count")
-		case "node_index_docs_count":
-			dim.ID = indexDimID(index, "docs_count")
-		case "node_index_store_size":
-			dim.ID = indexDimID(index, "store_size_in_bytes")
-		default:
-			continue
-		}
-		if err := chart.AddDim(&dim); err != nil {
-			es.Warningf("add index '%s': %v", index, err)
-			continue
-		}
-		chart.MarkNotCreated()
+func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
+	ms := &esMetrics{}
+	wg := &sync.WaitGroup{}
+
+	if es.DoNodeStats {
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeLocalNodeStats(ms) }()
+	}
+	if es.DoClusterHealth {
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeClusterHealth(ms) }()
+	}
+	if es.DoClusterStats {
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeClusterStats(ms) }()
+	}
+	if es.DoIndicesStats {
+		wg.Add(1)
+		go func() { defer wg.Done(); es.scrapeLocalIndicesStats(ms) }()
+	}
+	wg.Wait()
+
+	return ms
+}
+
+func (es *Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathLocalNodeStats
+
+	var stats struct {
+		Nodes map[string]esNodeStats
+	}
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	for _, node := range stats.Nodes {
+		ms.LocalNodeStats = &node
+		break
 	}
 }
 
-func (es *Elasticsearch) removeIndexFromCharts(index string) {
-	for _, chart := range *es.Charts() {
-		var id string
-		switch chart.ID {
-		case "node_index_health":
-			id = indexDimID(index, "health")
-		case "node_index_shards_count":
-			id = indexDimID(index, "shards_count")
-		case "node_index_docs_count":
-			id = indexDimID(index, "docs_count")
-		case "node_index_store_size":
-			id = indexDimID(index, "store_size_in_bytes")
-		default:
-			continue
-		}
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			es.Warningf("remove index '%s': %v", index, err)
-			continue
-		}
-		chart.MarkNotCreated()
+func (es *Elasticsearch) scrapeClusterHealth(ms *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathClusterHealth
+
+	var health esClusterHealth
+	if err := es.doOKDecode(req, &health); err != nil {
+		es.Warning(err)
+		return
+	}
+	ms.ClusterHealth = &health
+}
+
+func (es *Elasticsearch) scrapeClusterStats(ms *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathClusterStats
+
+	var stats esClusterStats
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	ms.ClusterStats = &stats
+}
+
+func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
+	req, _ := web.NewHTTPRequest(es.Request)
+	req.URL.Path = urlPathIndicesStats
+	req.URL.RawQuery = "local=true&format=json"
+
+	var stats []esIndexStats
+	if err := es.doOKDecode(req, &stats); err != nil {
+		es.Warning(err)
+		return
+	}
+	ms.LocalIndicesStats = removeSystemIndices(stats)
+}
+
+func (es *Elasticsearch) pingElasticsearch() error {
+	req, _ := web.NewHTTPRequest(es.Request)
+
+	var info struct{ Name string }
+	return es.doOKDecode(req, &info)
+}
+
+func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
+	resp, err := es.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)
+	}
+	defer closeBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(in); err != nil {
+		return fmt.Errorf("error on decoding response from '%s': %v", req.URL, err)
+	}
+	return nil
+}
+
+func closeBody(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(io.Discard, resp.Body)
+		_ = resp.Body.Close()
 	}
 }
 
 func indexDimID(name, metric string) string {
-	return fmt.Sprintf("node_indices_stats_%s_index_%s", name, metric)
-}
-
-func convertHealthStatus(status string) int64 {
-	switch status {
-	case "green":
-		return 0
-	case "yellow":
-		return 1
-	case "red":
-		return 2
-	default:
-		return 2
-	}
+	return fmt.Sprintf("node_index_%s_stats_%s", name, metric)
 }
 
 func convertIndexStoreSizeToBytes(size string) int64 {
@@ -175,113 +234,11 @@ func strToInt(s string) int64 {
 	return int64(v)
 }
 
-func (es Elasticsearch) scrapeElasticsearch() *esMetrics {
-	ms := &esMetrics{}
-	wg := &sync.WaitGroup{}
-
-	if es.DoNodeStats {
-		wg.Add(1)
-		go func() { defer wg.Done(); es.scrapeLocalNodeStats(ms) }()
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
 	}
-	if es.DoClusterHealth {
-		wg.Add(1)
-		go func() { defer wg.Done(); es.scrapeClusterHealth(ms) }()
-	}
-	if es.DoClusterStats {
-		wg.Add(1)
-		go func() { defer wg.Done(); es.scrapeClusterStats(ms) }()
-	}
-	if es.DoIndicesStats {
-		wg.Add(1)
-		go func() { defer wg.Done(); es.scrapeLocalIndicesStats(ms) }()
-	}
-	wg.Wait()
-	return ms
-}
-
-func (es Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
-	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathLocalNodeStats
-
-	var stats struct {
-		Nodes map[string]esNodeStats
-	}
-	if err := es.doOKDecode(req, &stats); err != nil {
-		es.Warning(err)
-		return
-	}
-	for _, node := range stats.Nodes {
-		ms.LocalNodeStats = &node
-		break
-	}
-}
-
-func (es Elasticsearch) scrapeClusterHealth(ms *esMetrics) {
-	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathClusterHealth
-
-	var health esClusterHealth
-	if err := es.doOKDecode(req, &health); err != nil {
-		es.Warning(err)
-		return
-	}
-	ms.ClusterHealth = &health
-}
-
-func (es Elasticsearch) scrapeClusterStats(ms *esMetrics) {
-	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathClusterStats
-
-	var stats esClusterStats
-	if err := es.doOKDecode(req, &stats); err != nil {
-		es.Warning(err)
-		return
-	}
-	ms.ClusterStats = &stats
-}
-
-func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
-	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathIndicesStats
-	req.URL.RawQuery = "local=true&format=json"
-
-	var stats []esIndexStats
-	if err := es.doOKDecode(req, &stats); err != nil {
-		es.Warning(err)
-		return
-	}
-	ms.LocalIndicesStats = removeSystemIndices(stats)
-}
-
-func (es Elasticsearch) pingElasticsearch() error {
-	req, _ := web.NewHTTPRequest(es.Request)
-
-	var info struct{ Name string }
-	return es.doOKDecode(req, &info)
-}
-
-func (es Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
-	resp, err := es.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("error on HTTP request '%s': %v", req.URL, err)
-	}
-	defer closeBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("'%s' returned HTTP status code: %d", req.URL, resp.StatusCode)
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(in); err != nil {
-		return fmt.Errorf("error on decoding response from '%s': %v", req.URL, err)
-	}
-	return nil
-}
-
-func closeBody(resp *http.Response) {
-	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		_ = resp.Body.Close()
-	}
+	return 0
 }
 
 func removeSystemIndices(indices []esIndexStats) []esIndexStats {
