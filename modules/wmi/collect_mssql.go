@@ -126,8 +126,8 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByName(metricMSSQLSQLErrorsTotal) {
 		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
-			if name := pm.Labels.Get("resource"); name != "" && name != "_Total" {
-				dim := mssqlParseResource(name)
+			if res := pm.Labels.Get("resource"); res != "" && res != "_Total" {
+				dim := mssqlParseResource(res)
 				mx[px+name+"_sql_errors_total_"+dim] = int64(pm.Value)
 			}
 		}
