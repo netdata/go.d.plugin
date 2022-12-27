@@ -849,9 +849,13 @@ var (
 		mssqlBufManIOPSChart.Copy(),
 		mssqlBlockedProcessChart.Copy(),
 		mssqlLocksWaitChart.Copy(),
+		mssqlMemmgrConnectionMemoryBytes.Copy(),
+		mssqlMemmgrExternalBenefitOfMemory.Copy(),
 		mssqlMemmgrPendingMemoryChart.Copy(),
 		mssqlMemmgrTotalServerChart.Copy(),
+		mssqlSQLErrorsTotal.Copy(),
 		mssqlStatsAutoParamChart.Copy(),
+		mssqlStatsBatchRequests.Copy(),
 		mssqlStatsSafeAutoChart.Copy(),
 		mssqlStatsCompilationChart.Copy(),
 		mssqlStatsRecompilationChart.Copy(),
@@ -978,6 +982,28 @@ var (
 	}
 	// Memory Manager
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-memory-manager-object?view=sql-server-ver16
+	mssqlMemmgrConnectionMemoryBytes = module.Chart{
+		ID:       "mssql_instance_%s_memmgr_connection_memory_bytes",
+		Title:    "Total of dynamic memory to maitaing connections",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_memmgr_connection_memory_bytes",
+		Priority: prioMSSQLMemmgrConnectionMemoryBytes,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_memmgr_connection_memory_bytes", Name: "memory", Algo: module.Incremental},
+		},
+	}
+	mssqlMemmgrExternalBenefitOfMemory = module.Chart{
+		ID:       "mssql_instance_%s_memmgr_external_benefit_of_memory",
+		Title:    "Total of dynamic memory to maitaing connections",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_memmgr_external_benefit_of_memory",
+		Priority: prioMSSQLMemmgrExternalBenefitOfMemory,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_memmgr_external_benefit_of_memory", Name: "memory", Algo: module.Incremental},
+		},
+	}
 	mssqlMemmgrPendingMemoryChart = module.Chart{
 		ID:       "mssql_instance_%s_memmgr_pending_memory_grants",
 		Title:    "Process waiting for memory grant",
@@ -1000,6 +1026,24 @@ var (
 			{ID: "mssql_instance_%s_memmgr_total_server_memory_bytes", Name: "memory"},
 		},
 	}
+
+	// SQL errors
+	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-errors-object?view=sql-server-ver16
+	mssqlSQLErrorsTotal = module.Chart{
+		ID:       "mssql_instance_%s_sql_errors_total",
+		Title:    "Total of errors",
+		Units:    "errors",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_sql_errors_total",
+		Priority: prioMSSQLSqlErrorsTotal,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_sql_errors_total_offline", Name: "offline", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_info", Name: "info", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_kill_connections", Name: "Kill Connections", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_user", Name: "user", Algo: module.Incremental},
+		},
+	}
+
 	// SQL Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-statistics-object?view=sql-server-ver16
 	mssqlStatsAutoParamChart = module.Chart{
@@ -1011,6 +1055,17 @@ var (
 		Priority: prioMSSQLStatsAutoParameterization,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_auto_parameterization_attempts", Name: "failed", Algo: module.Incremental},
+		},
+	}
+	mssqlStatsBatchRequests = module.Chart{
+		ID:       "mssql_instance_%s_sqlstats_batch_requests",
+		Title:    "Total of batches requests",
+		Units:    "requests/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_sqlstats_batch_requests",
+		Priority: prioMSSQLStatsBatchRequests,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_sqlstats_batch_requests", Name: "failed", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsSafeAutoChart = module.Chart{
