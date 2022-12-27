@@ -1065,7 +1065,7 @@ var (
 		Ctx:      "wmi.mssql_instance_sqlstats_batch_requests",
 		Priority: prioMSSQLStatsBatchRequests,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_sqlstats_batch_requests", Name: "failed", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sqlstats_batch_requests", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsSafeAutoChart = module.Chart{
