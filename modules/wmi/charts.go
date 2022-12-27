@@ -92,9 +92,13 @@ const (
 	prioMSSQLBlockedProcess
 	prioMSSQLUserConnections
 	prioMSSQLLocksLockWait
+	prioMSSQLMemmgrConnectionMemoryBytes
+	prioMSSQLMemmgrExternalBenefitOfMemory
 	prioMSSQLMemmgrPendingMemoryGrants
 	prioMSSQLMemTotalServer
+	prioMSSQLSqlErrorsTotal
 	prioMSSQLStatsAutoParameterization
+	prioMSSQLStatsBatchRequests
 	prioMSSQLStatsSafeAutoParameterization
 	prioMSSQLStatsCompilations
 	prioMSSQLStatsRecompilations
