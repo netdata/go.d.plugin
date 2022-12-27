@@ -1037,10 +1037,10 @@ var (
 		Ctx:      "wmi.mssql_instance_sql_errors_total",
 		Priority: prioMSSQLSqlErrorsTotal,
 		Dims: module.Dims{
-			{ID: "mssql_instance_%s_sql_errors_total_offline", Name: "offline", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_sql_errors_total_info", Name: "info", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_sql_errors_total_kill_connections", Name: "Kill Connections", Algo: module.Incremental},
-			{ID: "mssql_instance_%s_sql_errors_total_user", Name: "user", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_db_offline_errors", Name: "offline", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_info_errors", Name: "info", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_kill_connections_errors", Name: "Kill Connections", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_user_errors", Name: "user", Algo: module.Incremental},
 		},
 	}
 

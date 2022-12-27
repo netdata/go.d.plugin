@@ -19,9 +19,13 @@ const (
 	metricMSSQLBlockedProcesses             = "windows_mssql_genstats_blocked_processes"
 	metricMSSQLUserConnections              = "windows_mssql_genstats_user_connections"
 	metricMSSQLLockWait                     = "windows_mssql_locks_lock_wait_seconds"
+	metricMSSQLConnectionMemoryBytes        = "windows_mssql_memmgr_connection_memory_bytes"
+	metricMSSQLExternalBenefitOfMemory      = "windows_mssql_memmgr_external_benefit_of_memory"
 	metricMSSQLPendingMemoryGrants          = "windows_mssql_memmgr_pending_memory_grants"
+	metricMSSQLSQLErrorsTotal               = "windows_mssql_sql_errors_total"
 	metricMSSQLTotalServerMemory            = "windows_mssql_memmgr_total_server_memory_bytes"
 	metricMSSQLStatsAutoParameterization    = "windows_mssql_sqlstats_auto_parameterization_attempts"
+	metricMSSQLStatsBatchRequests           = "windows_mssql_sqlstats_batch_requests"
 	metricMSSQLStatSafeAutoParameterization = "windows_mssql_sqlstats_safe_auto_parameterization_attempts"
 	metricMSSQLCompilations                 = "windows_mssql_sqlstats_sql_compilations"
 	metricMSSQLRecompilations               = "windows_mssql_sqlstats_sql_recompilations"
@@ -101,10 +105,31 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 			}
 		}
 	}
+	for _, pm := range pms.FindByName(metricMSSQLConnectionMemoryBytes) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
+			instances[name] = true
+			mx[px+name+"_memmgr_connection_memory_bytes"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLExternalBenefitOfMemory) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
+			instances[name] = true
+			mx[px+name+"_memmgr_external_benefit_of_memory"] = int64(pm.Value)
+		}
+	}
 	for _, pm := range pms.FindByName(metricMSSQLPendingMemoryGrants) {
 		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
 			mx[px+name+"_memmgr_pending_memory_grants"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLSQLErrorsTotal) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
+			instances[name] = true
+			if name := pm.Labels.Get("resource"); name != "" && name != "_Total" {
+				dim := mssqlParseResource(name)
+				mx[px+name+"_sql_errors_total_"+dim] = int64(pm.Value)
+			}
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLTotalServerMemory) {
@@ -117,6 +142,12 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 		if name := pm.Labels.Get("mssql_instance"); name != "" {
 			instances[name] = true
 			mx[px+name+"_sqlstats_auto_parameterization_attempts"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLStatsBatchRequests) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
+			instances[name] = true
+			mx[px+name+"_sqlstats_batch_requests"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricMSSQLStatSafeAutoParameterization) {
@@ -211,4 +242,9 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 			}
 		}
 	}
+}
+
+func mssqlParseResource(name string) string {
+	convert := strings.ReplaceAll(name, " ", "_")
+	return strings.ToLower(convert)
 }
