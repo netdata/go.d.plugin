@@ -28,7 +28,7 @@ func New() *Mongo {
 			Timeout: 1,
 			URI:     "mongodb://localhost:27017",
 			Databases: matcher.SimpleExpr{
-				Includes: []string{"* *"},
+				Includes: []string{"* *"}, // TODO: set to []string{}
 				Excludes: []string{},
 			},
 		},
