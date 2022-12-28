@@ -245,6 +245,6 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 }
 
 func mssqlParseResource(name string) string {
-	convert := strings.ReplaceAll(name, " ", "_")
-	return strings.ToLower(convert)
+	name = strings.ReplaceAll(name, " ", "_")
+	return strings.ToLower(name)
 }
