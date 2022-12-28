@@ -10,12 +10,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-type Config struct {
-	URI       string             `yaml:"uri"`
-	Timeout   time.Duration      `yaml:"timeout"`
-	Databases matcher.SimpleExpr `yaml:"databases"`
-}
-
 func init() {
 	module.Register("mongodb", module.Creator{
 		Create: func() module.Module { return New() },
@@ -35,32 +29,34 @@ func New() *Mongo {
 		},
 		charts:             &module.Charts{},
 		optionalCharts:     make(map[string]bool),
-		discoveredDBs:      make([]string, 0),
 		shardNodesDims:     make(map[string]bool),
 		mongoCollector:     &mongoCollector{},
 		addShardChartsOnce: sync.Once{},
-		replSetMembersList: make([]string, 0),
-		replSetDimsEnabled: make(map[string]bool),
 
 		replSetMembers: make(map[string]bool),
 		databases:      make(map[string]bool),
 	}
 }
 
+type Config struct {
+	URI       string             `yaml:"uri"`
+	Timeout   time.Duration      `yaml:"timeout"`
+	Databases matcher.SimpleExpr `yaml:"databases"`
+}
+
 type Mongo struct {
 	module.Base
-	Config             `yaml:",inline"`
-	mongoCollector     connector
-	charts             *module.Charts
-	dbMatcher          matcher.Matcher
-	optionalCharts     map[string]bool
-	discoveredDBs      []string
+	Config `yaml:",inline"`
+
+	mongoCollector connector
+	charts         *module.Charts
+
+	dbMatcher matcher.Matcher
+
 	shardNodesDims     map[string]bool
-	chartsDbStats      *module.Charts
-	replSetMembersList []string
-	replSetDimsEnabled map[string]bool
 	addShardChartsOnce sync.Once
 
+	optionalCharts map[string]bool
 	replSetMembers map[string]bool
 	databases      map[string]bool
 }
