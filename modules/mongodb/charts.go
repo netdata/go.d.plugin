@@ -3,7 +3,9 @@
 package mongo
 
 import (
+	"fmt"
 	"github.com/netdata/go.d.plugin/agent/module"
+	"strings"
 )
 
 const (
@@ -33,6 +35,7 @@ var serverStatusCharts = module.Charts{
 
 // dbStatsChartsTmpl are used to collect per database metrics
 var dbStatsChartsTmpl = module.Charts{
+	chartDBStatsCollectionsTmpl.Copy(),
 	chartDBStatsIndexesTmpl,
 	chartDBStatsViewsTmpl,
 	chartDBStatsDocumentsTmpl,
@@ -49,11 +52,11 @@ var replSetMemberChartsTmpl = module.Charts{
 	replSetMemberUptimeChartTmpl.Copy(),
 }
 
-var shardCharts = module.Charts{
+var shardingCharts = module.Charts{
 	chartShardNodes,
 	chartShardDatabases,
 	chartShardCollections,
-	chartShardChunks,
+	chartShardChunksTmpl,
 }
 
 var (
@@ -665,12 +668,90 @@ var (
 		},
 	}
 
-	chartShardChunks = &module.Chart{
-		ID:    "shard_chucks_per_node",
-		Title: "Chucks Per Node",
+	shardChartsTmpl = module.Charts{
+		chartShardChunksTmpl.Copy(),
+	}
+
+	chartShardChunksTmpl = &module.Chart{
+		ID:    "shard_id_%s_chunks",
+		Title: "Shard chunks",
 		Units: "chunks",
 		Fam:   "shard stats",
-		Ctx:   "mongodb.shard_chucks_per_node",
-		Type:  module.Stacked,
+		Ctx:   "mongodb.shard_chunks",
+		Dims: module.Dims{
+			{ID: "shard_id_%s_chunks", Name: "chunks"},
+		},
 	}
 )
+
+func (m *Mongo) addDatabaseCharts(name string) {
+	charts := dbStatsChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "database", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *Mongo) removeDatabaseCharts(name string) {
+	px := fmt.Sprintf("database_%s_", name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (m *Mongo) addReplSetMemberCharts(v replSetMember) {
+	charts := replSetMemberChartsTmpl.Copy()
+
+	if v.Self != nil {
+		_ = charts.Remove(replSetMemberHeartbeatLatencyChartTmpl.ID)
+		_ = charts.Remove(replSetMemberPingRTTChartTmpl.ID)
+		_ = charts.Remove(replSetMemberUptimeChartTmpl.ID)
+	}
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, v.Name)
+		chart.Labels = []module.Label{
+			{Key: "repl_set_member", Value: v.Name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, v.Name)
+		}
+	}
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *Mongo) removeReplSetMemberCharts(name string) {
+	px := fmt.Sprintf("repl_set_member_%s_", name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
+
+func (m *Mongo) addShardingCharts() {
+	charts := shardingCharts.Copy()
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}

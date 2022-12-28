@@ -15,7 +15,7 @@ import (
 // Because mongo reports a metric only after it first appears,some dims might take a while to appear.
 // For example, in order to report number of create commands, a document must be created first.
 func (m *Mongo) collectServerStatus(ms map[string]int64) error {
-	status, err := m.mongoCollector.serverStatus()
+	status, err := m.conn.serverStatus()
 	if err != nil {
 		return fmt.Errorf("serverStatus command failed: %s", err)
 	}
@@ -35,7 +35,7 @@ func (m *Mongo) addOptionalCharts(s *serverStatus) {
 
 	if s.Transactions != nil {
 		m.addOptionalChart(s.Transactions, &chartTransactionsCurrent)
-		if m.mongoCollector.isMongos() {
+		if m.conn.isMongos() {
 			m.addOptionalChart(s.Transactions.CommitTypes, &chartTransactionsCommitTypes)
 		}
 	}

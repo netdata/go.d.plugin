@@ -27,14 +27,15 @@ func New() *Mongo {
 				Excludes: []string{},
 			},
 		},
-		charts:             &module.Charts{},
-		optionalCharts:     make(map[string]bool),
-		shardNodesDims:     make(map[string]bool),
-		mongoCollector:     &mongoCollector{},
-		addShardChartsOnce: sync.Once{},
 
+		charts:                serverStatusCharts.Copy(),
+		conn:                  &mongoClient{},
+		addShardingChartsOnce: &sync.Once{},
+
+		optionalCharts: make(map[string]bool),
 		replSetMembers: make(map[string]bool),
 		databases:      make(map[string]bool),
+		shards:         make(map[string]bool),
 	}
 }
 
@@ -48,41 +49,31 @@ type Mongo struct {
 	module.Base
 	Config `yaml:",inline"`
 
-	mongoCollector connector
-	charts         *module.Charts
+	charts *module.Charts
 
-	dbMatcher matcher.Matcher
+	conn mongoConn
 
-	shardNodesDims     map[string]bool
-	addShardChartsOnce sync.Once
+	dbSelector matcher.Matcher
+
+	addShardingChartsOnce *sync.Once
 
 	optionalCharts map[string]bool
-	replSetMembers map[string]bool
 	databases      map[string]bool
+	replSetMembers map[string]bool
+	shards         map[string]bool
 }
 
 func (m *Mongo) Init() bool {
-	m.Infof("initializing mongodb")
-	if m.URI == "" {
-		m.Errorf("connection URI is empty")
+	if err := m.verifyConfig(); err != nil {
+		m.Errorf("config validation: %v", err)
 		return false
 	}
 
-	if !m.Databases.Empty() {
-		mMatcher, err := m.Databases.Parse()
-		if err != nil {
-			m.Errorf("error on creating 'databases' matcher : %v", err)
-			return false
-		}
-		m.dbMatcher = mMatcher
-	}
-
-	var err error
-	m.charts, err = m.initCharts()
-	if err != nil {
-		m.Errorf("init charts: %v", err)
+	if err := m.initDatabaseSelector(); err != nil {
+		m.Errorf("init database selector: %v", err)
 		return false
 	}
+
 	return true
 }
 
@@ -95,30 +86,24 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	ms, err := m.collect()
+	mx, err := m.collect()
 	if err != nil {
 		m.Error(err)
 	}
-	if len(ms) == 0 {
+
+	if len(mx) == 0 {
 		m.Warning("no values collected")
 		return nil
 	}
-	return ms
+
+	return mx
 }
 
 func (m *Mongo) Cleanup() {
-	err := m.mongoCollector.close()
-	if err != nil {
-		m.Warningf("cleanup: error on closing mongo client: %v", err)
+	if m.conn == nil {
+		return
 	}
-}
-
-func (m *Mongo) initCharts() (*module.Charts, error) {
-	var charts module.Charts
-	err := charts.Add(*serverStatusCharts.Copy()...)
-	if err != nil {
-		return nil, err
+	if err := m.conn.close(); err != nil {
+		m.Warningf("cleanup: error on closing mongo conn: %v", err)
 	}
-
-	return &charts, nil
 }

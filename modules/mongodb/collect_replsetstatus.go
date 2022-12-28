@@ -4,9 +4,6 @@ package mongo
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 // https://www.mongodb.com/docs/manual/reference/replica-states/#replica-set-member-states
@@ -26,7 +23,7 @@ var replicaSetMemberStates = map[string]int{
 // TODO: deal with duplicates if we collect metrics from all cluster nodes
 // should we only collect ReplSetStatus (at least by default) from primary nodes? (db.runCommand( { isMaster: 1 } ))
 func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
-	s, err := m.mongoCollector.replSetGetStatus()
+	s, err := m.conn.replSetGetStatus()
 	if err != nil {
 		return fmt.Errorf("error get status of the replica set from mongo: %s", err)
 	}
@@ -77,39 +74,4 @@ func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
 	}
 
 	return nil
-}
-
-func (m *Mongo) addReplSetMemberCharts(v replSetMember) {
-	charts := replSetMemberChartsTmpl.Copy()
-
-	if v.Self != nil {
-		_ = charts.Remove(replSetMemberHeartbeatLatencyChartTmpl.ID)
-		_ = charts.Remove(replSetMemberPingRTTChartTmpl.ID)
-		_ = charts.Remove(replSetMemberUptimeChartTmpl.ID)
-	}
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, v.Name)
-		chart.Labels = []module.Label{
-			{Key: "repl_set_member", Value: v.Name},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, v.Name)
-		}
-	}
-
-	if err := m.Charts().Add(*charts...); err != nil {
-		m.Warning(err)
-	}
-}
-
-func (m *Mongo) removeReplSetMemberCharts(name string) {
-	px := fmt.Sprintf("repl_set_member_%s_", name)
-
-	for _, chart := range *m.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
 }
