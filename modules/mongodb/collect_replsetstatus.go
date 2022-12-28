@@ -4,112 +4,111 @@ package mongo
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-// replSetCollect creates the map[string]int64 for the available dims.
-// nil values will be ignored and not added to the map and thus metrics
-// should not appear on the dashboard.
-// if the querying node does not belong to a replica set
-func (m *Mongo) collectReplSetStatus(ms map[string]int64) error {
-	status, err := m.mongoCollector.replSetGetStatus()
+// https://www.mongodb.com/docs/manual/reference/replica-states/#replica-set-member-states
+var replicaSetMemberStates = map[string]int{
+	"startup":    0,
+	"primary":    1,
+	"secondary":  2,
+	"recovering": 3,
+	"startup2":   5,
+	"unknown":    6,
+	"arbiter":    7,
+	"down":       8,
+	"rollback":   9,
+	"removed":    10,
+}
+
+// TODO: deal with duplicates if we collect metrics from all cluster nodes
+// should we only collect ReplSetStatus (at least by default) from primary nodes? (db.runCommand( { isMaster: 1 } ))
+func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
+	s, err := m.mongoCollector.replSetGetStatus()
 	if err != nil {
 		return fmt.Errorf("error get status of the replica set from mongo: %s", err)
 	}
 
-	var currentMembers []string
-	for _, member := range status.Members {
-		currentMembers = append(currentMembers, member.Name)
+	// https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/
+
+	seen := make(map[string]replSetMember)
+
+	for _, member := range s.Members {
+		seen[member.Name] = member
+
+		px := fmt.Sprintf("repl_set_member_%s_", member.Name)
+
+		mx[px+"replication_lag"] = s.Date.Sub(member.OptimeDate).Milliseconds()
+
+		for k, v := range replicaSetMemberStates {
+			mx[px+"state_"+k] = boolToInt(member.State == v)
+		}
+
+		mx[px+"health_status_up"] = boolToInt(member.Health == 1)
+		mx[px+"health_status_down"] = boolToInt(member.Health == 0)
+
+		if member.Self == nil {
+			mx[px+"uptime"] = member.Uptime
+			if v := member.LastHeartbeatRecv; v != nil && !v.IsZero() {
+				mx[px+"heartbeat_latency"] = s.Date.Sub(*v).Milliseconds()
+			}
+			if v := member.PingMs; v != nil {
+				mx[px+"ping_rtt"] = *v
+			}
+		}
 	}
 
-	// replica nodes may be removed
-	// we should collect metrics for these anymore
-	m.removeReplicaSetMembers(currentMembers)
-	m.replSetMembers = currentMembers
-
-	for _, member := range status.Members {
-		if member.LastHeartbeatRecv != nil {
-			id := replicationHeartbeatLatencyDimPrefix + member.Name
-			ms[id] = status.Date.Sub(*member.LastHeartbeatRecv).Milliseconds()
-
-			if !m.replSetDimsEnabled[id] {
-				m.replSetDimsEnabled[id] = true
-
-				if chart := m.charts.Get(replicationHeartbeatLatency); chart != nil {
-					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-						m.Warningf("failed to add dim: %v", err)
-					} else {
-						chart.MarkNotCreated()
-					}
-				}
-			}
+	for name, member := range seen {
+		if !m.replSetMembers[name] {
+			m.replSetMembers[name] = true
+			m.Debugf("new replica set member '%s': adding charts", name)
+			m.addReplSetMemberCharts(member)
 		}
+	}
 
-		id := replicationLagDimPrefix + member.Name
-		// Replica set time diff between current time and time when last entry from the oplog was applied
-		ms[id] = status.Date.Sub(member.OptimeDate).Milliseconds()
-
-		if !m.replSetDimsEnabled[id] {
-			m.replSetDimsEnabled[id] = true
-
-			if chart := m.charts.Get(replicationLag); chart != nil {
-				if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-					m.Warningf("failed to add dim: %v", err)
-				} else {
-					chart.MarkNotCreated()
-				}
-			}
-		}
-
-		if member.PingMs != nil {
-			id := replicationNodePingDimPrefix + member.Name
-			ms[id] = *member.PingMs
-
-			if !m.replSetDimsEnabled[id] {
-				m.replSetDimsEnabled[id] = true
-
-				if chart := m.charts.Get(replicationNodePing); chart != nil {
-					if err := chart.AddDim(&module.Dim{ID: id, Name: member.Name}); err != nil {
-						m.Warningf("failed to add dim: %v", err)
-					} else {
-						chart.MarkNotCreated()
-					}
-				}
-			}
+	for name := range m.replSetMembers {
+		if _, ok := seen[name]; !ok {
+			delete(m.replSetMembers, name)
+			m.Debugf("stale replica set member '%s': removing charts", name)
+			m.removeReplSetMemberCharts(name)
 		}
 	}
 
 	return nil
 }
 
-// removeReplicaSetMember removes dimensions for not existing
-// replica set members
-func (m *Mongo) removeReplicaSetMembers(newMembers []string) {
-	diff := sliceDiff(m.replSetMembers, newMembers)
-	for _, name := range diff {
-		for _, v := range []struct{ chartID, dimPrefix string }{
-			{replicationLag, replicationLagDimPrefix},
-			{replicationHeartbeatLatency, replicationHeartbeatLatencyDimPrefix},
-			{replicationNodePing, replicationNodePingDimPrefix},
-		} {
-			id := v.dimPrefix + name
-			if !m.replSetDimsEnabled[id] {
-				continue
-			}
-			delete(m.replSetDimsEnabled, id)
+func (m *Mongo) addReplSetMemberCharts(v replSetMember) {
+	charts := replSetMemberChartsTmpl.Copy()
 
-			chart := m.charts.Get(v.chartID)
-			if chart == nil {
-				m.Warningf("failed to remove dimension: %s. job doesn't have chart: %s", id, v.chartID)
-				continue
-			}
+	if v.Self != nil {
+		_ = charts.Remove(replSetMemberHeartbeatLatencyChartTmpl.ID)
+		_ = charts.Remove(replSetMemberPingRTTChartTmpl.ID)
+		_ = charts.Remove(replSetMemberUptimeChartTmpl.ID)
+	}
 
-			err := chart.MarkDimRemove(id, true)
-			if err != nil {
-				m.Warningf("failed to remove dimension: %v", err)
-				continue
-			}
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, v.Name)
+		chart.Labels = []module.Label{
+			{Key: "repl_set_member", Value: v.Name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, v.Name)
+		}
+	}
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *Mongo) removeReplSetMemberCharts(name string) {
+	px := fmt.Sprintf("repl_set_member_%s_", name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
 			chart.MarkNotCreated()
 		}
 	}

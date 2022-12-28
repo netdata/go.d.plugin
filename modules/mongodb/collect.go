@@ -10,25 +10,18 @@ func (m *Mongo) collect() (map[string]int64, error) {
 	}
 
 	mx := map[string]int64{}
+
 	if err := m.collectServerStatus(mx); err != nil {
-		return nil, fmt.Errorf("couldn't collecting server status metrics: %v", err)
+		return nil, fmt.Errorf("couldn't collect server status metrics: %v", err)
 	}
 
 	if err := m.collectDbStats(mx); err != nil {
-		return mx, fmt.Errorf("couldn't collecting dbstats metrics: %v", err)
+		return mx, fmt.Errorf("couldn't collect dbstats metrics: %v", err)
 	}
 
 	if m.mongoCollector.isReplicaSet() {
-		// if we have replica set based on the serverStatus response
-		// we add once the charts during runtime
-		m.addReplChartsOnce.Do(func() {
-			if err := m.charts.Add(*replCharts.Copy()...); err != nil {
-				m.Errorf("failed to add replica set chart: %v", err)
-			}
-		})
-
 		if err := m.collectReplSetStatus(mx); err != nil {
-			return mx, fmt.Errorf("couldn't collecting replSetStatus metrics: %v", err)
+			return mx, fmt.Errorf("couldn't collect replSetStatus metrics: %v", err)
 		}
 	}
 
@@ -42,24 +35,16 @@ func (m *Mongo) collect() (map[string]int64, error) {
 		})
 
 		if err := m.collectShard(mx); err != nil {
-			return mx, fmt.Errorf("couldn't collecting shard metrics: %v", err)
+			return mx, fmt.Errorf("couldn't collect shard metrics: %v", err)
 		}
 	}
 
 	return mx, nil
 }
 
-// sliceDiff calculates the diff between to slices
-func sliceDiff(slice1, slice2 []string) []string {
-	mb := make(map[string]struct{}, len(slice2))
-	for _, x := range slice2 {
-		mb[x] = struct{}{}
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
 	}
-	var diff []string
-	for _, x := range slice1 {
-		if _, found := mb[x]; !found {
-			diff = append(diff, x)
-		}
-	}
-	return diff
+	return 0
 }

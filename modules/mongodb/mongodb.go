@@ -25,8 +25,9 @@ func init() {
 func New() *Mongo {
 	return &Mongo{
 		Config: Config{
-			Timeout: 1,
-			URI:     "mongodb://localhost:27017",
+			Timeout: 3,
+			//URI:     "mongodb://localhost:27017",
+			URI: "mongodb://root:password123@localhost:27017",
 			Databases: matcher.SimpleExpr{
 				Includes: []string{"* *"}, // TODO: set to []string{}
 				Excludes: []string{},
@@ -37,12 +38,12 @@ func New() *Mongo {
 		discoveredDBs:      make([]string, 0),
 		shardNodesDims:     make(map[string]bool),
 		mongoCollector:     &mongoCollector{},
-		addReplChartsOnce:  sync.Once{},
 		addShardChartsOnce: sync.Once{},
-		replSetMembers:     make([]string, 0),
+		replSetMembersList: make([]string, 0),
 		replSetDimsEnabled: make(map[string]bool),
 
-		dbs: make(map[string]bool),
+		replSetMembers: make(map[string]bool),
+		databases:      make(map[string]bool),
 	}
 }
 
@@ -56,12 +57,12 @@ type Mongo struct {
 	discoveredDBs      []string
 	shardNodesDims     map[string]bool
 	chartsDbStats      *module.Charts
-	replSetMembers     []string
+	replSetMembersList []string
 	replSetDimsEnabled map[string]bool
-	addReplChartsOnce  sync.Once
 	addShardChartsOnce sync.Once
 
-	dbs map[string]bool
+	replSetMembers map[string]bool
+	databases      map[string]bool
 }
 
 func (m *Mongo) Init() bool {

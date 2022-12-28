@@ -6,6 +6,17 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+const (
+	_ = module.Priority + iota
+
+	replSetMemberState
+	replSetMemberHealthStatus
+	replSetMemberReplicationLag
+	replSetMemberHeartbeatLatency
+	replSetMemberPingRTT
+	replSetMemberUptime
+)
+
 // these charts are expected to be available in many versions
 // and build in mongoDB, and we are always creating them
 var serverStatusCharts = module.Charts{
@@ -22,18 +33,20 @@ var serverStatusCharts = module.Charts{
 
 // dbStatsChartsTmpl are used to collect per database metrics
 var dbStatsChartsTmpl = module.Charts{
-	chartDBStatsCollectionsTmpl,
 	chartDBStatsIndexesTmpl,
 	chartDBStatsViewsTmpl,
 	chartDBStatsDocumentsTmpl,
 	chartDBStatsSizeTmpl,
 }
 
-// replCharts on used on replica sets
-var replCharts = module.Charts{
-	chartReplLag,
-	chartReplHeartbeatLatency,
-	chartReplPing,
+// replSetMemberChartsTmpl on used on replica sets
+var replSetMemberChartsTmpl = module.Charts{
+	replSetMemberStateChartTmpl.Copy(),
+	replSetMemberHealthStatusChartTmpl.Copy(),
+	replSetMemberReplicationLagChartTmpl,
+	replSetMemberHeartbeatLatencyChartTmpl,
+	replSetMemberPingRTTChartTmpl,
+	replSetMemberUptimeChartTmpl.Copy(),
 }
 
 var shardCharts = module.Charts{
@@ -533,38 +546,82 @@ var (
 	}
 )
 
-const (
-	replicationLag                       = "replication_lag"
-	replicationHeartbeatLatency          = "replication_heartbeat_latency"
-	replicationNodePing                  = "replication_node_ping"
-	replicationLagDimPrefix              = "operational_lag_"
-	replicationHeartbeatLatencyDimPrefix = "heartbeat_latency_"
-	replicationNodePingDimPrefix         = "ping_"
-)
-
 var (
-	chartReplLag = &module.Chart{
-		ID:    replicationLag,
-		Title: "Replica Operational Lag",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationLag,
+	replSetMemberStateChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_state",
+		Title:    "Replica Set member state",
+		Units:    "state",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_state",
+		Priority: replSetMemberState,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_state_primary", Name: "primary"},
+			{ID: "repl_set_member_%s_state_startup", Name: "startup"},
+			{ID: "repl_set_member_%s_state_secondary", Name: "secondary"},
+			{ID: "repl_set_member_%s_state_recovering", Name: "recovering"},
+			{ID: "repl_set_member_%s_state_startup2", Name: "startup2"},
+			{ID: "repl_set_member_%s_state_unknown", Name: "unknown"},
+			{ID: "repl_set_member_%s_state_arbiter", Name: "arbiter"},
+			{ID: "repl_set_member_%s_state_down", Name: "down"},
+			{ID: "repl_set_member_%s_state_rollback", Name: "rollback"},
+			{ID: "repl_set_member_%s_state_removed", Name: "removed"},
+		},
 	}
-
-	chartReplHeartbeatLatency = &module.Chart{
-		ID:    replicationHeartbeatLatency,
-		Title: "Replica Heartbeat Latency",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationHeartbeatLatency,
+	replSetMemberHealthStatusChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_health_status",
+		Title:    "Replica Set member health status",
+		Units:    "status",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_health_status",
+		Priority: replSetMemberHealthStatus,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_health_status_up", Name: "up"},
+			{ID: "repl_set_member_%s_health_status_down", Name: "down"},
+		},
 	}
-
-	chartReplPing = &module.Chart{
-		ID:    replicationNodePing,
-		Title: "Replica Ping",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationNodePing,
+	replSetMemberReplicationLagChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_replication_lag",
+		Title:    "Replica Set member replication lag",
+		Units:    "milliseconds",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_replication_lag",
+		Priority: replSetMemberReplicationLag,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_replication_lag", Name: "replication_lag"},
+		},
+	}
+	replSetMemberHeartbeatLatencyChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_heartbeat_latency",
+		Title:    "Replica Set member heartbeat latency",
+		Units:    "milliseconds",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_heartbeat_latency",
+		Priority: replSetMemberHeartbeatLatency,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_heartbeat_latency", Name: "heartbeat_latency"},
+		},
+	}
+	replSetMemberPingRTTChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_ping_rtt",
+		Title:    "Replica Set member ping RTT",
+		Units:    "milliseconds",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_ping_rtt",
+		Priority: replSetMemberPingRTT,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_ping_rtt", Name: "ping_rtt"},
+		},
+	}
+	replSetMemberUptimeChartTmpl = &module.Chart{
+		ID:       "replica_set_member_%s_uptime",
+		Title:    "Replica Set member uptime",
+		Units:    "seconds",
+		Fam:      "replica set",
+		Ctx:      "mongodb.repl_set_member_uptime",
+		Priority: replSetMemberUptime,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_uptime", Name: "uptime"},
+		},
 	}
 )
 

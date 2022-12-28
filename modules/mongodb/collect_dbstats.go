@@ -52,16 +52,16 @@ func (m *Mongo) collectDbStats(mx map[string]int64) error {
 	}
 
 	for db := range seen {
-		if !m.dbs[db] {
-			m.dbs[db] = true
+		if !m.databases[db] {
+			m.databases[db] = true
 			m.Debugf("new database '%s': creating charts", db)
 			m.addDatabaseCharts(db)
 		}
 	}
 
-	for db := range m.dbs {
+	for db := range m.databases {
 		if !seen[db] {
-			delete(m.dbs, db)
+			delete(m.databases, db)
 			m.Debugf("stale database '%s': removing charts", db)
 			m.removeDatabaseCharts(db)
 		}
@@ -86,7 +86,6 @@ func (m *Mongo) addDatabaseCharts(name string) {
 	if err := m.Charts().Add(*charts...); err != nil {
 		m.Warning(err)
 	}
-
 }
 
 func (m *Mongo) removeDatabaseCharts(name string) {

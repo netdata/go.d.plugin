@@ -274,15 +274,20 @@ type dbStats struct {
 }
 
 type replSetStatus struct {
-	Date    time.Time `bson:"date"`
-	Members []struct {
-		Name              string     `bson:"name"`
-		State             int        `bson:"state"`
-		OptimeDate        time.Time  `bson:"optimeDate"`
-		LastHeartbeat     *time.Time `bson:"lastHeartbeat"`
-		LastHeartbeatRecv *time.Time `bson:"lastHeartbeatRecv"`
-		PingMs            *int64     `bson:"pingMs"`
-	} `bson:"members"`
+	Date    time.Time       `bson:"date"`
+	Members []replSetMember `bson:"members"`
+}
+
+type replSetMember struct {
+	Name              string     `bson:"name"`
+	Self              *bool      `bson:"self"`
+	State             int        `bson:"state"`
+	Health            int        `bson:"health"`
+	OptimeDate        time.Time  `bson:"optimeDate"`
+	LastHeartbeat     *time.Time `bson:"lastHeartbeat"`
+	LastHeartbeatRecv *time.Time `bson:"lastHeartbeatRecv"`
+	PingMs            *int64     `bson:"pingMs"`
+	Uptime            int64      `bson:"uptime"`
 }
 
 type aggrResults struct {

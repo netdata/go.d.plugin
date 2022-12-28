@@ -247,64 +247,6 @@ func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
 	assert.Len(t, ms, 0, msg)
 }
 
-func TestMongo_Collect_ReplSetStatus(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatus,
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	_ = m.Collect()
-	msg := "%s chart should have been added"
-	assert.True(t, m.charts.Has(replicationLag), msg, replicationLag)
-	assert.True(t, m.charts.Has(replicationHeartbeatLatency), msg, replicationHeartbeatLatency)
-	assert.True(t, m.charts.Has(replicationNodePing), msg, replicationNodePing)
-}
-
-func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode1,
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	_ = m.Collect()
-	msg := "node1 dimension is missing"
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"), msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node1"), msg)
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node1"), msg)
-
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode2,
-	}
-	_ = m.Collect()
-	// node2 dimensions added
-	msg = "node2 dimension is missing"
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node2"), msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node2"), msg)
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node2"), msg)
-
-	// node1 dimensions removed
-	msg = "node1 was remove but dimension is still active"
-	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete, msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete, msg)
-	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete, msg)
-}
-
 func TestMongo_Collect_Shard(t *testing.T) {
 	m := New()
 	mockClient := &mockMongo{
