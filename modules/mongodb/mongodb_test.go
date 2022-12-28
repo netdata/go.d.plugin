@@ -318,7 +318,7 @@ func TestMongo_Collect_Shard(t *testing.T) {
 		shardColPartitionResponse: v5_0_0.ShardCollections,
 		chunksShardNum:            2,
 	}
-	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
+	mockClient.connector = &mongoCollector{aggrFunc: mockClient.dbAggregate}
 	m.mongoCollector = mockClient
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"
@@ -348,8 +348,8 @@ func TestMongo_Collect_Shard_Fail(t *testing.T) {
 		},
 	}
 	mockClient.connector = &mongoCollector{
-		Client:          &mongo.Client{},
-		aggregationFunc: mockClient.dbAggregate,
+		client:   &mongo.Client{},
+		aggrFunc: mockClient.dbAggregate,
 	}
 	m.mongoCollector = mockClient
 	m.Config.Databases.Includes = []string{"* *"}
@@ -390,7 +390,7 @@ func TestMongo_ShardUpdateNodeChart(t *testing.T) {
 		shardColPartitionResponse: v5_0_0.ShardCollections,
 		chunksShardNum:            2,
 	}
-	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
+	mockClient.connector = &mongoCollector{aggrFunc: mockClient.dbAggregate}
 	m.mongoCollector = mockClient
 	m.Config.Databases.Includes = []string{"* *"}
 	m.URI = "mongodb://localhost"

@@ -32,32 +32,32 @@ func New() *Mongo {
 				Excludes: []string{},
 			},
 		},
-		charts:                &module.Charts{},
-		optionalChartsEnabled: make(map[string]bool),
-		discoveredDBs:         make([]string, 0),
-		shardNodesDims:        make(map[string]bool),
-		mongoCollector:        &mongoCollector{},
-		addReplChartsOnce:     sync.Once{},
-		addShardChartsOnce:    sync.Once{},
-		replSetMembers:        make([]string, 0),
-		replSetDimsEnabled:    make(map[string]bool),
+		charts:             &module.Charts{},
+		optionalCharts:     make(map[string]bool),
+		discoveredDBs:      make([]string, 0),
+		shardNodesDims:     make(map[string]bool),
+		mongoCollector:     &mongoCollector{},
+		addReplChartsOnce:  sync.Once{},
+		addShardChartsOnce: sync.Once{},
+		replSetMembers:     make([]string, 0),
+		replSetDimsEnabled: make(map[string]bool),
 	}
 }
 
 type Mongo struct {
 	module.Base
-	Config                `yaml:",inline"`
-	mongoCollector        connector
-	charts                *module.Charts
-	databasesMatcher      matcher.Matcher
-	optionalChartsEnabled map[string]bool
-	discoveredDBs         []string
-	shardNodesDims        map[string]bool
-	chartsDbStats         *module.Charts
-	replSetMembers        []string
-	replSetDimsEnabled    map[string]bool
-	addReplChartsOnce     sync.Once
-	addShardChartsOnce    sync.Once
+	Config             `yaml:",inline"`
+	mongoCollector     connector
+	charts             *module.Charts
+	databasesMatcher   matcher.Matcher
+	optionalCharts     map[string]bool
+	discoveredDBs      []string
+	shardNodesDims     map[string]bool
+	chartsDbStats      *module.Charts
+	replSetMembers     []string
+	replSetDimsEnabled map[string]bool
+	addReplChartsOnce  sync.Once
+	addShardChartsOnce sync.Once
 }
 
 func (m *Mongo) Init() bool {

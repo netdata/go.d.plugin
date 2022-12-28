@@ -11,11 +11,9 @@ import (
 )
 
 // collectServerStatus creates the map[string]int64 for the available dims.
-// nil values will be ignored and not added to the map and thus metrics
-// should not appear on the dashboard.
-// Because mongo reports a metric only after it first appears, some dims might
-// take a while to appear. For example, in order to report number of create
-// commands, a document must be created first.
+// nil values will be ignored and not added to the map and thus metrics should not appear on the dashboard.
+// Because mongo reports a metric only after it first appears,some dims might take a while to appear.
+// For example, in order to report number of create commands, a document must be created first.
 func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 	status, err := m.mongoCollector.serverStatus()
 	if err != nil {
@@ -23,65 +21,60 @@ func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 	}
 
 	m.addOptionalCharts(status)
+
 	for k, v := range stm.ToMap(status) {
 		ms[k] = v
 	}
+
 	return nil
 }
 
-// addOptionalCharts tries to add charts based on the availability of
-// metrics coming back from the `serverStatus` command.
-// Nil pointer structs will be skipped, and we won't produce metrics for
-// unavailable metrics.
-func (m *Mongo) addOptionalCharts(status *serverStatus) {
-	m.metricExists(status.FlowControl, &chartFlowControl)
+// addOptionalCharts attempts to add charts based on the availability of the metrics returned by the serverStatus command.
+func (m *Mongo) addOptionalCharts(s *serverStatus) {
+	m.addOptionalChart(s.FlowControl, &chartFlowControl)
 
-	if status.Transactions != nil {
-		m.metricExists(status.Transactions, &chartTransactionsCurrent)
+	if s.Transactions != nil {
+		m.addOptionalChart(s.Transactions, &chartTransactionsCurrent)
 		if m.mongoCollector.isMongos() {
-			m.metricExists(status.Transactions.CommitTypes, &chartTransactionsCommitTypes)
+			m.addOptionalChart(s.Transactions.CommitTypes, &chartTransactionsCommitTypes)
 		}
 	}
 
-	if status.GlobalLock != nil {
-		m.metricExists(status.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
-		m.metricExists(status.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
+	if s.GlobalLock != nil {
+		m.addOptionalChart(s.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
+		m.addOptionalChart(s.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
 	}
-	if status.Tcmalloc != nil {
-		m.metricExists(status.Tcmalloc.Generic, &chartTcmallocGeneric)
-		m.metricExists(status.Tcmalloc.Tcmalloc, &chartTcmalloc)
+	if s.Tcmalloc != nil {
+		m.addOptionalChart(s.Tcmalloc.Generic, &chartTcmallocGeneric)
+		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &chartTcmalloc)
 	}
-	if status.Locks != nil {
-		m.metricExists(status.Locks.Global, &chartLocks)
-		m.metricExists(status.Locks.Database, &chartLocks)
-		m.metricExists(status.Locks.Collection, &chartLocks)
+	if s.Locks != nil {
+		m.addOptionalChart(s.Locks.Global, &chartLocks)
+		m.addOptionalChart(s.Locks.Database, &chartLocks)
+		m.addOptionalChart(s.Locks.Collection, &chartLocks)
 	}
-	if status.WiredTiger != nil {
-		m.metricExists(status.WiredTiger.BlockManager, &chartWiredTigerBlockManager)
-		m.metricExists(status.WiredTiger.Cache, &chartWiredTigerCache)
-		m.metricExists(status.WiredTiger.Capacity, &chartWiredTigerCapacity)
-		m.metricExists(status.WiredTiger.Connection, &chartWiredTigerConnection)
-		m.metricExists(status.WiredTiger.Cursor, &chartWiredTigerCursor)
-		m.metricExists(status.WiredTiger.Lock, &chartWiredTigerLock)
-		m.metricExists(status.WiredTiger.Lock, &chartWiredTigerLockDuration)
-		m.metricExists(status.WiredTiger.Log, &chartWiredTigerLogOps)
-		m.metricExists(status.WiredTiger.Log, &chartWiredTigerLogBytes)
-		m.metricExists(status.WiredTiger.Transaction, &chartWiredTigerTransactions)
+	if s.WiredTiger != nil {
+		m.addOptionalChart(s.WiredTiger.BlockManager, &chartWiredTigerBlockManager)
+		m.addOptionalChart(s.WiredTiger.Cache, &chartWiredTigerCache)
+		m.addOptionalChart(s.WiredTiger.Capacity, &chartWiredTigerCapacity)
+		m.addOptionalChart(s.WiredTiger.Connection, &chartWiredTigerConnection)
+		m.addOptionalChart(s.WiredTiger.Cursor, &chartWiredTigerCursor)
+		m.addOptionalChart(s.WiredTiger.Lock, &chartWiredTigerLock)
+		m.addOptionalChart(s.WiredTiger.Lock, &chartWiredTigerLockDuration)
+		m.addOptionalChart(s.WiredTiger.Log, &chartWiredTigerLogOps)
+		m.addOptionalChart(s.WiredTiger.Log, &chartWiredTigerLogBytes)
+		m.addOptionalChart(s.WiredTiger.Transaction, &chartWiredTigerTransactions)
 	}
 }
 
-// metricExists checks if the paces interface(iface) is not nil
-// and if so add the passed chart to the index.
-func (m *Mongo) metricExists(iface interface{}, chart *module.Chart) {
-	if reflect.ValueOf(iface).IsNil() {
+func (m *Mongo) addOptionalChart(iface interface{}, chart *module.Chart) {
+	if reflect.ValueOf(iface).IsNil() || m.optionalCharts[chart.ID] {
 		return
 	}
-	if !m.optionalChartsEnabled[chart.ID] {
-		err := m.charts.Add(chart.Copy())
-		if err != nil {
-			m.Warning(err)
-		}
-		m.optionalChartsEnabled[chart.ID] = true
-		return
+
+	m.optionalCharts[chart.ID] = true
+
+	if err := m.charts.Add(chart.Copy()); err != nil {
+		m.Warning(err)
 	}
 }
