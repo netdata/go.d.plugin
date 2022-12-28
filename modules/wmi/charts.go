@@ -92,9 +92,13 @@ const (
 	prioMSSQLBlockedProcess
 	prioMSSQLUserConnections
 	prioMSSQLLocksLockWait
+	prioMSSQLMemmgrConnectionMemoryBytes
+	prioMSSQLMemmgrExternalBenefitOfMemory
 	prioMSSQLMemmgrPendingMemoryGrants
 	prioMSSQLMemTotalServer
+	prioMSSQLSqlErrorsTotal
 	prioMSSQLStatsAutoParameterization
+	prioMSSQLStatsBatchRequests
 	prioMSSQLStatsSafeAutoParameterization
 	prioMSSQLStatsCompilations
 	prioMSSQLStatsRecompilations
@@ -845,9 +849,13 @@ var (
 		mssqlBufManIOPSChart.Copy(),
 		mssqlBlockedProcessChart.Copy(),
 		mssqlLocksWaitChart.Copy(),
+		mssqlMemmgrConnectionMemoryBytesChart.Copy(),
+		mssqlMemmgrExternalBenefitOfMemoryChart.Copy(),
 		mssqlMemmgrPendingMemoryChart.Copy(),
 		mssqlMemmgrTotalServerChart.Copy(),
+		mssqlSQLErrorsTotalChart.Copy(),
 		mssqlStatsAutoParamChart.Copy(),
+		mssqlStatsBatchRequestsChart.Copy(),
 		mssqlStatsSafeAutoChart.Copy(),
 		mssqlStatsCompilationChart.Copy(),
 		mssqlStatsRecompilationChart.Copy(),
@@ -974,6 +982,28 @@ var (
 	}
 	// Memory Manager
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-memory-manager-object?view=sql-server-ver16
+	mssqlMemmgrConnectionMemoryBytesChart = module.Chart{
+		ID:       "mssql_instance_%s_memmgr_connection_memory_bytes",
+		Title:    "Amount of dynamic memory to maintain connections",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_memmgr_connection_memory_bytes",
+		Priority: prioMSSQLMemmgrConnectionMemoryBytes,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_memmgr_connection_memory_bytes", Name: "memory", Algo: module.Incremental},
+		},
+	}
+	mssqlMemmgrExternalBenefitOfMemoryChart = module.Chart{
+		ID:       "mssql_instance_%s_memmgr_external_benefit_of_memory",
+		Title:    "Performance benefit from adding memory to a specific cache",
+		Units:    "bytes",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_memmgr_external_benefit_of_memory",
+		Priority: prioMSSQLMemmgrExternalBenefitOfMemory,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_memmgr_external_benefit_of_memory", Name: "benefit", Algo: module.Incremental},
+		},
+	}
 	mssqlMemmgrPendingMemoryChart = module.Chart{
 		ID:       "mssql_instance_%s_memmgr_pending_memory_grants",
 		Title:    "Process waiting for memory grant",
@@ -996,6 +1026,24 @@ var (
 			{ID: "mssql_instance_%s_memmgr_total_server_memory_bytes", Name: "memory"},
 		},
 	}
+
+	// SQL errors
+	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-errors-object?view=sql-server-ver16
+	mssqlSQLErrorsTotalChart = module.Chart{
+		ID:       "mssql_instance_%s_sql_errors_total",
+		Title:    "Errors",
+		Units:    "errors/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_sql_errors",
+		Priority: prioMSSQLSqlErrorsTotal,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_sql_errors_total_db_offline_errors", Name: "db_offline", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_info_errors", Name: "info", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_kill_connection_errors", Name: "kill_connection", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_sql_errors_total_user_errors", Name: "user", Algo: module.Incremental},
+		},
+	}
+
 	// SQL Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-statistics-object?view=sql-server-ver16
 	mssqlStatsAutoParamChart = module.Chart{
@@ -1007,6 +1055,17 @@ var (
 		Priority: prioMSSQLStatsAutoParameterization,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_auto_parameterization_attempts", Name: "failed", Algo: module.Incremental},
+		},
+	}
+	mssqlStatsBatchRequestsChart = module.Chart{
+		ID:       "mssql_instance_%s_sqlstats_batch_requests",
+		Title:    "Total of batches requests",
+		Units:    "requests/s",
+		Fam:      "mssql",
+		Ctx:      "wmi.mssql_instance_sqlstats_batch_requests",
+		Priority: prioMSSQLStatsBatchRequests,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_sqlstats_batch_requests", Name: "batch", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsSafeAutoChart = module.Chart{
