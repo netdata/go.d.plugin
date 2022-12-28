@@ -9,13 +9,13 @@ func (m *Mongo) collect() (map[string]int64, error) {
 		return nil, fmt.Errorf("init mongo client: %v", err)
 	}
 
-	ms := map[string]int64{}
-	if err := m.collectServerStatus(ms); err != nil {
+	mx := map[string]int64{}
+	if err := m.collectServerStatus(mx); err != nil {
 		return nil, fmt.Errorf("couldn't collecting server status metrics: %v", err)
 	}
 
-	if err := m.collectDbStats(ms); err != nil {
-		return ms, fmt.Errorf("couldn't collecting dbstats metrics: %v", err)
+	if err := m.collectDbStats(mx); err != nil {
+		return mx, fmt.Errorf("couldn't collecting dbstats metrics: %v", err)
 	}
 
 	if m.mongoCollector.isReplicaSet() {
@@ -27,8 +27,8 @@ func (m *Mongo) collect() (map[string]int64, error) {
 			}
 		})
 
-		if err := m.collectReplSetStatus(ms); err != nil {
-			return ms, fmt.Errorf("couldn't collecting replSetStatus metrics: %v", err)
+		if err := m.collectReplSetStatus(mx); err != nil {
+			return mx, fmt.Errorf("couldn't collecting replSetStatus metrics: %v", err)
 		}
 	}
 
@@ -41,12 +41,12 @@ func (m *Mongo) collect() (map[string]int64, error) {
 			}
 		})
 
-		if err := m.collectShard(ms); err != nil {
-			return ms, fmt.Errorf("couldn't collecting shard metrics: %v", err)
+		if err := m.collectShard(mx); err != nil {
+			return mx, fmt.Errorf("couldn't collecting shard metrics: %v", err)
 		}
 	}
 
-	return ms, nil
+	return mx, nil
 }
 
 // sliceDiff calculates the diff between to slices

@@ -28,7 +28,7 @@ func New() *Mongo {
 			Timeout: 1,
 			URI:     "mongodb://localhost:27017",
 			Databases: matcher.SimpleExpr{
-				Includes: []string{},
+				Includes: []string{"* *"},
 				Excludes: []string{},
 			},
 		},
@@ -41,6 +41,8 @@ func New() *Mongo {
 		addShardChartsOnce: sync.Once{},
 		replSetMembers:     make([]string, 0),
 		replSetDimsEnabled: make(map[string]bool),
+
+		dbs: make(map[string]bool),
 	}
 }
 
@@ -49,7 +51,7 @@ type Mongo struct {
 	Config             `yaml:",inline"`
 	mongoCollector     connector
 	charts             *module.Charts
-	databasesMatcher   matcher.Matcher
+	dbMatcher          matcher.Matcher
 	optionalCharts     map[string]bool
 	discoveredDBs      []string
 	shardNodesDims     map[string]bool
@@ -58,6 +60,8 @@ type Mongo struct {
 	replSetDimsEnabled map[string]bool
 	addReplChartsOnce  sync.Once
 	addShardChartsOnce sync.Once
+
+	dbs map[string]bool
 }
 
 func (m *Mongo) Init() bool {
@@ -73,7 +77,7 @@ func (m *Mongo) Init() bool {
 			m.Errorf("error on creating 'databases' matcher : %v", err)
 			return false
 		}
-		m.databasesMatcher = mMatcher
+		m.dbMatcher = mMatcher
 	}
 
 	var err error
@@ -119,9 +123,5 @@ func (m *Mongo) initCharts() (*module.Charts, error) {
 		return nil, err
 	}
 
-	m.chartsDbStats = dbStatsCharts.Copy()
-	if err := charts.Add(*m.chartsDbStats...); err != nil {
-		return nil, err
-	}
 	return &charts, nil
 }

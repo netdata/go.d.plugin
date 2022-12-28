@@ -20,13 +20,13 @@ var serverStatusCharts = module.Charts{
 	chartAsserts.Copy(),
 }
 
-// dbStatsCharts are used to collect per database metrics
-var dbStatsCharts = module.Charts{
-	chartDBStatsCollections,
-	chartDBStatsIndexes,
-	chartDBStatsViews,
-	chartDBStatsDocuments,
-	chartDBStatsSize,
+// dbStatsChartsTmpl are used to collect per database metrics
+var dbStatsChartsTmpl = module.Charts{
+	chartDBStatsCollectionsTmpl,
+	chartDBStatsIndexesTmpl,
+	chartDBStatsViewsTmpl,
+	chartDBStatsDocumentsTmpl,
+	chartDBStatsSizeTmpl,
 }
 
 // replCharts on used on replica sets
@@ -477,49 +477,59 @@ var (
 )
 
 var (
-	chartDBStatsCollections = &module.Chart{
-		ID:    "database_collections",
+	chartDBStatsCollectionsTmpl = &module.Chart{
+		ID:    "database_%s_collections",
 		Title: "Collections",
 		Units: "collections",
 		Fam:   "database_statistics",
 		Ctx:   "mongodb.database_collections",
-		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "database_%s_collections", Name: "collections"},
+		},
 	}
 
-	chartDBStatsIndexes = &module.Chart{
-		ID:    "database_indexes",
+	chartDBStatsIndexesTmpl = &module.Chart{
+		ID:    "database_%s_indexes",
 		Title: "Indexes",
 		Units: "indexes",
 		Fam:   "database_statistics",
 		Ctx:   "mongodb.database_indexes",
-		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "database_%s_indexes", Name: "indexes"},
+		},
 	}
 
-	chartDBStatsViews = &module.Chart{
-		ID:    "database_views",
+	chartDBStatsViewsTmpl = &module.Chart{
+		ID:    "database_%s_views",
 		Title: "Views",
 		Units: "views",
 		Fam:   "database_statistics",
 		Ctx:   "mongodb.database_views",
-		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "database_%s_views", Name: "views"},
+		},
 	}
 
-	chartDBStatsDocuments = &module.Chart{
-		ID:    "database_documents",
+	chartDBStatsDocumentsTmpl = &module.Chart{
+		ID:    "database_%s_documents",
 		Title: "Documents",
 		Units: "documents",
 		Fam:   "database_statistics",
 		Ctx:   "mongodb.database_documents",
-		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "database_%s_documents", Name: "documents"},
+		},
 	}
 
-	chartDBStatsSize = &module.Chart{
-		ID:    "database_storage_size",
+	chartDBStatsSizeTmpl = &module.Chart{
+		ID:    "database_%s_storage_size",
 		Title: "Disk Size",
 		Units: "bytes",
 		Fam:   "database_statistics",
 		Ctx:   "mongodb.database_storage_size",
-		Type:  module.Stacked,
+		Dims: module.Dims{
+			{ID: "database_%s_storage_size", Name: "storage_size"},
+		},
 	}
 )
 

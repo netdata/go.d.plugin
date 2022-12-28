@@ -67,9 +67,9 @@ func TestMongo_Init_AddDbChartsTwiceFails(t *testing.T) {
 	msg := "adding duplicate db stats charts is expected to fail Init()"
 	m := New()
 	// duplicate charts
-	temp := dbStatsCharts
-	defer func() { dbStatsCharts = temp }()
-	dbStatsCharts = append(dbStatsCharts, dbStatsCharts...)
+	temp := dbStatsChartsTmpl
+	defer func() { dbStatsChartsTmpl = temp }()
+	dbStatsChartsTmpl = append(dbStatsChartsTmpl, dbStatsChartsTmpl...)
 	assert.Equal(t, false, m.Init(), msg)
 }
 
@@ -163,11 +163,11 @@ func TestMongo_Collect_DbStats(t *testing.T) {
 	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField()*len(v5_0_0.ListDatabaseNames), msg)
 
 	charts := []*module.Chart{
-		chartDBStatsCollections.Copy(),
-		chartDBStatsIndexes.Copy(),
-		chartDBStatsViews.Copy(),
-		chartDBStatsDocuments.Copy(),
-		chartDBStatsSize.Copy(),
+		chartDBStatsCollectionsTmpl.Copy(),
+		chartDBStatsIndexesTmpl.Copy(),
+		chartDBStatsViewsTmpl.Copy(),
+		chartDBStatsDocumentsTmpl.Copy(),
+		chartDBStatsSizeTmpl.Copy(),
 	}
 	for _, chart := range charts {
 		require.True(t, m.charts.Has(chart.ID))
