@@ -92,3 +92,11 @@ func (m *Mongo) removeShardCharts(id string) {
 		}
 	}
 }
+
+func (m *Mongo) addShardingCharts() {
+	charts := chartsSharding.Copy()
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}

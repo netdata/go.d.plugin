@@ -28,7 +28,7 @@ func New() *Mongo {
 			},
 		},
 
-		charts:                serverStatusCharts.Copy(),
+		charts:                chartsServerStatus.Copy(),
 		conn:                  &mongoClient{},
 		addShardingChartsOnce: &sync.Once{},
 

@@ -4,6 +4,9 @@ package mongo
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 func (m *Mongo) collectDbStats(mx map[string]int64) error {
@@ -65,4 +68,33 @@ func (m *Mongo) collectDbStats(mx map[string]int64) error {
 	}
 
 	return nil
+}
+
+func (m *Mongo) addDatabaseCharts(name string) {
+	charts := chartsTmplDatabase.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "database", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *Mongo) removeDatabaseCharts(name string) {
+	px := fmt.Sprintf("database_%s_", name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
 }

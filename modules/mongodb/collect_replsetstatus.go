@@ -4,6 +4,9 @@ package mongo
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 // https://www.mongodb.com/docs/manual/reference/replica-states/#replica-set-member-states
@@ -74,4 +77,39 @@ func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
 	}
 
 	return nil
+}
+
+func (m *Mongo) addReplSetMemberCharts(v replSetMember) {
+	charts := chartsTmplReplSetMember.Copy()
+
+	if v.Self != nil {
+		_ = charts.Remove(chartTmplReplSetMemberHeartbeatLatency.ID)
+		_ = charts.Remove(chartTmplReplSetMemberPingRTT.ID)
+		_ = charts.Remove(chartTmplReplSetMemberUptime.ID)
+	}
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, v.Name)
+		chart.Labels = []module.Label{
+			{Key: "repl_set_member", Value: v.Name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, v.Name)
+		}
+	}
+
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
+}
+
+func (m *Mongo) removeReplSetMemberCharts(name string) {
+	px := fmt.Sprintf("repl_set_member_%s_", name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
 }

@@ -29,33 +29,32 @@ func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 	return nil
 }
 
-// addOptionalCharts attempts to add charts based on the availability of the metrics returned by the serverStatus command.
 func (m *Mongo) addOptionalCharts(s *serverStatus) {
-	m.addOptionalChart(s.FlowControl, &chartFlowControl)
+	m.addOptionalChart(s.FlowControl, &flowControlTimingsChart)
 
 	if s.Transactions != nil {
-		m.addOptionalChart(s.Transactions, &chartTransactionsCurrent)
+		m.addOptionalChart(s.Transactions, &transactionsCurrentChart)
 		if m.conn.isMongos() {
-			m.addOptionalChart(s.Transactions.CommitTypes, &chartTransactionsCommitTypes)
+			m.addOptionalChart(s.Transactions.CommitTypes, &transactionsCommitTypesChart)
 		}
 	}
 
 	if s.GlobalLock != nil {
-		m.addOptionalChart(s.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
-		m.addOptionalChart(s.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
+		m.addOptionalChart(s.GlobalLock.ActiveClients, &globalLockActiveClientsChart)
+		m.addOptionalChart(s.GlobalLock.CurrentQueue, &globalLockCurrentQueueChart)
 	}
 	if s.Tcmalloc != nil {
-		m.addOptionalChart(s.Tcmalloc.Generic, &chartTcmallocGeneric)
-		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &chartTcmalloc)
+		m.addOptionalChart(s.Tcmalloc.Generic, &tcMallocGenericChart)
+		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &tcMallocChart)
 	}
 	if s.Locks != nil {
-		m.addOptionalChart(s.Locks.Global, &chartLocks)
-		m.addOptionalChart(s.Locks.Database, &chartLocks)
-		m.addOptionalChart(s.Locks.Collection, &chartLocks)
+		m.addOptionalChart(s.Locks.Global, &locksChart)
+		m.addOptionalChart(s.Locks.Database, &locksChart)
+		m.addOptionalChart(s.Locks.Collection, &locksChart)
 	}
 	if s.WiredTiger != nil {
-		m.addOptionalChart(s.WiredTiger.BlockManager, &chartWiredTigerBlockManager)
-		m.addOptionalChart(s.WiredTiger.Cache, &chartWiredTigerCache)
+		m.addOptionalChart(s.WiredTiger.BlockManager, &wiredTigerBlocksChart)
+		m.addOptionalChart(s.WiredTiger.Cache, &wiredTigerCacheChart)
 		m.addOptionalChart(s.WiredTiger.Capacity, &chartWiredTigerCapacity)
 		m.addOptionalChart(s.WiredTiger.Connection, &chartWiredTigerConnection)
 		m.addOptionalChart(s.WiredTiger.Cursor, &chartWiredTigerCursor)
