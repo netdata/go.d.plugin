@@ -13,15 +13,15 @@ import (
 )
 
 type mongoConn interface {
-	serverStatus() (*serverStatus, error)
+	serverStatus() (*documentServerStatus, error)
 	listDatabaseNames() ([]string, error)
-	dbStats(name string) (*dbStats, error)
+	dbStats(name string) (*documentDBStats, error)
 	isReplicaSet() bool
 	isMongos() bool
-	replSetGetStatus() (*replSetStatus, error)
-	shardNodes() (*shardNodesResult, error)
-	shardDatabasesPartitioning() (*partitionedResult, error)
-	shardCollectionsPartitioning() (*partitionedResult, error)
+	replSetGetStatus() (*documentReplSetStatus, error)
+	shardNodes() (*documentShardNodesResult, error)
+	shardDatabasesPartitioning() (*documentPartitionedResult, error)
+	shardCollectionsPartitioning() (*documentPartitionedResult, error)
 	shardChunks() (map[string]int64, error)
 	initClient(uri string, timeout time.Duration) error
 	close() error
@@ -33,17 +33,40 @@ type mongoClient struct {
 	timeout        time.Duration
 	replicaSetFlag *bool
 	mongosFlag     *bool
-	aggrFunc       func(ctx context.Context, client *mongo.Client, collection string, aggr []bson.D) ([]aggrResults, error)
+	aggrFunc       func(ctx context.Context, client *mongo.Client, collection string, aggr []bson.D) ([]documentAggrResults, error)
 }
 
-// serverStatus connects to the database and return the output of the
-// `serverStatus` command.
-func (c *mongoClient) serverStatus() (*serverStatus, error) {
+// documentServerStatus connects to the database and return the output of the
+// `documentServerStatus` command.
+func (c *mongoClient) serverStatus() (*documentServerStatus, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*c.timeout)
 	defer cancel()
 
-	cmd := bson.D{{Key: "serverStatus", Value: 1}, {Key: "metrics", Value: 0}, {Key: "repl", Value: 1}}
-	var status *serverStatus
+	cmd := bson.D{
+		{Key: "serverStatus", Value: 1},
+		{Key: "repl", Value: 1},
+		{Key: "metrics",
+			Value: bson.D{
+				{Key: "apiVersions", Value: false},
+				{Key: "aggStageCounters", Value: false},
+				{Key: "commands", Value: false},
+				{Key: "document", Value: false},
+				{Key: "dotsAndDollarsFields", Value: false},
+				{Key: "getLastError", Value: false},
+				{Key: "mongos", Value: false},
+				{Key: "operation", Value: false},
+				{Key: "operatorCounters", Value: false},
+				{Key: "query", Value: false},
+				{Key: "record", Value: false},
+				{Key: "repl", Value: false},
+				{Key: "storage", Value: false},
+				{Key: "ttl", Value: false},
+				{Key: "cursor", Value: true},
+				{Key: "queryExecutor", Value: true},
+			},
+		},
+	}
+	var status *documentServerStatus
 
 	err := c.client.Database("admin").RunCommand(ctx, cmd).Decode(&status)
 	if err != nil {
@@ -67,13 +90,13 @@ func (c *mongoClient) listDatabaseNames() ([]string, error) {
 	return c.client.ListDatabaseNames(ctx, bson.M{})
 }
 
-// dbStats gets the `dbstats` metrics for a specific database.
-func (c *mongoClient) dbStats(name string) (*dbStats, error) {
+// documentDBStats gets the `dbstats` metrics for a specific database.
+func (c *mongoClient) dbStats(name string) (*documentDBStats, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*c.timeout)
 	defer cancel()
 
 	cmd := bson.M{"dbStats": 1}
-	var stats dbStats
+	var stats documentDBStats
 
 	if err := c.client.Database(name).RunCommand(ctx, cmd).Decode(&stats); err != nil {
 		return nil, err
@@ -110,11 +133,11 @@ func (c *mongoClient) isMongos() bool {
 }
 
 // replSetGetStatus gets the `replSetGetStatus` from the server
-func (c *mongoClient) replSetGetStatus() (*replSetStatus, error) {
+func (c *mongoClient) replSetGetStatus() (*documentReplSetStatus, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*c.timeout)
 	defer cancel()
 
-	var status *replSetStatus
+	var status *documentReplSetStatus
 	cmd := bson.M{"replSetGetStatus": 1}
 
 	err := c.client.Database("admin").RunCommand(ctx, cmd).Decode(&status)
@@ -125,7 +148,7 @@ func (c *mongoClient) replSetGetStatus() (*replSetStatus, error) {
 	return status, err
 }
 
-func (c *mongoClient) shardNodes() (*shardNodesResult, error) {
+func (c *mongoClient) shardNodes() (*documentShardNodesResult, error) {
 	collection := "shards"
 	groupStage := bson.D{{Key: "$sortByCount", Value: "$state"}}
 
@@ -134,10 +157,10 @@ func (c *mongoClient) shardNodes() (*shardNodesResult, error) {
 		return nil, err
 	}
 
-	return &shardNodesResult{nodesByState.True, nodesByState.False}, nil
+	return &documentShardNodesResult{nodesByState.True, nodesByState.False}, nil
 }
 
-func (c *mongoClient) shardDatabasesPartitioning() (*partitionedResult, error) {
+func (c *mongoClient) shardDatabasesPartitioning() (*documentPartitionedResult, error) {
 	collection := "databases"
 	groupStage := bson.D{{Key: "$sortByCount", Value: "$partitioned"}}
 
@@ -146,10 +169,10 @@ func (c *mongoClient) shardDatabasesPartitioning() (*partitionedResult, error) {
 		return nil, err
 	}
 
-	return &partitionedResult{partitioning.True, partitioning.False}, nil
+	return &documentPartitionedResult{partitioning.True, partitioning.False}, nil
 }
 
-func (c *mongoClient) shardCollectionsPartitioning() (*partitionedResult, error) {
+func (c *mongoClient) shardCollectionsPartitioning() (*documentPartitionedResult, error) {
 	collection := "collections"
 	matchStage := bson.D{{Key: "$match", Value: bson.D{{Key: "dropped", Value: false}}}}
 	countStage := bson.D{{Key: "$sortByCount", Value: bson.D{{Key: "$eq", Value: bson.A{"$distributionMode", "sharded"}}}}}
@@ -159,10 +182,10 @@ func (c *mongoClient) shardCollectionsPartitioning() (*partitionedResult, error)
 		return nil, err
 	}
 
-	return &partitionedResult{partitioning.True, partitioning.False}, nil
+	return &documentPartitionedResult{partitioning.True, partitioning.False}, nil
 }
 
-func (c *mongoClient) shardCollectAggregation(collection string, aggr []bson.D) (*aggrResult, error) {
+func (c *mongoClient) shardCollectAggregation(collection string, aggr []bson.D) (*documentAggrResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*c.timeout)
 	defer cancel()
 
@@ -171,7 +194,7 @@ func (c *mongoClient) shardCollectAggregation(collection string, aggr []bson.D) 
 		return nil, err
 	}
 
-	result := &aggrResult{}
+	result := &documentAggrResult{}
 
 	for _, row := range rows {
 		if row.Bool {
@@ -265,7 +288,7 @@ func (c *mongoClient) close() error {
 }
 
 // dbAggregate is not a method in order to mock it out in the tests
-func dbAggregate(ctx context.Context, client *mongo.Client, collection string, aggr []bson.D) ([]aggrResults, error) {
+func dbAggregate(ctx context.Context, client *mongo.Client, collection string, aggr []bson.D) ([]documentAggrResults, error) {
 	col := client.Database("config").Collection(collection)
 
 	cursor, err := col.Aggregate(ctx, aggr)
@@ -275,7 +298,7 @@ func dbAggregate(ctx context.Context, client *mongo.Client, collection string, a
 
 	defer func() { _ = cursor.Close(ctx) }()
 
-	var rows []aggrResults
+	var rows []documentAggrResults
 	if err = cursor.All(ctx, &rows); err != nil {
 		return nil, err
 	}

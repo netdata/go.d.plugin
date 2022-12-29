@@ -29,40 +29,36 @@ func (m *Mongo) collectServerStatus(ms map[string]int64) error {
 	return nil
 }
 
-func (m *Mongo) addOptionalCharts(s *serverStatus) {
-	m.addOptionalChart(s.FlowControl, &flowControlTimingsChart)
+func (m *Mongo) addOptionalCharts(s *documentServerStatus) {
+	m.addOptionalChart(s.FlowControl, &chartFlowControlTimings)
 
 	if s.Transactions != nil {
-		m.addOptionalChart(s.Transactions, &transactionsCurrentChart)
+		m.addOptionalChart(s.Transactions, &chartTransactionsCurrent)
 		if m.conn.isMongos() {
-			m.addOptionalChart(s.Transactions.CommitTypes, &transactionsCommitTypesChart)
+			m.addOptionalChart(s.Transactions.CommitTypes, &chartTransactionsCommitTypes)
 		}
 	}
 
 	if s.GlobalLock != nil {
-		m.addOptionalChart(s.GlobalLock.ActiveClients, &globalLockActiveClientsChart)
-		m.addOptionalChart(s.GlobalLock.CurrentQueue, &globalLockCurrentQueueChart)
+		m.addOptionalChart(s.GlobalLock.ActiveClients, &chartGlobalLockActiveClients)
+		m.addOptionalChart(s.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
 	}
 	if s.Tcmalloc != nil {
 		m.addOptionalChart(s.Tcmalloc.Generic, &tcMallocGenericChart)
 		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &tcMallocChart)
 	}
 	if s.Locks != nil {
-		m.addOptionalChart(s.Locks.Global, &locksChart)
-		m.addOptionalChart(s.Locks.Database, &locksChart)
-		m.addOptionalChart(s.Locks.Collection, &locksChart)
+		m.addOptionalChart(s.Locks.Global, &chartLocks)
+		m.addOptionalChart(s.Locks.Database, &chartLocks)
+		m.addOptionalChart(s.Locks.Collection, &chartLocks)
 	}
 	if s.WiredTiger != nil {
-		m.addOptionalChart(s.WiredTiger.BlockManager, &wiredTigerBlocksChart)
-		m.addOptionalChart(s.WiredTiger.Cache, &wiredTigerCacheChart)
-		m.addOptionalChart(s.WiredTiger.Capacity, &chartWiredTigerCapacity)
-		m.addOptionalChart(s.WiredTiger.Connection, &chartWiredTigerConnection)
-		m.addOptionalChart(s.WiredTiger.Cursor, &chartWiredTigerCursor)
-		m.addOptionalChart(s.WiredTiger.Lock, &chartWiredTigerLock)
-		m.addOptionalChart(s.WiredTiger.Lock, &chartWiredTigerLockDuration)
-		m.addOptionalChart(s.WiredTiger.Log, &chartWiredTigerLogOps)
-		m.addOptionalChart(s.WiredTiger.Log, &chartWiredTigerLogBytes)
-		m.addOptionalChart(s.WiredTiger.Transaction, &chartWiredTigerTransactions)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerConcurrentReadTransactions)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerConcurrentWriteTransactions)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerCacheUsage)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerCacheDirtySpaceSize)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerCacheIORate)
+		m.addOptionalChart(s.WiredTiger, &chartWiredTigerCacheEvictionRate)
 	}
 }
 

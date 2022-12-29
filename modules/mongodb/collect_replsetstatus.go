@@ -31,9 +31,7 @@ func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
 		return fmt.Errorf("error get status of the replica set from mongo: %s", err)
 	}
 
-	// https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/
-
-	seen := make(map[string]replSetMember)
+	seen := make(map[string]documentReplSetMember)
 
 	for _, member := range s.Members {
 		seen[member.Name] = member
@@ -79,7 +77,7 @@ func (m *Mongo) collectReplSetStatus(mx map[string]int64) error {
 	return nil
 }
 
-func (m *Mongo) addReplSetMemberCharts(v replSetMember) {
+func (m *Mongo) addReplSetMemberCharts(v documentReplSetMember) {
 	charts := chartsTmplReplSetMember.Copy()
 
 	if v.Self != nil {

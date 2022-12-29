@@ -21,7 +21,7 @@ func (m *Mongo) collect() (map[string]int64, error) {
 
 	if m.conn.isReplicaSet() {
 		if err := m.collectReplSetStatus(mx); err != nil {
-			return mx, fmt.Errorf("couldn't collect replSetStatus metrics: %v", err)
+			return mx, fmt.Errorf("couldn't collect documentReplSetStatus metrics: %v", err)
 		}
 	}
 
