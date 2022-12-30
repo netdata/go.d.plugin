@@ -47,10 +47,12 @@ func (c *mongoClient) serverStatus() (*documentServerStatus, error) {
 		{Key: "repl", Value: 1},
 		{Key: "metrics",
 			Value: bson.D{
+				{Key: "document", Value: true},
+				{Key: "cursor", Value: true},
+				{Key: "queryExecutor", Value: true},
 				{Key: "apiVersions", Value: false},
 				{Key: "aggStageCounters", Value: false},
 				{Key: "commands", Value: false},
-				{Key: "document", Value: false},
 				{Key: "dotsAndDollarsFields", Value: false},
 				{Key: "getLastError", Value: false},
 				{Key: "mongos", Value: false},
@@ -61,8 +63,6 @@ func (c *mongoClient) serverStatus() (*documentServerStatus, error) {
 				{Key: "repl", Value: false},
 				{Key: "storage", Value: false},
 				{Key: "ttl", Value: false},
-				{Key: "cursor", Value: true},
-				{Key: "queryExecutor", Value: true},
 			},
 		},
 	}

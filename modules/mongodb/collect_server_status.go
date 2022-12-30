@@ -44,8 +44,7 @@ func (m *Mongo) addOptionalCharts(s *documentServerStatus) {
 		m.addOptionalChart(s.GlobalLock.CurrentQueue, &chartGlobalLockCurrentQueue)
 	}
 	if s.Tcmalloc != nil {
-		m.addOptionalChart(s.Tcmalloc.Generic, &tcMallocGenericChart)
-		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &tcMallocChart)
+		m.addOptionalChart(s.Tcmalloc.Tcmalloc, &chartMemoryTCMallocStatsChart)
 	}
 	if s.Locks != nil {
 		m.addOptionalChart(s.Locks.Global, &chartLocks)

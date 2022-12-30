@@ -63,17 +63,25 @@ type (
 	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#network
 	documentNetwork struct {
-		BytesIn     int64 `bson:"bytesIn" stm:"bytes_in"`
-		BytesOut    int64 `bson:"bytesOut" stm:"bytes_out"`
-		NumRequests int64 `bson:"numRequests" stm:"requests"`
+		BytesIn              int64  `bson:"bytesIn" stm:"bytes_in"`
+		BytesOut             int64  `bson:"bytesOut" stm:"bytes_out"`
+		NumRequests          int64  `bson:"numRequests" stm:"requests"`
+		NumSlowDNSOperations *int64 `bson:"numSlowDNSOperations" stm:"slow_dns_operations"` // 4.4+
+		NumSlowSSLOperations *int64 `bson:"numSlowSSLOperations" stm:"slow_ssl_operations"` // 4.4+
 	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#mem
 	documentMemory struct {
-		Resident int64 `bson:"resident" stm:"resident"`
-		Virtual  int64 `bson:"virtual" stm:"virtual"`
+		Resident int64 `bson:"resident" stm:"resident,1048576,1"`
+		Virtual  int64 `bson:"virtual" stm:"virtual,1048576,1"`
 	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#metrics
 	documentMetrics struct {
+		Document struct {
+			Deleted  int64 `bson:"deleted" stm:"deleted"`
+			Inserted int64 `bson:"inserted" stm:"inserted"`
+			Returned int64 `bson:"returned" stm:"returned"`
+			Updated  int64 `bson:"updated" stm:"updated"`
+		} `bson:"document" stm:"document"`
 		QueryExecutor struct {
 			Scanned        int64 `bson:"scanned" stm:"scanned"`
 			ScannedObjects int64 `bson:"scannedObjects" stm:"scanned_objects"`
@@ -128,8 +136,12 @@ type (
 			Writers int64 `bson:"writers" stm:"writers"`
 		} `bson:"activeClients" stm:"active_clients"`
 	}
-	// https://www.mongodb.com/docs/v6.0/reference/command/serverStatus/#change-tcmalloc-verbosity
-	// https://github.com/mongodb/mongo/blob/54e1be7d98aa154e1676d6d652b4d2d1a1073b07/src/mongo/util/tcmalloc_server_status_section.cpp#L88
+	// Values:
+	//  - mongodb: https://github.com/mongodb/mongo/blob/54e1be7d98aa154e1676d6d652b4d2d1a1073b07/src/mongo/util/tcmalloc_server_status_section.cpp#L88
+	//  - tcmalloc: https://github.com/google/tcmalloc/blob/927c1433141daa1f0bcf920e6d71bf64795cc2c2/tcmalloc/global_stats.cc#L582
+	// formattedString:
+	//  - https://github.com/google/tcmalloc/blob/master/docs/stats.md
+	//  - https://github.com/google/tcmalloc/blob/927c1433141daa1f0bcf920e6d71bf64795cc2c2/tcmalloc/global_stats.cc#L208
 	documentTCMallocStatus struct {
 		Generic *struct {
 			CurrentAllocatedBytes int64 `bson:"current_allocated_bytes" stm:"current_allocated_bytes"`
