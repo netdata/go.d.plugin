@@ -23,7 +23,6 @@ type documentServerStatus struct {
 	GlobalLock   *documentGlobalLock     `bson:"globalLock" stm:"global_lock"`
 	Tcmalloc     *documentTCMallocStatus `bson:"tcmalloc" stm:"tcmalloc"`
 	Locks        *documentLocks          `bson:"locks" stm:"locks"`
-	FlowControl  *documentFlowControl    `bson:"flowControl" stm:"flow"` // 4.2+
 	WiredTiger   *documentWiredTiger     `bson:"wiredTiger" stm:"wiredtiger"`
 	Repl         interface{}             `bson:"repl"`
 }
@@ -59,7 +58,6 @@ type (
 		ExhaustIsMaster         *int64 `bson:"exhaustIsMaster" stm:"exhaust_is_master"`
 		ExhaustHello            *int64 `bson:"exhaustHello" stm:"exhaust_hello"`
 		AwaitingTopologyChanges *int64 `bson:"awaitingTopologyChanges" stm:"awaiting_topology_changes"`
-		LoadBalanced            *int64 `bson:"loadBalanced" stm:"load_balanced"`
 	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#network
 	documentNetwork struct {
@@ -74,67 +72,9 @@ type (
 		Resident int64 `bson:"resident" stm:"resident,1048576,1"`
 		Virtual  int64 `bson:"virtual" stm:"virtual,1048576,1"`
 	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#metrics
-	documentMetrics struct {
-		Document struct {
-			Deleted  int64 `bson:"deleted" stm:"deleted"`
-			Inserted int64 `bson:"inserted" stm:"inserted"`
-			Returned int64 `bson:"returned" stm:"returned"`
-			Updated  int64 `bson:"updated" stm:"updated"`
-		} `bson:"document" stm:"document"`
-		QueryExecutor struct {
-			Scanned        int64 `bson:"scanned" stm:"scanned"`
-			ScannedObjects int64 `bson:"scannedObjects" stm:"scanned_objects"`
-		} `bson:"queryExecutor" stm:"query_executor"`
-	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#extra_info
 	documentExtraInfo struct {
 		PageFaults int64 `bson:"page_faults" stm:"page_faults"`
-	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#asserts
-	documentAsserts struct {
-		Regular   int64 `bson:"regular" stm:"regular"`
-		Warning   int64 `bson:"warning" stm:"warning"`
-		Msg       int64 `bson:"msg" stm:"msg"`
-		User      int64 `bson:"user" stm:"user"`
-		Tripwire  int64 `bson:"tripwire" stm:"tripwire"`
-		Rollovers int64 `bson:"rollovers" stm:"rollovers"`
-	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#transactions
-	documentTransactions struct {
-		CurrentActive   *int64                           `bson:"currentActive" stm:"active"`           // mongod in 4.0.2+ and mongos in 4.2.1+
-		CurrentInactive *int64                           `bson:"currentInactive" stm:"inactive"`       // mongod in 4.0.2+ and mongos in 4.2.1+
-		CurrentOpen     *int64                           `bson:"currentOpen" stm:"open"`               // mongod in 4.0.2+ and mongos in 4.2.1+
-		CurrentPrepared *int64                           `bson:"currentPrepared" stm:"prepared"`       // 4.2+ mongod only
-		TotalAborted    *int64                           `bson:"totalAborted" stm:"total_aborted"`     // mongod in 4.0.2+ and mongos in 4.2+
-		TotalCommitted  *int64                           `bson:"totalCommitted" stm:"total_committed"` // mongod in 4.0.2+ and mongos in 4.2+
-		TotalStarted    *int64                           `bson:"totalStarted" stm:"total_started"`     // mongod in 4.0.2+ and mongos in 4.2+
-		CommitTypes     *documentTransactionsCommitTypes `bson:"commitTypes" stm:"commit_types"`       // mongos only
-	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.transactions.commitTypes
-	documentTransactionsCommitTypes struct {
-		NoShards         documentTransactionsCommitType `bson:"noShards" stm:"no_shards"`
-		SingleShard      documentTransactionsCommitType `bson:"singleShard" stm:"single_shard"`
-		SingleWriteShard documentTransactionsCommitType `bson:"singleWriteShard" stm:"single_write_shard"`
-		ReadOnly         documentTransactionsCommitType `bson:"readOnly" stm:"read_only"`
-		TwoPhaseCommit   documentTransactionsCommitType `bson:"twoPhaseCommit" stm:"two_phase"`
-		RecoverWithToken documentTransactionsCommitType `bson:"recoverWithToken" stm:"recover_with_token"`
-	}
-	documentTransactionsCommitType struct {
-		Initiated                int64 `json:"initiated" stm:"initiated"`
-		Successful               int64 `json:"successful" stm:"successful"`
-		SuccessfulDurationMicros int64 `json:"successfulDurationMicros" stm:"successful_duration_micros"`
-	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#globallock
-	documentGlobalLock struct {
-		CurrentQueue *struct {
-			Readers int64 `bson:"readers" stm:"readers"`
-			Writers int64 `bson:"writers" stm:"writers"`
-		} `bson:"currentQueue" stm:"current_queue"`
-		ActiveClients *struct {
-			Readers int64 `bson:"readers" stm:"readers"`
-			Writers int64 `bson:"writers" stm:"writers"`
-		} `bson:"activeClients" stm:"active_clients"`
 	}
 	// Values:
 	//  - mongodb: https://github.com/mongodb/mongo/blob/54e1be7d98aa154e1676d6d652b4d2d1a1073b07/src/mongo/util/tcmalloc_server_status_section.cpp#L88
@@ -168,12 +108,74 @@ type (
 			SpinlockTotalDelayNs         int64 `bson:"spinlock_total_delay_ns" stm:"spinlock_total_delay_ns"`
 		} `bson:"tcmalloc" stm:""`
 	}
+	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#metrics
+	documentMetrics struct {
+		Cursor struct {
+		} `bson:"cursor" stm:"cursor"`
+		Document struct {
+			Deleted  int64 `bson:"deleted" stm:"deleted"`
+			Inserted int64 `bson:"inserted" stm:"inserted"`
+			Returned int64 `bson:"returned" stm:"returned"`
+			Updated  int64 `bson:"updated" stm:"updated"`
+		} `bson:"document" stm:"document"`
+		QueryExecutor struct {
+			Scanned        int64 `bson:"scanned" stm:"scanned"`
+			ScannedObjects int64 `bson:"scannedObjects" stm:"scanned_objects"`
+		} `bson:"queryExecutor" stm:"query_executor"`
+	}
+	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#asserts
+	documentAsserts struct {
+		Regular   int64 `bson:"regular" stm:"regular"`
+		Warning   int64 `bson:"warning" stm:"warning"`
+		Msg       int64 `bson:"msg" stm:"msg"`
+		User      int64 `bson:"user" stm:"user"`
+		Tripwire  int64 `bson:"tripwire" stm:"tripwire"`
+		Rollovers int64 `bson:"rollovers" stm:"rollovers"`
+	}
+	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#transactions
+	documentTransactions struct {
+		CurrentActive   *int64                           `bson:"currentActive" stm:"active"`           // mongod in 4.0.2+ and mongos in 4.2.1+
+		CurrentInactive *int64                           `bson:"currentInactive" stm:"inactive"`       // mongod in 4.0.2+ and mongos in 4.2.1+
+		CurrentOpen     *int64                           `bson:"currentOpen" stm:"open"`               // mongod in 4.0.2+ and mongos in 4.2.1+
+		CurrentPrepared *int64                           `bson:"currentPrepared" stm:"prepared"`       // 4.2+ mongod only
+		TotalAborted    *int64                           `bson:"totalAborted" stm:"total_aborted"`     // mongod in 4.0.2+ and mongos in 4.2+
+		TotalCommitted  *int64                           `bson:"totalCommitted" stm:"total_committed"` // mongod in 4.0.2+ and mongos in 4.2+
+		TotalStarted    *int64                           `bson:"totalStarted" stm:"total_started"`     // mongod in 4.0.2+ and mongos in 4.2+
+		TotalPrepared   *int64                           `bson:"totalPrepared" stm:"total_prepared"`   // mongod in 4.0.2+ and mongos in 4.2+
+		CommitTypes     *documentTransactionsCommitTypes `bson:"commitTypes" stm:"commit_types"`       // mongos only
+	}
+	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.transactions.commitTypes
+	documentTransactionsCommitTypes struct {
+		NoShards         documentTransactionsCommitType `bson:"noShards" stm:"no_shards"`
+		SingleShard      documentTransactionsCommitType `bson:"singleShard" stm:"single_shard"`
+		SingleWriteShard documentTransactionsCommitType `bson:"singleWriteShard" stm:"single_write_shard"`
+		ReadOnly         documentTransactionsCommitType `bson:"readOnly" stm:"read_only"`
+		TwoPhaseCommit   documentTransactionsCommitType `bson:"twoPhaseCommit" stm:"two_phase_commit"`
+		RecoverWithToken documentTransactionsCommitType `bson:"recoverWithToken" stm:"recover_with_token"`
+	}
+	documentTransactionsCommitType struct {
+		Initiated                int64 `json:"initiated" stm:"initiated"`
+		Successful               int64 `json:"successful" stm:"successful"`
+		SuccessfulDurationMicros int64 `json:"successfulDurationMicros" stm:"successful_duration_micros"`
+	}
+	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#globallock
+	documentGlobalLock struct {
+		CurrentQueue *struct {
+			Readers int64 `bson:"readers" stm:"readers"`
+			Writers int64 `bson:"writers" stm:"writers"`
+		} `bson:"currentQueue" stm:"current_queue"`
+		ActiveClients *struct {
+			Readers int64 `bson:"readers" stm:"readers"`
+			Writers int64 `bson:"writers" stm:"writers"`
+		} `bson:"activeClients" stm:"active_clients"`
+	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.locks
 	documentLocks struct {
 		Global     *documentLockType `bson:"Global" stm:"global"`
 		Database   *documentLockType `bson:"Database" stm:"database"`
 		Collection *documentLockType `bson:"Collection" stm:"collection"`
 		Mutex      *documentLockType `bson:"Mutex" stm:"mutex"`
+		Metadata   *documentLockType `bson:"Metadata" stm:"metadata"`
 		Oplog      *documentLockType `bson:"oplog" stm:"oplog"`
 	}
 	documentLockType struct {
@@ -185,11 +187,6 @@ type (
 		IntentShared    int64 `bson:"r" stm:"intent_shared"`
 		IntentExclusive int64 `bson:"w" stm:"intent_exclusive"`
 	}
-	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#flowcontrol
-	documentFlowControl struct {
-		TargetRateLimit     int64 `bson:"targetRateLimit" stm:"target_rate_limit"`
-		TimeAcquiringMicros int64 `bson:"timeAcquiringMicros" stm:"time_acquiring_micros"`
-	}
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#wiredtiger
 	documentWiredTiger struct {
 		ConcurrentTransaction struct {
@@ -200,7 +197,7 @@ type (
 			Read struct {
 				Out       int `bson:"out" stm:"out"`
 				Available int `bson:"available" stm:"available"`
-			} `bson:"Read" stm:"read"`
+			} `bson:"read" stm:"read"`
 		} `bson:"concurrentTransactions" stm:"concurrent_transactions"`
 		Cache struct {
 			BytesCurrentlyInCache    int `bson:"bytes currently in the cache" stm:"currently_in_cache_bytes"`

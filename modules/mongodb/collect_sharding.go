@@ -64,7 +64,7 @@ func (m *Mongo) collectShard(mx map[string]int64) error {
 }
 
 func (m *Mongo) addShardCharts(id string) {
-	charts := shardChartsTmpl.Copy()
+	charts := chartsTmplShardingShard.Copy()
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, id)
