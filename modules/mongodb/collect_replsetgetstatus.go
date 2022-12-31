@@ -102,7 +102,7 @@ func (m *Mongo) addReplSetMemberCharts(v documentReplSetMember) {
 }
 
 func (m *Mongo) removeReplSetMemberCharts(name string) {
-	px := fmt.Sprintf("repl_set_member_%s_", name)
+	px := fmt.Sprintf("replica_set_member_%s_", name)
 
 	for _, chart := range *m.Charts() {
 		if strings.HasPrefix(chart.ID, px) {
