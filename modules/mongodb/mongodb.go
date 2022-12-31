@@ -20,10 +20,9 @@ func New() *Mongo {
 	return &Mongo{
 		Config: Config{
 			Timeout: 3,
-			//URI:     "mongodb://localhost:27017",
-			URI: "mongodb://root:password123@localhost:27017",
+			URI:     "mongodb://localhost:27017",
 			Databases: matcher.SimpleExpr{
-				Includes: []string{"* *"}, // TODO: set to []string{}
+				Includes: []string{},
 				Excludes: []string{},
 			},
 		},

@@ -711,7 +711,7 @@ func (m *mockMongoClient) shardCollectionsPartitioning() (*documentPartitionedRe
 	if !m.mongos {
 		return nil, errors.New("mock.shardCollectionsPartitioning() error: should be called for mongos")
 	}
-	if m.errOnShardDatabasesPartitioning {
+	if m.errOnShardCollectionsPartitioning {
 		return nil, errors.New("mock.shardCollectionsPartitioning() error")
 	}
 
@@ -728,7 +728,7 @@ func (m *mockMongoClient) shardChunks() (map[string]int64, error) {
 	if !m.mongos {
 		return nil, errors.New("mock.shardChunks() error: should be called for mongos")
 	}
-	if m.errOnShardDatabasesPartitioning {
+	if m.errOnShardChunks {
 		return nil, errors.New("mock.shardChunks() error")
 	}
 
