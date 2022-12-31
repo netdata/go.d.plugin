@@ -9,7 +9,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func (m *Mongo) collectShard(mx map[string]int64) error {
+func (m *Mongo) collectSharding(mx map[string]int64) error {
 	nodes, err := m.conn.shardNodes()
 	if err != nil {
 		return err

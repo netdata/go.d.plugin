@@ -255,11 +255,17 @@ func (c *mongoClient) initClient(uri string, timeout time.Duration) error {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), c.timeout*time.Second)
-	defer cancel()
+	ctxConn, cancelConn := context.WithTimeout(context.Background(), c.timeout*time.Second)
+	defer cancelConn()
 
-	err = client.Connect(ctx)
-	if err != nil {
+	if err := client.Connect(ctxConn); err != nil {
+		return err
+	}
+
+	ctxPing, cancelPing := context.WithTimeout(context.Background(), c.timeout*time.Second)
+	defer cancelPing()
+
+	if err := client.Ping(ctxPing, nil); err != nil {
 		return err
 	}
 

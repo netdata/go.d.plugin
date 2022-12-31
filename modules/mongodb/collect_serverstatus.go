@@ -15,20 +15,20 @@ import (
 // Because mongo reports a metric only after it first appears,some dims might take a while to appear.
 // For example, in order to report number of create commands, a document must be created first.
 func (m *Mongo) collectServerStatus(mx map[string]int64) error {
-	status, err := m.conn.serverStatus()
+	s, err := m.conn.serverStatus()
 	if err != nil {
 		return fmt.Errorf("serverStatus command failed: %s", err)
 	}
 
-	m.addOptionalCharts(status)
+	m.addOptionalCharts(s)
 
-	for k, v := range stm.ToMap(status) {
+	for k, v := range stm.ToMap(s) {
 		mx[k] = v
 	}
 
-	if status.Transactions != nil && status.Transactions.CommitTypes != nil {
+	if s.Transactions != nil && s.Transactions.CommitTypes != nil {
 		px := "transactions_commit_types_"
-		v := status.Transactions.CommitTypes
+		v := s.Transactions.CommitTypes
 		mx[px+"no_shards_unsuccessful"] = v.NoShards.Initiated - v.NoShards.Successful
 		mx[px+"single_shard_unsuccessful"] = v.SingleShard.Initiated - v.SingleShard.Successful
 		mx[px+"single_write_shard_unsuccessful"] = v.SingleWriteShard.Initiated - v.SingleWriteShard.Successful
@@ -96,7 +96,7 @@ func (m *Mongo) addOptionalCharts(s *documentServerStatus) {
 	}
 }
 
-func (m *Mongo) addOptionalChart(iface interface{}, charts ...*module.Chart) {
+func (m *Mongo) addOptionalChart(iface any, charts ...*module.Chart) {
 	if reflect.ValueOf(iface).IsNil() {
 		return
 	}

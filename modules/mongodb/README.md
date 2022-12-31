@@ -10,33 +10,27 @@ learn_rel_path: "References/Collectors references/Databases"
 
 # MongoDB monitoring with Netdata
 
-[`MongoDB`](https://www.mongodb.com/) MongoDB is a source-available cross-platform document-oriented database program.
-Classified as a NoSQL database program, MongoDB uses JSON-like documents with optional schemas. MongoDB is developed by
-MongoDB Inc. and licensed under the Server Side Public License (SSPL).
+[MongoDB](https://www.mongodb.com/) is a source-available cross-platform document-oriented database program.
 
-source: [`Wikipedia`](https://en.wikipedia.org/wiki/MongoDB)
+This module monitors one or more MongoDB instances, depending on your configuration. It collects information and
+statistics about the server executing the following commands:
 
----
-
-This module monitors one or more `MongoDB` instances, depending on your configuration.
-
-It collects information and statistics about the server executing the following commands:
-
-- [`serverStatus`](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-dbcommand-dbcmd.serverStatus)
-- [`dbStats`](https://docs.mongodb.com/manual/reference/command/dbStats/#dbstats)
+- [serverStatus](https://docs.mongodb.com/manual/reference/command/serverStatus/)
+- [dbStats](https://docs.mongodb.com/manual/reference/command/dbStats/)
+- [replSetGetStatus](https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/)
 
 ## Prerequisites
 
 Create a read-only user for Netdata in the admin database.
 
-- Authenticate as the admin user.
+- Authenticate as the admin user:
 
   ```bash
   use admin
   db.auth("admin", "<MONGODB_ADMIN_PASSWORD>")
   ```
 
-- Create a user.
+- Create a user:
 
   ```bash
   # MongoDB 2.x.
@@ -58,10 +52,10 @@ Create a read-only user for Netdata in the admin database.
 
 All metrics have "mongodb." prefix.
 
-- WireTiger metrics are available only if [WiredTiger](https://docs.mongodb.com/v5.0/core/wiredtiger/) is used as the
+- WireTiger metrics are available only if [WiredTiger](https://docs.mongodb.com/v6.0/core/wiredtiger/) is used as the
   storage engine.
 - Sharding metrics are available on shards only
-  for [mongos](https://docs.mongodb.com/manual/reference/command/serverStatus/#mongodb-serverstatus-serverstatus.process)
+  for [mongos](https://www.mongodb.com/docs/manual/reference/program/mongos/).
 
 Labels per scope:
 

@@ -222,7 +222,7 @@ type documentDBStats struct {
 	StorageSize int64 `bson:"storageSize"`
 }
 
-// // https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/
+// https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/
 type documentReplSetStatus struct {
 	Date    time.Time               `bson:"date"`
 	Members []documentReplSetMember `bson:"members"`

@@ -27,8 +27,8 @@ func (m *Mongo) collect() (map[string]int64, error) {
 
 	if m.conn.isMongos() {
 		m.addShardingChartsOnce.Do(m.addShardingCharts)
-		if err := m.collectShard(mx); err != nil {
-			return mx, fmt.Errorf("couldn't collect shard metrics: %v", err)
+		if err := m.collectSharding(mx); err != nil {
+			return mx, fmt.Errorf("couldn't collect sharding metrics: %v", err)
 		}
 	}
 
