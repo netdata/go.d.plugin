@@ -27,7 +27,7 @@ func (m *Mongo) collectServerStatus(mx map[string]int64) error {
 	}
 
 	if s.Transactions != nil && s.Transactions.CommitTypes != nil {
-		px := "transactions_commit_types_"
+		px := "txn_commit_types_"
 		v := s.Transactions.CommitTypes
 		mx[px+"no_shards_unsuccessful"] = v.NoShards.Initiated - v.NoShards.Successful
 		mx[px+"single_shard_unsuccessful"] = v.SingleShard.Initiated - v.SingleShard.Successful
@@ -42,12 +42,12 @@ func (m *Mongo) collectServerStatus(mx map[string]int64) error {
 
 func (m *Mongo) addOptionalCharts(s *documentServerStatus) {
 	m.addOptionalChart(s.OpLatencies,
-		&chartOperations,
-		&chartOperationsLatency,
+		&chartOperationsRate,
+		&chartOperationsLatencyTime,
 	)
 	m.addOptionalChart(s.WiredTiger,
-		&chartWiredTigerConcurrentReadTransactions,
-		&chartWiredTigerConcurrentWriteTransactions,
+		&chartWiredTigerConcurrentReadTransactionsUsage,
+		&chartWiredTigerConcurrentWriteTransactionsUsage,
 		&chartWiredTigerCacheUsage,
 		&chartWiredTigerCacheDirtySpaceSize,
 		&chartWiredTigerCacheIORate,
@@ -57,42 +57,58 @@ func (m *Mongo) addOptionalCharts(s *documentServerStatus) {
 		&chartMemoryTCMallocStatsChart,
 	)
 	m.addOptionalChart(s.GlobalLock,
-		&chartGlobalLockActiveClients,
-		&chartGlobalLockCurrentQueue,
+		&chartGlobalLockActiveClientsCount,
+		&chartGlobalLockCurrentQueueCount,
 	)
 	m.addOptionalChart(s.Network.NumSlowDNSOperations,
-		&chartNetworkSlowDNSResolutions,
+		&chartNetworkSlowDNSResolutionsRate,
 	)
 	m.addOptionalChart(s.Network.NumSlowSSLOperations,
-		&chartNetworkSlowSSLHandshakes,
+		&chartNetworkSlowSSLHandshakesRate,
 	)
+	m.addOptionalChart(s.Metrics.Cursor.TotalOpened,
+		&chartCursorsOpenedRate,
+	)
+	m.addOptionalChart(s.Metrics.Cursor.TimedOut,
+		&chartCursorsTimedOutRate,
+	)
+	m.addOptionalChart(s.Metrics.Cursor.Open.Total,
+		&chartCursorsOpenCount,
+	)
+	m.addOptionalChart(s.Metrics.Cursor.Open.NoTimeout,
+		&chartCursorsOpenNoTimeoutCount,
+	)
+	m.addOptionalChart(s.Metrics.Cursor.Lifespan,
+		&chartCursorsByLifespanCount,
+	)
+
 	if s.Transactions != nil {
 		m.addOptionalChart(s.Transactions,
-			&chartTransactionsCurrent,
+			&chartTransactionsCount,
 			&chartTransactionsRate,
 		)
 		m.addOptionalChart(s.Transactions.CommitTypes,
 			&chartTransactionsNoShardsCommitsRate,
-			&chartTransactionsNoShardsCommitsDuration,
+			&chartTransactionsNoShardsCommitsDurationTime,
 			&chartTransactionsSingleShardCommitsRate,
-			&chartTransactionsSingleShardCommitsDuration,
+			&chartTransactionsSingleShardCommitsDurationTime,
 			&chartTransactionsSingleWriteShardCommitsRate,
-			&chartTransactionsSingleWriteShardCommitsDuration,
+			&chartTransactionsSingleWriteShardCommitsDurationTime,
 			&chartTransactionsReadOnlyCommitsRate,
-			&chartTransactionsReadOnlyCommitsDuration,
+			&chartTransactionsReadOnlyCommitsDurationTime,
 			&chartTransactionsTwoPhaseCommitCommitsRate,
-			&chartTransactionsTwoPhaseCommitCommitsDuration,
+			&chartTransactionsTwoPhaseCommitCommitsDurationTime,
 			&chartTransactionsRecoverWithTokenCommitsRate,
-			&chartTransactionsRecoverWithTokenCommitsDuration,
+			&chartTransactionsRecoverWithTokenCommitsDurationTime,
 		)
 	}
 	if s.Locks != nil {
-		m.addOptionalChart(s.Locks.Global, &chartGlobalLockAcquisitions)
-		m.addOptionalChart(s.Locks.Database, &chartDatabaseLockAcquisitions)
-		m.addOptionalChart(s.Locks.Collection, &chartCollectionLockAcquisitions)
-		m.addOptionalChart(s.Locks.Mutex, &chartMutexLockAcquisitions)
-		m.addOptionalChart(s.Locks.Metadata, &chartMetadataLockAcquisitions)
-		m.addOptionalChart(s.Locks.Oplog, &chartOpLogLockAcquisitions)
+		m.addOptionalChart(s.Locks.Global, &chartGlobalLockAcquisitionsRate)
+		m.addOptionalChart(s.Locks.Database, &chartDatabaseLockAcquisitionsRate)
+		m.addOptionalChart(s.Locks.Collection, &chartCollectionLockAcquisitionsRate)
+		m.addOptionalChart(s.Locks.Mutex, &chartMutexLockAcquisitionsRate)
+		m.addOptionalChart(s.Locks.Metadata, &chartMetadataLockAcquisitionsRate)
+		m.addOptionalChart(s.Locks.Oplog, &chartOpLogLockAcquisitionsRate)
 	}
 }
 

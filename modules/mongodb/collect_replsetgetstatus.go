@@ -81,8 +81,8 @@ func (m *Mongo) addReplSetMemberCharts(v documentReplSetMember) {
 	charts := chartsTmplReplSetMember.Copy()
 
 	if v.Self != nil {
-		_ = charts.Remove(chartTmplReplSetMemberHeartbeatLatency.ID)
-		_ = charts.Remove(chartTmplReplSetMemberPingRTT.ID)
+		_ = charts.Remove(chartTmplReplSetMemberHeartbeatLatencyTime.ID)
+		_ = charts.Remove(chartTmplReplSetMemberPingRTTTime.ID)
 		_ = charts.Remove(chartTmplReplSetMemberUptime.ID)
 	}
 

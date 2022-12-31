@@ -4,10 +4,6 @@ package mongo
 
 import "time"
 
-const (
-	mongos = "mongos"
-)
-
 // https://www.mongodb.com/docs/manual/reference/command/serverStatus
 type documentServerStatus struct {
 	Process      string                  `bson:"process"` // mongod|mongos
@@ -19,7 +15,7 @@ type documentServerStatus struct {
 	Metrics      documentMetrics         `bson:"metrics" stm:"metrics"`
 	ExtraInfo    documentExtraInfo       `bson:"extra_info" stm:"extra_info"`
 	Asserts      documentAsserts         `bson:"asserts" stm:"asserts"`
-	Transactions *documentTransactions   `bson:"transactions" stm:"transactions"` // mongod in 3.6.3+ and on mongos in 4.2+
+	Transactions *documentTransactions   `bson:"transactions" stm:"txn"` // mongod in 3.6.3+ and on mongos in 4.2+
 	GlobalLock   *documentGlobalLock     `bson:"globalLock" stm:"global_lock"`
 	Tcmalloc     *documentTCMallocStatus `bson:"tcmalloc" stm:"tcmalloc"`
 	Locks        *documentLocks          `bson:"locks" stm:"locks"`
@@ -111,6 +107,21 @@ type (
 	// https://www.mongodb.com/docs/manual/reference/command/serverStatus/#metrics
 	documentMetrics struct {
 		Cursor struct {
+			TotalOpened *int64 `bson:"totalOpened" stm:"total_opened"`
+			TimedOut    *int64 `bson:"timedOut" stm:"timed_out"`
+			Open        struct {
+				NoTimeout *int64 `bson:"noTimeout" stm:"no_timeout"`
+				Total     *int64 `bson:"total" stm:"total"`
+			} `bson:"open" stm:"open"`
+			Lifespan *struct {
+				GreaterThanOrEqual10Minutes int64 `bson:"greaterThanOrEqual10Minutes" stm:"greater_than_or_equal_10_minutes"`
+				LessThan10Minutes           int64 `bson:"lessThan10Minutes" stm:"less_than_10_minutes"`
+				LessThan15Seconds           int64 `bson:"lessThan15Seconds" stm:"less_than_15_seconds"`
+				LessThan1Minute             int64 `bson:"lessThan1Minute" stm:"less_than_1_minute"`
+				LessThan1Second             int64 `bson:"lessThan1Second" stm:"less_than_1_second"`
+				LessThan30Seconds           int64 `bson:"lessThan30Seconds" stm:"less_than_30_seconds"`
+				LessThan5Seconds            int64 `bson:"lessThan5Seconds" stm:"less_than_5_seconds"`
+			} `bson:"lifespan" stm:"lifespan"`
 		} `bson:"cursor" stm:"cursor"`
 		Document struct {
 			Deleted  int64 `bson:"deleted" stm:"deleted"`
@@ -198,7 +209,7 @@ type (
 				Out       int `bson:"out" stm:"out"`
 				Available int `bson:"available" stm:"available"`
 			} `bson:"read" stm:"read"`
-		} `bson:"concurrentTransactions" stm:"concurrent_transactions"`
+		} `bson:"concurrentTransactions" stm:"concurrent_txn"`
 		Cache struct {
 			BytesCurrentlyInCache    int `bson:"bytes currently in the cache" stm:"currently_in_cache_bytes"`
 			MaximumBytesConfigured   int `bson:"maximum bytes configured" stm:"maximum_configured_bytes"`
