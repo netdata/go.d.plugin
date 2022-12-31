@@ -83,7 +83,7 @@ func (m *Mongo) addShardCharts(id string) {
 }
 
 func (m *Mongo) removeShardCharts(id string) {
-	px := fmt.Sprintf("sharding_shard_id_%s_", id)
+	px := fmt.Sprintf("%s%s_", chartPxShard, id)
 
 	for _, chart := range *m.Charts() {
 		if strings.HasPrefix(chart.ID, px) {

@@ -89,6 +89,12 @@ const (
 	prioShardChunks
 )
 
+const (
+	chartPxDatabase      = "database_"
+	chartPxReplSetMember = "replica_set_member_"
+	chartPxShard         = "sharding_shard_"
+)
+
 // these charts are expected to be available in many versions
 var chartsServerStatus = module.Charts{
 	chartOperationsByTypeCount.Copy(),
@@ -817,7 +823,7 @@ var (
 
 var (
 	chartTmplDatabaseCollectionsCount = &module.Chart{
-		ID:       "database_%s_collections_count",
+		ID:       chartPxDatabase + "%s_collections_count",
 		Title:    "Database collections",
 		Units:    "collections",
 		Fam:      "databases",
@@ -828,7 +834,7 @@ var (
 		},
 	}
 	chartTmplDatabaseIndexesCount = &module.Chart{
-		ID:       "database_%s_indexes_count",
+		ID:       chartPxDatabase + "%s_indexes_count",
 		Title:    "Database indexes",
 		Units:    "indexes",
 		Fam:      "databases",
@@ -839,7 +845,7 @@ var (
 		},
 	}
 	chartTmplDatabaseViewsCount = &module.Chart{
-		ID:       "database_%s_views_count",
+		ID:       chartPxDatabase + "%s_views_count",
 		Title:    "Database views",
 		Units:    "views",
 		Fam:      "databases",
@@ -850,7 +856,7 @@ var (
 		},
 	}
 	chartTmplDatabaseDocumentsCount = &module.Chart{
-		ID:       "database_%s_documents_count",
+		ID:       chartPxDatabase + "%s_documents_count",
 		Title:    "Database documents",
 		Units:    "documents",
 		Fam:      "databases",
@@ -861,7 +867,7 @@ var (
 		},
 	}
 	chartTmplDatabaseDataSize = &module.Chart{
-		ID:       "database_%s_data_size",
+		ID:       chartPxDatabase + "%s_data_size",
 		Title:    "Database data size",
 		Units:    "bytes",
 		Fam:      "databases",
@@ -872,7 +878,7 @@ var (
 		},
 	}
 	chartTmplDatabaseStorageSize = &module.Chart{
-		ID:       "database_%s_storage_size",
+		ID:       chartPxDatabase + "%s_storage_size",
 		Title:    "Database storage size",
 		Units:    "bytes",
 		Fam:      "databases",
@@ -883,7 +889,7 @@ var (
 		},
 	}
 	chartTmplDatabaseIndexSize = &module.Chart{
-		ID:       "database_%s_index_size",
+		ID:       chartPxDatabase + "%s_index_size",
 		Title:    "Database index size",
 		Units:    "bytes",
 		Fam:      "databases",
@@ -897,7 +903,7 @@ var (
 
 var (
 	chartTmplReplSetMemberState = &module.Chart{
-		ID:       "replica_set_member_%s_state",
+		ID:       chartPxReplSetMember + "%s_state",
 		Title:    "Replica Set member state",
 		Units:    "state",
 		Fam:      "replica sets",
@@ -917,7 +923,7 @@ var (
 		},
 	}
 	chartTmplReplSetMemberHealthStatus = &module.Chart{
-		ID:       "replica_set_member_%s_health_status",
+		ID:       chartPxReplSetMember + "%s_health_status",
 		Title:    "Replica Set member health status",
 		Units:    "status",
 		Fam:      "replica sets",
@@ -929,7 +935,7 @@ var (
 		},
 	}
 	chartTmplReplSetMemberReplicationLagTime = &module.Chart{
-		ID:       "replica_set_member_%s_replication_lag_time",
+		ID:       chartPxReplSetMember + "%s_replication_lag_time",
 		Title:    "Replica Set member replication lag",
 		Units:    "milliseconds",
 		Fam:      "replica sets",
@@ -940,7 +946,7 @@ var (
 		},
 	}
 	chartTmplReplSetMemberHeartbeatLatencyTime = &module.Chart{
-		ID:       "replica_set_member_%s_heartbeat_latency_time",
+		ID:       chartPxReplSetMember + "%s_heartbeat_latency_time",
 		Title:    "Replica Set member heartbeat latency",
 		Units:    "milliseconds",
 		Fam:      "replica sets",
@@ -951,7 +957,7 @@ var (
 		},
 	}
 	chartTmplReplSetMemberPingRTTTime = &module.Chart{
-		ID:       "replica_set_member_%s_ping_rtt_time",
+		ID:       chartPxReplSetMember + "%s_ping_rtt_time",
 		Title:    "Replica Set member ping RTT",
 		Units:    "milliseconds",
 		Fam:      "replica sets",
@@ -962,7 +968,7 @@ var (
 		},
 	}
 	chartTmplReplSetMemberUptime = &module.Chart{
-		ID:       "replica_set_member_%s_uptime",
+		ID:       chartPxReplSetMember + "%s_uptime",
 		Title:    "Replica Set member uptime",
 		Units:    "seconds",
 		Fam:      "replica sets",
@@ -1017,7 +1023,7 @@ var (
 	}
 
 	chartTmplShardChunks = &module.Chart{
-		ID:       "sharding_shard_id_%s_chunks",
+		ID:       chartPxShard + "%s_chunks",
 		Title:    "Shard chunks",
 		Units:    "chunks",
 		Fam:      "sharding",

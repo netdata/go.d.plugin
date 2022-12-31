@@ -89,7 +89,7 @@ func (m *Mongo) addDatabaseCharts(name string) {
 }
 
 func (m *Mongo) removeDatabaseCharts(name string) {
-	px := fmt.Sprintf("database_%s_", name)
+	px := fmt.Sprintf("%s%s_", chartPxDatabase, name)
 
 	for _, chart := range *m.Charts() {
 		if strings.HasPrefix(chart.ID, px) {

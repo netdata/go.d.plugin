@@ -135,7 +135,7 @@ func TestMongo_Check(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mongo := New()
+			mongo := prepareMongo()
 			defer mongo.Cleanup()
 			mongo.conn = test.prepare()
 
@@ -564,7 +564,7 @@ func TestMongo_Collect(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mongo := New()
+			mongo := prepareMongo()
 			defer mongo.Cleanup()
 			mongo.conn = test.prepare()
 
@@ -575,6 +575,12 @@ func TestMongo_Collect(t *testing.T) {
 			assert.Equal(t, test.wantCollected, mx)
 		})
 	}
+}
+
+func prepareMongo() *Mongo {
+	m := New()
+	m.Databases = matcher.SimpleExpr{Includes: []string{"* *"}}
+	return m
 }
 
 func caseMongodReplicaSet() *mockMongoClient {
@@ -606,6 +612,9 @@ type mockMongoClient struct {
 }
 
 func (m *mockMongoClient) serverStatus() (*documentServerStatus, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.serverStatus() error: mongo client not inited")
+	}
 	if m.errOnServerStatus {
 		return nil, errors.New("mock.serverStatus() error")
 	}
@@ -624,6 +633,9 @@ func (m *mockMongoClient) serverStatus() (*documentServerStatus, error) {
 }
 
 func (m *mockMongoClient) listDatabaseNames() ([]string, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.listDatabaseNames() error: mongo client not inited")
+	}
 	if m.errOnListDatabaseNames {
 		return nil, errors.New("mock.listDatabaseNames() error")
 	}
@@ -631,6 +643,9 @@ func (m *mockMongoClient) listDatabaseNames() ([]string, error) {
 }
 
 func (m *mockMongoClient) dbStats(_ string) (*documentDBStats, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.dbStats() error: mongo client not inited")
+	}
 	if m.errOnDbStats {
 		return nil, errors.New("mock.dbStats() error")
 	}
@@ -652,6 +667,9 @@ func (m *mockMongoClient) isMongos() bool {
 }
 
 func (m *mockMongoClient) replSetGetStatus() (*documentReplSetStatus, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.replSetGetStatus() error: mongo client not inited")
+	}
 	if m.mongos {
 		return nil, errors.New("mock.replSetGetStatus() error: shouldn't be called for mongos")
 	}
@@ -671,6 +689,9 @@ func (m *mockMongoClient) replSetGetStatus() (*documentReplSetStatus, error) {
 }
 
 func (m *mockMongoClient) shardNodes() (*documentShardNodesResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardNodes() error: mongo client not inited")
+	}
 	if m.replicaSet {
 		return nil, errors.New("mock.replSetGetStatus() error: shouldn't be called for replica set")
 	}
@@ -688,6 +709,9 @@ func (m *mockMongoClient) shardNodes() (*documentShardNodesResult, error) {
 }
 
 func (m *mockMongoClient) shardDatabasesPartitioning() (*documentPartitionedResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardDatabasesPartitioning() error: mongo client not inited")
+	}
 	if m.replicaSet {
 		return nil, errors.New("mock.shardDatabasesPartitioning() error: shouldn't be called for replica set")
 	}
@@ -705,6 +729,9 @@ func (m *mockMongoClient) shardDatabasesPartitioning() (*documentPartitionedResu
 }
 
 func (m *mockMongoClient) shardCollectionsPartitioning() (*documentPartitionedResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardCollectionsPartitioning() error: mongo client not inited")
+	}
 	if m.replicaSet {
 		return nil, errors.New("mock.shardCollectionsPartitioning() error: shouldn't be called for replica set")
 	}
@@ -722,6 +749,9 @@ func (m *mockMongoClient) shardCollectionsPartitioning() (*documentPartitionedRe
 }
 
 func (m *mockMongoClient) shardChunks() (map[string]int64, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardChunks() error: mongo client not inited")
+	}
 	if m.replicaSet {
 		return nil, errors.New("mock.shardChunks() error: shouldn't be called for replica set")
 	}
