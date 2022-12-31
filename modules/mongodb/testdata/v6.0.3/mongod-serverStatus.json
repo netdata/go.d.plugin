@@ -2,58 +2,74 @@
   "Process": "mongod",
   "OpCounters": {
     "Insert": 0,
-    "Query": 715,
-    "Update": 672,
-    "Delete": 105,
-    "GetMore": 58604,
-    "Command": 1524685
+    "Query": 76,
+    "Update": 59,
+    "Delete": 7,
+    "GetMore": 5110,
+    "Command": 125531
   },
   "OpLatencies": {
     "Reads": {
-      "Latency": 11676414,
-      "Ops": 58671
+      "Latency": 1009868,
+      "Ops": 5111
     },
     "Writes": {
-      "Latency": 33915,
-      "Ops": 3
+      "Latency": 0,
+      "Ops": 0
     },
     "Commands": {
-      "Latency": 471510947,
-      "Ops": 1523389
+      "Latency": 46432082,
+      "Ops": 125412
     }
   },
   "Connections": {
-    "Current": 47,
-    "Available": 838813,
-    "TotalCreated": 647,
-    "Active": 12,
-    "Threaded": 47,
-    "ExhaustIsMaster": 2,
-    "ExhaustHello": 6,
-    "AwaitingTopologyChanges": 10
+    "Current": 19,
+    "Available": 838841,
+    "TotalCreated": 77,
+    "Active": 7,
+    "Threaded": 19,
+    "ExhaustIsMaster": 1,
+    "ExhaustHello": 2,
+    "AwaitingTopologyChanges": 5
   },
   "Network": {
-    "BytesIn": 427955426,
-    "BytesOut": 7874806560,
-    "NumRequests": 1582075,
+    "BytesIn": 38851356,
+    "BytesOut": 706335836,
+    "NumRequests": 130530,
     "NumSlowDNSOperations": 0,
     "NumSlowSSLOperations": 0
   },
   "Memory": {
-    "Resident": 195,
-    "Virtual": 2925
+    "Resident": 185,
+    "Virtual": 2883
   },
   "Metrics": {
-    "Cursor": {},
+    "Cursor": {
+      "TotalOpened": 1,
+      "TimedOut": 0,
+      "Open": {
+        "NoTimeout": 0,
+        "Total": 1
+      },
+      "Lifespan": {
+        "GreaterThanOrEqual10Minutes": 0,
+        "LessThan10Minutes": 0,
+        "LessThan15Seconds": 0,
+        "LessThan1Minute": 0,
+        "LessThan1Second": 0,
+        "LessThan30Seconds": 0,
+        "LessThan5Seconds": 0
+      }
+    },
     "Document": {
-      "Deleted": 37,
+      "Deleted": 7,
       "Inserted": 0,
-      "Returned": 19422,
-      "Updated": 605
+      "Returned": 1699,
+      "Updated": 52
     },
     "QueryExecutor": {
-      "Scanned": 647,
-      "ScannedObjects": 20068
+      "Scanned": 61,
+      "ScannedObjects": 1760
     }
   },
   "ExtraInfo": {
@@ -63,7 +79,7 @@
     "Regular": 0,
     "Warning": 0,
     "Msg": 0,
-    "User": 2149,
+    "User": 246,
     "Tripwire": 0,
     "Rollovers": 0
   },
@@ -90,28 +106,28 @@
   },
   "Tcmalloc": {
     "Generic": {
-      "CurrentAllocatedBytes": 115920144,
-      "HeapSize": 141750272
+      "CurrentAllocatedBytes": 109050648,
+      "HeapSize": 127213568
     },
     "Tcmalloc": {
-      "PageheapFreeBytes": 17358848,
-      "PageheapUnmappedBytes": 647168,
+      "PageheapFreeBytes": 13959168,
+      "PageheapUnmappedBytes": 126976,
       "MaxTotalThreadCacheBytes": 1073741824,
-      "CurrentTotalThreadCacheBytes": 3968312,
-      "TotalFreeBytes": 7824112,
-      "CentralCacheFreeBytes": 605816,
-      "TransferCacheFreeBytes": 3249984,
-      "ThreadCacheFreeBytes": 3968312,
+      "CurrentTotalThreadCacheBytes": 2490832,
+      "TotalFreeBytes": 4076776,
+      "CentralCacheFreeBytes": 406680,
+      "TransferCacheFreeBytes": 1179264,
+      "ThreadCacheFreeBytes": 2490832,
       "AggressiveMemoryDecommit": 0,
-      "PageheapCommittedBytes": 141103104,
+      "PageheapCommittedBytes": 127086592,
       "PageheapScavengeBytes": 0,
-      "PageheapCommitCount": 4261,
-      "PageheapTotalCommitBytes": 1401995264,
-      "PageheapDecommitCount": 1955,
-      "PageheapTotalDecommitBytes": 1260892160,
-      "PageheapReserveCount": 62,
-      "PageheapTotalReserveBytes": 141750272,
-      "SpinlockTotalDelayNs": 352929263
+      "PageheapCommitCount": 376,
+      "PageheapTotalCommitBytes": 229060608,
+      "PageheapDecommitCount": 122,
+      "PageheapTotalDecommitBytes": 101974016,
+      "PageheapReserveCount": 60,
+      "PageheapTotalReserveBytes": 127213568,
+      "SpinlockTotalDelayNs": 33426251
     }
   },
   "Locks": {
@@ -119,31 +135,31 @@
       "AcquireCount": {
         "Shared": 0,
         "Exclusive": 6,
-        "IntentShared": 4996125,
-        "IntentExclusive": 1997473
+        "IntentShared": 437905,
+        "IntentExclusive": 174228
       }
     },
     "Database": {
       "AcquireCount": {
         "Shared": 0,
-        "Exclusive": 6,
-        "IntentShared": 573719,
-        "IntentExclusive": 1978176
+        "Exclusive": 3,
+        "IntentShared": 50971,
+        "IntentExclusive": 172539
       }
     },
     "Collection": {
       "AcquireCount": {
         "Shared": 0,
         "Exclusive": 6,
-        "IntentShared": 3788068,
-        "IntentExclusive": 1978155
+        "IntentShared": 336370,
+        "IntentExclusive": 172523
       }
     },
     "Mutex": {
       "AcquireCount": {
         "Shared": 0,
         "Exclusive": 0,
-        "IntentShared": 2799023,
+        "IntentShared": 245077,
         "IntentExclusive": 0
       }
     },
@@ -152,7 +168,7 @@
       "AcquireCount": {
         "Shared": 0,
         "Exclusive": 0,
-        "IntentShared": 189078,
+        "IntentShared": 16788,
         "IntentExclusive": 1
       }
     }
@@ -169,13 +185,13 @@
       }
     },
     "Cache": {
-      "BytesCurrentlyInCache": 4682708,
+      "BytesCurrentlyInCache": 814375,
       "MaximumBytesConfigured": 7854882816,
-      "TrackedDirtyBytesInCache": 4231259,
-      "UnmodifiedPagesEvicted": 1,
-      "ModifiedPagesEvicted": 2,
-      "PagesReadIntoCache": 71,
-      "PagesWrittenFromCache": 63360
+      "TrackedDirtyBytesInCache": 456446,
+      "UnmodifiedPagesEvicted": 0,
+      "ModifiedPagesEvicted": 0,
+      "PagesReadIntoCache": 108,
+      "PagesWrittenFromCache": 3177
     }
   },
   "Repl": [
@@ -184,11 +200,11 @@
       "Value": [
         {
           "Key": "processId",
-          "Value": "63ac73a5b54a8df9c74bf3a2"
+          "Value": "63b043be562288304ad3b4fe"
         },
         {
           "Key": "counter",
-          "Value": 13
+          "Value": 7
         }
       ]
     },
@@ -225,7 +241,7 @@
     },
     {
       "Key": "electionId",
-      "Value": "7fffffff0000000000000003"
+      "Value": "7fffffff0000000000000006"
     },
     {
       "Key": "lastWrite",
@@ -236,19 +252,19 @@
             {
               "Key": "ts",
               "Value": {
-                "T": 1672439035,
+                "T": 1672512884,
                 "I": 1
               }
             },
             {
               "Key": "t",
-              "Value": 3
+              "Value": 6
             }
           ]
         },
         {
           "Key": "lastWriteDate",
-          "Value": "2022-12-31T00:23:55+02:00"
+          "Value": "2022-12-31T20:54:44+02:00"
         },
         {
           "Key": "majorityOpTime",
@@ -256,19 +272,19 @@
             {
               "Key": "ts",
               "Value": {
-                "T": 1672439035,
+                "T": 1672512884,
                 "I": 1
               }
             },
             {
               "Key": "t",
-              "Value": 3
+              "Value": 6
             }
           ]
         },
         {
           "Key": "majorityWriteDate",
-          "Value": "2022-12-31T00:23:55+02:00"
+          "Value": "2022-12-31T20:54:44+02:00"
         }
       ]
     },
@@ -286,13 +302,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -302,13 +318,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -360,13 +376,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -376,13 +392,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -392,13 +408,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -408,13 +424,13 @@
               {
                 "Key": "ts",
                 "Value": {
-                  "T": 1672439035,
+                  "T": 1672512884,
                   "I": 1
                 }
               },
               {
                 "Key": "t",
-                "Value": 3
+                "Value": 6
               }
             ]
           },
@@ -429,7 +445,7 @@
       "Key": "primaryOnlyServices",
       "Value": [
         {
-          "Key": "TenantMigrationRecipientService",
+          "Key": "ShardSplitDonorService",
           "Value": [
             {
               "Key": "state",
@@ -442,7 +458,7 @@
           ]
         },
         {
-          "Key": "ShardSplitDonorService",
+          "Key": "TenantMigrationRecipientService",
           "Value": [
             {
               "Key": "state",
@@ -471,7 +487,7 @@
     },
     {
       "Key": "rbid",
-      "Value": 1
+      "Value": 2
     },
     {
       "Key": "userWriteBlockMode",
