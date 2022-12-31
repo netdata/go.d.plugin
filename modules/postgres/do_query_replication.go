@@ -35,14 +35,24 @@ func (p *Postgres) doQueryReplStandbyAppWALDelta() error {
 		case "application_name":
 			app = value
 			p.getReplAppMetrics(app).updated = true
-		case "sent_delta":
-			p.getReplAppMetrics(app).walSentDelta += parseInt(value)
-		case "write_delta":
-			p.getReplAppMetrics(app).walWriteDelta += parseInt(value)
-		case "flush_delta":
-			p.getReplAppMetrics(app).walFlushDelta += parseInt(value)
-		case "replay_delta":
-			p.getReplAppMetrics(app).walReplayDelta += parseInt(value)
+		default:
+			// TODO: delta calculation was changed in https://github.com/netdata/go.d.plugin/pull/1039
+			// - 'replay_delta' (probably other deltas too?) can be negative
+			// - Also, WAL delta != WAL lag after that PR
+			v := parseInt(value)
+			if v < 0 {
+				v = 0
+			}
+			switch column {
+			case "sent_delta":
+				p.getReplAppMetrics(app).walSentDelta += v
+			case "write_delta":
+				p.getReplAppMetrics(app).walWriteDelta += v
+			case "flush_delta":
+				p.getReplAppMetrics(app).walFlushDelta += v
+			case "replay_delta":
+				p.getReplAppMetrics(app).walReplayDelta += v
+			}
 		}
 	})
 }
