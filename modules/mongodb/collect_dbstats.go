@@ -4,77 +4,96 @@ package mongo
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-// collectDbStats creates the map[string]int64 for the available dims
-// it calls listDatabase and then dbstats for each database internally
-func (m *Mongo) collectDbStats(ms map[string]int64) error {
-	if m.databasesMatcher == nil {
+func (m *Mongo) collectDbStats(mx map[string]int64) error {
+	if m.dbSelector == nil {
+		m.Debug("'database' selector not set, skip collecting database statistics")
 		return nil
 	}
-	allDatabases, err := m.mongoCollector.listDatabaseNames()
+
+	allDBs, err := m.conn.listDatabaseNames()
 	if err != nil {
-		return fmt.Errorf("cannot get database names: %s", err)
+		return fmt.Errorf("cannot get database names: %v", err)
 	}
 
-	// filter matching databases and exclude non-matching
-	var databases []string
-	for _, database := range allDatabases {
-		if m.databasesMatcher.MatchString(database) {
-			databases = append(databases, database)
+	m.Debugf("all databases on the server: '%v'", allDBs)
+
+	var dbs []string
+	for _, db := range allDBs {
+		if m.dbSelector.MatchString(db) {
+			dbs = append(dbs, db)
 		}
 	}
 
-	// add dims for each database
-	m.updateDBStatsCharts(databases)
+	if len(allDBs) != len(dbs) {
+		m.Debugf("databases remaining after filtering: %v", dbs)
+	}
 
-	for _, database := range databases {
-		stats, err := m.mongoCollector.dbStats(database)
+	seen := make(map[string]bool)
+	for _, db := range dbs {
+		s, err := m.conn.dbStats(db)
 		if err != nil {
-			return fmt.Errorf("dbStats command failed: %s", err)
+			return fmt.Errorf("dbStats command failed: %v", err)
 		}
-		stats.toMap(database, ms)
+
+		seen[db] = true
+
+		mx["database_"+db+"_collections"] = s.Collections
+		mx["database_"+db+"_views"] = s.Views
+		mx["database_"+db+"_indexes"] = s.Indexes
+		mx["database_"+db+"_documents"] = s.Objects
+		mx["database_"+db+"_data_size"] = s.DataSize
+		mx["database_"+db+"_index_size"] = s.IndexSize
+		mx["database_"+db+"_storage_size"] = s.StorageSize
 	}
+
+	for db := range seen {
+		if !m.databases[db] {
+			m.databases[db] = true
+			m.Debugf("new database '%s': creating charts", db)
+			m.addDatabaseCharts(db)
+		}
+	}
+
+	for db := range m.databases {
+		if !seen[db] {
+			delete(m.databases, db)
+			m.Debugf("stale database '%s': removing charts", db)
+			m.removeDatabaseCharts(db)
+		}
+	}
+
 	return nil
 }
 
-// updateDBStatsCharts adds dimensions for new databases and
-// removes for dropped
-func (m *Mongo) updateDBStatsCharts(databases []string) {
-	// remove dims for not existing databases
-	m.removeDatabasesFromDBStatsCharts(databases)
+func (m *Mongo) addDatabaseCharts(name string) {
+	charts := chartsTmplDatabase.Copy()
 
-	// add dimensions for new databases
-	for _, database := range sliceDiff(databases, m.discoveredDBs) {
-		for _, chart := range *m.chartsDbStats {
-			id := chart.ID + "_" + database
-			err := chart.AddDim(&module.Dim{ID: id, Name: database, Algo: module.Absolute})
-			if err != nil {
-				m.Warningf("failed to add dim: %s, %v", id, err)
-				continue
-			}
-			chart.MarkNotCreated()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "database", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
 		}
 	}
 
-	// update the cache
-	m.discoveredDBs = databases
+	if err := m.Charts().Add(*charts...); err != nil {
+		m.Warning(err)
+	}
 }
 
-// removeDatabasesFromDBStatsCharts removes dimensions from dbstats
-// charts for dropped databases
-func (m *Mongo) removeDatabasesFromDBStatsCharts(newDatabases []string) {
-	diff := sliceDiff(m.discoveredDBs, newDatabases)
-	for _, name := range diff {
-		for _, chart := range *m.chartsDbStats {
-			id := chart.ID + "_" + name
-			err := chart.MarkDimRemove(id, true)
-			if err != nil {
-				m.Warningf("failed to remove dimension %s with error: %v", id, err)
-				continue
-			}
+func (m *Mongo) removeDatabaseCharts(name string) {
+	px := fmt.Sprintf("%s%s_", chartPxDatabase, name)
+
+	for _, chart := range *m.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
 			chart.MarkNotCreated()
 		}
 	}

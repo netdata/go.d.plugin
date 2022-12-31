@@ -1,0 +1,481 @@
+{
+  "Process": "mongod",
+  "OpCounters": {
+    "Insert": 0,
+    "Query": 715,
+    "Update": 672,
+    "Delete": 105,
+    "GetMore": 58604,
+    "Command": 1524685
+  },
+  "OpLatencies": {
+    "Reads": {
+      "Latency": 11676414,
+      "Ops": 58671
+    },
+    "Writes": {
+      "Latency": 33915,
+      "Ops": 3
+    },
+    "Commands": {
+      "Latency": 471510947,
+      "Ops": 1523389
+    }
+  },
+  "Connections": {
+    "Current": 47,
+    "Available": 838813,
+    "TotalCreated": 647,
+    "Active": 12,
+    "Threaded": 47,
+    "ExhaustIsMaster": 2,
+    "ExhaustHello": 6,
+    "AwaitingTopologyChanges": 10
+  },
+  "Network": {
+    "BytesIn": 427955426,
+    "BytesOut": 7874806560,
+    "NumRequests": 1582075,
+    "NumSlowDNSOperations": 0,
+    "NumSlowSSLOperations": 0
+  },
+  "Memory": {
+    "Resident": 195,
+    "Virtual": 2925
+  },
+  "Metrics": {
+    "Cursor": {},
+    "Document": {
+      "Deleted": 37,
+      "Inserted": 0,
+      "Returned": 19422,
+      "Updated": 605
+    },
+    "QueryExecutor": {
+      "Scanned": 647,
+      "ScannedObjects": 20068
+    }
+  },
+  "ExtraInfo": {
+    "PageFaults": 0
+  },
+  "Asserts": {
+    "Regular": 0,
+    "Warning": 0,
+    "Msg": 0,
+    "User": 2149,
+    "Tripwire": 0,
+    "Rollovers": 0
+  },
+  "Transactions": {
+    "CurrentActive": 0,
+    "CurrentInactive": 0,
+    "CurrentOpen": 0,
+    "CurrentPrepared": 0,
+    "TotalAborted": 0,
+    "TotalCommitted": 0,
+    "TotalStarted": 0,
+    "TotalPrepared": 0,
+    "CommitTypes": null
+  },
+  "GlobalLock": {
+    "CurrentQueue": {
+      "Readers": 0,
+      "Writers": 0
+    },
+    "ActiveClients": {
+      "Readers": 0,
+      "Writers": 0
+    }
+  },
+  "Tcmalloc": {
+    "Generic": {
+      "CurrentAllocatedBytes": 115920144,
+      "HeapSize": 141750272
+    },
+    "Tcmalloc": {
+      "PageheapFreeBytes": 17358848,
+      "PageheapUnmappedBytes": 647168,
+      "MaxTotalThreadCacheBytes": 1073741824,
+      "CurrentTotalThreadCacheBytes": 3968312,
+      "TotalFreeBytes": 7824112,
+      "CentralCacheFreeBytes": 605816,
+      "TransferCacheFreeBytes": 3249984,
+      "ThreadCacheFreeBytes": 3968312,
+      "AggressiveMemoryDecommit": 0,
+      "PageheapCommittedBytes": 141103104,
+      "PageheapScavengeBytes": 0,
+      "PageheapCommitCount": 4261,
+      "PageheapTotalCommitBytes": 1401995264,
+      "PageheapDecommitCount": 1955,
+      "PageheapTotalDecommitBytes": 1260892160,
+      "PageheapReserveCount": 62,
+      "PageheapTotalReserveBytes": 141750272,
+      "SpinlockTotalDelayNs": 352929263
+    }
+  },
+  "Locks": {
+    "Global": {
+      "AcquireCount": {
+        "Shared": 0,
+        "Exclusive": 6,
+        "IntentShared": 4996125,
+        "IntentExclusive": 1997473
+      }
+    },
+    "Database": {
+      "AcquireCount": {
+        "Shared": 0,
+        "Exclusive": 6,
+        "IntentShared": 573719,
+        "IntentExclusive": 1978176
+      }
+    },
+    "Collection": {
+      "AcquireCount": {
+        "Shared": 0,
+        "Exclusive": 6,
+        "IntentShared": 3788068,
+        "IntentExclusive": 1978155
+      }
+    },
+    "Mutex": {
+      "AcquireCount": {
+        "Shared": 0,
+        "Exclusive": 0,
+        "IntentShared": 2799023,
+        "IntentExclusive": 0
+      }
+    },
+    "Metadata": null,
+    "Oplog": {
+      "AcquireCount": {
+        "Shared": 0,
+        "Exclusive": 0,
+        "IntentShared": 189078,
+        "IntentExclusive": 1
+      }
+    }
+  },
+  "WiredTiger": {
+    "ConcurrentTransaction": {
+      "Write": {
+        "Out": 0,
+        "Available": 128
+      },
+      "Read": {
+        "Out": 0,
+        "Available": 128
+      }
+    },
+    "Cache": {
+      "BytesCurrentlyInCache": 4682708,
+      "MaximumBytesConfigured": 7854882816,
+      "TrackedDirtyBytesInCache": 4231259,
+      "UnmodifiedPagesEvicted": 1,
+      "ModifiedPagesEvicted": 2,
+      "PagesReadIntoCache": 71,
+      "PagesWrittenFromCache": 63360
+    }
+  },
+  "Repl": [
+    {
+      "Key": "topologyVersion",
+      "Value": [
+        {
+          "Key": "processId",
+          "Value": "63ac73a5b54a8df9c74bf3a2"
+        },
+        {
+          "Key": "counter",
+          "Value": 13
+        }
+      ]
+    },
+    {
+      "Key": "hosts",
+      "Value": [
+        "mongodb-primary:27017",
+        "mongodb-secondary:27017"
+      ]
+    },
+    {
+      "Key": "setName",
+      "Value": "replicaset"
+    },
+    {
+      "Key": "setVersion",
+      "Value": 4
+    },
+    {
+      "Key": "isWritablePrimary",
+      "Value": true
+    },
+    {
+      "Key": "secondary",
+      "Value": false
+    },
+    {
+      "Key": "primary",
+      "Value": "mongodb-primary:27017"
+    },
+    {
+      "Key": "me",
+      "Value": "mongodb-primary:27017"
+    },
+    {
+      "Key": "electionId",
+      "Value": "7fffffff0000000000000003"
+    },
+    {
+      "Key": "lastWrite",
+      "Value": [
+        {
+          "Key": "opTime",
+          "Value": [
+            {
+              "Key": "ts",
+              "Value": {
+                "T": 1672439035,
+                "I": 1
+              }
+            },
+            {
+              "Key": "t",
+              "Value": 3
+            }
+          ]
+        },
+        {
+          "Key": "lastWriteDate",
+          "Value": "2022-12-31T00:23:55+02:00"
+        },
+        {
+          "Key": "majorityOpTime",
+          "Value": [
+            {
+              "Key": "ts",
+              "Value": {
+                "T": 1672439035,
+                "I": 1
+              }
+            },
+            {
+              "Key": "t",
+              "Value": 3
+            }
+          ]
+        },
+        {
+          "Key": "majorityWriteDate",
+          "Value": "2022-12-31T00:23:55+02:00"
+        }
+      ]
+    },
+    {
+      "Key": "replicationProgress",
+      "Value": [
+        [
+          {
+            "Key": "host",
+            "Value": "mongodb-primary:27017"
+          },
+          {
+            "Key": "optime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "lastAppliedOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "heartbeatAppliedOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 0,
+                  "I": 0
+                }
+              },
+              {
+                "Key": "t",
+                "Value": -1
+              }
+            ]
+          },
+          {
+            "Key": "heartbeatDurableOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 0,
+                  "I": 0
+                }
+              },
+              {
+                "Key": "t",
+                "Value": -1
+              }
+            ]
+          },
+          {
+            "Key": "memberId",
+            "Value": 0
+          }
+        ],
+        [
+          {
+            "Key": "host",
+            "Value": "mongodb-secondary:27017"
+          },
+          {
+            "Key": "optime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "lastAppliedOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "heartbeatAppliedOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "heartbeatDurableOpTime",
+            "Value": [
+              {
+                "Key": "ts",
+                "Value": {
+                  "T": 1672439035,
+                  "I": 1
+                }
+              },
+              {
+                "Key": "t",
+                "Value": 3
+              }
+            ]
+          },
+          {
+            "Key": "memberId",
+            "Value": 1
+          }
+        ]
+      ]
+    },
+    {
+      "Key": "primaryOnlyServices",
+      "Value": [
+        {
+          "Key": "TenantMigrationRecipientService",
+          "Value": [
+            {
+              "Key": "state",
+              "Value": "running"
+            },
+            {
+              "Key": "numInstances",
+              "Value": 0
+            }
+          ]
+        },
+        {
+          "Key": "ShardSplitDonorService",
+          "Value": [
+            {
+              "Key": "state",
+              "Value": "running"
+            },
+            {
+              "Key": "numInstances",
+              "Value": 0
+            }
+          ]
+        },
+        {
+          "Key": "TenantMigrationDonorService",
+          "Value": [
+            {
+              "Key": "state",
+              "Value": "running"
+            },
+            {
+              "Key": "numInstances",
+              "Value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Key": "rbid",
+      "Value": 1
+    },
+    {
+      "Key": "userWriteBlockMode",
+      "Value": 1
+    }
+  ]
+}

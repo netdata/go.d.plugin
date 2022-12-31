@@ -10,12 +10,6 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
-type Config struct {
-	URI       string             `yaml:"uri"`
-	Timeout   time.Duration      `yaml:"timeout"`
-	Databases matcher.SimpleExpr `yaml:"databases"`
-}
-
 func init() {
 	module.Register("mongodb", module.Creator{
 		Create: func() module.Module { return New() },
@@ -25,63 +19,61 @@ func init() {
 func New() *Mongo {
 	return &Mongo{
 		Config: Config{
-			Timeout: 1,
+			Timeout: 2,
 			URI:     "mongodb://localhost:27017",
 			Databases: matcher.SimpleExpr{
 				Includes: []string{},
 				Excludes: []string{},
 			},
 		},
-		charts:                &module.Charts{},
-		optionalChartsEnabled: make(map[string]bool),
-		discoveredDBs:         make([]string, 0),
-		shardNodesDims:        make(map[string]bool),
-		mongoCollector:        &mongoCollector{},
-		addReplChartsOnce:     sync.Once{},
-		addShardChartsOnce:    sync.Once{},
-		replSetMembers:        make([]string, 0),
-		replSetDimsEnabled:    make(map[string]bool),
+
+		conn: &mongoClient{},
+
+		charts:                chartsServerStatus.Copy(),
+		addShardingChartsOnce: &sync.Once{},
+
+		optionalCharts: make(map[string]bool),
+		replSetMembers: make(map[string]bool),
+		databases:      make(map[string]bool),
+		shards:         make(map[string]bool),
 	}
+}
+
+type Config struct {
+	URI       string             `yaml:"uri"`
+	Timeout   time.Duration      `yaml:"timeout"`
+	Databases matcher.SimpleExpr `yaml:"databases"`
 }
 
 type Mongo struct {
 	module.Base
-	Config                `yaml:",inline"`
-	mongoCollector        connector
-	charts                *module.Charts
-	databasesMatcher      matcher.Matcher
-	optionalChartsEnabled map[string]bool
-	discoveredDBs         []string
-	shardNodesDims        map[string]bool
-	chartsDbStats         *module.Charts
-	replSetMembers        []string
-	replSetDimsEnabled    map[string]bool
-	addReplChartsOnce     sync.Once
-	addShardChartsOnce    sync.Once
+	Config `yaml:",inline"`
+
+	charts *module.Charts
+
+	conn mongoConn
+
+	dbSelector matcher.Matcher
+
+	addShardingChartsOnce *sync.Once
+
+	optionalCharts map[string]bool
+	databases      map[string]bool
+	replSetMembers map[string]bool
+	shards         map[string]bool
 }
 
 func (m *Mongo) Init() bool {
-	m.Infof("initializing mongodb")
-	if m.URI == "" {
-		m.Errorf("connection URI is empty")
+	if err := m.verifyConfig(); err != nil {
+		m.Errorf("config validation: %v", err)
 		return false
 	}
 
-	if !m.Databases.Empty() {
-		mMatcher, err := m.Databases.Parse()
-		if err != nil {
-			m.Errorf("error on creating 'databases' matcher : %v", err)
-			return false
-		}
-		m.databasesMatcher = mMatcher
-	}
-
-	var err error
-	m.charts, err = m.initCharts()
-	if err != nil {
-		m.Errorf("init charts: %v", err)
+	if err := m.initDatabaseSelector(); err != nil {
+		m.Errorf("init database selector: %v", err)
 		return false
 	}
+
 	return true
 }
 
@@ -94,34 +86,24 @@ func (m *Mongo) Charts() *module.Charts {
 }
 
 func (m *Mongo) Collect() map[string]int64 {
-	ms, err := m.collect()
+	mx, err := m.collect()
 	if err != nil {
 		m.Error(err)
 	}
-	if len(ms) == 0 {
+
+	if len(mx) == 0 {
 		m.Warning("no values collected")
 		return nil
 	}
-	return ms
+
+	return mx
 }
 
 func (m *Mongo) Cleanup() {
-	err := m.mongoCollector.close()
-	if err != nil {
-		m.Warningf("cleanup: error on closing mongo client: %v", err)
+	if m.conn == nil {
+		return
 	}
-}
-
-func (m *Mongo) initCharts() (*module.Charts, error) {
-	var charts module.Charts
-	err := charts.Add(*serverStatusCharts.Copy()...)
-	if err != nil {
-		return nil, err
+	if err := m.conn.close(); err != nil {
+		m.Warningf("cleanup: error on closing mongo conn: %v", err)
 	}
-
-	m.chartsDbStats = dbStatsCharts.Copy()
-	if err := charts.Add(*m.chartsDbStats...); err != nil {
-		return nil, err
-	}
-	return &charts, nil
 }

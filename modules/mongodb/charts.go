@@ -6,50 +6,179 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+const (
+	prioOperationsRate = module.Priority + iota
+	prioOperationsLatencyTime
+	prioOperationsByTypeCount
+	prioDocumentOperationsRate
+	prioScannedIndexesRate
+	prioScannedDocumentsRate
+
+	prioActiveClientsCount
+	prioQueuedOperationsCount
+
+	prioGlobalLockAcquisitionsRate
+	prioDatabaseLockAcquisitionsRate
+	prioCollectionLockAcquisitionsRate
+	prioMutexLockAcquisitionsRate
+	prioMetadataLockAcquisitionsRate
+	prioOpLogLockAcquisitionsRate
+
+	prioCursorsOpenCount
+	prioCursorsOpenNoTimeoutCount
+	prioCursorsOpenedRate
+	prioTimedOutCursorsRate
+	prioCursorsByLifespanCount
+
+	prioTransactionsCount
+	prioTransactionsRate
+	prioTransactionsNoShardsCommitsRate
+	prioTransactionsNoShardsCommitsDurationTime
+	prioTransactionsSingleShardCommitsRate
+	prioTransactionsSingleShardCommitsDurationTime
+	prioTransactionsSingleWriteShardCommitsRate
+	prioTransactionsSingleWriteShardCommitsDurationTime
+	prioTransactionsReadOnlyCommitsRate
+	prioTransactionsReadOnlyCommitsDurationTime
+	prioTransactionsTwoPhaseCommitCommitsRate
+	prioTransactionsTwoPhaseCommitCommitsDurationTime
+	prioTransactionsRecoverWithTokenCommitsRate
+	prioTransactionsRecoverWithTokenCommitsDurationTime
+
+	prioConnectionsUsage
+	prioConnectionsByStateCount
+	prioConnectionsRate
+
+	prioAssertsRate
+
+	prioNetworkTrafficRate
+	prioNetworkRequestsRate
+	prioNetworkSlowDNSResolutionsRate
+	prioNetworkSlowSSLHandshakesRate
+
+	prioMemoryResidentSize
+	prioMemoryVirtualSize
+	prioMemoryPageFaultsRate
+	prioMemoryTCMallocStats
+
+	prioWiredTigerConcurrentReadTransactionsUsage
+	prioWiredTigerConcurrentWriteTransactionsUsage
+	prioWiredTigerCacheUsage
+	prioWiredTigerCacheDirtySpaceSize
+	prioWiredTigerCacheIORate
+	prioWiredTigerCacheEvictionsRate
+
+	prioDatabaseCollectionsCount
+	prioDatabaseIndexesCount
+	prioDatabaseViewsCount
+	prioDatabaseDocumentsCount
+	prioDatabaseDataSize
+	prioDatabaseStorageSize
+	prioDatabaseIndexSize
+
+	prioReplSetMemberState
+	prioReplSetMemberHealthStatus
+	prioReplSetMemberReplicationLagTime
+	prioReplSetMemberHeartbeatLatencyTime
+	prioReplSetMemberPingRTTTime
+	prioReplSetMemberUptime
+
+	prioShardingNodesCount
+	prioShardingShardedDatabasesCount
+	prioShardingShardedCollectionsCount
+	prioShardChunks
+)
+
+const (
+	chartPxDatabase      = "database_"
+	chartPxReplSetMember = "replica_set_member_"
+	chartPxShard         = "sharding_shard_"
+)
+
 // these charts are expected to be available in many versions
-// and build in mongoDB, and we are always creating them
-var serverStatusCharts = module.Charts{
-	chartOpcounter.Copy(),
-	chartOpLatencies.Copy(),
+var chartsServerStatus = module.Charts{
+	chartOperationsByTypeCount.Copy(),
+	chartDocumentOperationsRate.Copy(),
+	chartScannedIndexesRate.Copy(),
+	chartScannedDocumentsRate.Copy(),
+
 	chartConnectionsUsage.Copy(),
+	chartConnectionsByStateCount.Copy(),
 	chartConnectionsRate.Copy(),
-	chartConnectionsByState.Copy(),
-	chartNetwork.Copy(),
-	chartNetworkRequests.Copy(),
-	chartPageFaults.Copy(),
-	chartAsserts.Copy(),
+
+	chartNetworkTrafficRate.Copy(),
+	chartNetworkRequestsRate.Copy(),
+
+	chartMemoryResidentSize.Copy(),
+	chartMemoryVirtualSize.Copy(),
+	chartMemoryPageFaultsRate.Copy(),
+
+	chartAssertsRate.Copy(),
 }
 
-// dbStatsCharts are used to collect per database metrics
-var dbStatsCharts = module.Charts{
-	chartDBStatsCollections,
-	chartDBStatsIndexes,
-	chartDBStatsViews,
-	chartDBStatsDocuments,
-	chartDBStatsSize,
+var chartsTmplDatabase = module.Charts{
+	chartTmplDatabaseCollectionsCount.Copy(),
+	chartTmplDatabaseIndexesCount.Copy(),
+	chartTmplDatabaseViewsCount.Copy(),
+	chartTmplDatabaseDocumentsCount.Copy(),
+	chartTmplDatabaseDataSize.Copy(),
+	chartTmplDatabaseStorageSize.Copy(),
+	chartTmplDatabaseIndexSize.Copy(),
 }
 
-// replCharts on used on replica sets
-var replCharts = module.Charts{
-	chartReplLag,
-	chartReplHeartbeatLatency,
-	chartReplPing,
+var chartsTmplReplSetMember = module.Charts{
+	chartTmplReplSetMemberState.Copy(),
+	chartTmplReplSetMemberHealthStatus.Copy(),
+	chartTmplReplSetMemberReplicationLagTime.Copy(),
+	chartTmplReplSetMemberHeartbeatLatencyTime.Copy(),
+	chartTmplReplSetMemberPingRTTTime.Copy(),
+	chartTmplReplSetMemberUptime.Copy(),
 }
 
-var shardCharts = module.Charts{
-	chartShardNodes,
-	chartShardDatabases,
-	chartShardCollections,
-	chartShardChunks,
+var chartsSharding = module.Charts{
+	chartShardingNodesCount.Copy(),
+	chartShardingShardedDatabases.Copy(),
+	chartShardingShardedCollectionsCount.Copy(),
+}
+
+var chartsTmplShardingShard = module.Charts{
+	chartTmplShardChunks.Copy(),
 }
 
 var (
-	chartOpcounter = module.Chart{
-		ID:    "operations",
-		Title: "Operations by type",
-		Units: "ops/s",
-		Fam:   "operations",
-		Ctx:   "mongodb.operations",
+	chartOperationsRate = module.Chart{
+		ID:       "operations_rate",
+		Title:    "Operations rate",
+		Units:    "operations/s",
+		Fam:      "operations",
+		Ctx:      "mongodb.operations_rate",
+		Priority: prioOperationsRate,
+		Dims: module.Dims{
+			{ID: "operations_latencies_reads_ops", Name: "reads", Algo: module.Incremental},
+			{ID: "operations_latencies_writes_ops", Name: "writes", Algo: module.Incremental},
+			{ID: "operations_latencies_commands_ops", Name: "commands", Algo: module.Incremental},
+		},
+	}
+	chartOperationsLatencyTime = module.Chart{
+		ID:       "operations_latency_time",
+		Title:    "Operations Latency",
+		Units:    "milliseconds",
+		Fam:      "operations",
+		Ctx:      "mongodb.operations_latency_time",
+		Priority: prioOperationsLatencyTime,
+		Dims: module.Dims{
+			{ID: "operations_latencies_reads_latency", Name: "reads", Algo: module.Incremental, Div: 1000},
+			{ID: "operations_latencies_writes_latency", Name: "writes", Algo: module.Incremental, Div: 1000},
+			{ID: "operations_latencies_commands_latency", Name: "commands", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartOperationsByTypeCount = module.Chart{
+		ID:       "operations_by_type_count",
+		Title:    "Operations by type",
+		Units:    "operations/s",
+		Fam:      "operations",
+		Ctx:      "mongodb.operations_by_type_count",
+		Priority: prioOperationsByTypeCount,
 		Dims: module.Dims{
 			{ID: "operations_insert", Name: "insert", Algo: module.Incremental},
 			{ID: "operations_query", Name: "query", Algo: module.Incremental},
@@ -59,551 +188,849 @@ var (
 			{ID: "operations_command", Name: "command", Algo: module.Incremental},
 		},
 	}
-	chartOpLatencies = module.Chart{
-		ID:    "operations_latency",
-		Title: "Operations Latency",
-		Units: "milliseconds",
-		Fam:   "operations",
-		Ctx:   "mongodb.operations_latency",
+	chartDocumentOperationsRate = module.Chart{
+		ID:       "document_operations_rate",
+		Title:    "Document operations",
+		Units:    "operations/s",
+		Fam:      "operations",
+		Ctx:      "mongodb.document_operations_rate",
+		Type:     module.Stacked,
+		Priority: prioDocumentOperationsRate,
 		Dims: module.Dims{
-			{ID: "operations_latency_read", Name: "reads", Algo: module.Incremental, Div: 1000},
-			{ID: "operations_latency_write", Name: "writes", Algo: module.Incremental, Div: 1000},
-			{ID: "operations_latency_command", Name: "commands", Algo: module.Incremental, Div: 1000},
+			{ID: "metrics_document_inserted", Name: "inserted", Algo: module.Incremental},
+			{ID: "metrics_document_deleted", Name: "deleted", Algo: module.Incremental},
+			{ID: "metrics_document_returned", Name: "returned", Algo: module.Incremental},
+			{ID: "metrics_document_updated", Name: "updated", Algo: module.Incremental},
 		},
 	}
-)
-
-var (
-	chartConnectionsUsage = module.Chart{
-		ID:    "connections",
-		Title: "Connections",
-		Units: "connections",
-		Fam:   "connections",
-		Ctx:   "mongodb.connections",
-		Type:  module.Stacked,
+	chartScannedIndexesRate = module.Chart{
+		ID:       "scanned_indexes_rate",
+		Title:    "Scanned indexes",
+		Units:    "indexes/s",
+		Fam:      "operations",
+		Ctx:      "mongodb.scanned_indexes_rate",
+		Priority: prioScannedIndexesRate,
 		Dims: module.Dims{
-			{ID: "connections_current", Name: "current"},
+			{ID: "metrics_query_executor_scanned", Name: "scanned", Algo: module.Incremental},
+		},
+	}
+	chartScannedDocumentsRate = module.Chart{
+		ID:       "scanned_documents_rate",
+		Title:    "Scanned documents",
+		Units:    "documents/s",
+		Fam:      "operations",
+		Ctx:      "mongodb.scanned_documents_rate",
+		Priority: prioScannedDocumentsRate,
+		Dims: module.Dims{
+			{ID: "metrics_query_executor_scanned_objects", Name: "scanned", Algo: module.Incremental},
+		},
+	}
+
+	chartGlobalLockActiveClientsCount = module.Chart{
+		ID:       "active_clients_count",
+		Title:    "Connection clients",
+		Units:    "clients",
+		Fam:      "clients",
+		Ctx:      "mongodb.active_clients_count",
+		Priority: prioActiveClientsCount,
+		Dims: module.Dims{
+			{ID: "global_lock_active_clients_readers", Name: "readers"},
+			{ID: "global_lock_active_clients_writers", Name: "writers"},
+		},
+	}
+	chartGlobalLockCurrentQueueCount = module.Chart{
+		ID:       "queued_operations",
+		Title:    "Queued operations because of a lock",
+		Units:    "operations",
+		Fam:      "clients",
+		Ctx:      "mongodb.queued_operations_count",
+		Priority: prioQueuedOperationsCount,
+		Dims: module.Dims{
+			{ID: "global_lock_current_queue_readers", Name: "readers"},
+			{ID: "global_lock_current_queue_writers", Name: "writers"},
+		},
+	}
+
+	chartConnectionsUsage = module.Chart{
+		ID:       "connections_usage",
+		Title:    "Connections usage",
+		Units:    "connections",
+		Fam:      "connections",
+		Ctx:      "mongodb.connections_usage",
+		Type:     module.Stacked,
+		Priority: prioConnectionsUsage,
+		Dims: module.Dims{
 			{ID: "connections_available", Name: "available"},
+			{ID: "connections_current", Name: "used"},
+		},
+	}
+	chartConnectionsByStateCount = module.Chart{
+		ID:       "connections_by_state_count",
+		Title:    "Connections By State",
+		Units:    "connections",
+		Fam:      "connections",
+		Ctx:      "mongodb.connections_by_state_count",
+		Priority: prioConnectionsByStateCount,
+		Dims: module.Dims{
+			{ID: "connections_active", Name: "active"},
+			{ID: "connections_threaded", Name: "threaded"},
+			{ID: "connections_exhaust_is_master", Name: "exhaust_is_master"},
+			{ID: "connections_exhaust_hello", Name: "exhaust_hello"},
+			{ID: "connections_awaiting_topology_changes", Name: "awaiting_topology_changes"},
 		},
 	}
 	chartConnectionsRate = module.Chart{
-		ID:    "connections_rate",
-		Title: "Connections Rate",
-		Units: "connections/s",
-		Fam:   "connections",
-		Ctx:   "mongodb.connections_rate",
+		ID:       "connections_rate",
+		Title:    "Connections Rate",
+		Units:    "connections/s",
+		Fam:      "connections",
+		Ctx:      "mongodb.connections_rate",
+		Priority: prioConnectionsRate,
 		Dims: module.Dims{
 			{ID: "connections_total_created", Name: "created", Algo: module.Incremental},
 		},
 	}
-	chartConnectionsByState = module.Chart{
-		ID:    "connections_state",
-		Title: "Connections By State",
-		Units: "connections",
-		Fam:   "connections",
-		Ctx:   "mongodb.connections_state",
-		Dims: module.Dims{
-			{ID: "connections_active", Name: "active"},
-			{ID: "connections_threaded", Name: "threaded"},
-			{ID: "connections_exhaustIsMaster", Name: "exhaustIsMaster"},
-			{ID: "connections_exhaustHello", Name: "exhaustHello"},
-			{ID: "connections_awaitingTopologyChanges", Name: "awaiting topology changes"},
-		},
-	}
-)
 
-var (
-	chartNetwork = module.Chart{
-		ID:    "network",
-		Title: "Network IO",
-		Units: "bytes/s",
-		Fam:   "network",
-		Ctx:   "mongodb.network_io",
-		Type:  module.Area,
+	chartNetworkTrafficRate = module.Chart{
+		ID:       "network_traffic",
+		Title:    "Network traffic",
+		Units:    "bytes/s",
+		Fam:      "network",
+		Ctx:      "mongodb.network_traffic_rate",
+		Priority: prioNetworkTrafficRate,
+		Type:     module.Area,
 		Dims: module.Dims{
-			{ID: "network_bytes_in", Name: "in", Algo: module.Incremental, Mul: -1},
+			{ID: "network_bytes_in", Name: "in", Algo: module.Incremental},
 			{ID: "network_bytes_out", Name: "out", Algo: module.Incremental},
 		},
 	}
-	chartNetworkRequests = module.Chart{
-		ID:    "network_requests",
-		Title: "Network Requests",
-		Units: "requests/s",
-		Fam:   "network",
-		Ctx:   "mongodb.network_requests",
+	chartNetworkRequestsRate = module.Chart{
+		ID:       "network_requests_rate",
+		Title:    "Network Requests",
+		Units:    "requests/s",
+		Fam:      "network",
+		Ctx:      "mongodb.network_requests_rate",
+		Priority: prioNetworkRequestsRate,
 		Dims: module.Dims{
 			{ID: "network_requests", Name: "requests", Algo: module.Incremental},
 		},
 	}
+	chartNetworkSlowDNSResolutionsRate = module.Chart{
+		ID:       "network_slow_dns_resolutions_rate",
+		Title:    "Slow DNS resolution operations",
+		Units:    "resolutions/s",
+		Fam:      "network",
+		Ctx:      "mongodb.network_slow_dns_resolutions_rate",
+		Priority: prioNetworkSlowDNSResolutionsRate,
+		Dims: module.Dims{
+			{ID: "network_slow_dns_operations", Name: "slow_dns", Algo: module.Incremental},
+		},
+	}
+	chartNetworkSlowSSLHandshakesRate = module.Chart{
+		ID:       "network_slow_ssl_handshakes",
+		Title:    "Slow SSL handshake operations",
+		Units:    "handshakes/s",
+		Fam:      "network",
+		Ctx:      "mongodb.network_slow_ssl_handshakes_rate",
+		Priority: prioNetworkSlowSSLHandshakesRate,
+		Dims: module.Dims{
+			{ID: "network_slow_ssl_operations", Name: "slow_ssl", Algo: module.Incremental},
+		},
+	}
+
+	chartMemoryResidentSize = module.Chart{
+		ID:       "memory_resident_size",
+		Title:    "Used resident memory",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "mongodb.memory_resident_size",
+		Priority: prioMemoryResidentSize,
+		Dims: module.Dims{
+			{ID: "memory_resident", Name: "used"},
+		},
+	}
+	chartMemoryVirtualSize = module.Chart{
+		ID:       "memory_virtual_size",
+		Title:    "Used virtual memory",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "mongodb.memory_virtual_size",
+		Priority: prioMemoryVirtualSize,
+		Dims: module.Dims{
+			{ID: "memory_virtual", Name: "used"},
+		},
+	}
+	chartMemoryPageFaultsRate = module.Chart{
+		ID:       "memory_page_faults",
+		Title:    "Memory page faults",
+		Units:    "pgfaults/s",
+		Fam:      "memory",
+		Ctx:      "mongodb.memory_page_faults_rate",
+		Priority: prioMemoryPageFaultsRate,
+		Dims: module.Dims{
+			{ID: "extra_info_page_faults", Name: "pgfaults", Algo: module.Incremental},
+		},
+	}
+	chartMemoryTCMallocStatsChart = module.Chart{
+		ID:       "memory_tcmalloc_stats",
+		Title:    "TCMalloc statistics",
+		Units:    "bytes",
+		Fam:      "memory",
+		Ctx:      "mongodb.memory_tcmalloc_stats",
+		Priority: prioMemoryTCMallocStats,
+		Dims: module.Dims{
+			{ID: "tcmalloc_generic_current_allocated_bytes", Name: "allocated"},
+			{ID: "tcmalloc_central_cache_free_bytes", Name: "central_cache_freelist"},
+			{ID: "tcmalloc_transfer_cache_free_bytes", Name: "transfer_cache_freelist"},
+			{ID: "tcmalloc_thread_cache_free_bytes", Name: "thread_cache_freelists"},
+			{ID: "tcmalloc_pageheap_free_bytes", Name: "pageheap_freelist"},
+			{ID: "tcmalloc_pageheap_unmapped_bytes", Name: "pageheap_unmapped"},
+		},
+	}
+
+	chartAssertsRate = module.Chart{
+		ID:       "asserts_rate",
+		Title:    "Raised assertions",
+		Units:    "asserts/s",
+		Fam:      "asserts",
+		Ctx:      "mongodb.asserts_rate",
+		Type:     module.Stacked,
+		Priority: prioAssertsRate,
+		Dims: module.Dims{
+			{ID: "asserts_regular", Name: "regular", Algo: module.Incremental},
+			{ID: "asserts_warning", Name: "warning", Algo: module.Incremental},
+			{ID: "asserts_msg", Name: "msg", Algo: module.Incremental},
+			{ID: "asserts_user", Name: "user", Algo: module.Incremental},
+			{ID: "asserts_tripwire", Name: "tripwire", Algo: module.Incremental},
+			{ID: "asserts_rollovers", Name: "rollovers", Algo: module.Incremental},
+		},
+	}
+
+	chartTransactionsCount = module.Chart{
+		ID:       "transactions_count",
+		Title:    "Current transactions",
+		Units:    "transactions",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_count",
+		Priority: prioTransactionsCount,
+		Dims: module.Dims{
+			{ID: "txn_active", Name: "active"},
+			{ID: "txn_inactive", Name: "inactive"},
+			{ID: "txn_open", Name: "open"},
+			{ID: "txn_prepared", Name: "prepared"},
+		},
+	}
+	chartTransactionsRate = module.Chart{
+		ID:       "transactions_rate",
+		Title:    "Transactions rate",
+		Units:    "transactions/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_rate",
+		Priority: prioTransactionsRate,
+		Dims: module.Dims{
+			{ID: "txn_total_started", Name: "started", Algo: module.Incremental},
+			{ID: "txn_total_aborted", Name: "aborted", Algo: module.Incremental},
+			{ID: "txn_total_committed", Name: "committed", Algo: module.Incremental},
+			{ID: "txn_total_prepared", Name: "prepared", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsNoShardsCommitsRate = module.Chart{
+		ID:       "transactions_no_shards_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsNoShardsCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "noShards"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_no_shards_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_no_shards_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsNoShardsCommitsDurationTime = module.Chart{
+		ID:       "transactions_no_shards_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsNoShardsCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "noShards"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_no_shards_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartTransactionsSingleShardCommitsRate = module.Chart{
+		ID:       "transactions_single_shard_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsSingleShardCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "singleShard"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_single_shard_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_single_shard_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsSingleShardCommitsDurationTime = module.Chart{
+		ID:       "transactions_single_shard_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsSingleShardCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "singleShard"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_single_shard_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartTransactionsSingleWriteShardCommitsRate = module.Chart{
+		ID:       "transactions_single_write_shard_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsSingleWriteShardCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "singleWriteShard"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_single_write_shard_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_single_write_shard_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsSingleWriteShardCommitsDurationTime = module.Chart{
+		ID:       "transactions_single_write_shard_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsSingleWriteShardCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "singleWriteShard"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_single_write_shard_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartTransactionsReadOnlyCommitsRate = module.Chart{
+		ID:       "transactions_read_only_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsReadOnlyCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "readOnly"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_read_only_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_read_only_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsReadOnlyCommitsDurationTime = module.Chart{
+		ID:       "transactions_read_only_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsReadOnlyCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "readOnly"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_read_only_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartTransactionsTwoPhaseCommitCommitsRate = module.Chart{
+		ID:       "transactions_two_phase_commit_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsTwoPhaseCommitCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "twoPhaseCommit"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_two_phase_commit_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_two_phase_commit_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsTwoPhaseCommitCommitsDurationTime = module.Chart{
+		ID:       "transactions_two_phase_commit_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsTwoPhaseCommitCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "twoPhaseCommit"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_two_phase_commit_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+	chartTransactionsRecoverWithTokenCommitsRate = module.Chart{
+		ID:       "transactions_recover_with_token_commits_rate",
+		Title:    "Transactions commits",
+		Units:    "commits/s",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_rate",
+		Priority: prioTransactionsRecoverWithTokenCommitsRate,
+		Type:     module.Stacked,
+		Labels:   []module.Label{{Key: "commit_type", Value: "recoverWithToken"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_recover_with_token_successful", Name: "success", Algo: module.Incremental},
+			{ID: "txn_commit_types_recover_with_token_unsuccessful", Name: "fail", Algo: module.Incremental},
+		},
+	}
+	chartTransactionsRecoverWithTokenCommitsDurationTime = module.Chart{
+		ID:       "transactions_recover_with_token_commits_duration_time",
+		Title:    "Transactions successful commits duration",
+		Units:    "milliseconds",
+		Fam:      "transactions",
+		Ctx:      "mongodb.transactions_commits_duration_time",
+		Priority: prioTransactionsRecoverWithTokenCommitsDurationTime,
+		Labels:   []module.Label{{Key: "commit_type", Value: "recoverWithToken"}},
+		Dims: module.Dims{
+			{ID: "txn_commit_types_recover_with_token_successful_duration_micros", Name: "commits", Algo: module.Incremental, Div: 1000},
+		},
+	}
+
+	chartGlobalLockAcquisitionsRate = module.Chart{
+		ID:       "global_lock_acquisitions_rate",
+		Title:    "Global lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioGlobalLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "global"}},
+		Dims: module.Dims{
+			{ID: "locks_global_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_global_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_global_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_global_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+	chartDatabaseLockAcquisitionsRate = module.Chart{
+		ID:       "database_lock_acquisitions_rate",
+		Title:    "Database lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioDatabaseLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "database"}},
+		Dims: module.Dims{
+			{ID: "locks_database_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_database_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_database_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_database_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+	chartCollectionLockAcquisitionsRate = module.Chart{
+		ID:       "collection_lock_acquisitions_rate",
+		Title:    "Collection lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioCollectionLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "collection"}},
+		Dims: module.Dims{
+			{ID: "locks_collection_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_collection_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_collection_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_collection_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+	chartMutexLockAcquisitionsRate = module.Chart{
+		ID:       "mutex_lock_acquisitions_rate",
+		Title:    "Mutex lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioMutexLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "mutex"}},
+		Dims: module.Dims{
+			{ID: "locks_mutex_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_mutex_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_mutex_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_mutex_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+	chartMetadataLockAcquisitionsRate = module.Chart{
+		ID:       "metadata_lock_acquisitions_rate",
+		Title:    "Metadata lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioMetadataLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "metadata"}},
+		Dims: module.Dims{
+			{ID: "locks_metadata_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_metadata_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_metadata_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_metadata_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+	chartOpLogLockAcquisitionsRate = module.Chart{
+		ID:       "oplog_lock_acquisitions_rate",
+		Title:    "Operations log lock acquisitions",
+		Units:    "acquisitions/s",
+		Fam:      "locks",
+		Ctx:      "mongodb.lock_acquisitions_rate",
+		Priority: prioOpLogLockAcquisitionsRate,
+		Labels:   []module.Label{{Key: "lock_type", Value: "oplog"}},
+		Dims: module.Dims{
+			{ID: "locks_oplog_acquire_shared", Name: "shared", Algo: module.Incremental},
+			{ID: "locks_oplog_acquire_exclusive", Name: "exclusive", Algo: module.Incremental},
+			{ID: "locks_oplog_acquire_intent_shared", Name: "intent_shared", Algo: module.Incremental},
+			{ID: "locks_oplog_acquire_intent_exclusive", Name: "intent_exclusive", Algo: module.Incremental},
+		},
+	}
+
+	chartCursorsOpenCount = module.Chart{
+		ID:       "cursors_open_count",
+		Title:    "Open cursors",
+		Units:    "cursors",
+		Fam:      "cursors",
+		Ctx:      "mongodb.cursors_open_count",
+		Priority: prioCursorsOpenCount,
+		Dims: module.Dims{
+			{ID: "metrics_cursor_open_total", Name: "open"},
+		},
+	}
+	chartCursorsOpenNoTimeoutCount = module.Chart{
+		ID:       "cursors_open_no_timeout_count",
+		Title:    "Open cursors with disabled timeout",
+		Units:    "cursors",
+		Fam:      "cursors",
+		Ctx:      "mongodb.cursors_open_no_timeout_count",
+		Priority: prioCursorsOpenNoTimeoutCount,
+		Dims: module.Dims{
+			{ID: "metrics_cursor_open_no_timeout", Name: "open_no_timeout"},
+		},
+	}
+	chartCursorsOpenedRate = module.Chart{
+		ID:       "cursors_opened_rate",
+		Title:    "Opened cursors rate",
+		Units:    "cursors/s",
+		Fam:      "cursors",
+		Ctx:      "mongodb.cursors_opened_rate",
+		Priority: prioCursorsOpenedRate,
+		Dims: module.Dims{
+			{ID: "metrics_cursor_total_opened", Name: "opened"},
+		},
+	}
+	chartCursorsTimedOutRate = module.Chart{
+		ID:       "cursors_timed_out_rate",
+		Title:    "Timed-out cursors",
+		Units:    "cursors/s",
+		Fam:      "cursors",
+		Ctx:      "mongodb.cursors_timed_out_rate",
+		Priority: prioTimedOutCursorsRate,
+		Dims: module.Dims{
+			{ID: "metrics_cursor_timed_out", Name: "timed_out"},
+		},
+	}
+	chartCursorsByLifespanCount = module.Chart{
+		ID:       "cursors_by_lifespan_count",
+		Title:    "Cursors lifespan",
+		Units:    "cursors",
+		Fam:      "cursors",
+		Ctx:      "mongodb.cursors_by_lifespan_count",
+		Priority: prioCursorsByLifespanCount,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "metrics_cursor_lifespan_less_than_1_second", Name: "le_1s"},
+			{ID: "metrics_cursor_lifespan_less_than_5_seconds", Name: "le_5s"},
+			{ID: "metrics_cursor_lifespan_less_than_15_seconds", Name: "le_15s"},
+			{ID: "metrics_cursor_lifespan_less_than_30_seconds", Name: "le_30s"},
+			{ID: "metrics_cursor_lifespan_less_than_1_minute", Name: "le_1m"},
+			{ID: "metrics_cursor_lifespan_less_than_10_minutes", Name: "le_10m"},
+			{ID: "metrics_cursor_lifespan_greater_than_or_equal_10_minutes", Name: "ge_10m"},
+		},
+	}
+
+	chartWiredTigerConcurrentReadTransactionsUsage = module.Chart{
+		ID:       "wiredtiger_concurrent_read_transactions_usage",
+		Title:    "Wired Tiger concurrent read transactions usage",
+		Units:    "transactions",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_concurrent_read_transactions_usage",
+		Priority: prioWiredTigerConcurrentReadTransactionsUsage,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "wiredtiger_concurrent_txn_read_available", Name: "available"},
+			{ID: "wiredtiger_concurrent_txn_read_out", Name: "used"},
+		},
+	}
+	chartWiredTigerConcurrentWriteTransactionsUsage = module.Chart{
+		ID:       "wiredtiger_concurrent_write_transactions_usage",
+		Title:    "Wired Tiger concurrent write transactions usage",
+		Units:    "transactions",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_concurrent_write_transactions_usage",
+		Priority: prioWiredTigerConcurrentWriteTransactionsUsage,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "wiredtiger_concurrent_txn_write_available", Name: "available"},
+			{ID: "wiredtiger_concurrent_txn_write_out", Name: "used"},
+		},
+	}
+	chartWiredTigerCacheUsage = module.Chart{
+		ID:       "wiredtiger_cache_usage",
+		Title:    "Wired Tiger cache usage",
+		Units:    "bytes",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_cache_usage",
+		Priority: prioWiredTigerCacheUsage,
+		Type:     module.Stacked,
+		Dims: module.Dims{
+			{ID: "wiredtiger_cache_currently_in_cache_bytes", Name: "used"},
+		},
+	}
+	chartWiredTigerCacheDirtySpaceSize = module.Chart{
+		ID:       "wiredtiger_cache_dirty_space_size",
+		Title:    "Wired Tiger cache dirty space size",
+		Units:    "bytes",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_cache_dirty_space_size",
+		Priority: prioWiredTigerCacheDirtySpaceSize,
+		Dims: module.Dims{
+			{ID: "wiredtiger_cache_tracked_dirty_in_the_cache_bytes", Name: "dirty"},
+		},
+	}
+	chartWiredTigerCacheIORate = module.Chart{
+		ID:       "wiredtiger_cache_io_rate",
+		Title:    "Wired Tiger IO activity",
+		Units:    "pages/s",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_cache_io_rate",
+		Priority: prioWiredTigerCacheIORate,
+		Dims: module.Dims{
+			{ID: "wiredtiger_cache_read_into_cache_pages", Name: "read", Algo: module.Incremental},
+			{ID: "wiredtiger_cache_written_from_cache_pages", Name: "written", Algo: module.Incremental},
+		},
+	}
+	chartWiredTigerCacheEvictionsRate = module.Chart{
+		ID:       "wiredtiger_cache_eviction_rate",
+		Title:    "Wired Tiger cache evictions",
+		Units:    "pages/s",
+		Fam:      "wiredtiger",
+		Ctx:      "mongodb.wiredtiger_cache_evictions_rate",
+		Type:     module.Stacked,
+		Priority: prioWiredTigerCacheEvictionsRate,
+		Dims: module.Dims{
+			{ID: "wiredtiger_cache_unmodified_evicted_pages", Name: "unmodified", Algo: module.Incremental},
+			{ID: "wiredtiger_cache_modified_evicted_pages", Name: "modified", Algo: module.Incremental},
+		},
+	}
 )
 
 var (
-	chartPageFaults = module.Chart{
-		ID:    "page_faults",
-		Title: "Page faults",
-		Units: "page faults/s",
-		Fam:   "memory",
-		Ctx:   "mongodb.page_faults",
+	chartTmplDatabaseCollectionsCount = &module.Chart{
+		ID:       chartPxDatabase + "%s_collections_count",
+		Title:    "Database collections",
+		Units:    "collections",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_collections_count",
+		Priority: prioDatabaseCollectionsCount,
 		Dims: module.Dims{
-			{ID: "extra_info_page_faults", Name: "page Faults", Algo: module.Incremental},
+			{ID: "database_%s_collections", Name: "collections"},
 		},
 	}
-
-	chartTcmallocGeneric = module.Chart{
-		ID:    "tcmalloc_generic",
-		Title: "Tcmalloc generic metrics",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "mongodb.tcmalloc_generic",
+	chartTmplDatabaseIndexesCount = &module.Chart{
+		ID:       chartPxDatabase + "%s_indexes_count",
+		Title:    "Database indexes",
+		Units:    "indexes",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_indexes_count",
+		Priority: prioDatabaseIndexesCount,
 		Dims: module.Dims{
-			{ID: "tcmalloc_generic_current_allocated", Name: "current_allocated"},
-			{ID: "tcmalloc_generic_heap_size", Name: "heap_size"},
+			{ID: "database_%s_indexes", Name: "indexes"},
 		},
 	}
-
-	chartTcmalloc = module.Chart{
-		ID:    "tcmalloc",
-		Title: "Tcmalloc",
-		Units: "bytes",
-		Fam:   "memory",
-		Ctx:   "mongodb.tcmalloc",
+	chartTmplDatabaseViewsCount = &module.Chart{
+		ID:       chartPxDatabase + "%s_views_count",
+		Title:    "Database views",
+		Units:    "views",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_views_count",
+		Priority: prioDatabaseViewsCount,
 		Dims: module.Dims{
-			{ID: "tcmalloc_tcmalloc_pageheap_free", Name: "pageheap free"},
-			{ID: "tcmalloc_tcmalloc_pageheap_unmapped", Name: "pageheap unmapped"},
-			{ID: "tcmalloc_tcmalloc_max_total_thread_cache", Name: "total threaded cache"},
-			{ID: "tcmalloc_tcmalloc_total_free", Name: "free"},
-			{ID: "tcmalloc_tcmalloc_pageheap_committed", Name: "pageheap committed"},
-			{ID: "tcmalloc_tcmalloc_pageheap_total_commit", Name: "pageheap total commit"},
-			{ID: "tcmalloc_tcmalloc_pageheap_total_decommit", Name: "pageheap decommit"},
-			{ID: "tcmalloc_tcmalloc_pageheap_total_reserve", Name: "pageheap reserve"},
+			{ID: "database_%s_views", Name: "views"},
 		},
 	}
-)
-
-var chartAsserts = module.Chart{
-	ID:    "asserts",
-	Title: "Raised assertions",
-	Units: "asserts/s",
-	Fam:   "asserts",
-	Ctx:   "mongodb.asserts",
-	Type:  module.Stacked,
-	Dims: module.Dims{
-		{ID: "asserts_regular", Name: "regular", Algo: module.Incremental},
-		{ID: "asserts_warning", Name: "warning", Algo: module.Incremental},
-		{ID: "asserts_msg", Name: "msg", Algo: module.Incremental},
-		{ID: "asserts_user", Name: "user", Algo: module.Incremental},
-		{ID: "asserts_tripwire", Name: "tripwire", Algo: module.Incremental},
-		{ID: "asserts_rollovers", Name: "rollovers", Algo: module.Incremental},
-	},
-}
-
-var chartTransactionsCurrent = module.Chart{
-	ID:    "current_transactions",
-	Title: "Current Transactions",
-	Units: "transactions",
-	Fam:   "transactions",
-	Ctx:   "mongodb.current_transactions",
-	Dims: module.Dims{
-		{ID: "transactions_active", Name: "active"},
-		{ID: "transactions_inactive", Name: "inactive"},
-		{ID: "transactions_open", Name: "open"},
-		{ID: "transactions_prepared", Name: "prepared"},
-	},
-}
-
-var chartTransactionsCommitTypes = module.Chart{
-	ID:    "shard_commit_types",
-	Title: "Shard Commit Types",
-	Units: "commits",
-	Fam:   "shard stats",
-	Ctx:   "mongodb.shard_commit_types",
-	Dims: module.Dims{
-		{ID: "transactions_commit_types_no_shards_initiated", Name: "no shard (init)"},
-		{ID: "transactions_commit_types_no_shards_successful", Name: "no shard (successful)"},
-		{ID: "transactions_commit_types_no_single_shard_initiated", Name: "single shard (init)"},
-		{ID: "transactions_commit_types_no_single_shard_successful", Name: "single shard (successful)"},
-		{ID: "transactions_commit_types_single_write_shard_initiated", Name: "shard write (init)"},
-		{ID: "transactions_commit_types_single_write_shard_successful", Name: "shard write (successful)"},
-		{ID: "transactions_commit_types_single_two_phase_initiated", Name: "two phase (init)"},
-		{ID: "transactions_commit_types_single_two_phase_successful", Name: "two phase (successful)"},
-	},
-}
-
-var (
-	chartGlobalLockActiveClients = module.Chart{
-		ID:    "active_clients",
-		Title: "Active Clients",
-		Units: "clients",
-		Fam:   "clients",
-		Ctx:   "mongodb.active_clients",
+	chartTmplDatabaseDocumentsCount = &module.Chart{
+		ID:       chartPxDatabase + "%s_documents_count",
+		Title:    "Database documents",
+		Units:    "documents",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_documents_count",
+		Priority: prioDatabaseDocumentsCount,
 		Dims: module.Dims{
-			{ID: "glock_active_clients_readers", Name: "readers"},
-			{ID: "glock_active_clients_writers", Name: "writers"},
+			{ID: "database_%s_documents", Name: "documents"},
 		},
 	}
-	chartGlobalLockCurrentQueue = module.Chart{
-		ID:    "queued_operations",
-		Title: "Queued operations because of a lock",
-		Units: "operations",
-		Fam:   "clients",
-		Ctx:   "mongodb.queued_operations",
-		Type:  module.Stacked,
+	chartTmplDatabaseDataSize = &module.Chart{
+		ID:       chartPxDatabase + "%s_data_size",
+		Title:    "Database data size",
+		Units:    "bytes",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_data_size",
+		Priority: prioDatabaseDataSize,
 		Dims: module.Dims{
-			{ID: "glock_current_queue_readers", Name: "readers"},
-			{ID: "glock_current_queue_writers", Name: "writers"},
+			{ID: "database_%s_data_size", Name: "data_size"},
 		},
 	}
-)
-
-var chartLocks = module.Chart{
-	ID:    "locks",
-	Title: "Acquired locks",
-	Units: "locks/s",
-	Fam:   "locks",
-	Ctx:   "mongodb.locks",
-	Dims: module.Dims{
-		{ID: "locks_global_read", Name: "global read", Algo: module.Incremental},
-		{ID: "locks_global_write", Name: "global write", Algo: module.Incremental},
-		{ID: "locks_database_read", Name: "database read", Algo: module.Incremental},
-		{ID: "locks_database_write", Name: "database write", Algo: module.Incremental},
-		{ID: "locks_collection_read", Name: "collection read", Algo: module.Incremental},
-		{ID: "locks_collection_write", Name: "collection write", Algo: module.Incremental},
-	},
-}
-
-var chartFlowControl = module.Chart{
-	ID:    "flow_control_timings",
-	Title: "Flow Control Stats",
-	Units: "milliseconds",
-	Fam:   "flow_control",
-	Ctx:   "mongodb.flow_control_timings",
-	Dims: module.Dims{
-		{ID: "flow_target_rate_limit", Name: "acquiring", Algo: module.Incremental, Div: 1000},
-		{ID: "flow_time_acquiring_micros", Name: "lagged", Algo: module.Incremental, Div: 1000},
-	},
-}
-
-var (
-	chartWiredTigerBlockManager = module.Chart{
-		ID:    "wiredtiger_blocks",
-		Title: "Wired Tiger Block Manager",
-		Units: "bytes",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_blocks",
-		Type:  module.Stacked,
+	chartTmplDatabaseStorageSize = &module.Chart{
+		ID:       chartPxDatabase + "%s_storage_size",
+		Title:    "Database storage size",
+		Units:    "bytes",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_storage_size",
+		Priority: prioDatabaseStorageSize,
 		Dims: module.Dims{
-			{ID: "wiredtiger_block_manager_read", Name: "read"},
-			{ID: "wiredtiger_block_manager_read_via_memory", Name: "read via memory map API"},
-			{ID: "wiredtiger_block_manager_read_via_system_api", Name: "read via system call API"},
-			{ID: "wiredtiger_block_manager_written", Name: "written"},
-			{ID: "wiredtiger_block_manager_written_for_checkpoint", Name: "written for checkpoint"},
-			{ID: "wiredtiger_block_manager_written_via_memory", Name: "written via memory map API"},
+			{ID: "database_%s_storage_size", Name: "storage_size"},
 		},
 	}
-
-	chartWiredTigerCache = module.Chart{
-		ID:    "wiredtiger_cache",
-		Title: "Wired Tiger Cache",
-		Units: "bytes",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_cache",
+	chartTmplDatabaseIndexSize = &module.Chart{
+		ID:       chartPxDatabase + "%s_index_size",
+		Title:    "Database index size",
+		Units:    "bytes",
+		Fam:      "databases",
+		Ctx:      "mongodb.database_index_size",
+		Priority: prioDatabaseIndexSize,
 		Dims: module.Dims{
-			{ID: "wiredtiger_cache_alloccated", Name: "allocated for updates"},
-			{ID: "wiredtiger_cache_read", Name: "read into cache"},
-			{ID: "wiredtiger_cache_write", Name: "written from cache"},
-		},
-	}
-
-	chartWiredTigerCapacity = module.Chart{
-		ID:    "wiredtiger_capacity",
-		Title: "Wired Tiger Capacity Waiting",
-		Units: "usec",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_capacity",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_capacity_wait_capacity", Name: "due to total capacity"},
-			{ID: "wiredtiger_capacity_wait_checkpoint", Name: "during checkpoint"},
-			{ID: "wiredtiger_capacity_wait_eviction", Name: "during eviction"},
-			{ID: "wiredtiger_capacity_wait_logging", Name: "during logging"},
-			{ID: "wiredtiger_capacity_wait_read", Name: "during read"},
-		},
-	}
-
-	chartWiredTigerConnection = module.Chart{
-		ID:    "wiredtiger_connection",
-		Title: "Wired Tiger Connection",
-		Units: "ops/s",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_connection",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_connection_allocations", Name: "memory allocations", Algo: module.Incremental},
-			{ID: "wiredtiger_connection_frees", Name: "memory frees", Algo: module.Incremental},
-			{ID: "wiredtiger_connection_reallocations", Name: "memory re-allocations", Algo: module.Incremental},
-		},
-	}
-
-	chartWiredTigerCursor = module.Chart{
-		ID:    "wiredtiger_cursor",
-		Title: "Wired Tiger Cursor",
-		Units: "calls/s",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_cursor",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_cursor_count", Name: "open count", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_bulk", Name: "cached count", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_close", Name: "bulk loaded insert calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_create", Name: "close calls that result in cache", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_insert", Name: "create calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_modify", Name: "insert calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_next", Name: "modify calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_restarted", Name: "next calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_prev", Name: "operation restarted", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_remove", Name: "prev calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_reserve", Name: "remove calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_reset", Name: "reserve calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_search", Name: "cursor reset calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_search_history", Name: "search calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_search_near", Name: "search history store calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_sweep_buckets", Name: "search near calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_sweep_cursors", Name: "sweep buckets", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_sweep_examined", Name: "sweep cursors closed", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_sweeps", Name: "sweep cursors examined", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_truncate", Name: "sweeps", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_update", Name: "truncate calls", Algo: module.Incremental},
-			{ID: "wiredtiger_cursor_update_value", Name: "update calls", Algo: module.Incremental},
-		},
-	}
-
-	chartWiredTigerLock = module.Chart{
-		ID:    "wiredtiger_lock",
-		Title: "Wired Tiger Lock Acquisitions",
-		Units: "ops/s",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_lock",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_lock_checkpoint_acquisitions", Name: "checkpoint", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_acquisitions", Name: "dhandle read", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_write_acquisitions", Name: "dhandle write", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_read_acquisitions", Name: "durable timestamp queue read", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_write_acquisitions", Name: "durable timestamp queue write", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_metadata_acquisitions", Name: "metadata", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_timestamp_queue_read_acquisitions", Name: "read timestamp queue read", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_read_timestamp_queue_write_acquisitions", Name: "read timestamp queue write", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_schema_acquisitions", Name: "schema", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_table_read_acquisitions", Name: "table read", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_table_write_acquisitions", Name: "table write", Algo: module.Incremental},
-			{ID: "wiredtiger_lock_txn_global_read_acquisitions", Name: "txn global read", Algo: module.Incremental},
-		},
-	}
-
-	chartWiredTigerLockDuration = module.Chart{
-		ID:    "wiredtiger_lock_duration",
-		Title: "Wired Tiger Lock Duration",
-		Units: "usec",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_lock_duration",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_lock_checkpoint_wait_time", Name: "checkpoint"},
-			{ID: "wiredtiger_lock_checkpoint_internal_thread_wait_time", Name: "checkpoint internal thread"},
-			{ID: "wiredtiger_lock_application_thread_time_waiting", Name: "dhandle application thread"},
-			{ID: "wiredtiger_lock_internal_thread_time_waiting", Name: "dhandle internal thread"},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_application_thread_time_waiting", Name: "durable timestamp queue application thread"},
-			{ID: "wiredtiger_lock_durable_timestamp_queue_internal_thread_time_waiting", Name: "durable timestamp queue internal thread"},
-			{ID: "wiredtiger_lock_metadata_application_thread_wait_time", Name: "metadata application thread"},
-			{ID: "wiredtiger_lock_metadata_internal_thread_wait_time", Name: "metadata internal thread"},
-			{ID: "wiredtiger_lock_read_timestamp_queue_application_thread_time_waiting", Name: "read timestamp queue application thread"},
-			{ID: "wiredtiger_lock_read_timestamp_queue_internal_thread_time_waiting", Name: "read timestamp queue internal thread"},
-			{ID: "wiredtiger_lock_schema_application_thread_wait_time", Name: "schema application thread"},
-			{ID: "wiredtiger_lock_schema_internal_thread_wait_time", Name: "schema internal thread"},
-		},
-	}
-
-	chartWiredTigerLogOps = module.Chart{
-		ID:    "wiredtiger_log_ops",
-		Title: "Wired Tiger Log Operations",
-		Units: "ops/s",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_log_ops",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_log_flush", Name: "flush", Algo: module.Incremental},
-			{ID: "wiredtiger_log_force_write", Name: "force write", Algo: module.Incremental},
-			{ID: "wiredtiger_log_write_skip", Name: "force write skipped", Algo: module.Incremental},
-			{ID: "wiredtiger_log_scan", Name: "scan", Algo: module.Incremental},
-			{ID: "wiredtiger_log_sync", Name: "sync", Algo: module.Incremental},
-			{ID: "wiredtiger_log_sync_dir", Name: "sync_dir", Algo: module.Incremental},
-			{ID: "wiredtiger_log_write", Name: "write", Algo: module.Incremental},
-		},
-	}
-
-	chartWiredTigerLogBytes = module.Chart{
-		ID:    "wiredtiger_log_ops_size",
-		Title: "Wired Tiger Log Operations",
-		Units: "bytes/s",
-		Fam:   "wiredtiger",
-		Ctx:   "mongodb.wiredtiger_log_ops_size",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_log_payload", Name: "payload data", Algo: module.Incremental},
-			{ID: "wiredtiger_log_written", Name: "written", Algo: module.Incremental},
-			{ID: "wiredtiger_log_consolidated", Name: "consolidated", Algo: module.Incremental},
-			{ID: "wiredtiger_log_buffer_size", Name: "total buffer size", Algo: module.Incremental},
-		},
-	}
-
-	chartWiredTigerTransactions = module.Chart{
-		ID:    "wiredtiger_transactions",
-		Title: "Wired Tiger Transactions",
-		Fam:   "wiredtiger",
-		Units: "transactions/s",
-		Ctx:   "mongodb.wiredtiger_transactions",
-
-		Dims: module.Dims{
-			{ID: "wiredtiger_transaction_prepare", Name: "prepared", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_query", Name: "query timestamp", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_rollback", Name: "rollback to stable", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_set_timestamp", Name: "set timestamp", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_begin", Name: "begins", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_sync", Name: "sync", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_committed", Name: "committed", Algo: module.Incremental},
-			{ID: "wiredtiger_transaction_rolled_back", Name: "rolled back", Algo: module.Incremental},
+			{ID: "database_%s_index_size", Name: "index_size"},
 		},
 	}
 )
 
 var (
-	chartDBStatsCollections = &module.Chart{
-		ID:    "database_collections",
-		Title: "Collections",
-		Units: "collections",
-		Fam:   "database_statistics",
-		Ctx:   "mongodb.database_collections",
-		Type:  module.Stacked,
-	}
-
-	chartDBStatsIndexes = &module.Chart{
-		ID:    "database_indexes",
-		Title: "Indexes",
-		Units: "indexes",
-		Fam:   "database_statistics",
-		Ctx:   "mongodb.database_indexes",
-		Type:  module.Stacked,
-	}
-
-	chartDBStatsViews = &module.Chart{
-		ID:    "database_views",
-		Title: "Views",
-		Units: "views",
-		Fam:   "database_statistics",
-		Ctx:   "mongodb.database_views",
-		Type:  module.Stacked,
-	}
-
-	chartDBStatsDocuments = &module.Chart{
-		ID:    "database_documents",
-		Title: "Documents",
-		Units: "documents",
-		Fam:   "database_statistics",
-		Ctx:   "mongodb.database_documents",
-		Type:  module.Stacked,
-	}
-
-	chartDBStatsSize = &module.Chart{
-		ID:    "database_storage_size",
-		Title: "Disk Size",
-		Units: "bytes",
-		Fam:   "database_statistics",
-		Ctx:   "mongodb.database_storage_size",
-		Type:  module.Stacked,
-	}
-)
-
-const (
-	replicationLag                       = "replication_lag"
-	replicationHeartbeatLatency          = "replication_heartbeat_latency"
-	replicationNodePing                  = "replication_node_ping"
-	replicationLagDimPrefix              = "operational_lag_"
-	replicationHeartbeatLatencyDimPrefix = "heartbeat_latency_"
-	replicationNodePingDimPrefix         = "ping_"
-)
-
-var (
-	chartReplLag = &module.Chart{
-		ID:    replicationLag,
-		Title: "Replica Operational Lag",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationLag,
-	}
-
-	chartReplHeartbeatLatency = &module.Chart{
-		ID:    replicationHeartbeatLatency,
-		Title: "Replica Heartbeat Latency",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationHeartbeatLatency,
-	}
-
-	chartReplPing = &module.Chart{
-		ID:    replicationNodePing,
-		Title: "Replica Ping",
-		Units: "milliseconds",
-		Fam:   "replica set",
-		Ctx:   "mongodb." + replicationNodePing,
-	}
-)
-
-var (
-	chartShardNodes = &module.Chart{
-		ID:    "shard_nodes_count",
-		Title: "Shard Nodes",
-		Units: "nodes",
-		Fam:   "shard stats",
-		Ctx:   "mongodb.shard_nodes_count",
-		Type:  module.Stacked,
+	chartTmplReplSetMemberState = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_state",
+		Title:    "Replica Set member state",
+		Units:    "state",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_state",
+		Priority: prioReplSetMemberState,
 		Dims: module.Dims{
-			{ID: "shard_nodes_count_aware", Name: "shard aware"},
-			{ID: "shard_nodes_count_unaware", Name: "shard unaware"},
+			{ID: "repl_set_member_%s_state_primary", Name: "primary"},
+			{ID: "repl_set_member_%s_state_startup", Name: "startup"},
+			{ID: "repl_set_member_%s_state_secondary", Name: "secondary"},
+			{ID: "repl_set_member_%s_state_recovering", Name: "recovering"},
+			{ID: "repl_set_member_%s_state_startup2", Name: "startup2"},
+			{ID: "repl_set_member_%s_state_unknown", Name: "unknown"},
+			{ID: "repl_set_member_%s_state_arbiter", Name: "arbiter"},
+			{ID: "repl_set_member_%s_state_down", Name: "down"},
+			{ID: "repl_set_member_%s_state_rollback", Name: "rollback"},
+			{ID: "repl_set_member_%s_state_removed", Name: "removed"},
 		},
 	}
+	chartTmplReplSetMemberHealthStatus = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_health_status",
+		Title:    "Replica Set member health status",
+		Units:    "status",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_health_status",
+		Priority: prioReplSetMemberHealthStatus,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_health_status_up", Name: "up"},
+			{ID: "repl_set_member_%s_health_status_down", Name: "down"},
+		},
+	}
+	chartTmplReplSetMemberReplicationLagTime = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_replication_lag_time",
+		Title:    "Replica Set member replication lag",
+		Units:    "milliseconds",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_replication_lag_time",
+		Priority: prioReplSetMemberReplicationLagTime,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_replication_lag", Name: "replication_lag"},
+		},
+	}
+	chartTmplReplSetMemberHeartbeatLatencyTime = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_heartbeat_latency_time",
+		Title:    "Replica Set member heartbeat latency",
+		Units:    "milliseconds",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_heartbeat_latency_time",
+		Priority: prioReplSetMemberHeartbeatLatencyTime,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_heartbeat_latency", Name: "heartbeat_latency"},
+		},
+	}
+	chartTmplReplSetMemberPingRTTTime = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_ping_rtt_time",
+		Title:    "Replica Set member ping RTT",
+		Units:    "milliseconds",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_ping_rtt_time",
+		Priority: prioReplSetMemberPingRTTTime,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_ping_rtt", Name: "ping_rtt"},
+		},
+	}
+	chartTmplReplSetMemberUptime = &module.Chart{
+		ID:       chartPxReplSetMember + "%s_uptime",
+		Title:    "Replica Set member uptime",
+		Units:    "seconds",
+		Fam:      "replica sets",
+		Ctx:      "mongodb.repl_set_member_uptime",
+		Priority: prioReplSetMemberUptime,
+		Dims: module.Dims{
+			{ID: "repl_set_member_%s_uptime", Name: "uptime"},
+		},
+	}
+)
 
-	chartShardDatabases = &module.Chart{
-		ID:    "shard_databases_status",
-		Title: "Databases Sharding Status",
-		Units: "databases",
-		Fam:   "shard stats",
-		Ctx:   "mongodb.shard_databases_status",
-		Type:  module.Stacked,
+var (
+	chartShardingNodesCount = &module.Chart{
+		ID:       "sharding_nodes_count",
+		Title:    "Sharding Nodes",
+		Units:    "nodes",
+		Fam:      "sharding",
+		Ctx:      "mongodb.sharding_nodes_count",
+		Type:     module.Stacked,
+		Priority: prioShardingNodesCount,
+		Dims: module.Dims{
+			{ID: "shard_nodes_aware", Name: "shard_aware"},
+			{ID: "shard_nodes_unaware", Name: "shard_unaware"},
+		},
+	}
+	chartShardingShardedDatabases = &module.Chart{
+		ID:       "sharding_sharded_databases_count",
+		Title:    "Sharded databases",
+		Units:    "databases",
+		Fam:      "sharding",
+		Ctx:      "mongodb.sharding_sharded_databases_count",
+		Type:     module.Stacked,
+		Priority: prioShardingShardedDatabasesCount,
 		Dims: module.Dims{
 			{ID: "shard_databases_partitioned", Name: "partitioned"},
-			{ID: "shard_databases_unpartitioned", Name: "un-partitioned"},
+			{ID: "shard_databases_unpartitioned", Name: "unpartitioned"},
 		},
 	}
 
-	chartShardCollections = &module.Chart{
-		ID:    "shard_collections_status",
-		Title: "Collections Sharding Status",
-		Units: "collections",
-		Fam:   "shard stats",
-		Ctx:   "mongodb.shard_collections_status",
-		Type:  module.Stacked,
+	chartShardingShardedCollectionsCount = &module.Chart{
+		ID:       "sharding_sharded_collections_count",
+		Title:    "Sharded collections",
+		Units:    "collections",
+		Fam:      "sharding",
+		Ctx:      "mongodb.sharding_sharded_collections_count",
+		Type:     module.Stacked,
+		Priority: prioShardingShardedCollectionsCount,
 		Dims: module.Dims{
 			{ID: "shard_collections_partitioned", Name: "partitioned"},
-			{ID: "shard_collections_unpartitioned", Name: "un-partitioned"},
+			{ID: "shard_collections_unpartitioned", Name: "unpartitioned"},
 		},
 	}
 
-	chartShardChunks = &module.Chart{
-		ID:    "shard_chucks_per_node",
-		Title: "Chucks Per Node",
-		Units: "chunks",
-		Fam:   "shard stats",
-		Ctx:   "mongodb.shard_chucks_per_node",
-		Type:  module.Stacked,
+	chartTmplShardChunks = &module.Chart{
+		ID:       chartPxShard + "%s_chunks",
+		Title:    "Shard chunks",
+		Units:    "chunks",
+		Fam:      "sharding",
+		Ctx:      "mongodb.sharding_shard_chunks_count",
+		Priority: prioShardChunks,
+		Dims: module.Dims{
+			{ID: "shard_id_%s_chunks", Name: "chunks"},
+		},
 	}
 )

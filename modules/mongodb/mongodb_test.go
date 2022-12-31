@@ -3,479 +3,782 @@
 package mongo
 
 import (
-	"fmt"
-	"reflect"
-	"strings"
+	"encoding/json"
+	"errors"
+	"os"
 	"testing"
-
-	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/modules/mongodb/testdata/v5.0.0"
-	"github.com/netdata/go.d.plugin/pkg/matcher"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
+
+var (
+	dataV6MongodServerStatus, _ = os.ReadFile("testdata/v6.0.3/mongod-serverStatus.json")
+	dataV6MongosServerStatus, _ = os.ReadFile("testdata/v6.0.3/mongos-serverStatus.json")
+	dataV6DbStats, _            = os.ReadFile("testdata/v6.0.3/dbStats.json")
+	dataV6ReplSetGetStatus, _   = os.ReadFile("testdata/v6.0.3/replSetGetStatus.json")
+)
+
+func Test_testDataIsValid(t *testing.T) {
+	for name, data := range map[string][]byte{
+		"dataV6MongodServerStatus": dataV6MongodServerStatus,
+		"dataV6MongosServerStatus": dataV6MongosServerStatus,
+		"dataV6DbStats":            dataV6DbStats,
+		"dataV6ReplSetGetStatus":   dataV6ReplSetGetStatus,
+	} {
+		require.NotNilf(t, data, name)
+	}
+}
 
 func TestMongo_Init(t *testing.T) {
 	tests := map[string]struct {
-		config  Config
-		success bool
+		config   Config
+		wantFail bool
 	}{
 		"success on default config": {
-			success: true,
-			config:  New().Config,
+			wantFail: false,
+			config:   New().Config,
 		},
 		"fails on unset 'address'": {
-			success: true,
+			wantFail: true,
 			config: Config{
-				URI:     "mongodb://localhost:27017",
-				Timeout: 10,
+				URI: "",
 			},
 		},
-		"fails on invalid port": {
-			success: false,
+		"fails on invalid database selector": {
+			wantFail: true,
 			config: Config{
-				URI:     "",
-				Timeout: 0,
+				URI: "mongodb://localhost:27017",
+				Databases: matcher.SimpleExpr{
+					Includes: []string{"!@#"},
+				},
 			},
 		},
 	}
 
-	msg := "Init() result does not match Init()"
-
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			m := New()
-			m.Config = test.config
-			assert.Equal(t, test.success, m.Init(), msg)
+			mongo := New()
+			mongo.Config = test.config
+
+			if test.wantFail {
+				assert.False(t, mongo.Init())
+			} else {
+				assert.True(t, mongo.Init())
+			}
 		})
 	}
 }
 
-func TestMongo_Init_AddServerChartsTwiceFails(t *testing.T) {
-	msg := "adding duplicate server status charts is expected to fail Init()"
-	m := New()
-	// duplicate charts
-	temp := serverStatusCharts
-	defer func() { serverStatusCharts = temp }()
-	serverStatusCharts = append(serverStatusCharts, serverStatusCharts...)
-	assert.Equal(t, false, m.Init(), msg)
-}
-
-func TestMongo_Init_AddDbChartsTwiceFails(t *testing.T) {
-	msg := "adding duplicate db stats charts is expected to fail Init()"
-	m := New()
-	// duplicate charts
-	temp := dbStatsCharts
-	defer func() { dbStatsCharts = temp }()
-	dbStatsCharts = append(dbStatsCharts, dbStatsCharts...)
-	assert.Equal(t, false, m.Init(), msg)
-}
-
-func TestMongo_Init_BadMatcher(t *testing.T) {
-	msg := "bad database matcher value is expected to fail Init()"
-	m := New()
-	m.Databases = matcher.SimpleExpr{
-		Includes: []string{"bad value"},
-		Excludes: nil,
-	}
-	assert.Equal(t, false, m.Init(), msg)
-}
-
 func TestMongo_Charts(t *testing.T) {
-	msg := "after Init() we expect to have server status and db stats charts"
-	m := New()
-	require.True(t, m.Init())
-	assert.Len(t, *m.Charts(), 14, msg)
-}
-
-func TestMongo_ChartsOptional(t *testing.T) {
-	// optional charts are the serer status charts
-	// depending on the supported metrics by
-	// the database version and configuration
-	msg := "optional charts should be added after the first Collect()"
-	m := New()
-	require.True(t, m.Init())
-	charts := *m.Charts()
-	var IDs []string
-	for _, chart := range charts {
-		IDs = append(IDs, chart.ID)
-	}
-	require.NotNil(t, m.Charts())
-	for _, id := range []string{
-		"current_transactions",
-		"flow_control_timings",
-		"active_clients",
-		"queued_operations",
-		"tcmalloc",
-		"tcmalloc_generic",
-		"wiredtiger_cache",
-		"wiredtiger_capacity",
-		"wiredtiger_connection",
-		"wiredtiger_cursor",
-		"wiredtiger_lock",
-		"wiredtiger_lock_duration",
-		"wiredtiger_log_ops",
-		"wiredtiger_log_ops_size",
-		"wiredtiger_transactions",
-	} {
-		assert.NotContainsf(t, IDs, id, msg)
-	}
-}
-
-func TestMongo_initMongoClient_uri(t *testing.T) {
-	m := New()
-	m.Config.URI = "mongodb://user:pass@localhost:27017"
-	assert.True(t, m.Init())
-}
-
-func TestMongo_CheckFail(t *testing.T) {
-	m := New()
-	m.Config.Timeout = 0
-	assert.False(t, m.Check(), "Check() should fail with context deadline exceeded")
-}
-
-func TestMongo_Success(t *testing.T) {
-	m := New()
-	m.Config.Timeout = 1
-	m.Config.URI = ""
-	obj := &mockMongo{serverStatusResponse: v5_0_0.ServerStatus}
-	m.mongoCollector = obj
-	assert.True(t, m.Check(), "check should success with the mocker serverStatus response")
-}
-
-func TestMongo_Collect_DbStats(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		listDatabaseNamesResponse: v5_0_0.ListDatabaseNames,
-		dbStatsResponse:           v5_0_0.DbStats,
-		replicaSetResponse:        "{}",
-		closeCalled:               false,
-		replicaSet:                false,
-	}
-	m.Config.Databases.Includes = []string{"* *"} // matcher
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	msg := "collected values should be equal to the number of the dbStats field * number of databases"
-	assert.Len(t, ms, reflect.ValueOf(dbStats{}).NumField()*len(v5_0_0.ListDatabaseNames), msg)
-
-	charts := []*module.Chart{
-		chartDBStatsCollections.Copy(),
-		chartDBStatsIndexes.Copy(),
-		chartDBStatsViews.Copy(),
-		chartDBStatsDocuments.Copy(),
-		chartDBStatsSize.Copy(),
-	}
-	for _, chart := range charts {
-		require.True(t, m.charts.Has(chart.ID))
-		for _, dbName := range v5_0_0.ListDatabaseNames {
-			dimID := fmt.Sprintf("%s_%s", chart.ID, dbName)
-			assert.True(t, m.charts.Get(chart.ID).HasDim(dimID), "dimension is expected")
-			assert.EqualValues(t, 1, ms[dimID], "all values are hardcode to 1 in the test data")
-		}
-	}
-}
-
-func TestMongo_Collect_DbStatsRemoveDropped(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{"db1", "db2"},
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	assert.Len(t, ms, 14)
-
-	// remove a database
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{"db1"},
-	}
-	ms = m.Collect()
-	msg := "dimension was removed but is still active"
-	assert.True(t, m.charts.Get("database_collections").Dims[1].Obsolete, msg)
-	assert.Len(t, ms, 7, "we should have collected exactly 7 metrics")
-
-	// add two databases
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{"db1", "db2", "db3"},
-	}
-	ms = m.Collect()
-	msg = "after adding two databases we should still have 3 charts"
-	assert.Len(t, m.charts.Get("database_collections").Dims, 3, msg)
-	msg = "after adding two databases we should still have 3 charts with 7 dimensions each"
-	assert.Len(t, ms, 21, msg)
-}
-
-func TestMongo_Collect_DbStats_Fail(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "",
-		listDatabaseNamesResponse: []string{},
-		replicaSetResponse:        "{}",
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	assert.Len(t, ms, 0)
-}
-
-func TestMongo_Collect_DbStats_EmptyMatcher(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSetResponse:        "{}",
-	}
-	m.Config.Databases.Includes = []string{"* not_matching"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	msg := "we shouldn't have any metrics with a bad matcher"
-	assert.Len(t, ms, 0, msg)
-}
-
-func TestMongo_Collect_ReplSetStatus(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatus,
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	_ = m.Collect()
-	msg := "%s chart should have been added"
-	assert.True(t, m.charts.Has(replicationLag), msg, replicationLag)
-	assert.True(t, m.charts.Has(replicationHeartbeatLatency), msg, replicationHeartbeatLatency)
-	assert.True(t, m.charts.Has(replicationNodePing), msg, replicationNodePing)
-}
-
-func TestMongo_Collect_ReplSetStatusAddRemove(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode1,
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	_ = m.Collect()
-	msg := "node1 dimension is missing"
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node1"), msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node1"), msg)
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node1"), msg)
-
-	m.mongoCollector = &mockMongo{
-		serverStatusResponse:      "{}",
-		dbStatsResponse:           "{}",
-		listDatabaseNamesResponse: []string{},
-		replicaSet:                true,
-		replicaSetResponse:        v5_0_0.ReplSetGetStatusNode2,
-	}
-	_ = m.Collect()
-	// node2 dimensions added
-	msg = "node2 dimension is missing"
-	assert.True(t, m.charts.Get(replicationLag).HasDim(replicationLagDimPrefix+"node2"), msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).HasDim(replicationHeartbeatLatencyDimPrefix+"node2"), msg)
-	assert.True(t, m.charts.Get(replicationNodePing).HasDim(replicationNodePingDimPrefix+"node2"), msg)
-
-	// node1 dimensions removed
-	msg = "node1 was remove but dimension is still active"
-	assert.True(t, m.charts.Get(replicationLag).GetDim(replicationLagDimPrefix+"node1").Obsolete, msg)
-	assert.True(t, m.charts.Get(replicationHeartbeatLatency).GetDim(replicationHeartbeatLatencyDimPrefix+"node1").Obsolete, msg)
-	assert.True(t, m.charts.Get(replicationNodePing).GetDim(replicationNodePingDimPrefix+"node1").Obsolete, msg)
-}
-
-func TestMongo_Collect_Shard(t *testing.T) {
-	m := New()
-	mockClient := &mockMongo{
-		serverStatusResponse:      "{}",
-		listDatabaseNamesResponse: []string{},
-		dbStatsResponse:           "{}",
-		replicaSetResponse:        "{}",
-		mongos:                    true,
-		shardNodesResponse:        v5_0_0.ShardNodes,
-		shardDbPartitionResponse:  v5_0_0.ShardDatabases,
-		shardColPartitionResponse: v5_0_0.ShardCollections,
-		chunksShardNum:            2,
-	}
-	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
-	m.mongoCollector = mockClient
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	msg := "%s chart should have been added"
-	for _, chart := range shardCharts {
-		assert.True(t, m.charts.Has(chart.ID), msg, chart.ID)
-		assert.Len(t, m.charts.Get(chart.ID).Dims, 2)
-	}
-	assert.Len(t, ms, 8)
-}
-
-func TestMongo_Collect_Shard_Fail(t *testing.T) {
-	m := New()
-	mockClient := &mockMongoErrors{
-		mockMongo: mockMongo{
-			serverStatusResponse:      "{}",
-			listDatabaseNamesResponse: []string{},
-			dbStatsResponse:           "{}",
-			replicaSetResponse:        "{}",
-			mongos:                    true,
-			shardNodesResponse:        v5_0_0.ShardNodes,
-			shardDbPartitionResponse:  v5_0_0.ShardDatabases,
-			shardColPartitionResponse: v5_0_0.ShardCollections,
-			chunksShardNum:            2,
-		},
-	}
-	mockClient.connector = &mongoCollector{
-		Client:          &mongo.Client{},
-		aggregationFunc: mockClient.dbAggregate,
-	}
-	m.mongoCollector = mockClient
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-
-	ms := m.Collect()
-	assert.Len(t, ms, 8)
-
-	mockClient.shardChunksError = true
-	ms = m.Collect()
-	assert.Len(t, ms, 6)
-
-	mockClient.shardCollectionsPartitioningError = true
-	ms = m.Collect()
-	assert.Len(t, ms, 4)
-
-	mockClient.shardDatabasesPartitioningError = true
-	ms = m.Collect()
-	assert.Len(t, ms, 2)
-
-	mockClient.shardNodesError = true
-	ms = m.Collect()
-	assert.Len(t, ms, 0)
-
-}
-
-func TestMongo_ShardUpdateNodeChart(t *testing.T) {
-	m := New()
-	mockClient := &mockMongo{
-		serverStatusResponse:      "{}",
-		listDatabaseNamesResponse: []string{},
-		dbStatsResponse:           "{}",
-		replicaSetResponse:        "{}",
-		mongos:                    true,
-		shardNodesResponse:        v5_0_0.ShardNodes,
-		shardDbPartitionResponse:  v5_0_0.ShardDatabases,
-		shardColPartitionResponse: v5_0_0.ShardCollections,
-		chunksShardNum:            2,
-	}
-	mockClient.connector = &mongoCollector{aggregationFunc: mockClient.dbAggregate}
-	m.mongoCollector = mockClient
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	_ = m.Collect()
-	assert.Len(t, m.charts.Get("shard_chucks_per_node").Dims, 2)
-
-	mockClient.chunksShardNum = 1
-	_ = m.Collect()
-	chart := m.charts.Get("shard_chucks_per_node")
-	assert.True(t, chart.GetDim("shard_chucks_per_node_shard2").Obsolete)
-}
-
-func TestMongo_Incomplete(t *testing.T) {
-	m := New()
-	m.mongoCollector = &mockMongo{}
-	ms := m.Collect()
-	msg := "uninitialized client should collect any data"
-	assert.Len(t, ms, 0, msg)
+	assert.NotNil(t, New().Charts())
 }
 
 func TestMongo_Cleanup(t *testing.T) {
-	m := New()
-	connector := &mockMongo{}
-	m.mongoCollector = connector
-	m.Cleanup()
-	msg := "Cleanup() should have closed the mongo client"
-	assert.True(t, connector.closeCalled, msg)
-}
+	tests := map[string]struct {
+		prepare   func(t *testing.T) *Mongo
+		wantClose bool
+	}{
+		"client not initialized": {
+			wantClose: false,
+			prepare: func(t *testing.T) *Mongo {
+				return New()
+			},
+		},
+		"client initialized": {
+			wantClose: true,
+			prepare: func(t *testing.T) *Mongo {
+				mongo := New()
+				mongo.conn = caseMongod()
+				_ = mongo.conn.initClient("", 0)
 
-func TestCollectUpToServerStatus(t *testing.T) {
-	m := New()
-	m.Timeout = 0
-	m.mongoCollector = &mockMongoServerStatusOnly{
-		serverStatusResponse: v5_0_0.ServerStatus,
+				return mongo
+			},
+		},
 	}
 
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	msg := "dim should not have been added: %s"
-	for dim := range ms {
-		assert.False(t, strings.HasPrefix(dim, "database"), msg, dim)
-		assert.False(t, strings.HasPrefix(dim, "replication"), msg, dim)
-	}
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mongo := test.prepare(t)
 
-func TestCollectUpToServerStatusListDbNamesFails(t *testing.T) {
-	m := New()
-	m.Timeout = 0
-	m.mongoCollector = &mockMongoServerStatusOnly{
-		serverStatusResponse:  v5_0_0.ServerStatus,
-		mockListDatabaseNames: true,
-	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
-	msg := "dim should not have been added: %s"
-	for dim := range ms {
-		assert.False(t, strings.HasPrefix(dim, "database"), msg, dim)
-		assert.False(t, strings.HasPrefix(dim, "replication"), msg, dim)
+			require.NotPanics(t, mongo.Cleanup)
+			if test.wantClose {
+				mock, ok := mongo.conn.(*mockMongoClient)
+				require.True(t, ok)
+				assert.True(t, mock.closeCalled)
+			}
+		})
 	}
 }
 
-func TestCollectUpToDbStats(t *testing.T) {
-	m := New()
-	m.Timeout = 0
-	m.mongoCollector = &mockMongoServerStatusOnly{
-		serverStatusResponse:  v5_0_0.ServerStatus,
-		mockListDatabaseNames: true,
-		mockDbStats:           true,
+func TestMongo_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func() *mockMongoClient
+		wantFail bool
+	}{
+		"success on Mongod (v6)": {
+			wantFail: false,
+			prepare:  caseMongod,
+		},
+		"success on Mongod Replicas Set(v6)": {
+			wantFail: false,
+			prepare:  caseMongodReplicaSet,
+		},
+		"success on Mongos (v6)": {
+			wantFail: false,
+			prepare:  caseMongos,
+		},
 	}
-	m.Config.Databases.Includes = []string{"* *"}
-	m.URI = "mongodb://localhost"
-	require.True(t, m.Init())
-	ms := m.Collect()
 
-	foundDbStatsDims := false
-	for dim := range ms {
-		if strings.HasPrefix(dim, "database") {
-			foundDbStatsDims = true
-			break
-		}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mongo := prepareMongo()
+			defer mongo.Cleanup()
+			mongo.conn = test.prepare()
+
+			require.True(t, mongo.Init())
+
+			if test.wantFail {
+				assert.False(t, mongo.Check())
+			} else {
+				assert.True(t, mongo.Check())
+			}
+		})
 	}
-	assert.True(t, foundDbStatsDims, "some dims 'database_*' were not found")
+}
+
+func TestMongo_Collect(t *testing.T) {
+	tests := map[string]struct {
+		prepare       func() *mockMongoClient
+		wantCollected map[string]int64
+	}{
+		"success on Mongod (v6)": {
+			prepare: caseMongod,
+			wantCollected: map[string]int64{
+				"asserts_msg":                                       0,
+				"asserts_regular":                                   0,
+				"asserts_rollovers":                                 0,
+				"asserts_tripwire":                                  0,
+				"asserts_user":                                      2149,
+				"asserts_warning":                                   0,
+				"connections_active":                                12,
+				"connections_available":                             838813,
+				"connections_awaiting_topology_changes":             10,
+				"connections_current":                               47,
+				"connections_exhaust_hello":                         6,
+				"connections_exhaust_is_master":                     2,
+				"connections_threaded":                              47,
+				"connections_total_created":                         647,
+				"database_admin_collections":                        3,
+				"database_admin_data_size":                          796,
+				"database_admin_documents":                          5,
+				"database_admin_index_size":                         81920,
+				"database_admin_indexes":                            4,
+				"database_admin_storage_size":                       61440,
+				"database_admin_views":                              0,
+				"database_config_collections":                       3,
+				"database_config_data_size":                         796,
+				"database_config_documents":                         5,
+				"database_config_index_size":                        81920,
+				"database_config_indexes":                           4,
+				"database_config_storage_size":                      61440,
+				"database_config_views":                             0,
+				"database_local_collections":                        3,
+				"database_local_data_size":                          796,
+				"database_local_documents":                          5,
+				"database_local_index_size":                         81920,
+				"database_local_indexes":                            4,
+				"database_local_storage_size":                       61440,
+				"database_local_views":                              0,
+				"extra_info_page_faults":                            0,
+				"global_lock_active_clients_readers":                0,
+				"global_lock_active_clients_writers":                0,
+				"global_lock_current_queue_readers":                 0,
+				"global_lock_current_queue_writers":                 0,
+				"locks_collection_acquire_exclusive":                6,
+				"locks_collection_acquire_intent_exclusive":         1978155,
+				"locks_collection_acquire_intent_shared":            3788068,
+				"locks_collection_acquire_shared":                   0,
+				"locks_database_acquire_exclusive":                  6,
+				"locks_database_acquire_intent_exclusive":           1978176,
+				"locks_database_acquire_intent_shared":              573719,
+				"locks_database_acquire_shared":                     0,
+				"locks_global_acquire_exclusive":                    6,
+				"locks_global_acquire_intent_exclusive":             1997473,
+				"locks_global_acquire_intent_shared":                4996125,
+				"locks_global_acquire_shared":                       0,
+				"locks_mutex_acquire_exclusive":                     0,
+				"locks_mutex_acquire_intent_exclusive":              0,
+				"locks_mutex_acquire_intent_shared":                 2799023,
+				"locks_mutex_acquire_shared":                        0,
+				"locks_oplog_acquire_exclusive":                     0,
+				"locks_oplog_acquire_intent_exclusive":              1,
+				"locks_oplog_acquire_intent_shared":                 189078,
+				"locks_oplog_acquire_shared":                        0,
+				"memory_resident":                                   204472320,
+				"memory_virtual":                                    3067084800,
+				"metrics_document_deleted":                          37,
+				"metrics_document_inserted":                         0,
+				"metrics_document_returned":                         19422,
+				"metrics_document_updated":                          605,
+				"metrics_query_executor_scanned":                    647,
+				"metrics_query_executor_scanned_objects":            20068,
+				"network_bytes_in":                                  427955426,
+				"network_bytes_out":                                 7874806560,
+				"network_requests":                                  1582075,
+				"network_slow_dns_operations":                       0,
+				"network_slow_ssl_operations":                       0,
+				"operations_command":                                1524685,
+				"operations_delete":                                 105,
+				"operations_getmore":                                58604,
+				"operations_insert":                                 0,
+				"operations_latencies_commands_latency":             471510947,
+				"operations_latencies_commands_ops":                 1523389,
+				"operations_latencies_reads_latency":                11676414,
+				"operations_latencies_reads_ops":                    58671,
+				"operations_latencies_writes_latency":               33915,
+				"operations_latencies_writes_ops":                   3,
+				"operations_query":                                  715,
+				"operations_update":                                 672,
+				"tcmalloc_aggressive_memory_decommit":               0,
+				"tcmalloc_central_cache_free_bytes":                 605816,
+				"tcmalloc_current_total_thread_cache_bytes":         3968312,
+				"tcmalloc_generic_current_allocated_bytes":          115920144,
+				"tcmalloc_generic_heap_size":                        141750272,
+				"tcmalloc_max_total_thread_cache_bytes":             1073741824,
+				"tcmalloc_pageheap_commit_count":                    4261,
+				"tcmalloc_pageheap_committed_bytes":                 141103104,
+				"tcmalloc_pageheap_decommit_count":                  1955,
+				"tcmalloc_pageheap_free_bytes":                      17358848,
+				"tcmalloc_pageheap_reserve_count":                   62,
+				"tcmalloc_pageheap_scavenge_bytes":                  0,
+				"tcmalloc_pageheap_total_commit_bytes":              1401995264,
+				"tcmalloc_pageheap_total_decommit_bytes":            1260892160,
+				"tcmalloc_pageheap_total_reserve_bytes":             141750272,
+				"tcmalloc_pageheap_unmapped_bytes":                  647168,
+				"tcmalloc_spinlock_total_delay_ns":                  352929263,
+				"tcmalloc_thread_cache_free_bytes":                  3968312,
+				"tcmalloc_total_free_bytes":                         7824112,
+				"tcmalloc_transfer_cache_free_bytes":                3249984,
+				"txn_active":                                        0,
+				"txn_inactive":                                      0,
+				"txn_open":                                          0,
+				"txn_prepared":                                      0,
+				"txn_total_aborted":                                 0,
+				"txn_total_committed":                               0,
+				"txn_total_prepared":                                0,
+				"txn_total_started":                                 0,
+				"wiredtiger_cache_currently_in_cache_bytes":         4682708,
+				"wiredtiger_cache_maximum_configured_bytes":         7854882816,
+				"wiredtiger_cache_modified_evicted_pages":           2,
+				"wiredtiger_cache_read_into_cache_pages":            71,
+				"wiredtiger_cache_tracked_dirty_in_the_cache_bytes": 4231259,
+				"wiredtiger_cache_unmodified_evicted_pages":         1,
+				"wiredtiger_cache_written_from_cache_pages":         63360,
+				"wiredtiger_concurrent_txn_read_available":          128,
+				"wiredtiger_concurrent_txn_read_out":                0,
+				"wiredtiger_concurrent_txn_write_available":         128,
+				"wiredtiger_concurrent_txn_write_out":               0,
+			},
+		},
+		"success on Mongod Replica Set (v6)": {
+			prepare: caseMongodReplicaSet,
+			wantCollected: map[string]int64{
+				"asserts_msg":                                                0,
+				"asserts_regular":                                            0,
+				"asserts_rollovers":                                          0,
+				"asserts_tripwire":                                           0,
+				"asserts_user":                                               2149,
+				"asserts_warning":                                            0,
+				"connections_active":                                         12,
+				"connections_available":                                      838813,
+				"connections_awaiting_topology_changes":                      10,
+				"connections_current":                                        47,
+				"connections_exhaust_hello":                                  6,
+				"connections_exhaust_is_master":                              2,
+				"connections_threaded":                                       47,
+				"connections_total_created":                                  647,
+				"database_admin_collections":                                 3,
+				"database_admin_data_size":                                   796,
+				"database_admin_documents":                                   5,
+				"database_admin_index_size":                                  81920,
+				"database_admin_indexes":                                     4,
+				"database_admin_storage_size":                                61440,
+				"database_admin_views":                                       0,
+				"database_config_collections":                                3,
+				"database_config_data_size":                                  796,
+				"database_config_documents":                                  5,
+				"database_config_index_size":                                 81920,
+				"database_config_indexes":                                    4,
+				"database_config_storage_size":                               61440,
+				"database_config_views":                                      0,
+				"database_local_collections":                                 3,
+				"database_local_data_size":                                   796,
+				"database_local_documents":                                   5,
+				"database_local_index_size":                                  81920,
+				"database_local_indexes":                                     4,
+				"database_local_storage_size":                                61440,
+				"database_local_views":                                       0,
+				"extra_info_page_faults":                                     0,
+				"global_lock_active_clients_readers":                         0,
+				"global_lock_active_clients_writers":                         0,
+				"global_lock_current_queue_readers":                          0,
+				"global_lock_current_queue_writers":                          0,
+				"locks_collection_acquire_exclusive":                         6,
+				"locks_collection_acquire_intent_exclusive":                  1978155,
+				"locks_collection_acquire_intent_shared":                     3788068,
+				"locks_collection_acquire_shared":                            0,
+				"locks_database_acquire_exclusive":                           6,
+				"locks_database_acquire_intent_exclusive":                    1978176,
+				"locks_database_acquire_intent_shared":                       573719,
+				"locks_database_acquire_shared":                              0,
+				"locks_global_acquire_exclusive":                             6,
+				"locks_global_acquire_intent_exclusive":                      1997473,
+				"locks_global_acquire_intent_shared":                         4996125,
+				"locks_global_acquire_shared":                                0,
+				"locks_mutex_acquire_exclusive":                              0,
+				"locks_mutex_acquire_intent_exclusive":                       0,
+				"locks_mutex_acquire_intent_shared":                          2799023,
+				"locks_mutex_acquire_shared":                                 0,
+				"locks_oplog_acquire_exclusive":                              0,
+				"locks_oplog_acquire_intent_exclusive":                       1,
+				"locks_oplog_acquire_intent_shared":                          189078,
+				"locks_oplog_acquire_shared":                                 0,
+				"memory_resident":                                            204472320,
+				"memory_virtual":                                             3067084800,
+				"metrics_document_deleted":                                   37,
+				"metrics_document_inserted":                                  0,
+				"metrics_document_returned":                                  19422,
+				"metrics_document_updated":                                   605,
+				"metrics_query_executor_scanned":                             647,
+				"metrics_query_executor_scanned_objects":                     20068,
+				"network_bytes_in":                                           427955426,
+				"network_bytes_out":                                          7874806560,
+				"network_requests":                                           1582075,
+				"network_slow_dns_operations":                                0,
+				"network_slow_ssl_operations":                                0,
+				"operations_command":                                         1524685,
+				"operations_delete":                                          105,
+				"operations_getmore":                                         58604,
+				"operations_insert":                                          0,
+				"operations_latencies_commands_latency":                      471510947,
+				"operations_latencies_commands_ops":                          1523389,
+				"operations_latencies_reads_latency":                         11676414,
+				"operations_latencies_reads_ops":                             58671,
+				"operations_latencies_writes_latency":                        33915,
+				"operations_latencies_writes_ops":                            3,
+				"operations_query":                                           715,
+				"operations_update":                                          672,
+				"repl_set_member_mongodb-primary:27017_health_status_down":   0,
+				"repl_set_member_mongodb-primary:27017_health_status_up":     1,
+				"repl_set_member_mongodb-primary:27017_replication_lag":      4572,
+				"repl_set_member_mongodb-primary:27017_state_arbiter":        0,
+				"repl_set_member_mongodb-primary:27017_state_down":           0,
+				"repl_set_member_mongodb-primary:27017_state_primary":        1,
+				"repl_set_member_mongodb-primary:27017_state_recovering":     0,
+				"repl_set_member_mongodb-primary:27017_state_removed":        0,
+				"repl_set_member_mongodb-primary:27017_state_rollback":       0,
+				"repl_set_member_mongodb-primary:27017_state_secondary":      0,
+				"repl_set_member_mongodb-primary:27017_state_startup":        0,
+				"repl_set_member_mongodb-primary:27017_state_startup2":       0,
+				"repl_set_member_mongodb-primary:27017_state_unknown":        0,
+				"repl_set_member_mongodb-secondary:27017_health_status_down": 0,
+				"repl_set_member_mongodb-secondary:27017_health_status_up":   1,
+				"repl_set_member_mongodb-secondary:27017_heartbeat_latency":  1359,
+				"repl_set_member_mongodb-secondary:27017_ping_rtt":           0,
+				"repl_set_member_mongodb-secondary:27017_replication_lag":    4572,
+				"repl_set_member_mongodb-secondary:27017_state_arbiter":      0,
+				"repl_set_member_mongodb-secondary:27017_state_down":         0,
+				"repl_set_member_mongodb-secondary:27017_state_primary":      0,
+				"repl_set_member_mongodb-secondary:27017_state_recovering":   0,
+				"repl_set_member_mongodb-secondary:27017_state_removed":      0,
+				"repl_set_member_mongodb-secondary:27017_state_rollback":     0,
+				"repl_set_member_mongodb-secondary:27017_state_secondary":    1,
+				"repl_set_member_mongodb-secondary:27017_state_startup":      0,
+				"repl_set_member_mongodb-secondary:27017_state_startup2":     0,
+				"repl_set_member_mongodb-secondary:27017_state_unknown":      0,
+				"repl_set_member_mongodb-secondary:27017_uptime":             192370,
+				"tcmalloc_aggressive_memory_decommit":                        0,
+				"tcmalloc_central_cache_free_bytes":                          605816,
+				"tcmalloc_current_total_thread_cache_bytes":                  3968312,
+				"tcmalloc_generic_current_allocated_bytes":                   115920144,
+				"tcmalloc_generic_heap_size":                                 141750272,
+				"tcmalloc_max_total_thread_cache_bytes":                      1073741824,
+				"tcmalloc_pageheap_commit_count":                             4261,
+				"tcmalloc_pageheap_committed_bytes":                          141103104,
+				"tcmalloc_pageheap_decommit_count":                           1955,
+				"tcmalloc_pageheap_free_bytes":                               17358848,
+				"tcmalloc_pageheap_reserve_count":                            62,
+				"tcmalloc_pageheap_scavenge_bytes":                           0,
+				"tcmalloc_pageheap_total_commit_bytes":                       1401995264,
+				"tcmalloc_pageheap_total_decommit_bytes":                     1260892160,
+				"tcmalloc_pageheap_total_reserve_bytes":                      141750272,
+				"tcmalloc_pageheap_unmapped_bytes":                           647168,
+				"tcmalloc_spinlock_total_delay_ns":                           352929263,
+				"tcmalloc_thread_cache_free_bytes":                           3968312,
+				"tcmalloc_total_free_bytes":                                  7824112,
+				"tcmalloc_transfer_cache_free_bytes":                         3249984,
+				"txn_active":                                                 0,
+				"txn_inactive":                                               0,
+				"txn_open":                                                   0,
+				"txn_prepared":                                               0,
+				"txn_total_aborted":                                          0,
+				"txn_total_committed":                                        0,
+				"txn_total_prepared":                                         0,
+				"txn_total_started":                                          0,
+				"wiredtiger_cache_currently_in_cache_bytes":                  4682708,
+				"wiredtiger_cache_maximum_configured_bytes":                  7854882816,
+				"wiredtiger_cache_modified_evicted_pages":                    2,
+				"wiredtiger_cache_read_into_cache_pages":                     71,
+				"wiredtiger_cache_tracked_dirty_in_the_cache_bytes":          4231259,
+				"wiredtiger_cache_unmodified_evicted_pages":                  1,
+				"wiredtiger_cache_written_from_cache_pages":                  63360,
+				"wiredtiger_concurrent_txn_read_available":                   128,
+				"wiredtiger_concurrent_txn_read_out":                         0,
+				"wiredtiger_concurrent_txn_write_available":                  128,
+				"wiredtiger_concurrent_txn_write_out":                        0,
+			},
+		},
+		"success on Mongos (v6)": {
+			prepare: caseMongos,
+			wantCollected: map[string]int64{
+				"asserts_msg":                                                    0,
+				"asserts_regular":                                                0,
+				"asserts_rollovers":                                              0,
+				"asserts_tripwire":                                               0,
+				"asserts_user":                                                   352,
+				"asserts_warning":                                                0,
+				"connections_active":                                             5,
+				"connections_available":                                          838842,
+				"connections_awaiting_topology_changes":                          4,
+				"connections_current":                                            18,
+				"connections_exhaust_hello":                                      3,
+				"connections_exhaust_is_master":                                  0,
+				"connections_threaded":                                           18,
+				"connections_total_created":                                      89,
+				"database_admin_collections":                                     3,
+				"database_admin_data_size":                                       796,
+				"database_admin_documents":                                       5,
+				"database_admin_index_size":                                      81920,
+				"database_admin_indexes":                                         4,
+				"database_admin_storage_size":                                    61440,
+				"database_admin_views":                                           0,
+				"database_config_collections":                                    3,
+				"database_config_data_size":                                      796,
+				"database_config_documents":                                      5,
+				"database_config_index_size":                                     81920,
+				"database_config_indexes":                                        4,
+				"database_config_storage_size":                                   61440,
+				"database_config_views":                                          0,
+				"database_local_collections":                                     3,
+				"database_local_data_size":                                       796,
+				"database_local_documents":                                       5,
+				"database_local_index_size":                                      81920,
+				"database_local_indexes":                                         4,
+				"database_local_storage_size":                                    61440,
+				"database_local_views":                                           0,
+				"extra_info_page_faults":                                         526,
+				"memory_resident":                                                84934656,
+				"memory_virtual":                                                 2596274176,
+				"metrics_document_deleted":                                       0,
+				"metrics_document_inserted":                                      0,
+				"metrics_document_returned":                                      0,
+				"metrics_document_updated":                                       0,
+				"metrics_query_executor_scanned":                                 0,
+				"metrics_query_executor_scanned_objects":                         0,
+				"network_bytes_in":                                               57943348,
+				"network_bytes_out":                                              247343709,
+				"network_requests":                                               227310,
+				"network_slow_dns_operations":                                    0,
+				"network_slow_ssl_operations":                                    0,
+				"operations_command":                                             227283,
+				"operations_delete":                                              0,
+				"operations_getmore":                                             0,
+				"operations_insert":                                              0,
+				"operations_query":                                               10,
+				"operations_update":                                              0,
+				"shard_collections_partitioned":                                  1,
+				"shard_collections_unpartitioned":                                1,
+				"shard_databases_partitioned":                                    1,
+				"shard_databases_unpartitioned":                                  1,
+				"shard_id_shard0_chunks":                                         1,
+				"shard_id_shard1_chunks":                                         1,
+				"shard_nodes_aware":                                              1,
+				"shard_nodes_unaware":                                            1,
+				"tcmalloc_aggressive_memory_decommit":                            0,
+				"tcmalloc_central_cache_free_bytes":                              736960,
+				"tcmalloc_current_total_thread_cache_bytes":                      1638104,
+				"tcmalloc_generic_current_allocated_bytes":                       13519784,
+				"tcmalloc_generic_heap_size":                                     24576000,
+				"tcmalloc_max_total_thread_cache_bytes":                          1042284544,
+				"tcmalloc_pageheap_commit_count":                                 480,
+				"tcmalloc_pageheap_committed_bytes":                              24518656,
+				"tcmalloc_pageheap_decommit_count":                               127,
+				"tcmalloc_pageheap_free_bytes":                                   5697536,
+				"tcmalloc_pageheap_reserve_count":                                15,
+				"tcmalloc_pageheap_scavenge_bytes":                               0,
+				"tcmalloc_pageheap_total_commit_bytes":                           84799488,
+				"tcmalloc_pageheap_total_decommit_bytes":                         60280832,
+				"tcmalloc_pageheap_total_reserve_bytes":                          24576000,
+				"tcmalloc_pageheap_unmapped_bytes":                               57344,
+				"tcmalloc_spinlock_total_delay_ns":                               96785212,
+				"tcmalloc_thread_cache_free_bytes":                               1638104,
+				"tcmalloc_total_free_bytes":                                      5301336,
+				"tcmalloc_transfer_cache_free_bytes":                             2926272,
+				"txn_active":                                                     0,
+				"txn_commit_types_no_shards_initiated":                           0,
+				"txn_commit_types_no_shards_successful":                          0,
+				"txn_commit_types_no_shards_successful_duration_micros":          0,
+				"txn_commit_types_no_shards_unsuccessful":                        0,
+				"txn_commit_types_read_only_initiated":                           0,
+				"txn_commit_types_read_only_successful":                          0,
+				"txn_commit_types_read_only_successful_duration_micros":          0,
+				"txn_commit_types_read_only_unsuccessful":                        0,
+				"txn_commit_types_recover_with_token_initiated":                  0,
+				"txn_commit_types_recover_with_token_successful":                 0,
+				"txn_commit_types_recover_with_token_successful_duration_micros": 0,
+				"txn_commit_types_recover_with_token_unsuccessful":               0,
+				"txn_commit_types_single_shard_initiated":                        0,
+				"txn_commit_types_single_shard_successful":                       0,
+				"txn_commit_types_single_shard_successful_duration_micros":       0,
+				"txn_commit_types_single_shard_unsuccessful":                     0,
+				"txn_commit_types_single_write_shard_initiated":                  0,
+				"txn_commit_types_single_write_shard_successful":                 0,
+				"txn_commit_types_single_write_shard_successful_duration_micros": 0,
+				"txn_commit_types_single_write_shard_unsuccessful":               0,
+				"txn_commit_types_two_phase_commit_initiated":                    0,
+				"txn_commit_types_two_phase_commit_successful":                   0,
+				"txn_commit_types_two_phase_commit_successful_duration_micros":   0,
+				"txn_commit_types_two_phase_commit_unsuccessful":                 0,
+				"txn_inactive":                                                   0,
+				"txn_open":                                                       0,
+				"txn_total_aborted":                                              0,
+				"txn_total_committed":                                            0,
+				"txn_total_started":                                              0,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mongo := prepareMongo()
+			defer mongo.Cleanup()
+			mongo.conn = test.prepare()
+
+			require.True(t, mongo.Init())
+
+			mx := mongo.Collect()
+
+			assert.Equal(t, test.wantCollected, mx)
+		})
+	}
+}
+
+func prepareMongo() *Mongo {
+	m := New()
+	m.Databases = matcher.SimpleExpr{Includes: []string{"* *"}}
+	return m
+}
+
+func caseMongodReplicaSet() *mockMongoClient {
+	return &mockMongoClient{replicaSet: true}
+}
+
+func caseMongod() *mockMongoClient {
+	return &mockMongoClient{}
+}
+
+func caseMongos() *mockMongoClient {
+	return &mockMongoClient{mongos: true}
+}
+
+type mockMongoClient struct {
+	replicaSet                        bool
+	mongos                            bool
+	errOnServerStatus                 bool
+	errOnListDatabaseNames            bool
+	errOnDbStats                      bool
+	errOnReplSetGetStatus             bool
+	errOnShardNodes                   bool
+	errOnShardDatabasesPartitioning   bool
+	errOnShardCollectionsPartitioning bool
+	errOnShardChunks                  bool
+	errOnInitClient                   bool
+	clientInited                      bool
+	closeCalled                       bool
+}
+
+func (m *mockMongoClient) serverStatus() (*documentServerStatus, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.serverStatus() error: mongo client not inited")
+	}
+	if m.errOnServerStatus {
+		return nil, errors.New("mock.serverStatus() error")
+	}
+
+	data := dataV6MongodServerStatus
+	if m.mongos {
+		data = dataV6MongosServerStatus
+	}
+
+	var s documentServerStatus
+	if err := json.Unmarshal(data, &s); err != nil {
+		return nil, err
+	}
+
+	return &s, nil
+}
+
+func (m *mockMongoClient) listDatabaseNames() ([]string, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.listDatabaseNames() error: mongo client not inited")
+	}
+	if m.errOnListDatabaseNames {
+		return nil, errors.New("mock.listDatabaseNames() error")
+	}
+	return []string{"admin", "config", "local"}, nil
+}
+
+func (m *mockMongoClient) dbStats(_ string) (*documentDBStats, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.dbStats() error: mongo client not inited")
+	}
+	if m.errOnDbStats {
+		return nil, errors.New("mock.dbStats() error")
+	}
+
+	var s documentDBStats
+	if err := json.Unmarshal(dataV6DbStats, &s); err != nil {
+		return nil, err
+	}
+
+	return &s, nil
+}
+
+func (m *mockMongoClient) isReplicaSet() bool {
+	return m.replicaSet
+}
+
+func (m *mockMongoClient) isMongos() bool {
+	return m.mongos
+}
+
+func (m *mockMongoClient) replSetGetStatus() (*documentReplSetStatus, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.replSetGetStatus() error: mongo client not inited")
+	}
+	if m.mongos {
+		return nil, errors.New("mock.replSetGetStatus() error: shouldn't be called for mongos")
+	}
+	if !m.replicaSet {
+		return nil, errors.New("mock.replSetGetStatus() error: should be called for replica set")
+	}
+	if m.errOnReplSetGetStatus {
+		return nil, errors.New("mock.replSetGetStatus() error")
+	}
+
+	var s documentReplSetStatus
+	if err := json.Unmarshal(dataV6ReplSetGetStatus, &s); err != nil {
+		return nil, err
+	}
+
+	return &s, nil
+}
+
+func (m *mockMongoClient) shardNodes() (*documentShardNodesResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardNodes() error: mongo client not inited")
+	}
+	if m.replicaSet {
+		return nil, errors.New("mock.replSetGetStatus() error: shouldn't be called for replica set")
+	}
+	if !m.mongos {
+		return nil, errors.New("mock.shardNodes() error: should be called for mongos")
+	}
+	if m.errOnShardNodes {
+		return nil, errors.New("mock.shardNodes() error")
+	}
+
+	return &documentShardNodesResult{
+		ShardAware:   1,
+		ShardUnaware: 1,
+	}, nil
+}
+
+func (m *mockMongoClient) shardDatabasesPartitioning() (*documentPartitionedResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardDatabasesPartitioning() error: mongo client not inited")
+	}
+	if m.replicaSet {
+		return nil, errors.New("mock.shardDatabasesPartitioning() error: shouldn't be called for replica set")
+	}
+	if !m.mongos {
+		return nil, errors.New("mock.shardDatabasesPartitioning() error: should be called for mongos")
+	}
+	if m.errOnShardDatabasesPartitioning {
+		return nil, errors.New("mock.shardDatabasesPartitioning() error")
+	}
+
+	return &documentPartitionedResult{
+		Partitioned:   1,
+		UnPartitioned: 1,
+	}, nil
+}
+
+func (m *mockMongoClient) shardCollectionsPartitioning() (*documentPartitionedResult, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardCollectionsPartitioning() error: mongo client not inited")
+	}
+	if m.replicaSet {
+		return nil, errors.New("mock.shardCollectionsPartitioning() error: shouldn't be called for replica set")
+	}
+	if !m.mongos {
+		return nil, errors.New("mock.shardCollectionsPartitioning() error: should be called for mongos")
+	}
+	if m.errOnShardCollectionsPartitioning {
+		return nil, errors.New("mock.shardCollectionsPartitioning() error")
+	}
+
+	return &documentPartitionedResult{
+		Partitioned:   1,
+		UnPartitioned: 1,
+	}, nil
+}
+
+func (m *mockMongoClient) shardChunks() (map[string]int64, error) {
+	if !m.clientInited {
+		return nil, errors.New("mock.shardChunks() error: mongo client not inited")
+	}
+	if m.replicaSet {
+		return nil, errors.New("mock.shardChunks() error: shouldn't be called for replica set")
+	}
+	if !m.mongos {
+		return nil, errors.New("mock.shardChunks() error: should be called for mongos")
+	}
+	if m.errOnShardChunks {
+		return nil, errors.New("mock.shardChunks() error")
+	}
+
+	return map[string]int64{
+		"shard0": 1,
+		"shard1": 1,
+	}, nil
+}
+
+func (m *mockMongoClient) initClient(_ string, _ time.Duration) error {
+	if m.errOnInitClient {
+		return errors.New("mock.initClient() error")
+	}
+	m.clientInited = true
+	return nil
+}
+
+func (m *mockMongoClient) close() error {
+	if m.clientInited {
+		m.closeCalled = true
+	}
+	return nil
 }
