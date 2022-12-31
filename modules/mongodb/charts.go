@@ -228,7 +228,7 @@ var (
 
 	chartGlobalLockActiveClientsCount = module.Chart{
 		ID:       "active_clients_count",
-		Title:    "Connection clients",
+		Title:    "Connected clients",
 		Units:    "clients",
 		Fam:      "clients",
 		Ctx:      "mongodb.active_clients_count",
