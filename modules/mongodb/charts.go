@@ -9,7 +9,7 @@ import (
 const (
 	prioOperationsRate = module.Priority + iota
 	prioOperationsLatencyTime
-	prioOperationsByTypeCount
+	prioOperationsByTypeRate
 	prioDocumentOperationsRate
 	prioScannedIndexesRate
 	prioScannedDocumentsRate
@@ -97,7 +97,7 @@ const (
 
 // these charts are expected to be available in many versions
 var chartsServerStatus = module.Charts{
-	chartOperationsByTypeCount.Copy(),
+	chartOperationsByTypeRate.Copy(),
 	chartDocumentOperationsRate.Copy(),
 	chartScannedIndexesRate.Copy(),
 	chartScannedDocumentsRate.Copy(),
@@ -172,13 +172,13 @@ var (
 			{ID: "operations_latencies_commands_latency", Name: "commands", Algo: module.Incremental, Div: 1000},
 		},
 	}
-	chartOperationsByTypeCount = module.Chart{
-		ID:       "operations_by_type_count",
+	chartOperationsByTypeRate = module.Chart{
+		ID:       "operations_by_type_rate",
 		Title:    "Operations by type",
 		Units:    "operations/s",
 		Fam:      "operations",
-		Ctx:      "mongodb.operations_by_type_count",
-		Priority: prioOperationsByTypeCount,
+		Ctx:      "mongodb.operations_by_type_rate",
+		Priority: prioOperationsByTypeRate,
 		Dims: module.Dims{
 			{ID: "operations_insert", Name: "insert", Algo: module.Incremental},
 			{ID: "operations_query", Name: "query", Algo: module.Incremental},
@@ -327,7 +327,7 @@ var (
 		},
 	}
 	chartNetworkSlowSSLHandshakesRate = module.Chart{
-		ID:       "network_slow_ssl_handshakes",
+		ID:       "network_slow_ssl_handshakes_rate",
 		Title:    "Slow SSL handshake operations",
 		Units:    "handshakes/s",
 		Fam:      "network",
@@ -736,11 +736,11 @@ var (
 		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "metrics_cursor_lifespan_less_than_1_second", Name: "le_1s"},
-			{ID: "metrics_cursor_lifespan_less_than_5_seconds", Name: "le_5s"},
-			{ID: "metrics_cursor_lifespan_less_than_15_seconds", Name: "le_15s"},
-			{ID: "metrics_cursor_lifespan_less_than_30_seconds", Name: "le_30s"},
-			{ID: "metrics_cursor_lifespan_less_than_1_minute", Name: "le_1m"},
-			{ID: "metrics_cursor_lifespan_less_than_10_minutes", Name: "le_10m"},
+			{ID: "metrics_cursor_lifespan_less_than_5_seconds", Name: "1s_5s"},
+			{ID: "metrics_cursor_lifespan_less_than_15_seconds", Name: "5s_15s"},
+			{ID: "metrics_cursor_lifespan_less_than_30_seconds", Name: "15s_30s"},
+			{ID: "metrics_cursor_lifespan_less_than_1_minute", Name: "30s_1m"},
+			{ID: "metrics_cursor_lifespan_less_than_10_minutes", Name: "1m_10m"},
 			{ID: "metrics_cursor_lifespan_greater_than_or_equal_10_minutes", Name: "ge_10m"},
 		},
 	}

@@ -66,7 +66,7 @@ Labels per scope:
 |------------------------------------------------|:------------------:|:------------------------------------------------------------------------------------------------------------------------:|:--------------:|
 | operations_rate                                |       global       |                                                 reads, writes, commands                                                  |  operations/s  |
 | operations_latency_time                        |       global       |                                                 reads, writes, commands                                                  |  milliseconds  |
-| operations_by_type_count                       |       global       |                                     insert, query, update, delete, getmore, command                                      |  operations/s  |
+| operations_by_type_rate                        |       global       |                                     insert, query, update, delete, getmore, command                                      |  operations/s  |
 | document_operations_rate                       |       global       |                                           inserted, deleted, returned, updated                                           |  operations/s  |
 | scanned_indexes_rate                           |       global       |                                                         scanned                                                          |   indexes/s    |
 | scanned_documents_rate                         |       global       |                                                         scanned                                                          |  documents/s   |
@@ -77,7 +77,7 @@ Labels per scope:
 | cursors_open_no_timeout_count                  |       global       |                                                     open_no_timeout                                                      |    cursors     |
 | cursors_opened_rate                            |       global       |                                                          opened                                                          |   cursors/s    |
 | cursors_timed_out_rate                         |       global       |                                                        timed_out                                                         |   cursors/s    |
-| cursors_by_lifespan_count                      |       global       |                                   le_1s, le_5s, le_15s, le_30s, le_1m, le_10m, ge_10m                                    |    cursors     |
+| cursors_by_lifespan_count                      |       global       |                                  le_1s, 1s_5s, 5s_15s, 15s_30s, 30s_1m, 1m_10m, ge_10m                                   |    cursors     |
 | transactions_count                             |       global       |                                             active, inactive, open, prepared                                             |  transactions  |
 | transactions_rate                              |       global       |                                          started, aborted, committed, prepared                                           | transactions/s |
 | transactions_commits_rate                      |    commit type     |                                                      success, fail                                                       |   commits/s    |
