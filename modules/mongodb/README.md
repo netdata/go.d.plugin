@@ -33,10 +33,6 @@ Create a read-only user for Netdata in the admin database.
 - Create a user:
 
   ```bash
-  # MongoDB 2.x.
-  db.addUser("netdata", "<UNIQUE_PASSWORD>", true)
-  
-  # MongoDB 3.x or higher.
   db.createUser({
     "user":"netdata",
     "pwd": "<UNIQUE_PASSWORD>",
@@ -125,15 +121,25 @@ cd /etc/netdata   # Replace this path with your Netdata config directory, if dif
 sudo ./edit-config go.d/mongodb.conf
 ```
 
-Sample using connection string:
-
-**This is the preferred way**
+Needs only [connection URI](https://www.mongodb.com/docs/drivers/go/current/fundamentals/connection/#connection-uri).
+Here is an example for 2 servers:
 
 ```yaml
-uri: 'mongodb://localhost:27017'
+jobs:
+  - name: local
+    uri: 'mongodb://user:password@localhost:27017'
+    databases:
+      include:
+        - "* *"
+
+  - name: remote
+    dsn: 'mongodb://user:password@203.0.113.10:27017'
+    databases:
+      include:
+        - "* *"
 ```
 
-If no configuration is given, module will attempt to connect to mongodb daemon on `127.0.0.1:27017` address
+If no configuration is given, module will attempt to connect to mongodb daemon on `127.0.0.1:27017` address.
 
 For all available options, see the `mongodb`
 collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/mongodb.conf).
