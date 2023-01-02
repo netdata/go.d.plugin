@@ -3,101 +3,91 @@
 package rabbitmq
 
 import (
-	"fmt"
+	"net/http"
 	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/web"
-
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
 func init() {
-	creator := module.Creator{
+	module.Register("rabbitmq", module.Creator{
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("rabbitmq", creator)
+	})
 }
 
-// New creates RabbitMQ with default values.
 func New() *RabbitMQ {
-	config := Config{
-		HTTP: web.HTTP{
-			Request: web.Request{
-				URL:      "http://localhost:15672",
-				Username: "guest",
-				Password: "guest",
-			},
-			Client: web.Client{
-				Timeout: web.Duration{Duration: time.Second},
-			},
-		},
-	}
-
 	return &RabbitMQ{
-		Config:          config,
-		charts:          charts(),
-		collectedVhosts: make(map[string]bool),
+		Config: Config{
+			HTTP: web.HTTP{
+				Request: web.Request{
+					URL:      "http://localhost:15672",
+					Username: "guest",
+					Password: "guest",
+				},
+				Client: web.Client{
+					Timeout: web.Duration{Duration: time.Second},
+				},
+			},
+			CollectQueues: false,
+		},
+		charts: baseCharts.Copy(),
+		vhosts: make(map[string]bool),
+		queues: make(map[string]queueCache),
 	}
 }
 
-// Config is the RabbitMQ module configuration.
 type Config struct {
-	web.HTTP `yaml:",inline"`
+	web.HTTP      `yaml:",inline"`
+	CollectQueues bool `yaml:"collect_queues_metrics"`
 }
 
-// RabbitMQ RabbitMQ module.
-type RabbitMQ struct {
-	module.Base
-	Config `yaml:",inline"`
+type (
+	RabbitMQ struct {
+		module.Base
+		Config `yaml:",inline"`
 
-	client          *client
-	collectedVhosts map[string]bool
-	charts          *Charts
-}
+		charts *module.Charts
 
-// Cleanup makes cleanup.
-func (RabbitMQ) Cleanup() {}
+		httpClient *http.Client
 
-func (r RabbitMQ) createClient() (*client, error) {
-	httpClient, err := web.NewHTTPClient(r.Client)
-	if err != nil {
-		return nil, fmt.Errorf("error on creating http client : %v", err)
+		nodeName string
+
+		vhosts map[string]bool
+		queues map[string]queueCache
 	}
+	queueCache struct {
+		name, vhost string
+	}
+)
 
-	return newClient(httpClient, r.Request), nil
-}
-
-// Init makes initialization.
 func (r *RabbitMQ) Init() bool {
-	client, err := r.createClient()
-	if err != nil {
-		r.Error(err)
+	if r.URL == "" {
+		r.Error("'url' can not be empty")
 		return false
 	}
 
-	r.client = client
+	client, err := web.NewHTTPClient(r.Client)
+	if err != nil {
+		r.Errorf("init HTTP client: %v", err)
+		return false
+	}
+	r.httpClient = client
+
 	r.Debugf("using URL %s", r.URL)
 	r.Debugf("using timeout: %s", r.Timeout.Duration)
+
 	return true
 }
 
-// Check makes check.
 func (r *RabbitMQ) Check() bool {
-	err := r.client.findNodeName()
-	if err != nil {
-		r.Error(err)
-		return false
-	}
 	return len(r.Collect()) > 0
 }
 
-// Charts creates Charts.
-func (r RabbitMQ) Charts() *Charts {
+func (r *RabbitMQ) Charts() *module.Charts {
 	return r.charts
 }
 
-// Collect collects stats.
 func (r *RabbitMQ) Collect() map[string]int64 {
 	mx, err := r.collect()
 	if err != nil {
@@ -107,5 +97,12 @@ func (r *RabbitMQ) Collect() map[string]int64 {
 	if len(mx) == 0 {
 		return nil
 	}
+
 	return mx
+}
+
+func (r *RabbitMQ) Cleanup() {
+	if r.httpClient != nil {
+		r.httpClient.CloseIdleConnections()
+	}
 }
