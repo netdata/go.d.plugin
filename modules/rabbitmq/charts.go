@@ -283,7 +283,7 @@ var (
 		ID:       "queue_%s_vhost_%s_message_stats",
 		Title:    "Queue messages rate",
 		Units:    "messages/s",
-		Fam:      "vhost messages",
+		Fam:      "queue messages",
 		Ctx:      "rabbitmq.queue_messages_rate",
 		Type:     module.Stacked,
 		Priority: prioQueueMessagesRate,
