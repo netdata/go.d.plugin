@@ -554,8 +554,8 @@ var (
 		Priority: prioClusterStatus,
 		Dims: module.Dims{
 			{ID: "cluster_status_green", Name: "green"},
-			{ID: "cluster_status_yellow", Name: "yellow"},
 			{ID: "cluster_status_red", Name: "red"},
+			{ID: "cluster_status_yellow", Name: "yellow"},
 		},
 	}
 	clusterNodesCountChart = module.Chart{
@@ -715,8 +715,8 @@ var (
 		Priority: prioNodeIndexHealth,
 		Dims: module.Dims{
 			{ID: "node_index_%s_stats_health_green", Name: "green"},
-			{ID: "node_index_%s_stats_health_yellow", Name: "yellow"},
 			{ID: "node_index_%s_stats_health_red", Name: "red"},
+			{ID: "node_index_%s_stats_health_yellow", Name: "yellow"},
 		},
 	}
 	nodeIndexShardsCountChartTmpl = module.Chart{
