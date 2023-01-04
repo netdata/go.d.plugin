@@ -34,6 +34,7 @@ Labels per scope:
 | gpu_frame_buffer_memory_usage |  gpu  |   free, used, reserved   |    B    | yes | yes |
 | gpu_bar1_memory_usage         |  gpu  |        free, used        |    B    | yes | no  |
 | gpu_temperature               |  gpu  |       temperature        | Celsius | yes | yes |
+| gpu_voltage                   |  gpu  |         voltage          |    V    | yes | no  |
 | gpu_clock_freq                |  gpu  | graphics, video, sm, mem |   MHz   | yes | yes |
 | gpu_power_draw                |  gpu  |        power_draw        |  Watts  | yes | yes |
 | gpu_performance_state         |  gpu  |          P0-P15          |  state  | yes | yes |

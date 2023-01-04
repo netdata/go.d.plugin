@@ -53,6 +53,7 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		addMetric(mx, px+"sm_clock", gpu.Clocks.SmClock, 0)
 		addMetric(mx, px+"mem_clock", gpu.Clocks.MemClock, 0)
 		addMetric(mx, px+"power_draw", gpu.PowerReadings.PowerDraw, 0)
+		addMetric(mx, px+"voltage", gpu.Voltage.GraphicsVolt, 0)
 		for i := 0; i < 16; i++ {
 			if s := "P" + strconv.Itoa(i); gpu.PerformanceState == s {
 				mx[px+"performance_state_"+s] = 1
@@ -130,6 +131,9 @@ type (
 			MinPowerLimit      string `xml:"min_power_limit"`
 			MaxPowerLimit      string `xml:"max_power_limit"`
 		} `xml:"power_readings"`
+		Voltage struct {
+			GraphicsVolt string `xml:"graphics_volt"`
+		} `xml:"voltage"`
 		Processes struct {
 			ProcessInfo []struct {
 				PID         string `xml:"pid"`

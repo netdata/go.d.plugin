@@ -19,6 +19,7 @@ const (
 	prioGPUFBMemoryUsage
 	prioGPUBAR1MemoryUsage
 	prioGPUTemperatureChart
+	prioGPUVoltageChart
 	prioGPUClockFreq
 	prioGPUPowerDraw
 	prioGPUPerformanceState
@@ -34,6 +35,7 @@ var (
 		gpuEncoderUtilizationChartTmpl.Copy(),
 		gpuFrameBufferMemoryUsageChartTmpl.Copy(),
 		gpuBAR1MemoryUsageChartTmpl.Copy(),
+		gpuVoltageChartTmpl.Copy(),
 		gpuTemperatureChartTmpl.Copy(),
 		gpuClockFreqChartTmpl.Copy(),
 		gpuPowerDrawChartTmpl.Copy(),
@@ -158,6 +160,17 @@ var (
 			{ID: "gpu_%s_temperature", Name: "temperature"},
 		},
 	}
+	gpuVoltageChartTmpl = module.Chart{
+		ID:       "gpu_%s_voltage",
+		Title:    "Voltage",
+		Units:    "V",
+		Fam:      "voltage",
+		Ctx:      "nvidia_smi.gpu_voltage",
+		Priority: prioGPUVoltageChart,
+		Dims: module.Dims{
+			{ID: "gpu_%s_voltage", Name: "voltage", Div: 1000}, // mV => V
+		},
+	}
 	gpuClockFreqChartTmpl = module.Chart{
 		ID:       "gpu_%s_clock_freq",
 		Title:    "Clock current frequency",
@@ -218,6 +231,9 @@ func (nv *NvidiaSMI) addGPUXMLCharts(gpu xmlGPUInfo) {
 	}
 	if !isValidValue(gpu.PowerReadings.PowerDraw) {
 		_ = charts.Remove(gpuPowerDrawChartTmpl.ID)
+	}
+	if !isValidValue(gpu.Voltage.GraphicsVolt) {
+		_ = charts.Remove(gpuVoltageChartTmpl.ID)
 	}
 
 	for _, c := range *charts {
