@@ -161,6 +161,7 @@ func TestNvidiaSMI_Collect(t *testing.T) {
 						"gpu_GPU-473d8d0f-d462-185c-6b36-6fc23e23e571_sm_clock":                           210,
 						"gpu_GPU-473d8d0f-d462-185c-6b36-6fc23e23e571_temperature":                        45,
 						"gpu_GPU-473d8d0f-d462-185c-6b36-6fc23e23e571_video_clock":                        555,
+						"gpu_GPU-473d8d0f-d462-185c-6b36-6fc23e23e571_voltage":                            631,
 					}
 
 					assert.Equal(t, expected, mx)
