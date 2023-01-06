@@ -38,7 +38,7 @@ sudo ./edit-config go.d/portcheck.conf
 
 Here is an example for 3 servers:
 
-> **Notice**: a literal IPv6 address must be enclosed in square brackets, as in "[::1]".
+> **Note**: a literal IPv6 address must be enclosed in square brackets, as in "[::1]".
 
 ```yaml
 jobs:
