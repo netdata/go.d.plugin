@@ -36,7 +36,9 @@ cd /etc/netdata # Replace this path with your Netdata config directory
 sudo ./edit-config go.d/portcheck.conf
 ```
 
-Here is an example for 2 servers:
+Here is an example for 3 servers:
+
+> **Notice**: a literal IPv6 address must be enclosed in square brackets, as in "[::1]".
 
 ```yaml
 jobs:
@@ -47,6 +49,12 @@ jobs:
       - 23
 
   - name: server2
+    host: "[2001:DB8::1]"
+    ports:
+      - 80
+      - 8080
+
+  - name: server3
     host: 203.0.113.10
     ports:
       - 80
