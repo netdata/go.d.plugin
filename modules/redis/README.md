@@ -86,6 +86,11 @@ jobs:
   - name: local
     address: 'redis://:password@127.0.0.1:6379'
 
+  - name: local
+    address: 'redis://127.0.0.1:6379'
+    username: 'user'
+    password: 'password'
+
   - name: remote
     address: 'redis://user:password@203.0.113.0:6379'
 ```

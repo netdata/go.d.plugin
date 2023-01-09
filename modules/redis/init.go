@@ -33,6 +33,13 @@ func (r *Redis) initRedisClient() (*redis.Client, error) {
 		tlsConfig.ServerName = opts.TLSConfig.ServerName
 	}
 
+	if opts.Username == "" && r.Username != "" {
+		opts.Username = r.Username
+	}
+	if opts.Password == "" && r.Password != "" {
+		opts.Password = r.Password
+	}
+
 	opts.PoolSize = 1
 	opts.TLSConfig = tlsConfig
 	opts.DialTimeout = r.Timeout.Duration
