@@ -40,6 +40,8 @@ func New() *Redis {
 
 type Config struct {
 	Address          string       `yaml:"address"`
+	Password         string       `yaml:"password"`
+	Username         string       `yaml:"username"`
 	Timeout          web.Duration `yaml:"timeout"`
 	PingSamples      int          `yaml:"ping_samples"`
 	tlscfg.TLSConfig `yaml:",inline"`
