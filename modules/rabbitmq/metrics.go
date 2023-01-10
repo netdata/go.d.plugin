@@ -5,11 +5,11 @@ package rabbitmq
 // https://www.rabbitmq.com/monitoring.html#cluster-wide-metrics
 type overviewStats struct {
 	ObjectTotals struct {
-		Consumers   int `stm:"consumers"`
-		Queues      int `stm:"queues"`
-		Exchanges   int `stm:"exchanges"`
-		Connections int `stm:"connections"`
-		Channels    int `stm:"channels"`
+		Consumers   int `json:"consumers" stm:"consumers"`
+		Queues      int `json:"queues" stm:"queues"`
+		Exchanges   int `json:"exchanges" stm:"exchanges"`
+		Connections int `json:"connections" stm:"connections"`
+		Channels    int `json:"channels" stm:"channels"`
 	} `json:"object_totals" stm:"object_totals"`
 	ChurnRates struct {
 		ChannelClosed     int `json:"channel_closed" stm:"channel_closed"`
@@ -45,10 +45,10 @@ type nodeStats struct {
 
 type vhostStats struct {
 	Name                   string       `json:"name"`
-	Messages               int          `stm:"messages"`
-	MessagesReady          int          `stm:"messages_ready"`
-	MessagesUnacknowledged int          `stm:"messages_unacknowledged"`
-	MessageStats           messageStats `json:"3message_stats" stm:"message_stats"`
+	Messages               int          `json:"messages" stm:"messages"`
+	MessagesReady          int          `json:"messages_ready" stm:"messages_ready"`
+	MessagesUnacknowledged int          `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+	MessageStats           messageStats `json:"message_stats" stm:"message_stats"`
 }
 
 // https://www.rabbitmq.com/monitoring.html#queue-metrics
@@ -57,26 +57,26 @@ type queueStats struct {
 	Vhost                  string       `json:"vhost"`
 	State                  string       `json:"state"`
 	Type                   string       `json:"type"`
-	Messages               int          `stm:"messages"`
-	MessagesPagedOut       int          `stm:"messages_paged_out"`
-	MessagesPersistent     int          `stm:"messages_persistent"`
-	MessagesReady          int          `stm:"messages_ready"`
-	MessagesUnacknowledged int          `stm:"messages_unacknowledged"`
+	Messages               int          `json:"messages" stm:"messages"`
+	MessagesReady          int          `json:"messages_ready" stm:"messages_ready"`
+	MessagesUnacknowledged int          `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+	MessagesPagedOut       int          `json:"messages_paged_out" stm:"messages_paged_out"`
+	MessagesPersistent     int          `json:"messages_persistent" stm:"messages_persistent"`
 	MessageStats           messageStats `json:"message_stats" stm:"message_stats"`
 }
 
 // https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.11.5/deps/rabbitmq_management/priv/www/api/index.html
 type messageStats struct {
-	Ack              int `stm:"ack"`
-	Publish          int `stm:"publish"`
+	Ack              int `json:"ack" stm:"ack"`
+	Publish          int `json:"publish" stm:"publish"`
 	PublishIn        int `json:"publish_in" stm:"publish_in"`
 	PublishOut       int `json:"publish_out" stm:"publish_out"`
-	Confirm          int `stm:"confirm"`
-	Deliver          int `stm:"deliver"`
+	Confirm          int `json:"confirm" stm:"confirm"`
+	Deliver          int `json:"deliver" stm:"deliver"`
 	DeliverNoAck     int `json:"deliver_no_ack" stm:"deliver_no_ack"`
-	Get              int `stm:"get"`
+	Get              int `json:"get" stm:"get"`
 	GetNoAck         int `json:"get_no_ack" stm:"get_no_ack"`
 	DeliverGet       int `json:"deliver_get" stm:"deliver_get"`
-	Redeliver        int `stm:"redeliver"`
+	Redeliver        int `json:"redeliver" stm:"redeliver"`
 	ReturnUnroutable int `json:"return_unroutable" stm:"return_unroutable"`
 }
