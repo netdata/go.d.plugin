@@ -5,15 +5,15 @@
     },
     "default_queue_type": "undefined",
     "description": "Default virtual host",
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
@@ -31,15 +31,15 @@
     },
     "default_queue_type": "classic",
     "description": "",
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
@@ -58,15 +58,15 @@
     },
     "default_queue_type": "classic",
     "description": "",
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },

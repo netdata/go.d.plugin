@@ -50,19 +50,19 @@
     "message_bytes_ram": 0,
     "message_bytes_ready": 0,
     "message_bytes_unacknowledged": 0,
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_paged_out": 0,
-    "messages_persistent": 0,
+    "messages_paged_out": 1,
+    "messages_persistent": 1,
     "messages_ram": 0,
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
     "messages_ready_ram": 0,
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
@@ -132,19 +132,19 @@
     "message_bytes_ram": 0,
     "message_bytes_ready": 0,
     "message_bytes_unacknowledged": 0,
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_paged_out": 0,
-    "messages_persistent": 0,
+    "messages_paged_out": 1,
+    "messages_persistent": 1,
     "messages_ram": 0,
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
     "messages_ready_ram": 0,
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
@@ -216,19 +216,19 @@
     "message_bytes_ram": 0,
     "message_bytes_ready": 0,
     "message_bytes_unacknowledged": 0,
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_paged_out": 0,
-    "messages_persistent": 0,
+    "messages_paged_out": 1,
+    "messages_persistent": 1,
     "messages_ram": 0,
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
     "messages_ready_ram": 0,
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
@@ -300,19 +300,19 @@
     "message_bytes_ram": 0,
     "message_bytes_ready": 0,
     "message_bytes_unacknowledged": 0,
-    "messages": 0,
+    "messages": 1,
     "messages_details": {
       "rate": 0
     },
-    "messages_paged_out": 0,
-    "messages_persistent": 0,
+    "messages_paged_out": 1,
+    "messages_persistent": 1,
     "messages_ram": 0,
-    "messages_ready": 0,
+    "messages_ready": 1,
     "messages_ready_details": {
       "rate": 0
     },
     "messages_ready_ram": 0,
-    "messages_unacknowledged": 0,
+    "messages_unacknowledged": 1,
     "messages_unacknowledged_details": {
       "rate": 0
     },
