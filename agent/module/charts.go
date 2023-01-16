@@ -139,6 +139,7 @@ type (
 	// For detailed description please visit https://docs.netdata.cloud/collectors/plugins.d/#variable
 	Var struct {
 		ID    string
+		Name  string
 		Value int64
 	}
 
