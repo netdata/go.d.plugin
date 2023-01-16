@@ -439,10 +439,11 @@ func (j *Job) createChart(chart *Chart) {
 		)
 	}
 	for _, v := range chart.Vars {
-		_ = j.api.VARIABLE(
-			v.ID,
-			v.Value,
-		)
+		if v.Name != "" {
+			_ = j.api.VARIABLE(v.Name, v.Value)
+		} else {
+			_ = j.api.VARIABLE(v.ID, v.Value)
+		}
 	}
 	_ = j.api.EMPTYLINE()
 }
@@ -486,7 +487,11 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 
 	for _, vr := range chart.Vars {
 		if v, ok := collected[vr.ID]; ok {
-			_ = j.api.VARIABLE(vr.ID, v)
+			if vr.Name != "" {
+				_ = j.api.VARIABLE(vr.Name, v)
+			} else {
+				_ = j.api.VARIABLE(vr.ID, v)
+			}
 		}
 
 	}

@@ -1148,6 +1148,9 @@ var (
 		Dims: module.Dims{
 			{ID: "table_%s_db_%s_schema_%s_bloat_size_perc", Name: "bloat"},
 		},
+		Vars: module.Vars{
+			{ID: "table_%s_db_%s_schema_%s_total_size", Name: "table_size"},
+		},
 	}
 	tableBloatSizeChartTmpl = module.Chart{
 		ID:       "table_%s_db_%s_schema_%s_bloat_size",
@@ -1187,6 +1190,9 @@ func newTableChart(chart *module.Chart, tbl *tableMetrics) *module.Chart {
 	}
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, tbl.name, tbl.db, tbl.schema)
+	}
+	for _, v := range chart.Vars {
+		v.ID = fmt.Sprintf(v.ID, tbl.name, tbl.db, tbl.schema)
 	}
 	return chart
 }
@@ -1312,6 +1318,9 @@ var (
 		Dims: module.Dims{
 			{ID: "index_%s_table_%s_db_%s_schema_%s_bloat_size_perc", Name: "bloat"},
 		},
+		Vars: module.Vars{
+			{ID: "index_%s_table_%s_db_%s_schema_%s_size", Name: "index_size"},
+		},
 	}
 	indexBloatSizeChartTmpl = module.Chart{
 		ID:       "index_%s_table_%s_db_%s_schema_%s_bloat_size",
@@ -1356,6 +1365,9 @@ func (p *Postgres) addNewIndexCharts(idx *indexMetrics) {
 		}
 		for _, d := range chart.Dims {
 			d.ID = fmt.Sprintf(d.ID, idx.name, idx.table, idx.db, idx.schema)
+		}
+		for _, v := range chart.Vars {
+			v.ID = fmt.Sprintf(v.ID, idx.name, idx.table, idx.db, idx.schema)
 		}
 	}
 
