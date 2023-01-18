@@ -29,6 +29,14 @@ type consulConfig struct {
 				Name       string
 			}
 		}
+		Cloud struct {
+			AuthURL      string
+			ClientID     string
+			ClientSecret string
+			Hostname     string
+			ResourceID   string
+			ScadaAddress string
+		}
 	}
 }
 

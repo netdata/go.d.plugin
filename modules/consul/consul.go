@@ -31,9 +31,10 @@ func New() *Consul {
 				Client:  web.Client{Timeout: web.Duration{Duration: time.Second * 2}},
 			},
 		},
-		charts:              &module.Charts{},
-		addGlobalChartsOnce: &sync.Once{},
-		checks:              make(map[string]bool),
+		charts:                       &module.Charts{},
+		addGlobalChartsOnce:          &sync.Once{},
+		addServerAutopilotChartsOnce: &sync.Once{},
+		checks:                       make(map[string]bool),
 	}
 }
 
@@ -48,8 +49,9 @@ type Consul struct {
 
 	Config `yaml:",inline"`
 
-	charts              *module.Charts
-	addGlobalChartsOnce *sync.Once
+	charts                       *module.Charts
+	addGlobalChartsOnce          *sync.Once
+	addServerAutopilotChartsOnce *sync.Once
 
 	httpClient *http.Client
 	prom       prometheus.Prometheus

@@ -19,7 +19,17 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 
 	// Key Metrics (https://developer.hashicorp.com/consul/docs/agent/telemetry#key-metrics)
 
-	if c.cfg.Config.Server {
+	// prometheus metrics are messy:
+	// - if 'disable_hostname' is false (default):
+	//   - consul_autopilot_failure_tolerance => consul_hostname_autopilot_failure_tolerance
+	//   - both are exposed
+	//   - only the one with the hostname has the correct value
+	// - 1.14.3 (it probably has something to do with cloud management version):
+	//   - runtime_sys_bytes => runtime_sys_bytes_sys_bytes; consul_autopilot_healthy => consul_autopilot_healthy_healthy
+	//   - both are exposed
+	//   - only the one with the double name has the correct value
+
+	if c.isServer() {
 		c.collectSummary(mx, mfs, "raft_thread_main_saturation")
 		c.collectSummary(mx, mfs, "raft_thread_fsm_saturation")
 		c.collectSummary(mx, mfs, "raft_boltdb_logsPerBatch")
@@ -34,12 +44,12 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 		c.collectCounter(mx, mfs, "raft_state_candidate", 1)
 		c.collectCounter(mx, mfs, "raft_state_leader", 1)
 
-		c.collectGaugeBool(mx, mfs, "autopilot_healthy")
-		c.collectGaugeBool(mx, mfs, "server_isLeader")
-		c.collectGauge(mx, mfs, "autopilot_failure_tolerance")
+		c.collectGaugeBool(mx, mfs, "autopilot_healthy", "autopilot_healthy_healthy")
+		c.collectGaugeBool(mx, mfs, "server_isLeader", "server_isLeader_isLeader")
+		c.collectGauge(mx, mfs, "autopilot_failure_tolerance", "autopilot_failure_tolerance_failure_tolerance")
 		c.collectGauge(mx, mfs, "raft_fsm_lastRestoreDuration")
-		c.collectGauge(mx, mfs, "raft_leader_oldestLogAge") // make sense for leader only
-		c.collectGauge(mx, mfs, "raft_boltdb_freelistBytes")
+		c.collectGauge(mx, mfs, "raft_leader_oldestLogAge", "raft_leader_oldestLogAge_oldestLogAge")
+		c.collectGauge(mx, mfs, "raft_boltdb_freelistBytes", "raft_boltdb_freelistBytes_freelistBytes")
 
 		if isLeader, ok := c.isLeader(mfs); ok {
 			if isLeader && !c.hasLeaderCharts {
@@ -64,18 +74,25 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 	c.collectCounter(mx, mfs, "client_rpc", 1)
 	c.collectCounter(mx, mfs, "client_rpc_exceeded", 1)
 	c.collectCounter(mx, mfs, "client_rpc_failed", 1)
-	c.collectGauge(mx, mfs, "runtime_alloc_bytes")
-	c.collectGauge(mx, mfs, "runtime_sys_bytes")
-	c.collectGauge(mx, mfs, "runtime_total_gc_pause_ns")
+
+	c.collectGauge(mx, mfs, "runtime_alloc_bytes", "runtime_alloc_bytes_alloc_bytes")
+	c.collectGauge(mx, mfs, "runtime_sys_bytes", "runtime_sys_bytes_sys_bytes")
+	c.collectGauge(mx, mfs, "runtime_total_gc_pause_ns", "runtime_total_gc_pause_ns_total_gc_pause_ns")
 
 	return nil
 }
 
 func (c *Consul) isLeader(mfs prometheus.MetricFamilies) (bool, bool) {
-	mf := mfs.GetGauge(c.promMetricNameWithHostname("server_isLeader"))
-	if mf == nil {
-		mf = mfs.GetGauge(c.promMetricName("server_isLeader"))
+	var mf *prometheus.MetricFamily
+	for _, v := range []string{"server_isLeader_isLeader", "server_isLeader"} {
+		if mf = mfs.GetGauge(c.promMetricNameWithHostname(v)); mf != nil {
+			break
+		}
+		if mf = mfs.GetGauge(c.promMetricName(v)); mf != nil {
+			break
+		}
 	}
+
 	if mf == nil {
 		return false, false
 	}
@@ -83,11 +100,17 @@ func (c *Consul) isLeader(mfs prometheus.MetricFamilies) (bool, bool) {
 	return mf.Metrics()[0].Gauge().Value() == 1, true
 }
 
-func (c *Consul) collectGauge(mx map[string]int64, mfs prometheus.MetricFamilies, name string) {
-	mf := mfs.GetGauge(c.promMetricNameWithHostname(name))
-	if mf == nil {
-		mf = mfs.GetGauge(c.promMetricName(name))
+func (c *Consul) collectGauge(mx map[string]int64, mfs prometheus.MetricFamilies, name string, aliases ...string) {
+	var mf *prometheus.MetricFamily
+	for _, v := range append(aliases, name) {
+		if mf = mfs.GetGauge(c.promMetricNameWithHostname(v)); mf != nil {
+			break
+		}
+		if mf = mfs.GetGauge(c.promMetricName(v)); mf != nil {
+			break
+		}
 	}
+
 	if mf == nil {
 		return
 	}
@@ -99,11 +122,17 @@ func (c *Consul) collectGauge(mx map[string]int64, mfs prometheus.MetricFamilies
 	}
 }
 
-func (c *Consul) collectGaugeBool(mx map[string]int64, mfs prometheus.MetricFamilies, name string) {
-	mf := mfs.GetGauge(c.promMetricNameWithHostname(name))
-	if mf == nil {
-		mf = mfs.GetGauge(c.promMetricName(name))
+func (c *Consul) collectGaugeBool(mx map[string]int64, mfs prometheus.MetricFamilies, name string, aliases ...string) {
+	var mf *prometheus.MetricFamily
+	for _, v := range append(aliases, name) {
+		if mf = mfs.GetGauge(c.promMetricNameWithHostname(v)); mf != nil {
+			break
+		}
+		if mf = mfs.GetGauge(c.promMetricName(v)); mf != nil {
+			break
+		}
 	}
+
 	if mf == nil {
 		return
 	}
