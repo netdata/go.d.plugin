@@ -121,6 +121,18 @@ const (
 	// Error
 	prioMSSQLSqlErrorsTotal
 
+	// SQL stats
+	prioMSSQLStatsAutoParameterization
+	prioMSSQLStatsBatchRequests
+	prioMSSQLStatsSafeAutoParameterization
+	prioMSSQLStatsCompilations
+	prioMSSQLStatsRecompilations
+
+	prioNETFrameworkCLRExceptionsThrown
+	prioNETFrameworkCLRExceptionsFilters
+	prioNETFrameworkCLRExceptionsFinallys
+	prioNETFrameworkCLRExceptionsThrowCatchDepth
+
 	prioServiceState
 	prioServiceStatus
 
@@ -2172,6 +2184,51 @@ var (
 		Ctx:      "wmi.processes_handles",
 		Type:     module.Stacked,
 		Priority: prioProcessesHandles,
+	}
+)
+
+// .NET
+var (
+	netChartsTmpl = module.Charts{
+		netFrameworkExceptionsThrown.Copy(),
+		netFrameworkExceptionsFilters.Copy(),
+		netFrameworkCLRExceptionsFinallys.Copy(),
+	}
+	netFrameworkExceptionsThrown = module.Chart{
+		ID:       "net_framework_exception_thrown",
+		Title:    "Number of exceptions thrown since start.",
+		Units:    "exceptions",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_exception_thrown",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRExceptionsThrown,
+	}
+	netFrameworkExceptionsFilters = module.Chart{
+		ID:       "net_framework_exception_filters",
+		Title:    "Number of exceptions filter executed.",
+		Units:    "exceptions",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_exception_filters",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRExceptionsFilters,
+	}
+	netFrameworkCLRExceptionsFinallys = module.Chart{
+		ID:       "net_framework_exception_finally",
+		Title:    "Number of finally blocks executed.",
+		Units:    "blocks",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_exception_finally",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRExceptionsFinallys,
+	}
+	netFrameworkExceptionsThrowCatchDepth = module.Chart{
+		ID:       "net_framework_exception_throw_catch_depth",
+		Title:    "Number of stack frames transversed.",
+		Units:    "stack frames",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_exception_thrown",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRExceptionsThrowCatchDepth,
 	}
 )
 
