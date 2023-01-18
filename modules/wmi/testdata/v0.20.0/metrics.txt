@@ -417,6 +417,7 @@ windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
 windows_exporter_collector_duration_seconds{collector="logon"} 0.1139134
 windows_exporter_collector_duration_seconds{collector="memory"} 0.00052
 windows_exporter_collector_duration_seconds{collector="mssql"} 0.003369
+windows_exporter_collector_duration_seconds{collector="netframework_clrexceptions"} 1.437537
 windows_exporter_collector_duration_seconds{collector="net"} 0
 windows_exporter_collector_duration_seconds{collector="os"} 0.0023497
 windows_exporter_collector_duration_seconds{collector="process"} 0.1154812
@@ -434,6 +435,7 @@ windows_exporter_collector_success{collector="logical_disk"} 1
 windows_exporter_collector_success{collector="logon"} 1
 windows_exporter_collector_success{collector="memory"} 1
 windows_exporter_collector_success{collector="mssql"} 1
+windows_exporter_collector_success{collector="netframework_clrexceptions"} 1
 windows_exporter_collector_success{collector="net"} 1
 windows_exporter_collector_success{collector="os"} 1
 windows_exporter_collector_success{collector="process"} 1
@@ -451,6 +453,7 @@ windows_exporter_collector_timeout{collector="logical_disk"} 0
 windows_exporter_collector_timeout{collector="logon"} 0
 windows_exporter_collector_timeout{collector="memory"} 0
 windows_exporter_collector_timeout{collector="mssql"} 0
+windows_exporter_collector_timeout{collector="netframework_clrexceptions"} 0
 windows_exporter_collector_timeout{collector="net"} 0
 windows_exporter_collector_timeout{collector="os"} 0
 windows_exporter_collector_timeout{collector="process"} 0
@@ -1985,6 +1988,22 @@ windows_net_packets_sent_total{nic="Intel_R__PRO_1000_MT_Network_Connection"} 1.
 # HELP windows_net_packets_total (Network.PacketsPerSec)
 # TYPE windows_net_packets_total counter
 windows_net_packets_total{nic="Intel_R__PRO_1000_MT_Network_Connection"} 5.453335e+06
+# HELP windows_netframework_clrexceptions_exceptions_filters_total Displays the total number of .NET exception filters executed. An exception filter evaluates regardless of whether an exception is handled.
+# TYPE windows_netframework_clrexceptions_exceptions_filters_total counter
+windows_netframework_clrexceptions_exceptions_filters_total{process="WMSvc"} 0
+windows_netframework_clrexceptions_exceptions_filters_total{process="powershell"} 0
+# HELP windows_netframework_clrexceptions_exceptions_finallys_total Displays the total number of finally blocks executed. Only the finally blocks executed for an exception are counted; finally blocks on normal code paths are not counted by this counter.
+# TYPE windows_netframework_clrexceptions_exceptions_finallys_total counter
+windows_netframework_clrexceptions_exceptions_finallys_total{process="WMSvc"} 0
+windows_netframework_clrexceptions_exceptions_finallys_total{process="powershell"} 56
+# HELP windows_netframework_clrexceptions_exceptions_thrown_total Displays the total number of exceptions thrown since the application started. This includes both .NET exceptions and unmanaged exceptions that are converted into .NET exceptions.
+# TYPE windows_netframework_clrexceptions_exceptions_thrown_total counter
+windows_netframework_clrexceptions_exceptions_thrown_total{process="WMSvc"} 0
+windows_netframework_clrexceptions_exceptions_thrown_total{process="powershell"} 37
+# HELP windows_netframework_clrexceptions_throw_to_catch_depth_total Displays the total number of stack frames traversed, from the frame that threw the exception to the frame that handled the exception.
+# TYPE windows_netframework_clrexceptions_throw_to_catch_depth_total counter
+windows_netframework_clrexceptions_throw_to_catch_depth_total{process="WMSvc"} 0
+windows_netframework_clrexceptions_throw_to_catch_depth_total{process="powershell"} 140
 # HELP windows_os_info OperatingSystem.Caption, OperatingSystem.Version
 # TYPE windows_os_info gauge
 windows_os_info{build_number="22621",major_version="10",minor_version="0",product="Microsoft Windows 10 Pro",version="10.0.22621"} 1
