@@ -66,18 +66,19 @@ type (
 		cache cache
 	}
 	cache struct {
-		cores          map[string]bool
-		volumes        map[string]bool
-		nics           map[string]bool
-		thermalZones   map[string]bool
-		processes      map[string]bool
-		iis            map[string]bool
-		adcs           map[string]bool
-		mssqlInstances map[string]bool
-		mssqlDBs       map[string]bool
-		services       map[string]bool
-		collectors     map[string]bool
-		collection     map[string]bool
+		cores            map[string]bool
+		volumes          map[string]bool
+		nics             map[string]bool
+		thermalZones     map[string]bool
+		processes        map[string]bool
+		iis              map[string]bool
+		adcs             map[string]bool
+		mssqlInstances   map[string]bool
+		mssqlDBs         map[string]bool
+		services         map[string]bool
+		netCLRExceptions map[string]bool
+		collectors       map[string]bool
+		collection       map[string]bool
 	}
 )
 

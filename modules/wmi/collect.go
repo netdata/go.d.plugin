@@ -9,22 +9,23 @@ import (
 const precision = 1000
 
 const (
-	collectorAD          = "ad"
-	collectorADCS        = "adcs"
-	collectorADFS        = "adfs"
-	collectorCPU         = "cpu"
-	collectorMemory      = "memory"
-	collectorNet         = "net"
-	collectorLogicalDisk = "logical_disk"
-	collectorOS          = "os"
-	collectorSystem      = "system"
-	collectorLogon       = "logon"
-	collectorThermalZone = "thermalzone"
-	collectorTCP         = "tcp"
-	collectorIIS         = "iis"
-	collectorMSSQL       = "mssql"
-	collectorProcess     = "process"
-	collectorService     = "service"
+	collectorAD                        = "ad"
+	collectorADCS                      = "adcs"
+	collectorADFS                      = "adfs"
+	collectorCPU                       = "cpu"
+	collectorMemory                    = "memory"
+	collectorNet                       = "net"
+	collectorLogicalDisk               = "logical_disk"
+	collectorOS                        = "os"
+	collectorSystem                    = "system"
+	collectorLogon                     = "logon"
+	collectorThermalZone               = "thermalzone"
+	collectorTCP                       = "tcp"
+	collectorIIS                       = "iis"
+	collectorMSSQL                     = "mssql"
+	collectorProcess                   = "process"
+	collectorService                   = "service"
+	collectorNetFrameworkCLRExceptions = "netframework_clrexceptions"
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
@@ -111,6 +112,8 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectADCS(mx, pms)
 		case collectorADFS:
 			w.collectADFS(mx, pms)
+		case collectorNetFrameworkCLRExceptions:
+			w.collectNetFrameworkCLRExceptions(mx, pms)
 		}
 	}
 }
