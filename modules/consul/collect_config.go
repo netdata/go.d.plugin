@@ -38,6 +38,11 @@ type consulConfig struct {
 			ScadaAddress string
 		}
 	}
+	Stats struct {
+		License struct {
+			ID string `json:"id"`
+		} `json:"license"`
+	}
 }
 
 func (c *Consul) collectConfiguration() error {
