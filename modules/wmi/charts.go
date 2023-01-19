@@ -2302,7 +2302,7 @@ var (
 		Priority: prioNETFrameworkCLRJITStandardFailures,
 	}
 	netFrameworkCLRJITILByes = module.Chart{
-		ID:       "net_framework_clrjit_il_byttes",
+		ID:       "net_framework_clrjit_il_bytes",
 		Title:    "Number of Microsoft intermediate language (MSIL) bytes compiled.",
 		Units:    "bytes",
 		Fam:      "net_framework",
