@@ -439,7 +439,7 @@ func TestConsul_Collect(t *testing.T) {
 		"success on response from Consul v1.13.2 server with disabled prometheus": {
 			prepare: caseConsulV1132ServerWithDisabledPrometheus,
 			// 3 node, 1 service check, no license
-			wantNumOfCharts: len(serverAutopilotHealthCharts) + 3 + 1 - 1,
+			wantNumOfCharts: len(serverAutopilotHealthCharts) + 3 + 1,
 			wantMetrics: map[string]int64{
 				"autopilot_server_healthy_no":           0,
 				"autopilot_server_healthy_yes":          1,
