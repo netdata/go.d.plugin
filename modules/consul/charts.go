@@ -78,6 +78,12 @@ var (
 		raftFollowerLastContactLeaderTimeChart.Copy(),
 		raftRPCInstallSnapshotTimeChart.Copy(),
 	}
+	serverAutopilotHealthCharts = module.Charts{
+		autopilotServerHealthStatusChart.Copy(),
+		autopilotServerStableTimeChart.Copy(),
+		autopilotServerSerfStatusChart.Copy(),
+		autopilotServerVoterStatusChart.Copy(),
+	}
 	serverCommonCharts = module.Charts{
 		kvsApplyTimeChart.Copy(),
 		kvsApplyOperationsRateChart.Copy(),
@@ -86,10 +92,6 @@ var (
 
 		autopilotClusterHealthStatusChart.Copy(),
 		autopilotFailureTolerance.Copy(),
-		autopilotServerHealthStatusChart.Copy(),
-		autopilotServerStableTimeChart.Copy(),
-		autopilotServerSerfStatusChart.Copy(),
-		autopilotServerVoterStatusChart.Copy(),
 
 		raftLeaderElectionsRateChart.Copy(),
 		raftLeadershipTransitionsRateChart.Copy(),
@@ -544,7 +546,7 @@ func (c *Consul) addGlobalCharts() {
 
 	var charts *module.Charts
 
-	if !c.cfg.Config.Server {
+	if !c.isServer() {
 		charts = clientCharts.Copy()
 	} else {
 		charts = serverCommonCharts.Copy()
@@ -574,6 +576,21 @@ func (c *Consul) addGlobalCharts() {
 	}
 
 	if err := c.Charts().Add(*charts.Copy()...); err != nil {
+		c.Warning(err)
+	}
+}
+
+func (c *Consul) addServerAutopilotHealthCharts() {
+	charts := serverAutopilotHealthCharts.Copy()
+
+	for _, chart := range *charts {
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: c.cfg.Config.Datacenter},
+			{Key: "node_name", Value: c.cfg.Config.NodeName},
+		}
+	}
+
+	if err := c.Charts().Add(*charts...); err != nil {
 		c.Warning(err)
 	}
 }
@@ -668,6 +685,10 @@ func (c *Consul) removeLeaderCharts() {
 
 func (c *Consul) addFollowerCharts() {
 	charts := serverFollowerCharts.Copy()
+	if c.isCloudManaged() {
+		// 'autopilot_server_lastContact_leader' comes from 'operator/autopilot/health' which is disabled
+		_ = charts.Remove(raftFollowerLastContactLeaderTimeChart.ID)
+	}
 
 	for _, chart := range *charts {
 		chart.Labels = []module.Label{

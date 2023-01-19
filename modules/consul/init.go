@@ -37,5 +37,12 @@ func (c *Consul) initPrometheusClient(httpClient *http.Client) (prometheus.Prome
 	req := c.Request.Copy()
 	req.URL = r.URL.String()
 
+	if c.ACLToken != "" {
+		if req.Headers == nil {
+			req.Headers = make(map[string]string)
+		}
+		req.Headers["X-Consul-Token"] = c.ACLToken
+	}
+
 	return prometheus.New(httpClient, req), nil
 }

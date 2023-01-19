@@ -25,6 +25,11 @@ var (
 	dataV1132ServerPromMetricsWithHostname, _ = os.ReadFile("testdata/v1.13.2/server_v1-agent-metrics_with_hostname.txt")
 	dataV1132ServerOperatorAutopilotHealth, _ = os.ReadFile("testdata/v1.13.2/server_v1-operator-autopilot-health.json")
 	dataV1132ServerCoordinateNodes, _         = os.ReadFile("testdata/v1.13.2/server_v1-coordinate-nodes.json")
+
+	dataV1143CloudServerPromMetrics, _     = os.ReadFile("testdata/v1.14.3-cloud/server_v1-agent-metrics.txt")
+	dataV1143CloudServerSelf, _            = os.ReadFile("testdata/v1.14.3-cloud/server_v1-agent-self.json")
+	dataV1143CloudServerCoordinateNodes, _ = os.ReadFile("testdata/v1.14.3-cloud/server_v1-coordinate-nodes.json")
+	dataV1143CloudChecks, _                = os.ReadFile("testdata/v1.14.3-cloud/v1-agent-checks.json")
 )
 
 func Test_testDataIsValid(t *testing.T) {
@@ -39,6 +44,10 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataV1132ServerPromMetricsWithHostname": dataV1132ServerPromMetricsWithHostname,
 		"dataV1132ServerOperatorAutopilotHealth": dataV1132ServerOperatorAutopilotHealth,
 		"dataV1132ServerCoordinateNodes":         dataV1132ServerCoordinateNodes,
+		"dataV1143CloudServerPromMetrics":        dataV1143CloudServerPromMetrics,
+		"dataV1143CloudServerSelf":               dataV1143CloudServerSelf,
+		"dataV1143CloudServerCoordinateNodes":    dataV1143CloudServerCoordinateNodes,
+		"dataV1143CloudChecks":                   dataV1143CloudChecks,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -85,6 +94,10 @@ func TestConsul_Check(t *testing.T) {
 		"success on response from Consul v1.13.2 server": {
 			wantFail: false,
 			prepare:  caseConsulV1132ServerResponse,
+		},
+		"success on response from Consul v1.14.3 server cloud managed": {
+			wantFail: false,
+			prepare:  caseConsulV1143CloudServerResponse,
 		},
 		"success on response from Consul v1.13.2 server with enabled hostname": {
 			wantFail: false,
@@ -134,7 +147,7 @@ func TestConsul_Collect(t *testing.T) {
 	}{
 		"success on response from Consul v1.13.2 server": {
 			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
@@ -231,9 +244,98 @@ func TestConsul_Collect(t *testing.T) {
 				"txn_apply_sum":                             0,
 			},
 		},
+		"success on response from Consul v1.14.3 server cloud managed": {
+			prepare:         caseConsulV1143CloudServerResponse,
+			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			wantMetrics: map[string]int64{
+				"autopilot_failure_tolerance":               0,
+				"autopilot_healthy_no":                      0,
+				"autopilot_healthy_yes":                     1,
+				"client_rpc":                                438718,
+				"client_rpc_exceeded":                       0,
+				"client_rpc_failed":                         0,
+				"health_check_chk1_critical_status":         0,
+				"health_check_chk1_maintenance_status":      0,
+				"health_check_chk1_passing_status":          1,
+				"health_check_chk1_warning_status":          0,
+				"health_check_chk2_critical_status":         1,
+				"health_check_chk2_maintenance_status":      0,
+				"health_check_chk2_passing_status":          0,
+				"health_check_chk2_warning_status":          0,
+				"health_check_chk3_critical_status":         1,
+				"health_check_chk3_maintenance_status":      0,
+				"health_check_chk3_passing_status":          0,
+				"health_check_chk3_warning_status":          0,
+				"health_check_mysql_critical_status":        1,
+				"health_check_mysql_maintenance_status":     0,
+				"health_check_mysql_passing_status":         0,
+				"health_check_mysql_warning_status":         0,
+				"kvs_apply_count":                           2,
+				"kvs_apply_quantile=0.5":                    0,
+				"kvs_apply_quantile=0.9":                    0,
+				"kvs_apply_quantile=0.99":                   0,
+				"kvs_apply_sum":                             18550,
+				"network_lan_rtt_avg":                       1321107,
+				"network_lan_rtt_count":                     1,
+				"network_lan_rtt_max":                       1321107,
+				"network_lan_rtt_min":                       1321107,
+				"network_lan_rtt_sum":                       1321107,
+				"raft_apply":                                115252000,
+				"raft_boltdb_freelistBytes":                 26008,
+				"raft_boltdb_logsPerBatch_count":            122794,
+				"raft_boltdb_logsPerBatch_quantile=0.5":     1000000,
+				"raft_boltdb_logsPerBatch_quantile=0.9":     1000000,
+				"raft_boltdb_logsPerBatch_quantile=0.99":    1000000,
+				"raft_boltdb_logsPerBatch_sum":              122856000,
+				"raft_boltdb_storeLogs_count":               122794,
+				"raft_boltdb_storeLogs_quantile=0.5":        1673303,
+				"raft_boltdb_storeLogs_quantile=0.9":        2210979,
+				"raft_boltdb_storeLogs_quantile=0.99":       2210979,
+				"raft_boltdb_storeLogs_sum":                 278437403,
+				"raft_commitTime_count":                     122785,
+				"raft_commitTime_quantile=0.5":              1718204,
+				"raft_commitTime_quantile=0.9":              2262192,
+				"raft_commitTime_quantile=0.99":             2262192,
+				"raft_commitTime_sum":                       284260428,
+				"raft_fsm_lastRestoreDuration":              0,
+				"raft_leader_lastContact_count":             19,
+				"raft_leader_lastContact_quantile=0.5":      0,
+				"raft_leader_lastContact_quantile=0.9":      0,
+				"raft_leader_lastContact_quantile=0.99":     0,
+				"raft_leader_lastContact_sum":               598000,
+				"raft_leader_oldestLogAge":                  68835264,
+				"raft_rpc_installSnapshot_count":            1,
+				"raft_rpc_installSnapshot_quantile=0.5":     0,
+				"raft_rpc_installSnapshot_quantile=0.9":     0,
+				"raft_rpc_installSnapshot_quantile=0.99":    0,
+				"raft_rpc_installSnapshot_sum":              473038,
+				"raft_state_candidate":                      1,
+				"raft_state_leader":                         1,
+				"raft_thread_fsm_saturation_count":          44326,
+				"raft_thread_fsm_saturation_quantile=0.5":   0,
+				"raft_thread_fsm_saturation_quantile=0.9":   0,
+				"raft_thread_fsm_saturation_quantile=0.99":  0,
+				"raft_thread_fsm_saturation_sum":            729,
+				"raft_thread_main_saturation_count":         451221,
+				"raft_thread_main_saturation_quantile=0.5":  0,
+				"raft_thread_main_saturation_quantile=0.9":  0,
+				"raft_thread_main_saturation_quantile=0.99": 9999,
+				"raft_thread_main_saturation_sum":           213059,
+				"runtime_alloc_bytes":                       51729856,
+				"runtime_sys_bytes":                         160156960,
+				"runtime_total_gc_pause_ns":                 832754048,
+				"server_isLeader_no":                        0,
+				"server_isLeader_yes":                       1,
+				"txn_apply_count":                           0,
+				"txn_apply_quantile=0.5":                    0,
+				"txn_apply_quantile=0.9":                    0,
+				"txn_apply_quantile=0.99":                   0,
+				"txn_apply_sum":                             0,
+			},
+		},
 		"success on response from Consul v1.13.2 server with enabled hostname": {
 			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
@@ -332,7 +434,7 @@ func TestConsul_Collect(t *testing.T) {
 		},
 		"success on response from Consul v1.13.2 server with disabled prometheus": {
 			prepare:         caseConsulV1132ServerWithDisabledPrometheus,
-			wantNumOfCharts: 3 + 1, // 3 node, 1 service check
+			wantNumOfCharts: len(serverAutopilotHealthCharts) + 3 + 1, // 3 node, 1 service check
 			wantMetrics: map[string]int64{
 				"autopilot_server_healthy_no":           0,
 				"autopilot_server_healthy_yes":          1,
@@ -428,6 +530,34 @@ func TestConsul_Collect(t *testing.T) {
 			}
 		})
 	}
+}
+
+func caseConsulV1143CloudServerResponse(t *testing.T) (*Consul, func()) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			switch {
+			case r.URL.Path == urlPathAgentSelf:
+				_, _ = w.Write(dataV1143CloudServerSelf)
+			case r.URL.Path == urlPathAgentChecks:
+				_, _ = w.Write(dataV1143CloudChecks)
+			case r.URL.Path == urlPathAgentMetrics && r.URL.RawQuery == "format=prometheus":
+				_, _ = w.Write(dataV1143CloudServerPromMetrics)
+			case r.URL.Path == urlPathOperationAutopilotHealth:
+				w.WriteHeader(http.StatusForbidden)
+			case r.URL.Path == urlPathCoordinateNodes:
+				_, _ = w.Write(dataV1143CloudServerCoordinateNodes)
+			default:
+				w.WriteHeader(http.StatusNotFound)
+			}
+		}))
+
+	consul := New()
+	consul.URL = srv.URL
+
+	require.True(t, consul.Init())
+
+	return consul, srv.Close
 }
 
 func caseConsulV1132ServerResponse(t *testing.T) (*Consul, func()) {
