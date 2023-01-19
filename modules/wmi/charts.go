@@ -132,6 +132,9 @@ const (
 	prioNETFrameworkCLRExceptionsFilters
 	prioNETFrameworkCLRExceptionsFinallys
 	prioNETFrameworkCLRExceptionsThrowCatchDepth
+	prioNETFrameworkCLRInteropCOMCalableWrapper
+	prioNETFrameworkCLRInteropMarshalling
+	prioNETFrameworkCLRInteropStubsCreated
 
 	prioServiceState
 	prioServiceStatus
@@ -2194,6 +2197,9 @@ var (
 		netFrameworkCLRExceptionsFilters.Copy(),
 		netFrameworkCLRExceptionsFinallys.Copy(),
 		netFrameworkCLRExceptionsThrowCatchDepth.Copy(),
+		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
+		netFrameworkCLRInteropMarshalling.Copy(),
+		netFrameworkCLRInteropStubsCreated.Copy(),
 	}
 
 	// Exceptions
@@ -2232,6 +2238,35 @@ var (
 		Ctx:      "wmi.net_framework_exception_thrown",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRExceptionsThrowCatchDepth,
+	}
+
+	// Interop
+	netFrameworkCLRInteropCOMCallableWrapper = module.Chart{
+		ID:       "net_framework_clrinterop_com_callable_wrapper",
+		Title:    "Number of COM callable wrappers(CCW).",
+		Units:    "ccw",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrinterop_com_callable_wrapper",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRInteropCOMCalableWrapper,
+	}
+	netFrameworkCLRInteropMarshalling = module.Chart{
+		ID:       "net_framework_clrinterop_marshalling",
+		Title:    "Number of times arguments or return value have been marshaled.",
+		Units:    "values marshaled",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrinterop_marshalling",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRInteropMarshalling,
+	}
+	netFrameworkCLRInteropStubsCreated = module.Chart{
+		ID:       "net_framework_clrinterop_stubs_created",
+		Title:    "Number of stubs created.",
+		Units:    "stubs",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrinterop_stubs_created",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRInteropStubsCreated,
 	}
 )
 
@@ -2713,6 +2748,15 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
 			id := fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRInteropCOMCallableWrapper.ID:
+			id := fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRInteropMarshalling.ID:
+			id := fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRInteropStubsCreated.ID:
+			id := fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			continue
 		}
@@ -2740,6 +2784,12 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrexceptions_%s_finallys", procID)
 		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
 			id = fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
+		case netFrameworkCLRInteropCOMCallableWrapper.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
+		case netFrameworkCLRInteropMarshalling.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
+		case netFrameworkCLRInteropStubsCreated.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
 		default:
 			continue
 		}
