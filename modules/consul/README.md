@@ -81,6 +81,7 @@ Labels per scope:
 | raft_boltdb_freelist_bytes             |    global     |                 freelist                  |     bytes     |      yes      |       yes       |   no   |
 | raft_boltdb_logs_per_batch_rate        |    global     |                  written                  |    logs/s     |      yes      |       yes       |   no   |
 | raft_boltdb_store_logs_time            |    global     | quantile_0.5, quantile_0.9, quantile_0.99 |      ms       |      yes      |       yes       |   no   |
+| license_expiration_time                |    global     |            license_expiration             |    seconds    |      yes      |       yes       |  yes   |
 
 ## Configuration
 

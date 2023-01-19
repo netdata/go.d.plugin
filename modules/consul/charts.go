@@ -55,6 +55,8 @@ const (
 
 	prioServiceHealthCheckStatus
 	prioNodeHealthCheckStatus
+
+	prioLicenseExpirationTime
 )
 
 var (
@@ -66,6 +68,8 @@ var (
 		memoryAllocatedChart.Copy(),
 		memorySysChart.Copy(),
 		gcPauseTimeChart.Copy(),
+
+		licenseExpirationTimeChart.Copy(),
 	}
 
 	serverLeaderCharts = module.Charts{
@@ -115,6 +119,8 @@ var (
 		memoryAllocatedChart.Copy(),
 		memorySysChart.Copy(),
 		gcPauseTimeChart.Copy(),
+
+		licenseExpirationTimeChart.Copy(),
 	}
 
 	kvsApplyTimeChart = module.Chart{
@@ -506,6 +512,18 @@ var (
 			{ID: "runtime_total_gc_pause_ns", Name: "gc_pause", Algo: module.Incremental, Div: 1e9},
 		},
 	}
+
+	licenseExpirationTimeChart = module.Chart{
+		ID:       "license_expiration_time",
+		Title:    "License expiration time",
+		Units:    "seconds",
+		Fam:      "license",
+		Ctx:      "consul.license_expiration_time",
+		Priority: prioLicenseExpirationTime,
+		Dims: module.Dims{
+			{ID: "system_licenseExpiration", Name: "license_expiration"},
+		},
+	}
 )
 
 var (
@@ -566,6 +584,10 @@ func (c *Consul) addGlobalCharts() {
 				_ = charts.Remove(raftBoltDBFreelistBytesChart.ID)
 			}
 		}
+	}
+
+	if !c.hasLicense() {
+		_ = charts.Remove(licenseExpirationTimeChart.ID)
 	}
 
 	for _, chart := range *charts {

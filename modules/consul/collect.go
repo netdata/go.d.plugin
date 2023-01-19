@@ -60,6 +60,10 @@ func (c *Consul) isCloudManaged() bool {
 	return c.cfg.DebugConfig.Cloud.ClientSecret != "" || c.cfg.DebugConfig.Cloud.ResourceID != ""
 }
 
+func (c *Consul) hasLicense() bool {
+	return c.cfg.Stats.License.ID != ""
+}
+
 func (c *Consul) isServer() bool {
 	return c.cfg.Config.Server
 }

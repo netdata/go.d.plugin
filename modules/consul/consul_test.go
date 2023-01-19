@@ -146,8 +146,9 @@ func TestConsul_Collect(t *testing.T) {
 		wantMetrics     map[string]int64
 	}{
 		"success on response from Consul v1.13.2 server": {
-			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			prepare: caseConsulV1132ServerResponse,
+			// 3 node, 1 service check, no license
+			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1 - 1,
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
@@ -245,8 +246,9 @@ func TestConsul_Collect(t *testing.T) {
 			},
 		},
 		"success on response from Consul v1.14.3 server cloud managed": {
-			prepare:         caseConsulV1143CloudServerResponse,
-			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			prepare: caseConsulV1143CloudServerResponse,
+			// 3 node, 1 service check, license
+			wantNumOfCharts: len(serverCommonCharts) + len(serverLeaderCharts) + 3 + 1,
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               0,
 				"autopilot_healthy_no":                      0,
@@ -326,6 +328,7 @@ func TestConsul_Collect(t *testing.T) {
 				"runtime_total_gc_pause_ns":                 832754048,
 				"server_isLeader_no":                        0,
 				"server_isLeader_yes":                       1,
+				"system_licenseExpiration":                  2949945,
 				"txn_apply_count":                           0,
 				"txn_apply_quantile=0.5":                    0,
 				"txn_apply_quantile=0.9":                    0,
@@ -334,8 +337,9 @@ func TestConsul_Collect(t *testing.T) {
 			},
 		},
 		"success on response from Consul v1.13.2 server with enabled hostname": {
-			prepare:         caseConsulV1132ServerResponse,
-			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1, // 3 node, 1 service check
+			prepare: caseConsulV1132ServerResponse,
+			// 3 node, 1 service check, no license
+			wantNumOfCharts: len(serverCommonCharts) + len(serverAutopilotHealthCharts) + len(serverLeaderCharts) + 3 + 1 - 1,
 			wantMetrics: map[string]int64{
 				"autopilot_failure_tolerance":               1,
 				"autopilot_healthy_no":                      0,
@@ -433,8 +437,9 @@ func TestConsul_Collect(t *testing.T) {
 			},
 		},
 		"success on response from Consul v1.13.2 server with disabled prometheus": {
-			prepare:         caseConsulV1132ServerWithDisabledPrometheus,
-			wantNumOfCharts: len(serverAutopilotHealthCharts) + 3 + 1, // 3 node, 1 service check
+			prepare: caseConsulV1132ServerWithDisabledPrometheus,
+			// 3 node, 1 service check, no license
+			wantNumOfCharts: len(serverAutopilotHealthCharts) + 3 + 1,
 			wantMetrics: map[string]int64{
 				"autopilot_server_healthy_no":           0,
 				"autopilot_server_healthy_yes":          1,
@@ -470,8 +475,9 @@ func TestConsul_Collect(t *testing.T) {
 			},
 		},
 		"success on response from Consul v1.13.2 client": {
-			prepare:         caseConsulV1132ClientResponse,
-			wantNumOfCharts: len(clientCharts) + 3 + 1, // 3 node, 1 service check
+			prepare: caseConsulV1132ClientResponse,
+			// 3 node, 1 service check, no license
+			wantNumOfCharts: len(clientCharts) + 3 + 1 - 1,
 			wantMetrics: map[string]int64{
 				"client_rpc":                            34,
 				"client_rpc_exceeded":                   0,
