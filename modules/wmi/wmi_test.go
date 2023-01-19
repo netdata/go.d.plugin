@@ -232,6 +232,9 @@ func TestWMI_Collect(t *testing.T) {
 				"collector_net_duration":                                                                        0,
 				"collector_net_status_fail":                                                                     0,
 				"collector_net_status_success":                                                                  1,
+				"collector_netframework_clrexceptions_duration":                                                 1437,
+				"collector_netframework_clrexceptions_status_fail":                                              0,
+				"collector_netframework_clrexceptions_status_success":                                           1,
 				"collector_os_duration":                                                                         2,
 				"collector_os_status_fail":                                                                      0,
 				"collector_os_status_success":                                                                   1,
@@ -441,6 +444,14 @@ func TestWMI_Collect(t *testing.T) {
 				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_errors":                        0,
 				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_received_total":                         4120869,
 				"net_nic_Intel_R_PRO_1000_MT_Network_Connection_packets_sent_total":                             1332466,
+				"netframework_clrexceptions_WMSvc_filters":                                                      0,
+				"netframework_clrexceptions_WMSvc_finallys":                                                     0,
+				"netframework_clrexceptions_WMSvc_throw_catch_depth":                                            0,
+				"netframework_clrexceptions_WMSvc_thrown":                                                       0,
+				"netframework_clrexceptions_powershell_filters":                                                 0,
+				"netframework_clrexceptions_powershell_finallys":                                                56,
+				"netframework_clrexceptions_powershell_throw_catch_depth":                                       140,
+				"netframework_clrexceptions_powershell_thrown":                                                  37,
 				"os_paging_free_bytes":                                                                          1414107136,
 				"os_paging_limit_bytes":                                                                         1476395008,
 				"os_paging_used_bytes":                                                                          62287872,
@@ -580,6 +591,13 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 	}
 	for _, chart := range processesCharts {
 		if w.cache.collection[collectorProcess] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRExceptionsCharts {
+		if w.cache.collection[collectorNetFrameworkCLRExceptions] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
