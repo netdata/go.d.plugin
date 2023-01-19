@@ -135,6 +135,10 @@ const (
 	prioNETFrameworkCLRInteropCOMCalableWrapper
 	prioNETFrameworkCLRInteropMarshalling
 	prioNETFrameworkCLRInteropStubsCreated
+	prioNETFrameworkCLRJITMethods
+	prioNETFrameworkCLRJITTime
+	prioNETFrameworkCLRJITStandardFailures
+	prioNETFrameworkCLRJITILBytes
 
 	prioServiceState
 	prioServiceStatus
@@ -2268,6 +2272,44 @@ var (
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRInteropStubsCreated,
 	}
+
+	// JIT
+	netFrameworkCLRJITMethods = module.Chart{
+		ID:       "net_framework_clrjit_methods",
+		Title:    "Number of JIT methods compiled.",
+		Units:    "JIT methods",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrjit_methods",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRJITMethods,
+	}
+	netFrameworkCLRJITTime = module.Chart{
+		ID:       "net_framework_clrjit_time",
+		Title:    "Percentage time spent in JIT compilation.",
+		Units:    "percentage",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrjit_time",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRJITTime,
+	}
+	netFrameworkCLRJITStandardFailure = module.Chart{
+		ID:       "net_framework_clrjit_standard_failure",
+		Title:    "Number of methods the JIT compiler has failed.",
+		Units:    "Failures",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrjit_standard_failure",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRJITStandardFailures,
+	}
+	netFrameworkCLRJITILByes = module.Chart{
+		ID:       "net_framework_clrjit_il_byttes",
+		Title:    "Number of Microsoft intermediate language (MSIL) bytes compiled.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrjit_il_bytes",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRJITILBytes,
+	}
 )
 
 // Service
@@ -2757,6 +2799,18 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRInteropStubsCreated.ID:
 			id := fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRJITMethods.ID:
+			id := fmt.Sprintf("netframework_clrjit_%s_methods", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRJITTime.ID:
+			id := fmt.Sprintf("netframework_clrjit_%s_time", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRJITStandardFailure.ID:
+			id := fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRJITILByes.ID:
+			id := fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			continue
 		}
@@ -2790,6 +2844,14 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
 		case netFrameworkCLRInteropStubsCreated.ID:
 			id = fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
+		case netFrameworkCLRJITMethods.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_methods", procID)
+		case netFrameworkCLRJITTime.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_time", procID)
+		case netFrameworkCLRJITStandardFailure.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
+		case netFrameworkCLRJITILByes.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
 		default:
 			continue
 		}
