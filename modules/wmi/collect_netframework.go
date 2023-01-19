@@ -11,9 +11,9 @@ const (
 	metricNetFrameworkCLRExceptionsThrowCatchDepth = "windows_netframework_clrexceptions_throw_to_catch_depth_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms prometheus.Series) {
+func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorProcess] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
+		w.cache.collection[collectorNetFrameworkCLR] = true
 		w.addNetFrameworkCRLExceptions()
 	}
 
@@ -48,14 +48,14 @@ func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms promethe
 	}
 
 	for proc := range seen {
-		if !w.cache.netFrameworkCLRExceptions[proc] {
-			w.cache.netFrameworkCLRExceptions[proc] = true
+		if !w.cache.netFrameworkCLR[proc] {
+			w.cache.netFrameworkCLR[proc] = true
 			w.addProcessToNetFrameworkCharts(proc)
 		}
 	}
-	for proc := range w.cache.netFrameworkCLRExceptions {
+	for proc := range w.cache.netFrameworkCLR {
 		if !seen[proc] {
-			delete(w.cache.netFrameworkCLRExceptions, proc)
+			delete(w.cache.netFrameworkCLR, proc)
 			w.removeProcessFromNetFrameworkCharts(proc)
 		}
 	}

@@ -2189,12 +2189,14 @@ var (
 
 // .NET
 var (
-	netFrameworkCLRExceptionsCharts = module.Charts{
+	netFrameworkCLRCharts = module.Charts{
 		netFrameworkCLRExceptionsThrown.Copy(),
 		netFrameworkCLRExceptionsFilters.Copy(),
 		netFrameworkCLRExceptionsFinallys.Copy(),
 		netFrameworkCLRExceptionsThrowCatchDepth.Copy(),
 	}
+
+	// Exceptions
 	netFrameworkCLRExceptionsThrown = module.Chart{
 		ID:       "net_framework_exception_thrown",
 		Title:    "Number of exceptions thrown since start.",
@@ -2574,7 +2576,7 @@ func (w *WMI) addProcessesCharts() {
 }
 
 func (w *WMI) addNetFrameworkCRLExceptions() {
-	charts := netFrameworkCLRExceptionsCharts.Copy()
+	charts := netFrameworkCLRCharts.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)

@@ -596,8 +596,8 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
 		}
 	}
-	for _, chart := range netFrameworkCLRExceptionsCharts {
-		if w.cache.collection[collectorNetFrameworkCLRExceptions] {
+	for _, chart := range netFrameworkCLRCharts {
+		if w.cache.collection[collectorNetFrameworkCLR] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
