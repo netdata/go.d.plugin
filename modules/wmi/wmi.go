@@ -30,18 +30,19 @@ func New() *WMI {
 			},
 		},
 		cache: cache{
-			collection:     make(map[string]bool),
-			collectors:     make(map[string]bool),
-			cores:          make(map[string]bool),
-			nics:           make(map[string]bool),
-			volumes:        make(map[string]bool),
-			thermalZones:   make(map[string]bool),
-			processes:      make(map[string]bool),
-			iis:            make(map[string]bool),
-			adcs:           make(map[string]bool),
-			services:       make(map[string]bool),
-			mssqlInstances: make(map[string]bool),
-			mssqlDBs:       make(map[string]bool),
+			collection:                make(map[string]bool),
+			collectors:                make(map[string]bool),
+			cores:                     make(map[string]bool),
+			nics:                      make(map[string]bool),
+			volumes:                   make(map[string]bool),
+			thermalZones:              make(map[string]bool),
+			processes:                 make(map[string]bool),
+			iis:                       make(map[string]bool),
+			adcs:                      make(map[string]bool),
+			services:                  make(map[string]bool),
+			netFrameworkCLRExceptions: make(map[string]bool),
+			mssqlInstances:            make(map[string]bool),
+			mssqlDBs:                  make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -66,19 +67,19 @@ type (
 		cache cache
 	}
 	cache struct {
-		cores            map[string]bool
-		volumes          map[string]bool
-		nics             map[string]bool
-		thermalZones     map[string]bool
-		processes        map[string]bool
-		iis              map[string]bool
-		adcs             map[string]bool
-		mssqlInstances   map[string]bool
-		mssqlDBs         map[string]bool
-		services         map[string]bool
-		netCLRExceptions map[string]bool
-		collectors       map[string]bool
-		collection       map[string]bool
+		cores                     map[string]bool
+		volumes                   map[string]bool
+		nics                      map[string]bool
+		thermalZones              map[string]bool
+		processes                 map[string]bool
+		iis                       map[string]bool
+		adcs                      map[string]bool
+		mssqlInstances            map[string]bool
+		mssqlDBs                  map[string]bool
+		services                  map[string]bool
+		netFrameworkCLRExceptions map[string]bool
+		collectors                map[string]bool
+		collection                map[string]bool
 	}
 )
 
