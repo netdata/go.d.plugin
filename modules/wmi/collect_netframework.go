@@ -18,6 +18,13 @@ const (
 	metricNetFrameworkCLRJITTime            = "windows_netframework_clrjit_jit_time_percent"
 	metricNetFrameworkCLRJITStandardFailure = "windows_netframework_clrjit_jit_standard_failures_total"
 	metricNetFrameworkCLRJITILBytes         = "windows_netframework_clrjit_jit_il_bytes_total"
+
+	metricNetFrameworkCLRLoadingLoaderHeapSize    = "windows_netframework_clrloading_loader_heap_size_bytes"
+	metricNetFrameworkCLRLoadingAppDomainLoaded   = "windows_netframework_clrloading_appdomains_loaded_total"
+	metricNetFrameworkCLRLoadingAppDomainUnloaded = "windows_netframework_clrloading_appdomains_unloaded_total"
+	metricNetFrameworkCLRLoadingAssembliesLoaded  = "windows_netframework_clrloading_assemblies_loaded_total"
+	metricNetFrameworkCLRLoadingClassesLoaded     = "windows_netframework_clrloading_classes_loaded_total"
+	metricNetFrameworkCLRLoadingClassLoadFailure  = "windows_netframework_clrloading_class_load_failures_total"
 )
 
 func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series) {
@@ -102,6 +109,48 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
 			mx[px+"jit_"+name+"_il_bytes"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingLoaderHeapSize) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_loader_heap_size"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAppDomainLoaded) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_app_domains_loaded"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAppDomainUnloaded) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_app_domains_unloaded"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAssembliesLoaded) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_assemblies_loaded"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingClassesLoaded) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_classes_loaded"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingClassLoadFailure) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"loading_"+name+"_class_load_failure"] += int64(pm.Value)
 		}
 	}
 

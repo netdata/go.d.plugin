@@ -2214,7 +2214,7 @@ var (
 		netFrameworkCLRJITTime.Copy(),
 		netFrameworkCLRJITStandardFailure.Copy(),
 		netFrameworkCLRJITILByes.Copy(),
-		netFrameworkCLRLoadingHeapSize.Copy(),
+		netFrameworkCLRLoadingLoaderHeapSize.Copy(),
 		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
 		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
 		netFrameworkCLRLoadingAssembliesLoaded.Copy(),
@@ -2328,7 +2328,7 @@ var (
 	}
 
 	// Loading
-	netFrameworkCLRLoadingHeapSize = module.Chart{
+	netFrameworkCLRLoadingLoaderHeapSize = module.Chart{
 		ID:       "net_framework_clrloading_heap_size",
 		Title:    "Bytes committed by class loader.",
 		Units:    "bytes",
@@ -2883,8 +2883,8 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRJITILByes.ID:
 			id := fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRLoadingHeapSize.ID:
-			id := fmt.Sprintf("netframework_clrloading_%s_heap_size", procID)
+		case netFrameworkCLRLoadingLoaderHeapSize.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_loader_heap_size", procID)
 			dim = &module.Dim{ID: id, Name: procID}
 		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
 			id := fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
@@ -2942,8 +2942,8 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
 		case netFrameworkCLRJITILByes.ID:
 			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
-		case netFrameworkCLRLoadingHeapSize.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_heap_size", procID)
+		case netFrameworkCLRLoadingLoaderHeapSize.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_loader_heap_size", procID)
 		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
 			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
 		case netFrameworkCLRLoadingAppDomainsUnloaded.ID:
