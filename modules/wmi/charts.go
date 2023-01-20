@@ -2210,7 +2210,10 @@ var (
 		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
 		netFrameworkCLRInteropMarshalling.Copy(),
 		netFrameworkCLRInteropStubsCreated.Copy(),
-
+		netFrameworkCLRJITMethods.Copy(),
+		netFrameworkCLRJITTime.Copy(),
+		netFrameworkCLRJITStandardFailure.Copy(),
+		netFrameworkCLRJITILByes.Copy(),
 		netFrameworkCLRLoadingHeapSize.Copy(),
 		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
 		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
