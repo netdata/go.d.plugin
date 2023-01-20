@@ -2329,11 +2329,11 @@ var (
 
 	// Loading
 	netFrameworkCLRLoadingLoaderHeapSize = module.Chart{
-		ID:       "net_framework_clrloading_heap_size",
+		ID:       "net_framework_clrloading_loader_heap_size",
 		Title:    "Bytes committed by class loader.",
 		Units:    "bytes",
 		Fam:      "net_framework",
-		Ctx:      "wmi.net_framework_clrloading_heap_size",
+		Ctx:      "wmi.net_framework_clrloading_loader_heap_size",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRLoadingLoaderHeapSize,
 	}
