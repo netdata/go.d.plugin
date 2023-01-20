@@ -32,6 +32,9 @@ The module collects metrics from the following collectors:
 - [adcs](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.adcs.md)
 - [adfs](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.adfs.md)
 - [netframework_clrexceptions](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrexceptions.md)
+- [netframework_clrinterop](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrinterop.md)
+- [netframework_clrjit](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrjit.md)
+- [netframework_clrloading](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrloading.md)
 
 ## Requirements
 
