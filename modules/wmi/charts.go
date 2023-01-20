@@ -139,6 +139,12 @@ const (
 	prioNETFrameworkCLRJITTime
 	prioNETFrameworkCLRJITStandardFailures
 	prioNETFrameworkCLRJITILBytes
+	prioNETFrameworkCLRLoadingLoaderHeapSize
+	prioNETFrameworkCLRLoadingAppDomainsLoaded
+	prioNETFrameworkCLRLoadingAppDomainsUnloaded
+	prioNETFrameworkCLRLoadingAssembliesLoaded
+	prioNETFrameworkCLRLoadingClassesLoaded
+	prioNETFrameworkCLRLoadingClassLoadFailure
 
 	prioServiceState
 	prioServiceStatus
@@ -2204,6 +2210,13 @@ var (
 		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
 		netFrameworkCLRInteropMarshalling.Copy(),
 		netFrameworkCLRInteropStubsCreated.Copy(),
+
+		netFrameworkCLRLoadingHeapSize.Copy(),
+		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
+		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
+		netFrameworkCLRLoadingAssembliesLoaded.Copy(),
+		netFrameworkCLRLoadingClassesLoaded.Copy(),
+		netFrameworkCLRLoadingClassLoadFailure.Copy(),
 	}
 
 	// Exceptions
@@ -2309,6 +2322,62 @@ var (
 		Ctx:      "wmi.net_framework_clrjit_il_bytes",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRJITILBytes,
+	}
+
+	// Loading
+	netFrameworkCLRLoadingHeapSize = module.Chart{
+		ID:       "net_framework_clrloading_heap_size",
+		Title:    "Bytes committed by class loader.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_heap_size",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingLoaderHeapSize,
+	}
+	netFrameworkCLRLoadingAppDomainsLoaded = module.Chart{
+		ID:       "net_framework_clrloading_appdomains_loaded",
+		Title:    "Application domain loaded since start.",
+		Units:    "application domain",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_appdomains_loaded",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingAppDomainsLoaded,
+	}
+	netFrameworkCLRLoadingAppDomainsUnloaded = module.Chart{
+		ID:       "net_framework_clrloading_appdomains_unloaded",
+		Title:    "Application domain unloaded since start.",
+		Units:    "application domain",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_appdomains_unloaded",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+	}
+	netFrameworkCLRLoadingAssembliesLoaded = module.Chart{
+		ID:       "net_framework_clrloading_assemblies_unloaded",
+		Title:    "Assemblies loaded since start.",
+		Units:    "assemblies",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_assemblies_unloaded",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+	}
+	netFrameworkCLRLoadingClassesLoaded = module.Chart{
+		ID:       "net_framework_clrloading_classes_loaded",
+		Title:    "Classes loaded in all assemblies.",
+		Units:    "classes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_classes_loaded",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+	}
+	netFrameworkCLRLoadingClassLoadFailure = module.Chart{
+		ID:       "net_framework_clrloading_class_load_failure",
+		Title:    "Classes that have failed to load.",
+		Units:    "classes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrloading_class_load_failure",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
 	}
 )
 
@@ -2811,6 +2880,24 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRJITILByes.ID:
 			id := fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLoadingHeapSize.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_heap_size", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLoadingAppDomainsUnloaded.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_app_domains_unloaded", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLoadingAssembliesLoaded.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_assemblies_loaded", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLoadingClassesLoaded.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_classes_loaded", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLoadingClassLoadFailure.ID:
+			id := fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			continue
 		}
@@ -2852,6 +2939,18 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
 		case netFrameworkCLRJITILByes.ID:
 			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
+		case netFrameworkCLRLoadingHeapSize.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_heap_size", procID)
+		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
+		case netFrameworkCLRLoadingAppDomainsUnloaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_unloaded", procID)
+		case netFrameworkCLRLoadingAssembliesLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_assemblies_loaded", procID)
+		case netFrameworkCLRLoadingClassesLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_classes_loaded", procID)
+		case netFrameworkCLRLoadingClassLoadFailure.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
 		default:
 			continue
 		}
