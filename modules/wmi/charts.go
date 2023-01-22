@@ -145,6 +145,11 @@ const (
 	prioNETFrameworkCLRLoadingAssembliesLoaded
 	prioNETFrameworkCLRLoadingClassesLoaded
 	prioNETFrameworkCLRLoadingClassLoadFailure
+	prioNETFrameworkCLRLockAndThreadsQueueLength
+	prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads
+	prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads
+	prioNETFrameworkCLRLockAndThreadsRecognizedThreads
+	prioNETFrameworkCLRLockAndThreadsContentions
 
 	prioServiceState
 	prioServiceStatus
@@ -2220,6 +2225,11 @@ var (
 		netFrameworkCLRLoadingAssembliesLoaded.Copy(),
 		netFrameworkCLRLoadingClassesLoaded.Copy(),
 		netFrameworkCLRLoadingClassLoadFailure.Copy(),
+		netFrameworkCLRLockAndThreadsQueueLength.Copy(),
+		netFrameworkCLRLockAndThreadsCurrentLogicalThreads.Copy(),
+		netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.Copy(),
+		netFrameworkCLRLockAndThreadsRecognizedThreads.Copy(),
+		netFrameworkCLRLockAndThreadsContentions.Copy(),
 	}
 
 	// Exceptions
@@ -2381,6 +2391,53 @@ var (
 		Ctx:      "wmi.net_framework_clrloading_class_load_failure",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRLoadingClassLoadFailure,
+	}
+
+	// Lock and Threads
+	netFrameworkCLRLockAndThreadsQueueLength = module.Chart{
+		ID:       "net_framework_clrlockandthreads_queue_length",
+		Title:    "Threads waiting for lock.",
+		Units:    "threads",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrlockandthreads_queue_length",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLockAndThreadsQueueLength,
+	}
+	netFrameworkCLRLockAndThreadsCurrentLogicalThreads = module.Chart{
+		ID:       "net_framework_clrlockandthreads_current_logical_threads",
+		Title:    "Number of running and stopped threads.",
+		Units:    "threads",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrlockandthreads_current_logical_threads",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads,
+	}
+	netFrameworkCLRLockAndThreadsCurrentPhysicalThreads = module.Chart{
+		ID:       "net_framework_clrlockandthreads_current_physical_threads",
+		Title:    "Number of running and stopped threads.",
+		Units:    "threads",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrlockandthreads_current_physical_threads",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads,
+	}
+	netFrameworkCLRLockAndThreadsRecognizedThreads = module.Chart{
+		ID:       "net_framework_clrlockandthreads_recognized_threads",
+		Title:    "Number of running and stopped threads.",
+		Units:    "threads",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrlockandthreads_recognized_threads",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLockAndThreadsRecognizedThreads,
+	}
+	netFrameworkCLRLockAndThreadsContentions = module.Chart{
+		ID:       "net_framework_clrlockandthreads_contentions",
+		Title:    "Number of fails to acquire managed lock.",
+		Units:    "threads",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrlockandthreads_contentions",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRLockAndThreadsContentions,
 	}
 )
 
@@ -2901,6 +2958,21 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRLoadingClassLoadFailure.ID:
 			id := fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLockAndThreadsQueueLength.ID:
+			id := fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
+			id := fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
+			id := fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
+			id := fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRLockAndThreadsContentions.ID:
+			id := fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			continue
 		}
@@ -2954,6 +3026,16 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrloading_%s_classes_loaded", procID)
 		case netFrameworkCLRLoadingClassLoadFailure.ID:
 			id = fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
+		case netFrameworkCLRLockAndThreadsQueueLength.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
+		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
+		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
+		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
+		case netFrameworkCLRLockAndThreadsContentions.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
 		default:
 			continue
 		}
