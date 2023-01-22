@@ -2356,13 +2356,13 @@ var (
 		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
 	}
 	netFrameworkCLRLoadingAssembliesLoaded = module.Chart{
-		ID:       "net_framework_clrloading_assemblies_unloaded",
+		ID:       "net_framework_clrloading_assemblies_loaded",
 		Title:    "Assemblies loaded since start.",
 		Units:    "assemblies",
 		Fam:      "net_framework",
-		Ctx:      "wmi.net_framework_clrloading_assemblies_unloaded",
+		Ctx:      "wmi.net_framework_clrloading_assemblies_loaded",
 		Type:     module.Stacked,
-		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+		Priority: prioNETFrameworkCLRLoadingAssembliesLoaded,
 	}
 	netFrameworkCLRLoadingClassesLoaded = module.Chart{
 		ID:       "net_framework_clrloading_classes_loaded",
@@ -2371,7 +2371,7 @@ var (
 		Fam:      "net_framework",
 		Ctx:      "wmi.net_framework_clrloading_classes_loaded",
 		Type:     module.Stacked,
-		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+		Priority: prioNETFrameworkCLRLoadingClassesLoaded,
 	}
 	netFrameworkCLRLoadingClassLoadFailure = module.Chart{
 		ID:       "net_framework_clrloading_class_load_failure",
@@ -2380,7 +2380,7 @@ var (
 		Fam:      "net_framework",
 		Ctx:      "wmi.net_framework_clrloading_class_load_failure",
 		Type:     module.Stacked,
-		Priority: prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+		Priority: prioNETFrameworkCLRLoadingClassLoadFailure,
 	}
 )
 
