@@ -422,6 +422,7 @@ windows_exporter_collector_duration_seconds{collector="netframework_clrinterop"}
 windows_exporter_collector_duration_seconds{collector="netframework_clrjit"} 1.2789005
 windows_exporter_collector_duration_seconds{collector="netframework_clrloading"} 1.3232636
 windows_exporter_collector_duration_seconds{collector="netframework_clrlocksandthreads"} 1.3578413999999999
+windows_exporter_collector_duration_seconds{collector="netframework_clrmemory"} 1.4066725
 windows_exporter_collector_duration_seconds{collector="net"} 0
 windows_exporter_collector_duration_seconds{collector="os"} 0.0023497
 windows_exporter_collector_duration_seconds{collector="process"} 0.1154812
@@ -444,6 +445,7 @@ windows_exporter_collector_success{collector="netframework_clrinterop"} 1
 windows_exporter_collector_success{collector="netframework_clrjit"} 1
 windows_exporter_collector_success{collector="netframework_clrloading"} 1
 windows_exporter_collector_success{collector="netframework_clrlocksandthreads"} 1
+windows_exporter_collector_success{collector="netframework_clrmemory"} 1
 windows_exporter_collector_success{collector="net"} 1
 windows_exporter_collector_success{collector="os"} 1
 windows_exporter_collector_success{collector="process"} 1
@@ -466,6 +468,7 @@ windows_exporter_collector_timeout{collector="netframework_clrinterop"} 0
 windows_exporter_collector_timeout{collector="netframework_clrjit"} 0
 windows_exporter_collector_timeout{collector="netframework_clrloading"} 0
 windows_exporter_collector_timeout{collector="netframework_clrlocksandthreads"} 0
+windows_exporter_collector_timeout{collector="netframework_clrmemory"} 0
 windows_exporter_collector_timeout{collector="net"} 0
 windows_exporter_collector_timeout{collector="os"} 0
 windows_exporter_collector_timeout{collector="process"} 0
@@ -2108,6 +2111,106 @@ windows_netframework_clrlocksandthreads_recognized_threads_current{process="powe
 # TYPE windows_netframework_clrlocksandthreads_recognized_threads_total counter
 windows_netframework_clrlocksandthreads_recognized_threads_total{process="WMSvc"} 1
 windows_netframework_clrlocksandthreads_recognized_threads_total{process="powershell"} 6
+# HELP windows_netframework_clrmemory_allocated_bytes_total Displays the total number of bytes allocated on the garbage collection heap.
+# TYPE windows_netframework_clrmemory_allocated_bytes_total counter
+windows_netframework_clrmemory_allocated_bytes_total{process="WMSvc"} 227792
+windows_netframework_clrmemory_allocated_bytes_total{process="powershell"} 4.63338e+07
+# HELP windows_netframework_clrmemory_collections_total Displays the number of times the generation objects are garbage collected since the application started.
+# TYPE windows_netframework_clrmemory_collections_total counter
+windows_netframework_clrmemory_collections_total{area="Gen0",process="WMSvc"} 1
+windows_netframework_clrmemory_collections_total{area="Gen0",process="powershell"} 7
+windows_netframework_clrmemory_collections_total{area="Gen1",process="WMSvc"} 1
+windows_netframework_clrmemory_collections_total{area="Gen1",process="powershell"} 3
+windows_netframework_clrmemory_collections_total{area="Gen2",process="WMSvc"} 0
+windows_netframework_clrmemory_collections_total{area="Gen2",process="powershell"} 1
+# HELP windows_netframework_clrmemory_committed_bytes Displays the amount of virtual memory, in bytes, currently committed by the garbage collector. Committed memory is the physical memory for which space has been reserved in the disk paging file.
+# TYPE windows_netframework_clrmemory_committed_bytes gauge
+windows_netframework_clrmemory_committed_bytes{process="WMSvc"} 270336
+windows_netframework_clrmemory_committed_bytes{process="powershell"} 2.0475904e+07
+# HELP windows_netframework_clrmemory_finalization_survivors Displays the number of garbage-collected objects that survive a collection because they are waiting to be finalized.
+# TYPE windows_netframework_clrmemory_finalization_survivors gauge
+windows_netframework_clrmemory_finalization_survivors{process="WMSvc"} 7
+windows_netframework_clrmemory_finalization_survivors{process="powershell"} 244
+# HELP windows_netframework_clrmemory_gc_time_percent Displays the percentage of time that was spent performing a garbage collection in the last sample.
+# TYPE windows_netframework_clrmemory_gc_time_percent gauge
+windows_netframework_clrmemory_gc_time_percent{process="WMSvc"} 0
+windows_netframework_clrmemory_gc_time_percent{process="powershell"} 0.00027784979937050934
+# HELP windows_netframework_clrmemory_heap_size_bytes Displays the maximum bytes that can be allocated; it does not indicate the current number of bytes allocated.
+# TYPE windows_netframework_clrmemory_heap_size_bytes gauge
+windows_netframework_clrmemory_heap_size_bytes{area="Gen0",process="WMSvc"} 4.194304e+06
+windows_netframework_clrmemory_heap_size_bytes{area="Gen0",process="powershell"} 2.6417392e+07
+windows_netframework_clrmemory_heap_size_bytes{area="Gen1",process="WMSvc"} 50200
+windows_netframework_clrmemory_heap_size_bytes{area="Gen1",process="powershell"} 122776
+windows_netframework_clrmemory_heap_size_bytes{area="Gen2",process="WMSvc"} 24
+windows_netframework_clrmemory_heap_size_bytes{area="Gen2",process="powershell"} 6.71388e+06
+windows_netframework_clrmemory_heap_size_bytes{area="LOH",process="WMSvc"} 68168
+windows_netframework_clrmemory_heap_size_bytes{area="LOH",process="powershell"} 1.457824e+06
+# HELP windows_netframework_clrmemory_induced_gc_total Displays the peak number of times garbage collection was performed because of an explicit call to GC.Collect.
+# TYPE windows_netframework_clrmemory_induced_gc_total counter
+windows_netframework_clrmemory_induced_gc_total{process="WMSvc"} 0
+windows_netframework_clrmemory_induced_gc_total{process="powershell"} 0
+# HELP windows_netframework_clrmemory_number_gc_handles Displays the current number of garbage collection handles in use. Garbage collection handles are handles to resources external to the common language runtime and the managed environment.
+# TYPE windows_netframework_clrmemory_number_gc_handles gauge
+windows_netframework_clrmemory_number_gc_handles{process="WMSvc"} 24
+windows_netframework_clrmemory_number_gc_handles{process="powershell"} 834
+# HELP windows_netframework_clrmemory_number_pinned_objects Displays the number of pinned objects encountered in the last garbage collection.
+# TYPE windows_netframework_clrmemory_number_pinned_objects gauge
+windows_netframework_clrmemory_number_pinned_objects{process="WMSvc"} 1
+windows_netframework_clrmemory_number_pinned_objects{process="powershell"} 0
+# HELP windows_netframework_clrmemory_number_sink_blocksinuse Displays the current number of synchronization blocks in use. Synchronization blocks are per-object data structures allocated for storing synchronization information. They hold weak references to managed objects and must be scanned by the garbage collector.
+# TYPE windows_netframework_clrmemory_number_sink_blocksinuse gauge
+windows_netframework_clrmemory_number_sink_blocksinuse{process="WMSvc"} 1
+windows_netframework_clrmemory_number_sink_blocksinuse{process="powershell"} 42
+# HELP windows_netframework_clrmemory_promoted_bytes Displays the bytes that were promoted from the generation to the next one during the last GC. Memory is promoted when it survives a garbage collection.
+# TYPE windows_netframework_clrmemory_promoted_bytes gauge
+windows_netframework_clrmemory_promoted_bytes{area="Gen0",process="WMSvc"} 49720
+windows_netframework_clrmemory_promoted_bytes{area="Gen0",process="powershell"} 107352
+windows_netframework_clrmemory_promoted_bytes{area="Gen1",process="WMSvc"} 0
+windows_netframework_clrmemory_promoted_bytes{area="Gen1",process="powershell"} 0
+# HELP windows_netframework_clrmemory_reserved_bytes Displays the amount of virtual memory, in bytes, currently reserved by the garbage collector. Reserved memory is the virtual memory space reserved for the application when no disk or main memory pages have been used.
+# TYPE windows_netframework_clrmemory_reserved_bytes gauge
+windows_netframework_clrmemory_reserved_bytes{process="WMSvc"} 4.02644992e+08
+windows_netframework_clrmemory_reserved_bytes{process="powershell"} 4.02644992e+08
+# HELP windows_netframework_clrremoting_channels_total Displays the total number of remoting channels registered across all application domains since application started.
+# TYPE windows_netframework_clrremoting_channels_total counter
+windows_netframework_clrremoting_channels_total{process="WMSvc"} 0
+windows_netframework_clrremoting_channels_total{process="powershell"} 0
+# HELP windows_netframework_clrremoting_context_bound_classes_loaded Displays the current number of context-bound classes that are loaded.
+# TYPE windows_netframework_clrremoting_context_bound_classes_loaded gauge
+windows_netframework_clrremoting_context_bound_classes_loaded{process="WMSvc"} 0
+windows_netframework_clrremoting_context_bound_classes_loaded{process="powershell"} 0
+# HELP windows_netframework_clrremoting_context_bound_objects_total Displays the total number of context-bound objects allocated.
+# TYPE windows_netframework_clrremoting_context_bound_objects_total counter
+windows_netframework_clrremoting_context_bound_objects_total{process="WMSvc"} 0
+windows_netframework_clrremoting_context_bound_objects_total{process="powershell"} 0
+# HELP windows_netframework_clrremoting_context_proxies_total Displays the total number of remoting proxy objects in this process since it started.
+# TYPE windows_netframework_clrremoting_context_proxies_total counter
+windows_netframework_clrremoting_context_proxies_total{process="WMSvc"} 0
+windows_netframework_clrremoting_context_proxies_total{process="powershell"} 0
+# HELP windows_netframework_clrremoting_contexts Displays the current number of remoting contexts in the application.
+# TYPE windows_netframework_clrremoting_contexts gauge
+windows_netframework_clrremoting_contexts{process="WMSvc"} 1
+windows_netframework_clrremoting_contexts{process="powershell"} 1
+# HELP windows_netframework_clrremoting_remote_calls_total Displays the total number of remote procedure calls invoked since the application started.
+# TYPE windows_netframework_clrremoting_remote_calls_total counter
+windows_netframework_clrremoting_remote_calls_total{process="WMSvc"} 0
+windows_netframework_clrremoting_remote_calls_total{process="powershell"} 0
+# HELP windows_netframework_clrsecurity_link_time_checks_total Displays the total number of link-time code access security checks since the application started.
+# TYPE windows_netframework_clrsecurity_link_time_checks_total counter
+windows_netframework_clrsecurity_link_time_checks_total{process="WMSvc"} 0
+windows_netframework_clrsecurity_link_time_checks_total{process="powershell"} 0
+# HELP windows_netframework_clrsecurity_rt_checks_time_percent Displays the percentage of time spent performing runtime code access security checks in the last sample.
+# TYPE windows_netframework_clrsecurity_rt_checks_time_percent gauge
+windows_netframework_clrsecurity_rt_checks_time_percent{process="WMSvc"} 0
+windows_netframework_clrsecurity_rt_checks_time_percent{process="powershell"} 0
+# HELP windows_netframework_clrsecurity_runtime_checks_total Displays the total number of runtime code access security checks performed since the application started.
+# TYPE windows_netframework_clrsecurity_runtime_checks_total counter
+windows_netframework_clrsecurity_runtime_checks_total{process="WMSvc"} 3
+windows_netframework_clrsecurity_runtime_checks_total{process="powershell"} 4386
+# HELP windows_netframework_clrsecurity_stack_walk_depth Displays the depth of the stack during that last runtime code access security check.
+# TYPE windows_netframework_clrsecurity_stack_walk_depth gauge
+windows_netframework_clrsecurity_stack_walk_depth{process="WMSvc"} 1
+windows_netframework_clrsecurity_stack_walk_depth{process="powershell"} 1
 # HELP windows_os_info OperatingSystem.Caption, OperatingSystem.Version
 # TYPE windows_os_info gauge
 windows_os_info{build_number="22621",major_version="10",minor_version="0",product="Microsoft Windows 10 Pro",version="10.0.22621"} 1
