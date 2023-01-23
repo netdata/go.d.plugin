@@ -50,7 +50,6 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 		c.collectGauge(mx, mfs, "raft_fsm_lastRestoreDuration", 1)
 		c.collectGauge(mx, mfs, "raft_leader_oldestLogAge", 1, "raft_leader_oldestLogAge_oldestLogAge")
 		c.collectGauge(mx, mfs, "raft_boltdb_freelistBytes", 1, "raft_boltdb_freelistBytes_freelistBytes")
-		c.collectGauge(mx, mfs, "system_licenseExpiration", 3600, "system_licenseExpiration_licenseExpiration")
 
 		if isLeader, ok := c.isLeader(mfs); ok {
 			if isLeader && !c.hasLeaderCharts {
@@ -71,6 +70,8 @@ func (c *Consul) collectMetricsPrometheus(mx map[string]int64) error {
 			}
 		}
 	}
+
+	c.collectGauge(mx, mfs, "system_licenseExpiration", 3600, "system_licenseExpiration_licenseExpiration")
 
 	c.collectCounter(mx, mfs, "client_rpc", 1)
 	c.collectCounter(mx, mfs, "client_rpc_exceeded", 1)
