@@ -1,7 +1,11 @@
 <!--
-title: How to write a Netdata collector in Go
+title: "How to write a Netdata collector in Go"
 description: "This guide will walk you through the technical implementation of writing a new Netdata collector in Golang, with tips on interfaces, structure, configuration files, and more."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/docs/how-to-write-a-module.md
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/docs/how-to-write-a-module.md"
+sidebar_label: "How to write a Netdata collector in Go"
+learn_status: "Published"
+learn_topic_type: "Tasks"
+learn_rel_path: "Developers/Collectors"
 -->
 
 # How to write a Netdata collector in Go
