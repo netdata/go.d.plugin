@@ -150,6 +150,18 @@ const (
 	prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads
 	prioNETFrameworkCLRLockAndThreadsRecognizedThreads
 	prioNETFrameworkCLRLockAndThreadsContentions
+	prioNETFrameworkCLRMemoryAllocatedBytes
+	prioNETFrameworkCLRMemoryFinalizationSurvivors
+	prioNETFrameworkCLRMemoryHeapSize
+	prioNETFrameworkCLRMemoryPromoted
+	prioNETFrameworkCLRMemoryNumberGCHandles
+	prioNETFrameworkCLRMemoryCollections
+	prioNETFrameworkCLRMemoryInducedGC
+	prioNETFrameworkCLRMemoryNumberPinnedObjects
+	prioNETFrameworkCLRMemoryNumberSinkBlocksInUse
+	prioNETFrameworkCLRMemoryCommitted
+	prioNETFrameworkCLRMemoryReserved
+	prioNETFrameworkCLRMemoryGCTime
 
 	prioServiceState
 	prioServiceStatus
@@ -2230,6 +2242,18 @@ var (
 		netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.Copy(),
 		netFrameworkCLRLockAndThreadsRecognizedThreads.Copy(),
 		netFrameworkCLRLockAndThreadsContentions.Copy(),
+		netFrameworkCLRMemoryAllocatedBytes.Copy(),
+		netFrameworkCLRMemoryFinalizationSurvivors.Copy(),
+		netFrameworkCLRMemoryHeapSize.Copy(),
+		netFrameworkCLRMemoryPromoted.Copy(),
+		netFrameworkCLRMemoryNumberGCHandles.Copy(),
+		netFrameworkCLRMemoryCollections.Copy(),
+		netFrameworkCLRMemoryInducedGC.Copy(),
+		netFrameworkCLRMemoryNumberPinnedObjects.Copy(),
+		netFrameworkCLRMemoryNumberSinkBlocksInUse.Copy(),
+		netFrameworkCLRMemoryCommitted.Copy(),
+		netFrameworkCLRMemoryReserved.Copy(),
+		netFrameworkCLRMemoryGCTime.Copy(),
 	}
 
 	// Exceptions
@@ -2438,6 +2462,116 @@ var (
 		Ctx:      "wmi.net_framework_clrlockandthreads_contentions",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRLockAndThreadsContentions,
+	}
+
+	// Memory
+	netFrameworkCLRMemoryAllocatedBytes = module.Chart{
+		ID:       "net_framework_clrmemory_allocated_bytes",
+		Title:    "Total of bytes allocated on the garbage collection.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_allocated_bytes",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryAllocatedBytes,
+	}
+	netFrameworkCLRMemoryFinalizationSurvivors = module.Chart{
+		ID:       "net_framework_clrmemory_finalization_survivors",
+		Title:    "Number of garbage-collected objects that survived.",
+		Units:    "objects",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_finalization_survivors",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryFinalizationSurvivors,
+	}
+	netFrameworkCLRMemoryHeapSize = module.Chart{
+		ID:       "net_framework_clrmemory_heap_size",
+		Title:    "Maximum bytes can be allocated.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_heap_size",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryHeapSize,
+	}
+	netFrameworkCLRMemoryPromoted = module.Chart{
+		ID:       "net_framework_clrmemory_promoted",
+		Title:    "Bytes promoted from the generation to next.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_promoted",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryPromoted,
+	}
+	netFrameworkCLRMemoryNumberGCHandles = module.Chart{
+		ID:       "net_framework_clrmemory_number_gc_handles",
+		Title:    "Number of Garbage Collection Handle used.",
+		Units:    "handles",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_number_gc_handles",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryNumberGCHandles,
+	}
+	netFrameworkCLRMemoryCollections = module.Chart{
+		ID:       "net_framework_clrmemory_collections",
+		Title:    "Number of times Garbage Collection (GC) happens.",
+		Units:    "GC",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_collections",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryCollections,
+	}
+	netFrameworkCLRMemoryInducedGC = module.Chart{
+		ID:       "net_framework_clrmemory_induced_gc",
+		Title:    "Peak number of times garbage collection was performed.",
+		Units:    "GC",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_induced_gc",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryInducedGC,
+	}
+	netFrameworkCLRMemoryNumberPinnedObjects = module.Chart{
+		ID:       "net_framework_clrmemory_number_pinned_objects",
+		Title:    "Pinned objects in the last garbage collection.",
+		Units:    "objects",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_number_pinned_objects",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryNumberPinnedObjects,
+	}
+	netFrameworkCLRMemoryNumberSinkBlocksInUse = module.Chart{
+		ID:       "net_framework_clrmemory_number_sink_blocks_in_use",
+		Title:    "Number of synchronization blocks in use.",
+		Units:    "blocks",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_number_sink_blocks_in_use",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryNumberSinkBlocksInUse,
+	}
+	netFrameworkCLRMemoryCommitted = module.Chart{
+		ID:       "net_framework_clrmemory_committed",
+		Title:    "Amount of virtual memory currently committed.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_committed",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryCommitted,
+	}
+	netFrameworkCLRMemoryReserved = module.Chart{
+		ID:       "net_framework_clrmemory_reserved",
+		Title:    "Amount of virtual memory currently reserved.",
+		Units:    "bytes",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_reserved",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryReserved,
+	}
+	netFrameworkCLRMemoryGCTime = module.Chart{
+		ID:       "net_framework_clrmemory_gc_time",
+		Title:    "Amount of virtual memory currently reserved.",
+		Units:    "percentage",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrmemory_gc_time",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRMemoryGCTime,
 	}
 )
 
@@ -2973,6 +3107,42 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRLockAndThreadsContentions.ID:
 			id := fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRMemoryAllocatedBytes.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryHeapSize.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryPromoted.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryNumberGCHandles.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryCollections.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRMemoryInducedGC.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryCommitted.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryReserved.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRMemoryGCTime.ID:
+			id := fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
+			dim = &module.Dim{ID: id, Name: procID}
 		default:
 			continue
 		}
@@ -3036,6 +3206,30 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
 		case netFrameworkCLRLockAndThreadsContentions.ID:
 			id = fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
+		case netFrameworkCLRMemoryAllocatedBytes.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
+		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
+		case netFrameworkCLRMemoryHeapSize.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
+		case netFrameworkCLRMemoryPromoted.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
+		case netFrameworkCLRMemoryNumberGCHandles.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
+		case netFrameworkCLRMemoryCollections.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
+		case netFrameworkCLRMemoryInducedGC.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
+		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
+		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
+		case netFrameworkCLRMemoryCommitted.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
+		case netFrameworkCLRMemoryReserved.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
+		case netFrameworkCLRMemoryGCTime.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
 		default:
 			continue
 		}
