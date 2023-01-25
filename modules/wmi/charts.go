@@ -2639,7 +2639,7 @@ var (
 		Fam:      "net_framework",
 		Ctx:      "wmi.net_framework_clrremoting_calls",
 		Type:     module.Stacked,
-		Priority: prioNETFrameworkCLRRemotingContexts,
+		Priority: prioNETFrameworkCLRRemotingRemoteCalls,
 	}
 )
 
