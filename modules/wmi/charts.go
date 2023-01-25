@@ -168,6 +168,10 @@ const (
 	prioNETFrameworkCLRRemotingContextProxies
 	prioNETFrameworkCLRRemotingContexts
 	prioNETFrameworkCLRRemotingRemoteCalls
+	prioNETFrameworkCLRSecurityLinkTimeChecks
+	prioNETFrameworkCLRSecurityRTChecksTime
+	prioNETFrameworkCLRSecurityStackWalkDepth
+	prioNETFrameworkCLRSecurityRuntimeChecks
 
 	prioServiceState
 	prioServiceStatus
@@ -2266,6 +2270,10 @@ var (
 		netFrameworkCLRContextProxies.Copy(),
 		netFrameworkCLRContexts.Copy(),
 		netFrameworkCLRRemotingCalls.Copy(),
+		netFrameworkCLRSecurityLinkTimeChecks.Copy(),
+		netFrameworkCLRSecurityChecksTime.Copy(),
+		netFrameworkCLRSecurityStackWalkDepth.Copy(),
+		netFrameworkCLRSecurityRuntimeChecks.Copy(),
 	}
 
 	// Exceptions
@@ -2640,6 +2648,44 @@ var (
 		Ctx:      "wmi.net_framework_clrremoting_calls",
 		Type:     module.Stacked,
 		Priority: prioNETFrameworkCLRRemotingRemoteCalls,
+	}
+
+	// Security
+	netFrameworkCLRSecurityLinkTimeChecks = module.Chart{
+		ID:       "net_framework_clrsecurity_link_time_checks",
+		Title:    "Number of Link-time code access security.",
+		Units:    "access",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrsecurity_link_time_checks",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRSecurityLinkTimeChecks,
+	}
+	netFrameworkCLRSecurityChecksTime = module.Chart{
+		ID:       "net_framework_clrsecurity_checks_time",
+		Title:    "Percentage of time to access security checks.",
+		Units:    "percentage",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrsecurity_checks_time",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRSecurityRTChecksTime,
+	}
+	netFrameworkCLRSecurityStackWalkDepth = module.Chart{
+		ID:       "net_framework_clrsecurity_stack_walk_depth",
+		Title:    "Depth of stack.",
+		Units:    "depth",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrsecurity_stack_walk_depth",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRSecurityStackWalkDepth,
+	}
+	netFrameworkCLRSecurityRuntimeChecks = module.Chart{
+		ID:       "net_framework_clrsecurity_runtime_checks",
+		Title:    "Total number of runtime code access.",
+		Units:    "access",
+		Fam:      "net_framework",
+		Ctx:      "wmi.net_framework_clrsecurity_checks_time",
+		Type:     module.Stacked,
+		Priority: prioNETFrameworkCLRSecurityRuntimeChecks,
 	}
 )
 
@@ -3229,6 +3275,18 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRRemotingCalls.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRSecurityLinkTimeChecks.ID:
+			id := fmt.Sprintf("netframework_clrsecuriy_%s_link_time_checks", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		case netFrameworkCLRSecurityChecksTime.ID:
+			id := fmt.Sprintf("netframework_clrsecuriy_%s_checks_time", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRSecurityStackWalkDepth.ID:
+			id := fmt.Sprintf("netframework_clrsecuriy_%s_stack_walk_depth", procID)
+			dim = &module.Dim{ID: id, Name: procID}
+		case netFrameworkCLRSecurityRuntimeChecks.ID:
+			id := fmt.Sprintf("netframework_clrsecuriy_%s_runtime_checks", procID)
+			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			continue
 		}
@@ -3328,6 +3386,14 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 			id = fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
 		case netFrameworkCLRRemotingCalls.ID:
 			id = fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
+		case netFrameworkCLRSecurityLinkTimeChecks.ID:
+			id = fmt.Sprintf("netframework_clrsecuriy_%s_link_time_checks", procID)
+		case netFrameworkCLRSecurityChecksTime.ID:
+			id = fmt.Sprintf("netframework_clrsecuriy_%s_checks_time", procID)
+		case netFrameworkCLRSecurityStackWalkDepth.ID:
+			id = fmt.Sprintf("netframework_clrsecuriy_%s_stack_walk_depth", procID)
+		case netFrameworkCLRSecurityRuntimeChecks.ID:
+			id = fmt.Sprintf("netframework_clrsecuriy_%s_runtime_checks", procID)
 		default:
 			continue
 		}
