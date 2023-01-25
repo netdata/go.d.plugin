@@ -3288,6 +3288,7 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 			id := fmt.Sprintf("netframework_clrsecuriy_%s_runtime_checks", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
+			dim = nil
 			continue
 		}
 
