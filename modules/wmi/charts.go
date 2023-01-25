@@ -3276,16 +3276,16 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 			id := fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		case netFrameworkCLRSecurityLinkTimeChecks.ID:
-			id := fmt.Sprintf("netframework_clrsecuriy_%s_link_time_checks", procID)
+			id := fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		case netFrameworkCLRSecurityChecksTime.ID:
-			id := fmt.Sprintf("netframework_clrsecuriy_%s_checks_time", procID)
+			id := fmt.Sprintf("netframework_clrsecurity_%s_checks_time", procID)
 			dim = &module.Dim{ID: id, Name: procID}
 		case netFrameworkCLRSecurityStackWalkDepth.ID:
-			id := fmt.Sprintf("netframework_clrsecuriy_%s_stack_walk_depth", procID)
+			id := fmt.Sprintf("netframework_clrsecurity_%s_stack_walk_depth", procID)
 			dim = &module.Dim{ID: id, Name: procID}
 		case netFrameworkCLRSecurityRuntimeChecks.ID:
-			id := fmt.Sprintf("netframework_clrsecuriy_%s_runtime_checks", procID)
+			id := fmt.Sprintf("netframework_clrsecurity_%s_runtime_checks", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
 		default:
 			dim = nil
@@ -3388,13 +3388,13 @@ func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
 		case netFrameworkCLRRemotingCalls.ID:
 			id = fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
 		case netFrameworkCLRSecurityLinkTimeChecks.ID:
-			id = fmt.Sprintf("netframework_clrsecuriy_%s_link_time_checks", procID)
+			id = fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
 		case netFrameworkCLRSecurityChecksTime.ID:
-			id = fmt.Sprintf("netframework_clrsecuriy_%s_checks_time", procID)
+			id = fmt.Sprintf("netframework_clrsecurity_%s_checks_time", procID)
 		case netFrameworkCLRSecurityStackWalkDepth.ID:
-			id = fmt.Sprintf("netframework_clrsecuriy_%s_stack_walk_depth", procID)
+			id = fmt.Sprintf("netframework_clrsecurity_%s_stack_walk_depth", procID)
 		case netFrameworkCLRSecurityRuntimeChecks.ID:
-			id = fmt.Sprintf("netframework_clrsecuriy_%s_runtime_checks", procID)
+			id = fmt.Sprintf("netframework_clrsecurity_%s_runtime_checks", procID)
 		default:
 			continue
 		}
