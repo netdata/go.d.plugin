@@ -302,7 +302,7 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingChannelsTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+"remoting_"+name+"_channels_total"] += int64(pm.Value)
+			mx[px+"remoting_"+name+"_channels"] += int64(pm.Value)
 		}
 	}
 
