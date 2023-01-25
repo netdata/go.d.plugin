@@ -44,6 +44,13 @@ const (
 	metricNetFrameworkCLRMemoryCommittedBytes        = "windows_netframework_clrmemory_committed_bytes"
 	metricNetFrameworkCLRMemoryReservedBytes         = "windows_netframework_clrmemory_reserved_bytes"
 	metricNetFrameworkCLRMemoryGCTimePecent          = "windows_netframework_clrmemory_gc_time_percent"
+
+	metricNetFrameworkCLRRemotingChannelsTotal             = "windows_netframework_clrremoting_channels_total"
+	metricNetFrameworkCLRRemotingContextBoundClassesLoaded = "windows_netframework_clrremoting_context_bound_classes_loaded"
+	metricNetFrameworkCLRRemotingContextBoundObjectsTotal  = "windows_netframework_clrremoting_context_bound_objects_total"
+	metricNetFrameworkCLRRemotingContextProxiesTotal       = "windows_netframework_clrremoting_context_proxies_total"
+	metricNetFrameworkCLRRemotingContexts                  = "windows_netframework_clrremoting_contexts"
+	metricNetFrameworkCLRRemotingRemoteCallsTotal          = "windows_netframework_clrremoting_remote_calls_total"
 )
 
 func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series) {
@@ -289,6 +296,48 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
 			mx[px+"memory_"+name+"_gc_time"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingChannelsTotal) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_channels_total"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextBoundClassesLoaded) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_context_bound_classes_loaded"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextBoundObjectsTotal) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_context_bound_objects"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextProxiesTotal) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_context_proxies"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContexts) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_contexts"] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingRemoteCallsTotal) {
+		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
+			seen[name] = true
+			mx[px+"remoting_"+name+"_calls"] += int64(pm.Value)
 		}
 	}
 
