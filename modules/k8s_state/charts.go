@@ -123,6 +123,7 @@ var containerChartsTmpl = module.Charts{
 var (
 	// CPU resource
 	nodeAllocatableCPURequestsUtilChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_cpu_requests_utilization",
 		Title:    "CPU requests utilization",
 		Units:    "%",
@@ -134,6 +135,7 @@ var (
 		},
 	}
 	nodeAllocatableCPURequestsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_cpu_requests_used",
 		Title:    "CPU requests used",
 		Units:    "millicpu",
@@ -145,6 +147,7 @@ var (
 		},
 	}
 	nodeAllocatableCPULimitsUtilChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_cpu_limits_utilization",
 		Title:    "CPU limits utilization",
 		Units:    "%",
@@ -156,6 +159,7 @@ var (
 		},
 	}
 	nodeAllocatableCPULimitsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_cpu_limits_used",
 		Title:    "CPU limits used",
 		Units:    "millicpu",
@@ -168,6 +172,7 @@ var (
 	}
 	// memory resource
 	nodeAllocatableMemRequestsUtilChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_mem_requests_utilization",
 		Title:    "Memory requests utilization",
 		Units:    "%",
@@ -179,6 +184,7 @@ var (
 		},
 	}
 	nodeAllocatableMemRequestsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_mem_requests_used",
 		Title:    "Memory requests used",
 		Units:    "bytes",
@@ -190,6 +196,7 @@ var (
 		},
 	}
 	nodeAllocatableMemLimitsUtilChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_mem_limits_utilization",
 		Title:    "Memory limits utilization",
 		Units:    "%",
@@ -201,6 +208,7 @@ var (
 		},
 	}
 	nodeAllocatableMemLimitsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_mem_limits_used",
 		Title:    "Memory limits used",
 		Units:    "bytes",
@@ -213,6 +221,7 @@ var (
 	}
 	// pods resource
 	nodeAllocatablePodsUtilizationChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocatable_pods_utilization",
 		Title:    "Pods resource utilization",
 		Units:    "%",
@@ -224,6 +233,7 @@ var (
 		},
 	}
 	nodeAllocatablePodsUsageChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.allocated_pods_usage",
 		Title:    "Pods resource usage",
 		Units:    "pods",
@@ -238,6 +248,7 @@ var (
 	}
 	// condition
 	nodeConditionsChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.condition_status",
 		Title:    "Condition status",
 		Units:    "status",
@@ -246,6 +257,7 @@ var (
 		Priority: prioNodeConditions,
 	}
 	nodeSchedulabilityChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.schedulability",
 		Title:    "Schedulability",
 		Units:    "state",
@@ -259,6 +271,7 @@ var (
 	}
 	// pods readiness
 	nodePodsReadinessChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.pods_readiness",
 		Title:    "Pods readiness",
 		Units:    "%",
@@ -270,6 +283,7 @@ var (
 		},
 	}
 	nodePodsReadinessStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.pods_readiness_state",
 		Title:    "Pods readiness state",
 		Units:    "pods",
@@ -284,6 +298,7 @@ var (
 	}
 	// pods condition
 	nodePodsConditionChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.pods_condition",
 		Title:    "Pods condition",
 		Units:    "pods",
@@ -299,6 +314,7 @@ var (
 	}
 	// pods phase
 	nodePodsPhaseChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.pods_phase",
 		Title:    "Pods phase",
 		Units:    "pods",
@@ -315,6 +331,7 @@ var (
 	}
 	// containers
 	nodeContainersChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.containers",
 		Title:    "Containers",
 		Units:    "containers",
@@ -327,6 +344,7 @@ var (
 		},
 	}
 	nodeContainersStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.containers_state",
 		Title:    "Containers state",
 		Units:    "containers",
@@ -341,6 +359,7 @@ var (
 		},
 	}
 	nodeInitContainersStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.init_containers_state",
 		Title:    "Init containers state",
 		Units:    "containers",
@@ -356,6 +375,7 @@ var (
 	}
 	// age
 	nodeAgeChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "node_%s.age",
 		Title:    "Age",
 		Units:    "seconds",
@@ -427,6 +447,7 @@ func (ks *KubeState) addNodeConditionToCharts(ns *nodeState, cond string) {
 
 var (
 	podCPURequestsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.cpu_requests_used",
 		Title:    "CPU requests used",
 		Units:    "millicpu",
@@ -438,6 +459,7 @@ var (
 		},
 	}
 	podCPULimitsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.cpu_limits_used",
 		Title:    "CPU limits used",
 		Units:    "millicpu",
@@ -449,6 +471,7 @@ var (
 		},
 	}
 	podMemRequestsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.mem_requests_used",
 		Title:    "Memory requests used",
 		Units:    "bytes",
@@ -460,6 +483,7 @@ var (
 		},
 	}
 	podMemLimitsUsedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.mem_limits_used",
 		Title:    "Memory limits used",
 		Units:    "bytes",
@@ -471,6 +495,7 @@ var (
 		},
 	}
 	podConditionChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.condition",
 		Title:    "Condition",
 		Units:    "state",
@@ -485,6 +510,7 @@ var (
 		},
 	}
 	podPhaseChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.phase",
 		Title:    "Phase",
 		Units:    "state",
@@ -499,6 +525,7 @@ var (
 		},
 	}
 	podAgeChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.age",
 		Title:    "Age",
 		Units:    "seconds",
@@ -510,6 +537,7 @@ var (
 		},
 	}
 	podContainersCountChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.containers_count",
 		Title:    "Containers",
 		Units:    "containers",
@@ -522,6 +550,7 @@ var (
 		},
 	}
 	podContainersStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.containers_state",
 		Title:    "Containers state",
 		Units:    "containers",
@@ -536,6 +565,7 @@ var (
 		},
 	}
 	podInitContainersStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s.init_containers_state",
 		Title:    "Init containers state",
 		Units:    "containers",
@@ -617,6 +647,7 @@ func (ks *KubeState) removePodCharts(ps *podState) {
 
 var (
 	containerReadinessStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s_container_%s.readiness_state",
 		Title:    "Readiness state",
 		Units:    "state",
@@ -628,6 +659,7 @@ var (
 		},
 	}
 	containerRestartsChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s_container_%s.restarts",
 		Title:    "Restarts",
 		Units:    "restarts/s",
@@ -639,6 +671,7 @@ var (
 		},
 	}
 	containersStateChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s_container_%s.state",
 		Title:    "Container state",
 		Units:    "state",
@@ -652,6 +685,7 @@ var (
 		},
 	}
 	containersStateWaitingChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s_container_%s.state_waiting_reason",
 		Title:    "Container waiting state reason",
 		Units:    "state",
@@ -660,6 +694,7 @@ var (
 		Priority: prioPodContainerWaitingStateReason,
 	}
 	containersStateTerminatedChartTmpl = module.Chart{
+		IDSep:    true,
 		ID:       "pod_%s_container_%s.state_terminated_reason",
 		Title:    "Container terminated state reason",
 		Units:    "state",
