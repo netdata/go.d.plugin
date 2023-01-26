@@ -65,17 +65,17 @@ const (
 	prioProcessesThreads
 	prioProcessesHandles
 
+	prioIISWebsiteUptime
 	prioIISWebsiteTraffic
-	prioIISWebsiteRequestsRate
+	prioIISWebsiteFTPFileTransferRate
 	prioIISWebsiteActiveConnectionsCount
-	prioIISWebsiteUsersCount
+	prioIISWebsiteRequestsRate
 	prioIISWebsiteConnectionAttemptsRate
+	prioIISWebsiteUsersCount
 	prioIISWebsiteISAPIExtRequestsCount
 	prioIISWebsiteISAPIExtRequestsRate
-	prioIISWebsiteFTPFileTransferRate
-	prioIISWebsiteLogonAttemptsRate
 	prioIISWebsiteErrorsRate
-	prioIISWebsiteUptime
+	prioIISWebsiteLogonAttemptsRate
 
 	prioMSSQLAccessMethodPageSplits
 	prioMSSQLCacheHitRatio
@@ -709,12 +709,24 @@ var (
 		iisWebsiteErrorsRateChart.Copy(),
 		iisWebsiteUptimeChartTmpl.Copy(),
 	}
+	iisWebsiteUptimeChartTmpl = module.Chart{
+		OverModule: "IIS",
+		ID:         "iis_website_%s_uptime",
+		Title:      "Website uptime",
+		Units:      "seconds",
+		Fam:        "uptime",
+		Ctx:        "iis.website_uptime",
+		Priority:   prioIISWebsiteUptime,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
+		},
+	}
 	iisWebsiteTrafficChartTempl = module.Chart{
 		OverModule: "IIS",
 		ID:         "iis_website_%s_traffic",
 		Title:      "Website traffic",
 		Units:      "bytes/s",
-		Fam:        "iis",
+		Fam:        "bandwidth",
 		Ctx:        "iis.website_traffic",
 		Type:       module.Area,
 		Priority:   prioIISWebsiteTraffic,
@@ -723,16 +735,17 @@ var (
 			{ID: "iis_website_%s_sent_bytes_total", Name: "sent", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	iisWebsiteRequestsRateChartTmpl = module.Chart{
+	iisWebsiteFTPFileTransferRateChartTempl = module.Chart{
 		OverModule: "IIS",
-		ID:         "iis_website_%s_requests_rate",
-		Title:      "Website requests rate",
-		Units:      "requests/s",
-		Fam:        "iis",
-		Ctx:        "iis.website_requests_rate",
-		Priority:   prioIISWebsiteRequestsRate,
+		ID:         "iis_website_%s_ftp_file_transfer_rate",
+		Title:      "Website FTP file transfer rate",
+		Units:      "files/s",
+		Fam:        "bandwidth",
+		Ctx:        "iis.website_ftp_file_transfer_rate",
+		Priority:   prioIISWebsiteFTPFileTransferRate,
 		Dims: module.Dims{
-			{ID: "iis_website_%s_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "iis_website_%s_files_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "iis_website_%s_files_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
 	iisWebsiteActiveConnectionsCountChartTmpl = module.Chart{
@@ -740,11 +753,35 @@ var (
 		ID:         "iis_website_%s_active_connections_count",
 		Title:      "Website active connections",
 		Units:      "connections",
-		Fam:        "iis",
+		Fam:        "connection",
 		Ctx:        "iis.website_active_connections_count",
 		Priority:   prioIISWebsiteActiveConnectionsCount,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_current_connections", Name: "active"},
+		},
+	}
+	iisWebsiteConnectionAttemptsRate = module.Chart{
+		OverModule: "IIS",
+		ID:         "iis_website_%s_connection_attempts_rate",
+		Title:      "Website connections attempts",
+		Units:      "attempts/s",
+		Fam:        "connection",
+		Ctx:        "iis.website_connection_attempts_rate",
+		Priority:   prioIISWebsiteConnectionAttemptsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_connection_attempts_all_instances_total", Name: "connection", Algo: module.Incremental},
+		},
+	}
+	iisWebsiteRequestsRateChartTmpl = module.Chart{
+		OverModule: "IIS",
+		ID:         "iis_website_%s_requests_rate",
+		Title:      "Website requests rate",
+		Units:      "requests/s",
+		Fam:        "request",
+		Ctx:        "iis.website_requests_rate",
+		Priority:   prioIISWebsiteRequestsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	iisWebsiteUsersCountChartTmpl = module.Chart{
@@ -752,7 +789,7 @@ var (
 		ID:         "iis_website_%s_users_count",
 		Title:      "Website users with pending requests",
 		Units:      "users",
-		Fam:        "iis",
+		Fam:        "request",
 		Ctx:        "iis.website_users_count",
 		Type:       module.Stacked,
 		Priority:   prioIISWebsiteUsersCount,
@@ -761,24 +798,12 @@ var (
 			{ID: "iis_website_%s_current_non_anonymous_users", Name: "non_anonymous"},
 		},
 	}
-	iisWebsiteConnectionAttemptsRate = module.Chart{
-		OverModule: "IIS",
-		ID:         "iis_website_%s_connection_attempts_rate",
-		Title:      "Website connections attempts",
-		Units:      "attempts/s",
-		Fam:        "iis",
-		Ctx:        "iis.website_connection_attempts_rate",
-		Priority:   prioIISWebsiteConnectionAttemptsRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_connection_attempts_all_instances_total", Name: "connection", Algo: module.Incremental},
-		},
-	}
 	iisWebsiteISAPIExtRequestsCountChartTmpl = module.Chart{
 		OverModule: "IIS",
 		ID:         "iis_website_%s_isapi_extension_requests_count",
 		Title:      "ISAPI extension requests",
 		Units:      "requests",
-		Fam:        "iis",
+		Fam:        "request",
 		Ctx:        "iis.website_isapi_extension_requests_count",
 		Priority:   prioIISWebsiteISAPIExtRequestsCount,
 		Dims: module.Dims{
@@ -790,36 +815,11 @@ var (
 		ID:         "iis_website_%s_isapi_extension_requests_rate",
 		Title:      "Website extensions request",
 		Units:      "requests/s",
-		Fam:        "iis",
+		Fam:        "request",
 		Ctx:        "iis.website_isapi_extension_requests_rate",
 		Priority:   prioIISWebsiteISAPIExtRequestsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_isapi_extension_requests_total", Name: "isapi", Algo: module.Incremental},
-		},
-	}
-	iisWebsiteFTPFileTransferRateChartTempl = module.Chart{
-		OverModule: "IIS",
-		ID:         "iis_website_%s_ftp_file_transfer_rate",
-		Title:      "Website FTP file transfer rate",
-		Units:      "files/s",
-		Fam:        "iis",
-		Ctx:        "iis.website_ftp_file_transfer_rate",
-		Priority:   prioIISWebsiteFTPFileTransferRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_files_received_total", Name: "received", Algo: module.Incremental},
-			{ID: "iis_website_%s_files_sent_total", Name: "sent", Algo: module.Incremental},
-		},
-	}
-	iisWebsiteLogonAttemptsRateChartTmpl = module.Chart{
-		OverModule: "IIS",
-		ID:         "iis_website_%s_logon_attempts_rate",
-		Title:      "Website logon attempts",
-		Units:      "attempts/s",
-		Fam:        "iis",
-		Ctx:        "iis.website_logon_attempts_rate",
-		Priority:   prioIISWebsiteLogonAttemptsRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
 		},
 	}
 	iisWebsiteErrorsRateChart = module.Chart{
@@ -827,7 +827,7 @@ var (
 		ID:         "iis_website_%s_errors_rate",
 		Title:      "Website errors",
 		Units:      "errors/s",
-		Fam:        "iis",
+		Fam:        "request",
 		Ctx:        "iis.website_errors_rate",
 		Type:       module.Stacked,
 		Priority:   prioIISWebsiteErrorsRate,
@@ -836,16 +836,16 @@ var (
 			{ID: "iis_website_%s_not_found_errors_total", Name: "document_not_found", Algo: module.Incremental},
 		},
 	}
-	iisWebsiteUptimeChartTmpl = module.Chart{
+	iisWebsiteLogonAttemptsRateChartTmpl = module.Chart{
 		OverModule: "IIS",
-		ID:         "iis_website_%s_uptime",
-		Title:      "Website uptime",
-		Units:      "seconds",
-		Fam:        "iis",
-		Ctx:        "iis.website_uptime",
-		Priority:   prioIISWebsiteUptime,
+		ID:         "iis_website_%s_logon_attempts_rate",
+		Title:      "Website logon attempts",
+		Units:      "attempts/s",
+		Fam:        "logon",
+		Ctx:        "iis.website_logon_attempts_rate",
+		Priority:   prioIISWebsiteLogonAttemptsRate,
 		Dims: module.Dims{
-			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
+			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
 		},
 	}
 )
