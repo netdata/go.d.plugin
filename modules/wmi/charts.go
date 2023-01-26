@@ -715,7 +715,7 @@ var (
 		Title:      "Website traffic",
 		Units:      "bytes/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_traffic",
+		Ctx:        "iis.website_traffic",
 		Type:       module.Area,
 		Priority:   prioIISWebsiteTraffic,
 		Dims: module.Dims{
@@ -729,7 +729,7 @@ var (
 		Title:      "Website requests rate",
 		Units:      "requests/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_requests_rate",
+		Ctx:        "iis.website_requests_rate",
 		Priority:   prioIISWebsiteRequestsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_requests_total", Name: "requests", Algo: module.Incremental},
@@ -741,7 +741,7 @@ var (
 		Title:      "Website active connections",
 		Units:      "connections",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_active_connections_count",
+		Ctx:        "iis.website_active_connections_count",
 		Priority:   prioIISWebsiteActiveConnectionsCount,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_current_connections", Name: "active"},
@@ -753,7 +753,7 @@ var (
 		Title:      "Website users with pending requests",
 		Units:      "users",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_users_count",
+		Ctx:        "iis.website_users_count",
 		Type:       module.Stacked,
 		Priority:   prioIISWebsiteUsersCount,
 		Dims: module.Dims{
@@ -767,7 +767,7 @@ var (
 		Title:      "Website connections attempts",
 		Units:      "attempts/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_connection_attempts_rate",
+		Ctx:        "iis.website_connection_attempts_rate",
 		Priority:   prioIISWebsiteConnectionAttemptsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_connection_attempts_all_instances_total", Name: "connection", Algo: module.Incremental},
@@ -779,7 +779,7 @@ var (
 		Title:      "ISAPI extension requests",
 		Units:      "requests",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_isapi_extension_requests_count",
+		Ctx:        "iis.website_isapi_extension_requests_count",
 		Priority:   prioIISWebsiteISAPIExtRequestsCount,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_current_isapi_extension_requests", Name: "isapi"},
@@ -791,7 +791,7 @@ var (
 		Title:      "Website extensions request",
 		Units:      "requests/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_isapi_extension_requests_rate",
+		Ctx:        "iis.website_isapi_extension_requests_rate",
 		Priority:   prioIISWebsiteISAPIExtRequestsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_isapi_extension_requests_total", Name: "isapi", Algo: module.Incremental},
@@ -803,7 +803,7 @@ var (
 		Title:      "Website FTP file transfer rate",
 		Units:      "files/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_ftp_file_transfer_rate",
+		Ctx:        "iis.website_ftp_file_transfer_rate",
 		Priority:   prioIISWebsiteFTPFileTransferRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_files_received_total", Name: "received", Algo: module.Incremental},
@@ -816,7 +816,7 @@ var (
 		Title:      "Website logon attempts",
 		Units:      "attempts/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_logon_attempts_rate",
+		Ctx:        "iis.website_logon_attempts_rate",
 		Priority:   prioIISWebsiteLogonAttemptsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
@@ -828,7 +828,7 @@ var (
 		Title:      "Website errors",
 		Units:      "errors/s",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_errors_rate",
+		Ctx:        "iis.website_errors_rate",
 		Type:       module.Stacked,
 		Priority:   prioIISWebsiteErrorsRate,
 		Dims: module.Dims{
@@ -842,7 +842,7 @@ var (
 		Title:      "Website uptime",
 		Units:      "seconds",
 		Fam:        "iis",
-		Ctx:        "wmi.iis_website_uptime",
+		Ctx:        "iis.website_uptime",
 		Priority:   prioIISWebsiteUptime,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
