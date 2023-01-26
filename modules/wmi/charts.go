@@ -1241,7 +1241,7 @@ var (
 		Title:      "DRA replication compressed traffic withing site",
 		Units:      "bytes/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_intersite_compressed_traffic",
+		Ctx:        "ad.dra_replication_intersite_compressed_traffic",
 		Priority:   prioADDRAReplicationIntersiteCompressedTraffic,
 		Type:       module.Area,
 		Dims: module.Dims{
@@ -1255,7 +1255,7 @@ var (
 		Title:      "DRA replication compressed traffic between sites",
 		Units:      "bytes/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_intrasite_compressed_traffic",
+		Ctx:        "ad.dra_replication_intrasite_compressed_traffic",
 		Priority:   prioADDRAReplicationIntrasiteCompressedTraffic,
 		Type:       module.Area,
 		Dims: module.Dims{
@@ -1269,7 +1269,7 @@ var (
 		Title:      "DRA replication full sync objects remaining",
 		Units:      "objects",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_sync_objects_remaining",
+		Ctx:        "ad.dra_replication_sync_objects_remaining",
 		Priority:   prioADDRAReplicationSyncObjectsRemaining,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_sync_objects_remaining", Name: "inbound"},
@@ -1281,7 +1281,7 @@ var (
 		Title:      "DRA replication objects filtered",
 		Units:      "objects/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_objects_filtered",
+		Ctx:        "ad.dra_replication_objects_filtered",
 		Priority:   prioADDRAReplicationObjectsFiltered,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_objects_filtered_total", Name: "inbound", Algo: module.Incremental},
@@ -1293,7 +1293,7 @@ var (
 		Title:      "DRA replication properties updated",
 		Units:      "properties/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_properties_updated",
+		Ctx:        "ad.dra_replication_properties_updated",
 		Priority:   prioADDRAReplicationPropertiesUpdated,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_properties_updated_total", Name: "inbound", Algo: module.Incremental},
@@ -1305,7 +1305,7 @@ var (
 		Title:      "DRA replication properties filtered",
 		Units:      "properties/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_properties_filtered",
+		Ctx:        "ad.dra_replication_properties_filtered",
 		Priority:   prioADDRAReplicationPropertiesFiltered,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_properties_filtered_total", Name: "inbound", Algo: module.Incremental},
@@ -1317,7 +1317,7 @@ var (
 		Title:      "DRA replication pending syncs",
 		Units:      "syncs",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_pending_syncs",
+		Ctx:        "ad.dra_replication_pending_syncs",
 		Priority:   prioADReplicationPendingSyncs,
 		Dims: module.Dims{
 			{ID: "ad_replication_pending_synchronizations", Name: "pending"},
@@ -1329,7 +1329,7 @@ var (
 		Title:      "DRA replication sync requests",
 		Units:      "requests/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_dra_replication_sync_requests",
+		Ctx:        "ad.dra_replication_sync_requests",
 		Priority:   prioADDRASyncRequests,
 		Dims: module.Dims{
 			{ID: "ad_replication_sync_requests_total", Name: "request", Algo: module.Incremental},
@@ -1341,7 +1341,7 @@ var (
 		Title:      "Directory Service threads",
 		Units:      "threads",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_ds_threads",
+		Ctx:        "ad.ds_threads",
 		Priority:   prioADDirectoryServiceThreadsInUse,
 		Dims: module.Dims{
 			{ID: "ad_directory_service_threads", Name: "in_use"},
@@ -1353,7 +1353,7 @@ var (
 		Title:      "LDAP last successful bind time",
 		Units:      "seconds",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_ldap_last_bind_time",
+		Ctx:        "ad.ldap_last_bind_time",
 		Priority:   prioADLDAPBindTime,
 		Dims: module.Dims{
 			{ID: "ad_ldap_last_bind_time_seconds", Name: "last_bind"},
@@ -1365,7 +1365,7 @@ var (
 		Title:      "Successful binds",
 		Units:      "bind/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_binds",
+		Ctx:        "ad.binds",
 		Priority:   prioADBindsTotal,
 		Dims: module.Dims{
 			{ID: "ad_binds_total", Name: "binds", Algo: module.Incremental},
@@ -1377,7 +1377,7 @@ var (
 		Title:      "LDAP client search operations",
 		Units:      "searches/s",
 		Fam:        "ad",
-		Ctx:        "wmi.ad_ldap_searches",
+		Ctx:        "ad.ldap_searches",
 		Priority:   prioADLDAPSearchesTotal,
 		Dims: module.Dims{
 			{ID: "ad_ldap_searches_total", Name: "searches", Algo: module.Incremental},
