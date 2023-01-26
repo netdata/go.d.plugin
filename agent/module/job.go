@@ -518,12 +518,16 @@ func getChartType(chart *Chart, j *Job) string {
 		return chart.typ
 	}
 	if !chart.IDSep {
-		return j.FullName()
-	}
-	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
+		chart.typ = j.FullName()
+	} else if i := strings.IndexByte(chart.ID, '.'); i != -1 {
 		chart.typ = j.FullName() + "_" + chart.ID[:i]
 	} else {
 		chart.typ = j.FullName()
+	}
+	if chart.OverModule != "" {
+		if v := strings.TrimPrefix(chart.typ, j.ModuleName()); v != chart.typ {
+			chart.typ = chart.OverModule + v
+		}
 	}
 	return chart.typ
 }

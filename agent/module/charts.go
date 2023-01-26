@@ -82,15 +82,16 @@ type (
 		typ string
 		id  string
 
-		IDSep    bool
-		ID       string
-		OverID   string
-		Title    string
-		Units    string
-		Fam      string
-		Ctx      string
-		Type     ChartType
-		Priority int
+		OverModule string
+		IDSep      bool
+		ID         string
+		OverID     string
+		Title      string
+		Units      string
+		Fam        string
+		Ctx        string
+		Type       ChartType
+		Priority   int
 		Opts
 
 		Labels []Label
