@@ -122,12 +122,12 @@ const (
 	prioADCSCertTemplateRequests
 	prioADCSCertTemplateRequestProcessingTime
 	prioADCSCertTemplateRetrievals
-	prioADCSCertTemplateRetrievalProcessingTime
 	prioADCSCertTemplateFailedRequests
 	prioADCSCertTemplateIssuesRequests
 	prioADCSCertTemplatePendingRequests
 	prioADCSCertTemplateRequestCryptoSigningTime
 	prioADCSCertTemplateRequestPolicyModuleProcessingTime
+	prioADCSCertTemplateRetrievalProcessingTime
 	prioADCSCertTemplateChallengeResponses
 	prioADCSCertTemplateChallengeResponseProcessingTime
 	prioADCSCertTemplateSignedCertificateTimestampLists
@@ -1408,7 +1408,7 @@ var (
 		ID:         "adcs_cert_template%s_requests",
 		Title:      "Certificate requests processed",
 		Units:      "requests/s",
-		Fam:        "adcs",
+		Fam:        "request",
 		Ctx:        "adcs.cert_template_requests",
 		Priority:   prioADCSCertTemplateRequests,
 		Dims: module.Dims{
@@ -1420,7 +1420,7 @@ var (
 		ID:         "adcs_cert_template_%s_failed_requests",
 		Title:      "Certificate failed requests processed",
 		Units:      "requests/s",
-		Fam:        "adcs",
+		Fam:        "request",
 		Ctx:        "adcs.cert_template_failed_requests",
 		Priority:   prioADCSCertTemplateFailedRequests,
 		Dims: module.Dims{
@@ -1432,7 +1432,7 @@ var (
 		ID:         "adcs_cert_template_%s_issued_requests",
 		Title:      "Certificate issued requests processed",
 		Units:      "requests/s",
-		Fam:        "adcs",
+		Fam:        "request",
 		Ctx:        "adcs.cert_template_issued_requests",
 		Priority:   prioADCSCertTemplateIssuesRequests,
 		Dims: module.Dims{
@@ -1444,7 +1444,7 @@ var (
 		ID:         "adcs_cert_template_%s_pending_requests",
 		Title:      "Certificate pending requests processed",
 		Units:      "requests/s",
-		Fam:        "adcs",
+		Fam:        "request",
 		Ctx:        "adcs.cert_template_pending_requests",
 		Priority:   prioADCSCertTemplatePendingRequests,
 		Dims: module.Dims{
@@ -1456,7 +1456,7 @@ var (
 		ID:         "adcs_cert_template_%s_request_processing_time",
 		Title:      "Certificate last request processing time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "request",
 		Ctx:        "adcs.cert_template_request_processing_time",
 		Priority:   prioADCSCertTemplateRequestProcessingTime,
 		Dims: module.Dims{
@@ -1468,7 +1468,7 @@ var (
 		ID:         "adcs_cert_template_%s_retrievals",
 		Title:      "Total of certificate retrievals",
 		Units:      "retrievals/s",
-		Fam:        "adcs",
+		Fam:        "retrieval",
 		Ctx:        "adcs.cert_template_retrievals",
 		Priority:   prioADCSCertTemplateRetrievals,
 		Dims: module.Dims{
@@ -1480,11 +1480,23 @@ var (
 		ID:         "adcs_cert_template_%s_retrievals_processing_time",
 		Title:      "Certificate last retrieval processing time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "retrieval",
 		Ctx:        "adcs.cert_template_retrieval_processing_time",
 		Priority:   prioADCSCertTemplateRetrievalProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time", Div: precision},
+		},
+	}
+	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
+		OverModule: "ADCS",
+		ID:         "adcs_cert_template_%s_challenge_responses",
+		Title:      "Certificate challenge responses",
+		Units:      "responses/s",
+		Fam:        "response",
+		Ctx:        "adcs.cert_template_challenge_responses",
+		Priority:   prioADCSCertTemplateChallengeResponses,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateRequestCryptoSigningTimeChartTmpl = module.Chart{
@@ -1492,7 +1504,7 @@ var (
 		ID:         "adcs_cert_template_%s_request_cryptographic_signing_time",
 		Title:      "Certificate last signing operation request time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "period",
 		Ctx:        "adcs.cert_template_request_cryptographic_signing_time",
 		Priority:   prioADCSCertTemplateRequestCryptoSigningTime,
 		Dims: module.Dims{
@@ -1504,23 +1516,11 @@ var (
 		ID:         "adcs_cert_template_%s_request_policy_module_processing_time",
 		Title:      "Certificate last policy module processing request time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "period",
 		Ctx:        "adcs.cert_template_request_policy_module_processing",
 		Priority:   prioADCSCertTemplateRequestPolicyModuleProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time", Div: precision},
-		},
-	}
-	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
-		OverModule: "ADCS",
-		ID:         "adcs_cert_template_%s_challenge_responses",
-		Title:      "Certificate challenge responses",
-		Units:      "responses/s",
-		Fam:        "adcs",
-		Ctx:        "adcs.cert_template_challenge_responses",
-		Priority:   prioADCSCertTemplateChallengeResponses,
-		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateChallengeResponseProcessingTimeChartTmpl = module.Chart{
@@ -1528,7 +1528,7 @@ var (
 		ID:         "adcs_cert_template_%s_challenge_response_processing_time",
 		Title:      "Certificate last challenge response time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "period",
 		Ctx:        "adcs.cert_template_challenge_response_processing_time",
 		Priority:   prioADCSCertTemplateChallengeResponseProcessingTime,
 		Dims: module.Dims{
@@ -1540,7 +1540,7 @@ var (
 		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_lists",
 		Title:      "Certificate Signed Certificate Timestamp Lists processed",
 		Units:      "lists/s",
-		Fam:        "adcs",
+		Fam:        "period",
 		Ctx:        "adcs.cert_template_signed_certificate_timestamp_lists",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampLists,
 		Dims: module.Dims{
@@ -1552,7 +1552,7 @@ var (
 		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time",
 		Title:      "Certificate last Signed Certificate Timestamp List process time",
 		Units:      "seconds",
-		Fam:        "adcs",
+		Fam:        "period",
 		Ctx:        "adcs.cert_template_signed_certificate_timestamp_list_processing_time",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
