@@ -1409,7 +1409,7 @@ var (
 		Title:      "Certificate requests processed",
 		Units:      "requests/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_requests",
+		Ctx:        "adcs.cert_template_requests",
 		Priority:   prioADCSCertTemplateRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_requests_total", Name: "requests", Algo: module.Incremental},
@@ -1421,7 +1421,7 @@ var (
 		Title:      "Certificate failed requests processed",
 		Units:      "requests/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_failed_requests",
+		Ctx:        "adcs.cert_template_failed_requests",
 		Priority:   prioADCSCertTemplateFailedRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_failed_requests_total", Name: "failed", Algo: module.Incremental},
@@ -1433,7 +1433,7 @@ var (
 		Title:      "Certificate issued requests processed",
 		Units:      "requests/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_issued_requests",
+		Ctx:        "adcs.cert_template_issued_requests",
 		Priority:   prioADCSCertTemplateIssuesRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_issued_requests_total", Name: "issued", Algo: module.Incremental},
@@ -1445,7 +1445,7 @@ var (
 		Title:      "Certificate pending requests processed",
 		Units:      "requests/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_pending_requests",
+		Ctx:        "adcs.cert_template_pending_requests",
 		Priority:   prioADCSCertTemplatePendingRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_pending_requests_total", Name: "pending", Algo: module.Incremental},
@@ -1457,7 +1457,7 @@ var (
 		Title:      "Certificate last request processing time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_request_processing_time",
+		Ctx:        "adcs.cert_template_request_processing_time",
 		Priority:   prioADCSCertTemplateRequestProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time", Div: precision},
@@ -1469,7 +1469,7 @@ var (
 		Title:      "Total of certificate retrievals",
 		Units:      "retrievals/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_retrievals",
+		Ctx:        "adcs.cert_template_retrievals",
 		Priority:   prioADCSCertTemplateRetrievals,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_total", Name: "retrievals", Algo: module.Incremental},
@@ -1481,7 +1481,7 @@ var (
 		Title:      "Certificate last retrieval processing time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_retrieval_processing_time",
+		Ctx:        "adcs.cert_template_retrieval_processing_time",
 		Priority:   prioADCSCertTemplateRetrievalProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time", Div: precision},
@@ -1493,7 +1493,7 @@ var (
 		Title:      "Certificate last signing operation request time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_request_cryptographic_signing_time",
+		Ctx:        "adcs.cert_template_request_cryptographic_signing_time",
 		Priority:   prioADCSCertTemplateRequestCryptoSigningTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_cryptographic_signing_time_seconds", Name: "singing_time", Div: precision},
@@ -1505,7 +1505,7 @@ var (
 		Title:      "Certificate last policy module processing request time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_request_policy_module_processing",
+		Ctx:        "adcs.cert_template_request_policy_module_processing",
 		Priority:   prioADCSCertTemplateRequestPolicyModuleProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time", Div: precision},
@@ -1517,7 +1517,7 @@ var (
 		Title:      "Certificate challenge responses",
 		Units:      "responses/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_challenge_responses",
+		Ctx:        "adcs.cert_template_challenge_responses",
 		Priority:   prioADCSCertTemplateChallengeResponses,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
@@ -1529,7 +1529,7 @@ var (
 		Title:      "Certificate last challenge response time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_challenge_response_processing_time",
+		Ctx:        "adcs.cert_template_challenge_response_processing_time",
 		Priority:   prioADCSCertTemplateChallengeResponseProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_challenge_response_processing_time_seconds", Name: "processing_time", Div: precision},
@@ -1541,7 +1541,7 @@ var (
 		Title:      "Certificate Signed Certificate Timestamp Lists processed",
 		Units:      "lists/s",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_signed_certificate_timestamp_lists",
+		Ctx:        "adcs.cert_template_signed_certificate_timestamp_lists",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampLists,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_lists_total", Name: "processed", Algo: module.Incremental},
@@ -1553,7 +1553,7 @@ var (
 		Title:      "Certificate last Signed Certificate Timestamp List process time",
 		Units:      "seconds",
 		Fam:        "adcs",
-		Ctx:        "wmi.adcs_cert_template_signed_certificate_timestamp_list_processing_time",
+		Ctx:        "adcs.cert_template_signed_certificate_timestamp_list_processing_time",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time", Div: precision},
