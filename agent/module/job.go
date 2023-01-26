@@ -393,7 +393,7 @@ func (j *Job) createChart(chart *Chart) {
 	}
 	_ = j.api.CHART(
 		getChartType(chart, j),
-		getChartID(chart, j),
+		getChartID(chart),
 		chart.OverID,
 		chart.Title,
 		chart.Units,
@@ -466,7 +466,7 @@ func (j *Job) updateChart(chart *Chart, collected map[string]int64, sinceLastRun
 
 	_ = j.api.BEGIN(
 		getChartType(chart, j),
-		getChartID(chart, j),
+		getChartID(chart),
 		sinceLastRun,
 	)
 	var i, updated int
@@ -517,7 +517,7 @@ func getChartType(chart *Chart, j *Job) string {
 	if chart.typ != "" {
 		return chart.typ
 	}
-	if j.ModuleName() != "k8s_state" {
+	if !chart.IDSep {
 		return j.FullName()
 	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {
@@ -528,11 +528,11 @@ func getChartType(chart *Chart, j *Job) string {
 	return chart.typ
 }
 
-func getChartID(chart *Chart, j *Job) string {
+func getChartID(chart *Chart) string {
 	if chart.id != "" {
 		return chart.id
 	}
-	if j.ModuleName() != "k8s_state" {
+	if !chart.IDSep {
 		return chart.ID
 	}
 	if i := strings.IndexByte(chart.ID, '.'); i != -1 {

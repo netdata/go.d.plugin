@@ -82,6 +82,7 @@ type (
 		typ string
 		id  string
 
+		IDSep    bool
 		ID       string
 		OverID   string
 		Title    string
