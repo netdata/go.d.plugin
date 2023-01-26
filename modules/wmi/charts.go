@@ -1240,7 +1240,7 @@ var (
 		ID:         "ad_dra_replication_intersite_compressed_traffic",
 		Title:      "DRA replication compressed traffic withing site",
 		Units:      "bytes/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_intersite_compressed_traffic",
 		Priority:   prioADDRAReplicationIntersiteCompressedTraffic,
 		Type:       module.Area,
@@ -1254,7 +1254,7 @@ var (
 		ID:         "ad_dra_replication_intrasite_compressed_traffic",
 		Title:      "DRA replication compressed traffic between sites",
 		Units:      "bytes/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_intrasite_compressed_traffic",
 		Priority:   prioADDRAReplicationIntrasiteCompressedTraffic,
 		Type:       module.Area,
@@ -1268,7 +1268,7 @@ var (
 		ID:         "ad_dra_replication_sync_objects_remaining",
 		Title:      "DRA replication full sync objects remaining",
 		Units:      "objects",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_sync_objects_remaining",
 		Priority:   prioADDRAReplicationSyncObjectsRemaining,
 		Dims: module.Dims{
@@ -1280,7 +1280,7 @@ var (
 		ID:         "ad_dra_replication_objects_filtered",
 		Title:      "DRA replication objects filtered",
 		Units:      "objects/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_objects_filtered",
 		Priority:   prioADDRAReplicationObjectsFiltered,
 		Dims: module.Dims{
@@ -1292,7 +1292,7 @@ var (
 		ID:         "ad_dra_replication_properties_updated",
 		Title:      "DRA replication properties updated",
 		Units:      "properties/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_properties_updated",
 		Priority:   prioADDRAReplicationPropertiesUpdated,
 		Dims: module.Dims{
@@ -1304,7 +1304,7 @@ var (
 		ID:         "ad_dra_replication_properties_filtered",
 		Title:      "DRA replication properties filtered",
 		Units:      "properties/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_properties_filtered",
 		Priority:   prioADDRAReplicationPropertiesFiltered,
 		Dims: module.Dims{
@@ -1316,7 +1316,7 @@ var (
 		ID:         "ad_dra_replication_pending_syncs",
 		Title:      "DRA replication pending syncs",
 		Units:      "syncs",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_pending_syncs",
 		Priority:   prioADReplicationPendingSyncs,
 		Dims: module.Dims{
@@ -1328,7 +1328,7 @@ var (
 		ID:         "ad_dra_replication_sync_requests",
 		Title:      "DRA replication sync requests",
 		Units:      "requests/s",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.dra_replication_sync_requests",
 		Priority:   prioADDRASyncRequests,
 		Dims: module.Dims{
@@ -1340,7 +1340,7 @@ var (
 		ID:         "ad_ds_threads",
 		Title:      "Directory Service threads",
 		Units:      "threads",
-		Fam:        "ad",
+		Fam:        "replication",
 		Ctx:        "ad.ds_threads",
 		Priority:   prioADDirectoryServiceThreadsInUse,
 		Dims: module.Dims{
@@ -1352,7 +1352,7 @@ var (
 		ID:         "ad_ldap_last_bind_time",
 		Title:      "LDAP last successful bind time",
 		Units:      "seconds",
-		Fam:        "ad",
+		Fam:        "bind",
 		Ctx:        "ad.ldap_last_bind_time",
 		Priority:   prioADLDAPBindTime,
 		Dims: module.Dims{
@@ -1364,7 +1364,7 @@ var (
 		ID:         "ad_binds",
 		Title:      "Successful binds",
 		Units:      "bind/s",
-		Fam:        "ad",
+		Fam:        "bind",
 		Ctx:        "ad.binds",
 		Priority:   prioADBindsTotal,
 		Dims: module.Dims{
@@ -1376,7 +1376,7 @@ var (
 		ID:         "ad_ldap_searches",
 		Title:      "LDAP client search operations",
 		Units:      "searches/s",
-		Fam:        "ad",
+		Fam:        "ldap",
 		Ctx:        "ad.ldap_searches",
 		Priority:   prioADLDAPSearchesTotal,
 		Dims: module.Dims{
