@@ -23,21 +23,22 @@ Labels per scope:
 
 - gpu: product_name.
 
-| Metric                        | Scope |        Dimensions        |  Units  | XML | CSV |
-|-------------------------------|:-----:|:------------------------:|:-------:|:---:|:---:|
-| gpu_pcie_bandwidth_usage      |  gpu  |          rx, tx          |   B/s   | yes | no  |
-| gpu_fan_speed_perc            |  gpu  |        fan_speed         |    %    | yes | yes |
-| gpu_utilization               |  gpu  |           gpu            |    %    | yes | yes |
-| gpu_memory_utilization        |  gpu  |          memory          |    %    | yes | yes |
-| gpu_decoder_utilization       |  gpu  |         decoder          |    %    | yes | no  |
-| gpu_encoder_utilization       |  gpu  |         encoder          |    %    | yes | no  |
-| gpu_frame_buffer_memory_usage |  gpu  |   free, used, reserved   |    B    | yes | yes |
-| gpu_bar1_memory_usage         |  gpu  |        free, used        |    B    | yes | no  |
-| gpu_temperature               |  gpu  |       temperature        | Celsius | yes | yes |
-| gpu_voltage                   |  gpu  |         voltage          |    V    | yes | no  |
-| gpu_clock_freq                |  gpu  | graphics, video, sm, mem |   MHz   | yes | yes |
-| gpu_power_draw                |  gpu  |        power_draw        |  Watts  | yes | yes |
-| gpu_performance_state         |  gpu  |          P0-P15          |  state  | yes | yes |
+| Metric                         | Scope |        Dimensions        |  Units  | XML | CSV |
+|--------------------------------|:-----:|:------------------------:|:-------:|:---:|:---:|
+| gpu_pcie_bandwidth_usage       |  gpu  |          rx, tx          |   B/s   | yes | no  |
+| gpu_pcie_bandwidth_utilization |  gpu  |          rx, tx          |    %    | yes | no  |
+| gpu_fan_speed_perc             |  gpu  |        fan_speed         |    %    | yes | yes |
+| gpu_utilization                |  gpu  |           gpu            |    %    | yes | yes |
+| gpu_memory_utilization         |  gpu  |          memory          |    %    | yes | yes |
+| gpu_decoder_utilization        |  gpu  |         decoder          |    %    | yes | no  |
+| gpu_encoder_utilization        |  gpu  |         encoder          |    %    | yes | no  |
+| gpu_frame_buffer_memory_usage  |  gpu  |   free, used, reserved   |    B    | yes | yes |
+| gpu_bar1_memory_usage          |  gpu  |        free, used        |    B    | yes | no  |
+| gpu_temperature                |  gpu  |       temperature        | Celsius | yes | yes |
+| gpu_voltage                    |  gpu  |         voltage          |    V    | yes | no  |
+| gpu_clock_freq                 |  gpu  | graphics, video, sm, mem |   MHz   | yes | yes |
+| gpu_power_draw                 |  gpu  |        power_draw        |  Watts  | yes | yes |
+| gpu_performance_state          |  gpu  |          P0-P15          |  state  | yes | yes |
 
 ## Configuration
 

@@ -34,10 +34,7 @@ func addMetric(mx map[string]int64, key, value string, mul int) {
 		return
 	}
 
-	// remove units
-	if i := strings.IndexByte(value, ' '); i != -1 {
-		value = value[:i]
-	}
+	value = removeUnits(value)
 
 	v, err := strconv.ParseFloat(value, 64)
 	if err != nil {
@@ -53,4 +50,16 @@ func addMetric(mx map[string]int64, key, value string, mul int) {
 
 func isValidValue(v string) bool {
 	return v != "" && v != "N/A" && v != "[N/A]"
+}
+
+func parseFloat(s string) float64 {
+	v, _ := strconv.ParseFloat(removeUnits(s), 64)
+	return v
+}
+
+func removeUnits(s string) string {
+	if i := strings.IndexByte(s, ' '); i != -1 {
+		s = s[:i]
+	}
+	return s
 }

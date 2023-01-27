@@ -11,6 +11,7 @@ import (
 
 const (
 	prioGPUPCIBandwidthUsage = module.Priority + iota
+	prioGPUPCIBandwidthUtilization
 	prioGPUFanSpeed
 	prioGPUUtilization
 	prioGPUMemUtilization
@@ -28,6 +29,7 @@ const (
 var (
 	gpuXMLCharts = module.Charts{
 		gpuPCIBandwidthUsageChartTmpl.Copy(),
+		gpuPCIBandwidthUtilizationChartTmpl.Copy(),
 		gpuFanSpeedPercChartTmpl.Copy(),
 		gpuUtilizationChartTmpl.Copy(),
 		gpuMemUtilizationChartTmpl.Copy(),
@@ -65,6 +67,18 @@ var (
 		Dims: module.Dims{
 			{ID: "gpu_%s_pcie_bandwidth_usage_rx", Name: "rx"},
 			{ID: "gpu_%s_pcie_bandwidth_usage_tx", Name: "tx", Mul: -1},
+		},
+	}
+	gpuPCIBandwidthUtilizationChartTmpl = module.Chart{
+		ID:       "gpu_%s_pcie_bandwidth_utilization",
+		Title:    "PCI Express Bandwidth Utilization",
+		Units:    "percentage",
+		Fam:      "pcie bandwidth",
+		Ctx:      "nvidia_smi.gpu_pcie_bandwidth_utilization",
+		Priority: prioGPUPCIBandwidthUtilization,
+		Dims: module.Dims{
+			{ID: "gpu_%s_pcie_bandwidth_utilization_rx", Name: "rx", Div: 100},
+			{ID: "gpu_%s_pcie_bandwidth_utilization_tx", Name: "tx", Div: 100},
 		},
 	}
 	gpuFanSpeedPercChartTmpl = module.Chart{
