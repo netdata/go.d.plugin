@@ -69,6 +69,16 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 			}
 		}
 
+		for _, mig := range gpu.MIGDevices.MIGDevice {
+			px := px + "mig_" + mig.GPUInstanceID + "_"
+
+			addMetric(mx, px+"ecc_error_sram_uncorrectable", mig.ECCErrorCount.VolatileCount.SRAMUncorrectable, 0)
+			addMetric(mx, px+"frame_buffer_memory_usage_free", mig.FBMemoryUsage.Free, 1024*1024)         // MiB => bytes
+			addMetric(mx, px+"frame_buffer_memory_usage_used", mig.FBMemoryUsage.Used, 1024*1024)         // MiB => bytes
+			addMetric(mx, px+"frame_buffer_memory_usage_reserved", mig.FBMemoryUsage.Reserved, 1024*1024) // MiB => bytes
+			addMetric(mx, px+"bar1_memory_usage_free", mig.BAR1MemoryUsage.Free, 1024*1024)               // MiB => bytes
+			addMetric(mx, px+"bar1_memory_usage_used", mig.BAR1MemoryUsage.Used, 1024*1024)               // MiB => bytes
+		}
 	}
 
 	for uuid := range nv.gpus {
@@ -122,7 +132,38 @@ type (
 		UUID                string `xml:"uuid"`
 		FanSpeed            string `xml:"fan_speed"`
 		PerformanceState    string `xml:"performance_state"`
-		PCI                 struct {
+		MIGDevices          struct {
+			MIGDevice []struct {
+				Index             string `xml:"index"`
+				GPUInstanceID     string `xml:"gpu_instance_id"`
+				ComputeInstanceID string `xml:"compute_instance_id"`
+				DeviceAttributes  struct {
+					Shared struct {
+						MultiprocessorCount string `xml:"multiprocessor_count"`
+						CopyEngineCount     string `xml:"copy_engine_count"`
+						EncoderCount        string `xml:"encoder_count"`
+						DecoderCount        string `xml:"decoder_count"`
+						OFACount            string `xml:"ofa_count"`
+						JPGCount            string `xml:"jpg_count"`
+					} `xml:"shared"`
+				} `xml:"device_attributes"`
+				ECCErrorCount struct {
+					VolatileCount struct {
+						SRAMUncorrectable string `xml:"sram_uncorrectable"`
+					} `xml:"volatile_count"`
+				} `xml:"ecc_error_count"`
+				FBMemoryUsage struct {
+					Free     string `xml:"free"`
+					Used     string `xml:"used"`
+					Reserved string `xml:"reserved"`
+				} `xml:"fb_memory_usage"`
+				BAR1MemoryUsage struct {
+					Free string `xml:"free"`
+					Used string `xml:"used"`
+				} `xml:"bar1_memory_usage"`
+			} `xml:"mig_device"`
+		} `xml:"mig_devices"`
+		PCI struct {
 			TxUtil         string `xml:"tx_util"`
 			RxUtil         string `xml:"rx_util"`
 			PCIGPULinkInfo struct {

@@ -17,6 +17,8 @@ var (
 	dataXMLRTX3060, _    = os.ReadFile("testdata/rtx-3060.xml")
 	dataXMLTeslaP100, _  = os.ReadFile("testdata/tesla-p100.xml")
 
+	dataXMLA100SXM4MIG, _ = os.ReadFile("testdata/a100-sxm4-mig.xml")
+
 	dataHelpQueryGPU, _ = os.ReadFile("testdata/help-query-gpu.txt")
 	dataCSVTeslaP100, _ = os.ReadFile("testdata/tesla-p100.csv")
 )
@@ -26,8 +28,11 @@ func Test_testDataIsValid(t *testing.T) {
 		"dataXMLRTX2080Win": dataXMLRTX2080Win,
 		"dataXMLRTX3060":    dataXMLRTX3060,
 		"dataXMLTeslaP100":  dataXMLTeslaP100,
-		"dataHelpQueryGPU":  dataHelpQueryGPU,
-		"dataCSVTeslaP100":  dataCSVTeslaP100,
+
+		"dataXMLA100SXM4MIG": dataXMLA100SXM4MIG,
+
+		"dataHelpQueryGPU": dataHelpQueryGPU,
+		"dataCSVTeslaP100": dataCSVTeslaP100,
 	} {
 		require.NotNilf(t, data, name)
 	}
@@ -70,6 +75,10 @@ func TestNvidiaSMI_Check(t *testing.T) {
 		prepare  func(nv *NvidiaSMI)
 		wantFail bool
 	}{
+		"success A100-SXM4 MIG [XML]": {
+			wantFail: false,
+			prepare:  prepareCaseMIGA100formatXML,
+		},
 		"success RTX 3060 [XML]": {
 			wantFail: false,
 			prepare:  prepareCaseRTX3060formatXML,
@@ -121,6 +130,63 @@ func TestNvidiaSMI_Collect(t *testing.T) {
 		check   func(t *testing.T, nv *NvidiaSMI)
 	}
 	tests := map[string][]testCaseStep{
+		"success A100-SXM4 MIG [XML]": {
+			{
+				prepare: prepareCaseMIGA100formatXML,
+				check: func(t *testing.T, nv *NvidiaSMI) {
+					mx := nv.Collect()
+
+					expected := map[string]int64{
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_bar1_memory_usage_free":                   68718428160,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_bar1_memory_usage_used":                   1048576,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_free":           42273341440,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_reserved":       634388480,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_used":           39845888,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_graphics_clock":                           1410,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mem_clock":                                1215,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_bar1_memory_usage_free":             34358689792,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_bar1_memory_usage_used":             0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_ecc_error_sram_uncorrectable":       0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_frame_buffer_memory_usage_free":     20916994048,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_frame_buffer_memory_usage_reserved": 0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_1_frame_buffer_memory_usage_used":     19922944,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_bar1_memory_usage_free":             34358689792,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_bar1_memory_usage_used":             0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_ecc_error_sram_uncorrectable":       0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_frame_buffer_memory_usage_free":     20916994048,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_frame_buffer_memory_usage_reserved": 0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_mig_2_frame_buffer_memory_usage_used":     19922944,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_pcie_bandwidth_usage_rx":                  0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_pcie_bandwidth_usage_tx":                  0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_pcie_bandwidth_utilization_rx":            0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_pcie_bandwidth_utilization_tx":            0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P0":                     1,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P1":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P10":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P11":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P12":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P13":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P14":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P15":                    0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P2":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P3":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P4":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P5":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P6":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P7":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P8":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_performance_state_P9":                     0,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_power_draw":                               66,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_sm_clock":                                 1410,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_temperature":                              36,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_video_clock":                              1275,
+						"gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_voltage":                                  881,
+					}
+
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
 		"success RTX 3060 [XML]": {
 			{
 				prepare: prepareCaseRTX3060formatXML,
@@ -383,6 +449,11 @@ func (m *mockNvidiaSMI) queryHelpQueryGPU() ([]byte, error) {
 		return nil, errors.New("error on mock.queryHelpQueryGPU()")
 	}
 	return m.helpQueryGPU, nil
+}
+
+func prepareCaseMIGA100formatXML(nv *NvidiaSMI) {
+	nv.UseCSVFormat = false
+	nv.exec = &mockNvidiaSMI{gpuInfoXML: dataXMLA100SXM4MIG}
 }
 
 func prepareCaseRTX3060formatXML(nv *NvidiaSMI) {
