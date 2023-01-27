@@ -2283,7 +2283,7 @@ var (
 		Title:      "Number of exceptions thrown since start.",
 		Units:      "exceptions",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_exception_thrown",
+		Ctx:        "net_framework.exception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrown,
 	}
@@ -2293,7 +2293,7 @@ var (
 		Title:      "Number of exceptions filter executed.",
 		Units:      "exceptions",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_exception_filters",
+		Ctx:        "net_framework.exception_filters",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFilters,
 	}
@@ -2303,7 +2303,7 @@ var (
 		Title:      "Number of finally blocks executed.",
 		Units:      "blocks",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_exception_finally",
+		Ctx:        "net_framework.exception_finally",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
 	}
@@ -2313,7 +2313,7 @@ var (
 		Title:      "Number of stack frames transversed.",
 		Units:      "stack frames",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_exception_thrown",
+		Ctx:        "net_framework.exception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrowCatchDepth,
 	}
@@ -2325,7 +2325,7 @@ var (
 		Title:      "Number of COM callable wrappers(CCW).",
 		Units:      "ccw",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrinterop_com_callable_wrapper",
+		Ctx:        "net_framework.clrinterop_com_callable_wrapper",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropCOMCalableWrapper,
 	}
@@ -2335,7 +2335,7 @@ var (
 		Title:      "Number of times arguments or return value have been marshaled.",
 		Units:      "values marshaled",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrinterop_marshalling",
+		Ctx:        "net_framework.clrinterop_marshalling",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropMarshalling,
 	}
@@ -2345,7 +2345,7 @@ var (
 		Title:      "Number of stubs created.",
 		Units:      "stubs",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrinterop_stubs_created",
+		Ctx:        "net_framework.clrinterop_stubs_created",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropStubsCreated,
 	}
@@ -2357,7 +2357,7 @@ var (
 		Title:      "Number of JIT methods compiled.",
 		Units:      "JIT methods",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrjit_methods",
+		Ctx:        "net_framework.clrjit_methods",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITMethods,
 	}
@@ -2367,7 +2367,7 @@ var (
 		Title:      "Percentage time spent in JIT compilation.",
 		Units:      "percentage",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrjit_time",
+		Ctx:        "net_framework.clrjit_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITTime,
 	}
@@ -2377,7 +2377,7 @@ var (
 		Title:      "Number of methods the JIT compiler has failed.",
 		Units:      "Failures",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrjit_standard_failure",
+		Ctx:        "net_framework.clrjit_standard_failure",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITStandardFailures,
 	}
@@ -2387,7 +2387,7 @@ var (
 		Title:      "Number of Microsoft intermediate language (MSIL) bytes compiled.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrjit_il_bytes",
+		Ctx:        "net_framework.clrjit_il_bytes",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITILBytes,
 	}
@@ -2399,7 +2399,7 @@ var (
 		Title:      "Bytes committed by class loader.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_loader_heap_size",
+		Ctx:        "net_framework.clrloading_loader_heap_size",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingLoaderHeapSize,
 	}
@@ -2409,7 +2409,7 @@ var (
 		Title:      "Application domain loaded since start.",
 		Units:      "application domain",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_appdomains_loaded",
+		Ctx:        "net_framework.clrloading_appdomains_loaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingAppDomainsLoaded,
 	}
@@ -2419,7 +2419,7 @@ var (
 		Title:      "Application domain unloaded since start.",
 		Units:      "application domain",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_appdomains_unloaded",
+		Ctx:        "net_framework.clrloading_appdomains_unloaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingAppDomainsUnloaded,
 	}
@@ -2429,7 +2429,7 @@ var (
 		Title:      "Assemblies loaded since start.",
 		Units:      "assemblies",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_assemblies_loaded",
+		Ctx:        "net_framework.clrloading_assemblies_loaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingAssembliesLoaded,
 	}
@@ -2439,7 +2439,7 @@ var (
 		Title:      "Classes loaded in all assemblies.",
 		Units:      "classes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_classes_loaded",
+		Ctx:        "net_framework.clrloading_classes_loaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingClassesLoaded,
 	}
@@ -2449,7 +2449,7 @@ var (
 		Title:      "Classes that have failed to load.",
 		Units:      "classes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrloading_class_load_failure",
+		Ctx:        "net_framework.clrloading_class_load_failure",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLoadingClassLoadFailure,
 	}
@@ -2461,7 +2461,7 @@ var (
 		Title:      "Threads waiting for lock.",
 		Units:      "threads",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrlockandthreads_queue_length",
+		Ctx:        "net_framework.clrlockandthreads_queue_length",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLockAndThreadsQueueLength,
 	}
@@ -2471,7 +2471,7 @@ var (
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrlockandthreads_current_logical_threads",
+		Ctx:        "net_framework.clrlockandthreads_current_logical_threads",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads,
 	}
@@ -2481,7 +2481,7 @@ var (
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrlockandthreads_current_physical_threads",
+		Ctx:        "net_framework.clrlockandthreads_current_physical_threads",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads,
 	}
@@ -2491,7 +2491,7 @@ var (
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrlockandthreads_recognized_threads",
+		Ctx:        "net_framework.clrlockandthreads_recognized_threads",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLockAndThreadsRecognizedThreads,
 	}
@@ -2501,7 +2501,7 @@ var (
 		Title:      "Number of fails to acquire managed lock.",
 		Units:      "threads",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrlockandthreads_contentions",
+		Ctx:        "net_framework.clrlockandthreads_contentions",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRLockAndThreadsContentions,
 	}
@@ -2513,7 +2513,7 @@ var (
 		Title:      "Total of bytes allocated on the garbage collection.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_allocated_bytes",
+		Ctx:        "net_framework.clrmemory_allocated_bytes",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryAllocatedBytes,
 	}
@@ -2523,7 +2523,7 @@ var (
 		Title:      "Number of garbage-collected objects that survived.",
 		Units:      "objects",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_finalization_survivors",
+		Ctx:        "net_framework.clrmemory_finalization_survivors",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryFinalizationSurvivors,
 	}
@@ -2533,7 +2533,7 @@ var (
 		Title:      "Maximum bytes can be allocated.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_heap_size",
+		Ctx:        "net_framework.clrmemory_heap_size",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryHeapSize,
 	}
@@ -2543,7 +2543,7 @@ var (
 		Title:      "Bytes promoted from the generation to next.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_promoted",
+		Ctx:        "net_framework.clrmemory_promoted",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryPromoted,
 	}
@@ -2553,7 +2553,7 @@ var (
 		Title:      "Number of Garbage Collection Handle used.",
 		Units:      "handles",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_number_gc_handles",
+		Ctx:        "net_framework.clrmemory_number_gc_handles",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberGCHandles,
 	}
@@ -2563,7 +2563,7 @@ var (
 		Title:      "Number of times Garbage Collection (GC) happens.",
 		Units:      "GC",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_collections",
+		Ctx:        "net_framework.clrmemory_collections",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryCollections,
 	}
@@ -2573,7 +2573,7 @@ var (
 		Title:      "Peak number of times garbage collection was performed.",
 		Units:      "GC",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_induced_gc",
+		Ctx:        "net_framework.clrmemory_induced_gc",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryInducedGC,
 	}
@@ -2583,7 +2583,7 @@ var (
 		Title:      "Pinned objects in the last garbage collection.",
 		Units:      "objects",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_number_pinned_objects",
+		Ctx:        "net_framework.clrmemory_number_pinned_objects",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberPinnedObjects,
 	}
@@ -2593,7 +2593,7 @@ var (
 		Title:      "Number of synchronization blocks in use.",
 		Units:      "blocks",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_number_sink_blocks_in_use",
+		Ctx:        "net_framework.clrmemory_number_sink_blocks_in_use",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberSinkBlocksInUse,
 	}
@@ -2603,7 +2603,7 @@ var (
 		Title:      "Amount of virtual memory currently committed.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_committed",
+		Ctx:        "net_framework.clrmemory_committed",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryCommitted,
 	}
@@ -2613,7 +2613,7 @@ var (
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "bytes",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_reserved",
+		Ctx:        "net_framework.clrmemory_reserved",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryReserved,
 	}
@@ -2623,7 +2623,7 @@ var (
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "percentage",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrmemory_gc_time",
+		Ctx:        "net_framework.clrmemory_gc_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryGCTime,
 	}
@@ -2635,7 +2635,7 @@ var (
 		Title:      "Remoting channels registered.",
 		Units:      "channels",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_channels",
+		Ctx:        "net_framework.clrremoting_channels",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingChannels,
 	}
@@ -2645,7 +2645,7 @@ var (
 		Title:      "Context-bound classes loaded.",
 		Units:      "context-bound",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_context_bound_classes_loaded",
+		Ctx:        "net_framework.clrremoting_context_bound_classes_loaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundClassesLoaded,
 	}
@@ -2655,7 +2655,7 @@ var (
 		Title:      "Total Context-bound objects allocated.",
 		Units:      "objects",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_context_bound_objects",
+		Ctx:        "net_framework.clrremoting_context_bound_objects",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundObjects,
 	}
@@ -2665,7 +2665,7 @@ var (
 		Title:      "Total remoting proxy objects.",
 		Units:      "objects",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_context_proxies",
+		Ctx:        "net_framework.clrremoting_context_proxies",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextProxies,
 	}
@@ -2675,7 +2675,7 @@ var (
 		Title:      "Total of remoting contexts.",
 		Units:      "contexts",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_contexts",
+		Ctx:        "net_framework.clrremoting_contexts",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContexts,
 	}
@@ -2685,7 +2685,7 @@ var (
 		Title:      "Total Remote Procedure Calls (RPC) invoked.",
 		Units:      "RPC",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrremoting_calls",
+		Ctx:        "net_framework.clrremoting_calls",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingRemoteCalls,
 	}
@@ -2697,7 +2697,7 @@ var (
 		Title:      "Number of Link-time code access security.",
 		Units:      "access",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrsecurity_link_time_checks",
+		Ctx:        "net_framework.clrsecurity_link_time_checks",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityLinkTimeChecks,
 	}
@@ -2707,7 +2707,7 @@ var (
 		Title:      "Percentage of time to access security checks.",
 		Units:      "percentage",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrsecurity_checks_time",
+		Ctx:        "net_framework.clrsecurity_checks_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityRTChecksTime,
 	}
@@ -2717,7 +2717,7 @@ var (
 		Title:      "Depth of stack.",
 		Units:      "depth",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrsecurity_stack_walk_depth",
+		Ctx:        "net_framework.clrsecurity_stack_walk_depth",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityStackWalkDepth,
 	}
@@ -2727,7 +2727,7 @@ var (
 		Title:      "Total number of runtime code access.",
 		Units:      "access",
 		Fam:        "net_framework",
-		Ctx:        "wmi.net_framework_clrsecurity_checks_time",
+		Ctx:        "net_framework.clrsecurity_checks_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityRuntimeChecks,
 	}
