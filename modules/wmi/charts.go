@@ -82,21 +82,35 @@ const (
 	prioMSSQLBufferCheckpointPages
 	prioMSSQLBufferPageLifeExpectancy
 	prioMSSQLBufManIOPS
+
+	// Database
 	prioMSSQLDatabaseActiveTransactions
+	prioMSSQLDatabaseTransactions
+	prioMSSQLDatabaseWriteTransactions
+
+	// DB backup
 	prioMSSQLDatabaseBackupRestoreOperations
 	prioMSSQLDatabaseDataFileSize
 	prioMSSQLDatabaseLogFlushed
 	prioMSSQLDatabaseLogFlushes
-	prioMSSQLDatabaseTransactions
-	prioMSSQLDatabaseWriteTransactions
+
 	prioMSSQLBlockedProcess
+
 	prioMSSQLUserConnections
+
+	// Locks
 	prioMSSQLLocksLockWait
+
+	// Memory
 	prioMSSQLMemmgrConnectionMemoryBytes
 	prioMSSQLMemmgrExternalBenefitOfMemory
 	prioMSSQLMemmgrPendingMemoryGrants
 	prioMSSQLMemTotalServer
+
+	// Error
 	prioMSSQLSqlErrorsTotal
+
+	// SQL stats
 	prioMSSQLStatsAutoParameterization
 	prioMSSQLStatsBatchRequests
 	prioMSSQLStatsSafeAutoParameterization
@@ -972,7 +986,7 @@ var (
 		ID:         "mssql_instance_%s_blocked_process",
 		Title:      "Blocked processes",
 		Units:      "process",
-		Fam:        "stats",
+		Fam:        "processes",
 		Ctx:        "mssql.instance_blocked_processes",
 		Priority:   prioMSSQLBlockedProcess,
 		Dims: module.Dims{
@@ -984,7 +998,7 @@ var (
 		ID:         "mssql_instance_%s_user_connection",
 		Title:      "User connections",
 		Units:      "connections",
-		Fam:        "stats",
+		Fam:        "connections",
 		Ctx:        "mssql.instance_user_connection",
 		Priority:   prioMSSQLUserConnections,
 		Dims: module.Dims{
@@ -998,7 +1012,7 @@ var (
 		ID:         "mssql_instance_%s_locks_lock_wait",
 		Title:      "Lock requests that required the caller to wait",
 		Units:      "locks/s",
-		Fam:        "lock",
+		Fam:        "locks",
 		Ctx:        "mssql.instance_locks_lock_wait",
 		Priority:   prioMSSQLLocksLockWait,
 		Dims: module.Dims{
@@ -1018,6 +1032,7 @@ var (
 			{ID: "mssql_instance_%s_resource_Xact_locks_lock_wait_seconds", Name: "xact", Algo: module.Incremental},
 		},
 	}
+
 	// Memory Manager
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-memory-manager-object?view=sql-server-ver16
 	mssqlMemmgrConnectionMemoryBytesChart = module.Chart{
@@ -1076,7 +1091,7 @@ var (
 		ID:         "mssql_instance_%s_sql_errors_total",
 		Title:      "Errors",
 		Units:      "errors/s",
-		Fam:        "error",
+		Fam:        "errors",
 		Ctx:        "mssql.instance_sql_errors",
 		Priority:   prioMSSQLSqlErrorsTotal,
 		Dims: module.Dims{
@@ -1094,7 +1109,7 @@ var (
 		ID:         "mssql_instance_%s_sqlstats_auto_parameterization_attempts",
 		Title:      "Failed auto-parameterization attempts",
 		Units:      "attempts/s",
-		Fam:        "stats",
+		Fam:        "sql stats",
 		Ctx:        "mssql.instance_sqlstats_auto_parameterization_attempts",
 		Priority:   prioMSSQLStatsAutoParameterization,
 		Dims: module.Dims{
@@ -1106,7 +1121,7 @@ var (
 		ID:         "mssql_instance_%s_sqlstats_batch_requests",
 		Title:      "Total of batches requests",
 		Units:      "requests/s",
-		Fam:        "stats",
+		Fam:        "sql stats",
 		Ctx:        "mssql.instance_sqlstats_batch_requests",
 		Priority:   prioMSSQLStatsBatchRequests,
 		Dims: module.Dims{
@@ -1118,7 +1133,7 @@ var (
 		ID:         "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts",
 		Title:      "Safe auto-parameterization attempts",
 		Units:      "attempts/s",
-		Fam:        "stats",
+		Fam:        "sql stats",
 		Ctx:        "mssql.instance_sqlstats_safe_auto_parameterization_attempts",
 		Priority:   prioMSSQLStatsSafeAutoParameterization,
 		Dims: module.Dims{
@@ -1130,7 +1145,7 @@ var (
 		ID:         "mssql_instance_%s_sqlstats_sql_compilations",
 		Title:      "SQL compilations",
 		Units:      "compilations/s",
-		Fam:        "stats",
+		Fam:        "sql stats",
 		Ctx:        "mssql.instance_sqlstats_sql_compilations",
 		Priority:   prioMSSQLStatsCompilations,
 		Dims: module.Dims{
@@ -1142,7 +1157,7 @@ var (
 		ID:         "mssql_instance_%s_sqlstats_sql_recompilations",
 		Title:      "SQL re-compilations",
 		Units:      "recompiles/s",
-		Fam:        "stats",
+		Fam:        "sql stats",
 		Ctx:        "mssql.instance_sqlstats_sql_recompilations",
 		Priority:   prioMSSQLStatsRecompilations,
 		Dims: module.Dims{
@@ -1157,7 +1172,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_active_transactions",
 		Title:      "Active transactions per database",
 		Units:      "transactions",
-		Fam:        "database",
+		Fam:        "db transactions",
 		Ctx:        "mssql.database_active_transactions",
 		Priority:   prioMSSQLDatabaseActiveTransactions,
 		Dims: module.Dims{
@@ -1169,7 +1184,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_backup_restore_operations",
 		Title:      "Backup IO per database",
 		Units:      "operations/s",
-		Fam:        "database",
+		Fam:        "db backup",
 		Ctx:        "mssql.database_backup_restore_operations",
 		Priority:   prioMSSQLDatabaseBackupRestoreOperations,
 		Dims: module.Dims{
@@ -1181,7 +1196,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_data_files_size",
 		Title:      "Current database size",
 		Units:      "bytes",
-		Fam:        "database",
+		Fam:        "db size",
 		Ctx:        "mssql.database_data_files_size",
 		Priority:   prioMSSQLDatabaseDataFileSize,
 		Dims: module.Dims{
@@ -1193,7 +1208,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_log_flushed",
 		Title:      "Log flushed",
 		Units:      "bytes/s",
-		Fam:        "database",
+		Fam:        "db logs",
 		Ctx:        "mssql.database_log_flushed",
 		Priority:   prioMSSQLDatabaseLogFlushed,
 		Dims: module.Dims{
@@ -1205,7 +1220,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_log_flushes",
 		Title:      "Log flushes",
 		Units:      "flushes/s",
-		Fam:        "database",
+		Fam:        "db logs",
 		Ctx:        "mssql.database_log_flushes",
 		Priority:   prioMSSQLDatabaseLogFlushes,
 		Dims: module.Dims{
@@ -1217,7 +1232,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_transactions",
 		Title:      "Transactions",
 		Units:      "transactions/s",
-		Fam:        "database",
+		Fam:        "db transactions",
 		Ctx:        "mssql.database_transactions",
 		Priority:   prioMSSQLDatabaseTransactions,
 		Dims: module.Dims{
@@ -1229,7 +1244,7 @@ var (
 		ID:         "mssql_db_%s_instance_%s_write_transactions",
 		Title:      "Write transactions",
 		Units:      "transactions/s",
-		Fam:        "database",
+		Fam:        "db transactions",
 		Ctx:        "mssql.instance_write_transactions",
 		Priority:   prioMSSQLDatabaseWriteTransactions,
 		Dims: module.Dims{
