@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
@@ -37,6 +38,12 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 
 		addMetric(mx, px+"pcie_bandwidth_usage_rx", gpu.PCI.RxUtil, 1024) // KB => bytes
 		addMetric(mx, px+"pcie_bandwidth_usage_tx", gpu.PCI.TxUtil, 1024) // KB => bytes
+		if max := calcMaxPCIEBandwidth(gpu); max > 0 {
+			rx := parseFloat(gpu.PCI.RxUtil) * 1024 // KB => bytes
+			tx := parseFloat(gpu.PCI.TxUtil) * 1024 // KB => bytes
+			mx[px+"pcie_bandwidth_utilization_rx"] = int64((rx * 100 / max) * 100)
+			mx[px+"pcie_bandwidth_utilization_tx"] = int64((tx * 100 / max) * 100)
+		}
 		addMetric(mx, px+"fan_speed_perc", gpu.FanSpeed, 0)
 		addMetric(mx, px+"gpu_utilization", gpu.Utilization.GpuUtil, 0)
 		addMetric(mx, px+"mem_utilization", gpu.Utilization.MemoryUtil, 0)
@@ -61,6 +68,7 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 				mx[px+"performance_state_"+s] = 0
 			}
 		}
+
 	}
 
 	for uuid := range nv.gpus {
@@ -71,6 +79,35 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 	}
 
 	return nil
+}
+
+func calcMaxPCIEBandwidth(gpu xmlGPUInfo) float64 {
+	gen := gpu.PCI.PCIGPULinkInfo.PCIEGen.MaxLinkGen
+	width := strings.TrimSuffix(gpu.PCI.PCIGPULinkInfo.LinkWidths.MaxLinkWidth, "x")
+
+	if !isValidValue(gen) || !isValidValue(width) {
+		return 0
+	}
+
+	// https://enterprise-support.nvidia.com/s/article/understanding-pcie-configuration-for-maximum-performance
+	var speed, enc float64
+	switch gen {
+	case "1":
+		speed, enc = 2.5, 1/5
+	case "2":
+		speed, enc = 5, 1/5
+	case "3":
+		speed, enc = 8, 2/130
+	case "4":
+		speed, enc = 16, 2/130
+	case "5":
+		speed, enc = 32, 2/130
+	default:
+		return 0
+	}
+
+	// Maximum PCIe Bandwidth = SPEED * WIDTH * (1 - ENCODING) - 1Gb/s
+	return (speed*parseFloat(width)*(1-enc) - 1) * 1e9 / 8 // Gb/s => bytes
 }
 
 type (
@@ -86,8 +123,16 @@ type (
 		FanSpeed            string `xml:"fan_speed"`
 		PerformanceState    string `xml:"performance_state"`
 		PCI                 struct {
-			TxUtil string `xml:"tx_util"`
-			RxUtil string `xml:"rx_util"`
+			TxUtil         string `xml:"tx_util"`
+			RxUtil         string `xml:"rx_util"`
+			PCIGPULinkInfo struct {
+				PCIEGen struct {
+					MaxLinkGen string `xml:"max_link_gen"`
+				} `xml:"pcie_gen"`
+				LinkWidths struct {
+					MaxLinkWidth string `xml:"max_link_width"`
+				} `xml:"link_widths"`
+			} `xml:"pci_gpu_link_info"`
 		} `xml:"pci"`
 		Utilization struct {
 			GpuUtil     string `xml:"gpu_util"`
