@@ -119,32 +119,51 @@ const (
 	prioADBindsTotal
 	prioADLDAPSearchesTotal
 
+	// Requests
 	prioADCSCertTemplateRequests
 	prioADCSCertTemplateRequestProcessingTime
 	prioADCSCertTemplateRetrievals
 	prioADCSCertTemplateFailedRequests
 	prioADCSCertTemplateIssuesRequests
 	prioADCSCertTemplatePendingRequests
+
+	// Response
+	prioADCSCertTemplateChallengeResponses
+
+	// Retrieval
+	prioADCSCertTemplateRetrievalProcessingTime
+
+	// Timing
 	prioADCSCertTemplateRequestCryptoSigningTime
 	prioADCSCertTemplateRequestPolicyModuleProcessingTime
-	prioADCSCertTemplateRetrievalProcessingTime
-	prioADCSCertTemplateChallengeResponses
 	prioADCSCertTemplateChallengeResponseProcessingTime
 	prioADCSCertTemplateSignedCertificateTimestampLists
 	prioADCSCertTemplateSignedCertificateTimestampListProcessingTime
 
+	// ADFS
+	// AD
 	prioADFSADLoginConnectionFailures
-	prioADFSCertificateAuthentications
+
+	// DB Artifacts
 	prioADFSDBArtifactFailures
 	prioADFSDBArtifactQueryTimeSeconds
+
+	// DB Config
 	prioADFSDBConfigFailures
 	prioADFSDBConfigQueryTimeSeconds
+
+	// Auth
 	prioADFSDeviceAuthentications
 	prioADFSExternalAuthentications
-	prioADFSFederatedAuthentications
-	prioADFSFederationMetadataRequests
 	prioADFSOauthAuthorizationRequests
+	prioADFSCertificateAuthentications
 	prioADFSOauthClientAuthentications
+	prioADFSPassportAuthentications
+	prioADFSSSOAuthentications
+	prioADFSUserPasswordAuthentications
+	prioADFSWindowsIntegratedAuthentications
+
+	// OAuth
 	prioADFSOauthClientCredentials
 	prioADFSOauthClientPrivkeyJwtAuthentication
 	prioADFSOauthClientSecretBasicAuthentications
@@ -153,16 +172,16 @@ const (
 	prioADFSOauthLogonCertificateRequests
 	prioADFSOauthPasswordGrantRequests
 	prioADFSOauthTokenRequestsSuccess
+	prioADFSFederatedAuthentications
+
+	// Requests
+	prioADFSFederationMetadataRequests
 	prioADFSPassiveRequests
-	prioADFSPassportAuthentications
 	prioADFSPasswordChangeRequests
 	prioADFSSAMLPTokenRequests
-	prioADFSSSOAuthentications
-	prioADFSTokenRequests
-	prioADFSUserPasswordAuthentications
-	prioADFSWindowsIntegratedAuthentications
-	prioADFSWSFedTokenRequestsSuccess
 	prioADFSWSTrustTokenRequestsSuccess
+	prioADFSTokenRequests
+	prioADFSWSFedTokenRequestsSuccess
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -1236,7 +1255,7 @@ var (
 		adLDAPSearchesChart.Copy(),
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_intersite_compressed_traffic",
 		Title:      "DRA replication compressed traffic withing site",
 		Units:      "bytes/s",
@@ -1250,7 +1269,7 @@ var (
 		},
 	}
 	adDRAReplicationIntrasiteCompressedTrafficChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_intrasite_compressed_traffic",
 		Title:      "DRA replication compressed traffic between sites",
 		Units:      "bytes/s",
@@ -1264,7 +1283,7 @@ var (
 		},
 	}
 	adDRAReplicationSyncObjectRemainingChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_sync_objects_remaining",
 		Title:      "DRA replication full sync objects remaining",
 		Units:      "objects",
@@ -1276,7 +1295,7 @@ var (
 		},
 	}
 	adDRAReplicationObjectsFilteredChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_objects_filtered",
 		Title:      "DRA replication objects filtered",
 		Units:      "objects/s",
@@ -1288,7 +1307,7 @@ var (
 		},
 	}
 	adDRAReplicationPropertiesUpdatedChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_properties_updated",
 		Title:      "DRA replication properties updated",
 		Units:      "properties/s",
@@ -1300,7 +1319,7 @@ var (
 		},
 	}
 	adDRAReplicationPropertiesFilteredChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_properties_filtered",
 		Title:      "DRA replication properties filtered",
 		Units:      "properties/s",
@@ -1312,7 +1331,7 @@ var (
 		},
 	}
 	adDRAReplicationPendingSyncsChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_pending_syncs",
 		Title:      "DRA replication pending syncs",
 		Units:      "syncs",
@@ -1324,7 +1343,7 @@ var (
 		},
 	}
 	adDRAReplicationSyncRequestsChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_dra_replication_sync_requests",
 		Title:      "DRA replication sync requests",
 		Units:      "requests/s",
@@ -1336,7 +1355,7 @@ var (
 		},
 	}
 	adDirectoryServiceThreadsChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_ds_threads",
 		Title:      "Directory Service threads",
 		Units:      "threads",
@@ -1348,7 +1367,7 @@ var (
 		},
 	}
 	adLDAPLastBindTimeChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_ldap_last_bind_time",
 		Title:      "LDAP last successful bind time",
 		Units:      "seconds",
@@ -1360,7 +1379,7 @@ var (
 		},
 	}
 	adBindsTotalChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_binds",
 		Title:      "Successful binds",
 		Units:      "bind/s",
@@ -1372,7 +1391,7 @@ var (
 		},
 	}
 	adLDAPSearchesChart = module.Chart{
-		OverModule: "AD",
+		OverModule: "ad",
 		ID:         "ad_ldap_searches",
 		Title:      "LDAP client search operations",
 		Units:      "searches/s",
@@ -1404,11 +1423,11 @@ var (
 		adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl.Copy(),
 	}
 	adcsCertTemplateRequestsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template%s_requests",
 		Title:      "Certificate requests processed",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adcs.cert_template_requests",
 		Priority:   prioADCSCertTemplateRequests,
 		Dims: module.Dims{
@@ -1416,11 +1435,11 @@ var (
 		},
 	}
 	adcsCertTemplateFailedRequestsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_failed_requests",
 		Title:      "Certificate failed requests processed",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adcs.cert_template_failed_requests",
 		Priority:   prioADCSCertTemplateFailedRequests,
 		Dims: module.Dims{
@@ -1428,11 +1447,11 @@ var (
 		},
 	}
 	adcsCertTemplateIssuedRequestsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_issued_requests",
 		Title:      "Certificate issued requests processed",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adcs.cert_template_issued_requests",
 		Priority:   prioADCSCertTemplateIssuesRequests,
 		Dims: module.Dims{
@@ -1440,11 +1459,11 @@ var (
 		},
 	}
 	adcsCertTemplatePendingRequestsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_pending_requests",
 		Title:      "Certificate pending requests processed",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adcs.cert_template_pending_requests",
 		Priority:   prioADCSCertTemplatePendingRequests,
 		Dims: module.Dims{
@@ -1452,23 +1471,35 @@ var (
 		},
 	}
 	adcsCertTemplateRequestProcessingTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_request_processing_time",
 		Title:      "Certificate last request processing time",
 		Units:      "seconds",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adcs.cert_template_request_processing_time",
 		Priority:   prioADCSCertTemplateRequestProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
+	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_challenge_responses",
+		Title:      "Certificate challenge responses",
+		Units:      "responses/s",
+		Fam:        "responses",
+		Ctx:        "adcs.cert_template_challenge_responses",
+		Priority:   prioADCSCertTemplateChallengeResponses,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
+		},
+	}
 	adcsCertTemplateRetrievalsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_retrievals",
 		Title:      "Total of certificate retrievals",
 		Units:      "retrievals/s",
-		Fam:        "retrieval",
+		Fam:        "retrievals",
 		Ctx:        "adcs.cert_template_retrievals",
 		Priority:   prioADCSCertTemplateRetrievals,
 		Dims: module.Dims{
@@ -1476,35 +1507,23 @@ var (
 		},
 	}
 	adcsCertificateRetrievalsTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_retrievals_processing_time",
 		Title:      "Certificate last retrieval processing time",
 		Units:      "seconds",
-		Fam:        "retrieval",
+		Fam:        "retrievals",
 		Ctx:        "adcs.cert_template_retrieval_processing_time",
 		Priority:   prioADCSCertTemplateRetrievalProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
-	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
-		OverModule: "ADCS",
-		ID:         "adcs_cert_template_%s_challenge_responses",
-		Title:      "Certificate challenge responses",
-		Units:      "responses/s",
-		Fam:        "response",
-		Ctx:        "adcs.cert_template_challenge_responses",
-		Priority:   prioADCSCertTemplateChallengeResponses,
-		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
-		},
-	}
 	adcsCertTemplateRequestCryptoSigningTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_request_cryptographic_signing_time",
 		Title:      "Certificate last signing operation request time",
 		Units:      "seconds",
-		Fam:        "period",
+		Fam:        "timings",
 		Ctx:        "adcs.cert_template_request_cryptographic_signing_time",
 		Priority:   prioADCSCertTemplateRequestCryptoSigningTime,
 		Dims: module.Dims{
@@ -1512,11 +1531,11 @@ var (
 		},
 	}
 	adcsCertTemplateRequestPolicyModuleProcessingTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_request_policy_module_processing_time",
 		Title:      "Certificate last policy module processing request time",
 		Units:      "seconds",
-		Fam:        "period",
+		Fam:        "timings",
 		Ctx:        "adcs.cert_template_request_policy_module_processing",
 		Priority:   prioADCSCertTemplateRequestPolicyModuleProcessingTime,
 		Dims: module.Dims{
@@ -1524,11 +1543,11 @@ var (
 		},
 	}
 	adcsCertTemplateChallengeResponseProcessingTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_challenge_response_processing_time",
 		Title:      "Certificate last challenge response time",
 		Units:      "seconds",
-		Fam:        "period",
+		Fam:        "timings",
 		Ctx:        "adcs.cert_template_challenge_response_processing_time",
 		Priority:   prioADCSCertTemplateChallengeResponseProcessingTime,
 		Dims: module.Dims{
@@ -1536,11 +1555,11 @@ var (
 		},
 	}
 	adcsCertTemplateSignedCertificateTimestampListsChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_lists",
 		Title:      "Certificate Signed Certificate Timestamp Lists processed",
 		Units:      "lists/s",
-		Fam:        "period",
+		Fam:        "timings",
 		Ctx:        "adcs.cert_template_signed_certificate_timestamp_lists",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampLists,
 		Dims: module.Dims{
@@ -1548,11 +1567,11 @@ var (
 		},
 	}
 	adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl = module.Chart{
-		OverModule: "ADCS",
+		OverModule: "adcs",
 		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time",
 		Title:      "Certificate last Signed Certificate Timestamp List process time",
 		Units:      "seconds",
-		Fam:        "period",
+		Fam:        "timings",
 		Ctx:        "adcs.cert_template_signed_certificate_timestamp_list_processing_time",
 		Priority:   prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
@@ -1599,7 +1618,7 @@ var (
 	}
 
 	adfsADLoginConnectionFailuresChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_ad_login_connection_failures",
 		Title:      "Connection failures",
 		Units:      "failures/s",
@@ -1611,7 +1630,7 @@ var (
 		},
 	}
 	adfsCertificateAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_certificate_authentications",
 		Title:      "User Certificate authentications",
 		Units:      "authentications/s",
@@ -1624,11 +1643,11 @@ var (
 	}
 
 	adfsDBArtifactFailuresChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_db_artifact_failures",
 		Title:      "Connection failures to the artifact database",
 		Units:      "failures/s",
-		Fam:        "artifact",
+		Fam:        "db artifact",
 		Ctx:        "adfs.db_artifact_failures",
 		Priority:   prioADFSDBArtifactFailures,
 		Dims: module.Dims{
@@ -1636,11 +1655,11 @@ var (
 		},
 	}
 	adfsDBArtifactQueryTimeSecondsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_db_artifact_query_time_seconds",
 		Title:      "Time taken for an artifact database query",
 		Units:      "seconds/s",
-		Fam:        "artifact",
+		Fam:        "db artifact",
 		Ctx:        "adfs.db_artifact_query_time_seconds",
 		Priority:   prioADFSDBArtifactQueryTimeSeconds,
 		Dims: module.Dims{
@@ -1648,11 +1667,11 @@ var (
 		},
 	}
 	adfsDBConfigFailuresChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_db_config_failures",
 		Title:      "Connection failures to the configuration database",
 		Units:      "failures/s",
-		Fam:        "config",
+		Fam:        "db config",
 		Ctx:        "adfs.db_config_failures",
 		Priority:   prioADFSDBConfigFailures,
 		Dims: module.Dims{
@@ -1660,11 +1679,11 @@ var (
 		},
 	}
 	adfsDBConfigQueryTimeSecondsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_db_config_query_time_seconds",
 		Title:      "Time taken for a configuration database query",
 		Units:      "seconds/s",
-		Fam:        "config",
+		Fam:        "db config",
 		Ctx:        "adfs.db_config_query_time_seconds",
 		Priority:   prioADFSDBConfigQueryTimeSeconds,
 		Dims: module.Dims{
@@ -1672,7 +1691,7 @@ var (
 		},
 	}
 	adfsDeviceAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_device_authentications",
 		Title:      "Device authentications",
 		Units:      "authentications/s",
@@ -1684,7 +1703,7 @@ var (
 		},
 	}
 	adfsExternalAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_external_authentications",
 		Title:      "Authentications from external MFA providers",
 		Units:      "authentications/s",
@@ -1697,7 +1716,7 @@ var (
 		},
 	}
 	adfsFederatedAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_federated_authentications",
 		Title:      "Authentications from Federated Sources",
 		Units:      "authentications/s",
@@ -1709,7 +1728,7 @@ var (
 		},
 	}
 	adfsFederationMetadataRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_federation_metadata_requests",
 		Title:      "Federation Metadata requests",
 		Units:      "requests/s",
@@ -1722,7 +1741,7 @@ var (
 	}
 
 	adfsOAuthAuthorizationRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_authorization_requests",
 		Title:      "Incoming requests to the OAuth Authorization endpoint",
 		Units:      "requests/s",
@@ -1734,7 +1753,7 @@ var (
 		},
 	}
 	adfsOAuthClientAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_authentications",
 		Title:      "OAuth client authentications",
 		Units:      "authentications/s",
@@ -1747,7 +1766,7 @@ var (
 		},
 	}
 	adfsOAuthClientCredentialRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_credentials_requests",
 		Title:      "OAuth client credentials requests",
 		Units:      "requests/s",
@@ -1760,7 +1779,7 @@ var (
 		},
 	}
 	adfsOAuthClientPrivKeyJwtAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_privkey_jwt_authentications",
 		Title:      "OAuth client private key JWT authentications",
 		Units:      "authentications/s",
@@ -1773,7 +1792,7 @@ var (
 		},
 	}
 	adfsOAuthClientSecretBasicAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_secret_basic_authentications",
 		Title:      "OAuth client secret basic authentications",
 		Units:      "authentications/s",
@@ -1787,7 +1806,7 @@ var (
 		},
 	}
 	adfsOAuthClientSecretPostAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_secret_post_authentications",
 		Title:      "OAuth client secret post authentications",
 		Units:      "authentications/s",
@@ -1800,7 +1819,7 @@ var (
 		},
 	}
 	adfsOAuthClientWindowsAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_client_windows_authentications",
 		Title:      "OAuth client windows integrated authentications",
 		Units:      "authentications/s",
@@ -1813,7 +1832,7 @@ var (
 		},
 	}
 	adfsOAuthLogonCertificateRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_logon_certificate_requests",
 		Title:      "OAuth logon certificate requests",
 		Units:      "requests/s",
@@ -1826,7 +1845,7 @@ var (
 		},
 	}
 	adfsOAuthPasswordGrantRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_password_grant_requests",
 		Title:      "OAuth password grant requests",
 		Units:      "requests/s",
@@ -1839,7 +1858,7 @@ var (
 		},
 	}
 	adfsOAuthTokenRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_oauth_token_requests_success",
 		Title:      "Successful RP token requests over OAuth protocol",
 		Units:      "requests/s",
@@ -1852,11 +1871,11 @@ var (
 	}
 
 	adfsPassiveRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_passive_requests",
 		Title:      "Passive requests",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adfs.passive_requests",
 		Priority:   prioADFSPassiveRequests,
 		Dims: module.Dims{
@@ -1864,7 +1883,7 @@ var (
 		},
 	}
 	adfsPassportAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_passport_authentications",
 		Title:      "Microsoft Passport SSO authentications",
 		Units:      "authentications/s",
@@ -1876,11 +1895,11 @@ var (
 		},
 	}
 	adfsPasswordChangeChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_password_change_requests",
 		Title:      "Password change requests",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adfs.password_change_requests",
 		Priority:   prioADFSPasswordChangeRequests,
 		Dims: module.Dims{
@@ -1889,19 +1908,31 @@ var (
 		},
 	}
 	adfsSAMLPTokenRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_samlp_token_requests_success",
 		Title:      "Successful RP token requests over SAML-P protocol",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adfs.samlp_token_requests_success",
 		Priority:   prioADFSSAMLPTokenRequests,
 		Dims: module.Dims{
 			{ID: "adfs_samlp_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
+	adfsWSTrustTokenRequestsSuccessChart = module.Chart{
+		OverModule: "adfs",
+		ID:         "adfs_wstrust_token_requests_success",
+		Title:      "Successful RP token requests over WS-Trust protocol",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.wstrust_token_requests_success",
+		Priority:   prioADFSWSTrustTokenRequestsSuccess,
+		Dims: module.Dims{
+			{ID: "adfs_wstrust_token_requests_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
 	adfsSSOAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_sso_authentications",
 		Title:      "SSO authentications",
 		Units:      "authentications/s",
@@ -1914,11 +1945,11 @@ var (
 		},
 	}
 	adfsTokenRequestsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_token_requests",
 		Title:      "Token access requests",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adfs.token_requests",
 		Priority:   prioADFSTokenRequests,
 		Dims: module.Dims{
@@ -1926,7 +1957,7 @@ var (
 		},
 	}
 	adfsUserPasswordAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_userpassword_authentications",
 		Title:      "AD U/P authentications",
 		Units:      "authentications/s",
@@ -1939,7 +1970,7 @@ var (
 		},
 	}
 	adfsWindowsIntegratedAuthenticationsChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_windows_integrated_authentications",
 		Title:      "f Windows integrated authentications using Kerberos or NTLM",
 		Units:      "authentications/s",
@@ -1951,27 +1982,15 @@ var (
 		},
 	}
 	adfsWSFedTokenRequestsSuccessChart = module.Chart{
-		OverModule: "ADFS",
+		OverModule: "adfs",
 		ID:         "adfs_wsfed_token_requests_success",
 		Title:      "Successful RP token requests over WS-Fed protocol",
 		Units:      "requests/s",
-		Fam:        "request",
+		Fam:        "requests",
 		Ctx:        "adfs.wsfed_token_requests_success",
 		Priority:   prioADFSWSFedTokenRequestsSuccess,
 		Dims: module.Dims{
 			{ID: "adfs_wsfed_token_requests_success_total", Name: "success", Algo: module.Incremental},
-		},
-	}
-	adfsWSTrustTokenRequestsSuccessChart = module.Chart{
-		OverModule: "ADFS",
-		ID:         "adfs_wstrust_token_requests_success",
-		Title:      "Successful RP token requests over WS-Trust protocol",
-		Units:      "requests/s",
-		Fam:        "request",
-		Ctx:        "adfs.wstrust_token_requests_success",
-		Priority:   prioADFSWSTrustTokenRequestsSuccess,
-		Dims: module.Dims{
-			{ID: "adfs_wstrust_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
 )
