@@ -2137,7 +2137,7 @@ var (
 		ID:         "exchange_activesync_ping_cmds",
 		Title:      "Ping commands pending in queue.",
 		Units:      "commands",
-		Fam:        "exchange",
+		Fam:        "command",
 		Ctx:        "exchange.activesync_ping_cmds",
 		Priority:   prioExchangeActiveSyncPingCMDsPending,
 		Dims: module.Dims{
@@ -2149,7 +2149,7 @@ var (
 		ID:         "exchange_activesync_requests",
 		Title:      "HTTP requests received from ASP.NET.",
 		Units:      "requests/s",
-		Fam:        "exchange",
+		Fam:        "command",
 		Ctx:        "exchange.activesync_requests",
 		Priority:   prioExchangeActiveSyncRequests,
 		Dims: module.Dims{
@@ -2161,7 +2161,7 @@ var (
 		ID:         "exchange_activesync_sync_cmds",
 		Title:      "Sync commands processed per second.",
 		Units:      "commands/s",
-		Fam:        "exchange",
+		Fam:        "command",
 		Ctx:        "exchange.activesync_sync_cmds",
 		Priority:   prioExchangeActiveSyncSyncCMDs,
 		Dims: module.Dims{
@@ -2173,7 +2173,7 @@ var (
 		ID:         "exchange_autodiscover_requests",
 		Title:      "Number of autodiscover service requests proccessed.",
 		Units:      "requests/s",
-		Fam:        "exchange",
+		Fam:        "command",
 		Ctx:        "exchange.autodiscover_requests",
 		Priority:   prioExchangeAutoDiscoverRequests,
 		Dims: module.Dims{
@@ -2185,7 +2185,7 @@ var (
 		ID:         "exchange_avail_service_requests",
 		Title:      "Resquests serviced per second.",
 		Units:      "requests/s",
-		Fam:        "exchange",
+		Fam:        "request",
 		Ctx:        "exchange.avail_service_requests",
 		Priority:   prioExchangeAvailServiceRequests,
 		Dims: module.Dims{
@@ -2197,7 +2197,7 @@ var (
 		ID:         "exchange_owa_current_unique_users_counter",
 		Title:      "Number of Unique Users Currently logged on to Outlook Web App.",
 		Units:      "logins",
-		Fam:        "exchange",
+		Fam:        "owa",
 		Ctx:        "exchange.owa_current_unique_users_counter",
 		Priority:   prioExchangeOWACurrentUniqueUsers,
 		Dims: module.Dims{
@@ -2209,7 +2209,7 @@ var (
 		ID:         "exchange_owa_requests_total",
 		Title:      "Number of requests handled by Outlook Web App.",
 		Units:      "requests/s",
-		Fam:        "exchange",
+		Fam:        "owa",
 		Ctx:        "exchange.owa_requests_total",
 		Priority:   prioExchangeOWARequestsTotal,
 		Dims: module.Dims{
@@ -2221,7 +2221,7 @@ var (
 		ID:         "exchange_rpc_active_user",
 		Title:      "Unique users showing activity in the last 2 minutes.",
 		Units:      "users",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_active_user_count",
 		Priority:   prioExchangeRPCActiveUserCount,
 		Dims: module.Dims{
@@ -2233,7 +2233,7 @@ var (
 		ID:         "exchange_rpc_avg_latency",
 		Title:      "Unique users showing activity in the last 2 minutes.",
 		Units:      "seconds",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_avg_latency",
 		Priority:   prioExchangeRPCAvgLatency,
 		Dims: module.Dims{
@@ -2245,7 +2245,7 @@ var (
 		ID:         "exchange_rpc_connection",
 		Title:      "Client connections maintained.",
 		Units:      "clients",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_connection",
 		Priority:   prioExchangeRPCConnection,
 		Dims: module.Dims{
@@ -2257,7 +2257,7 @@ var (
 		ID:         "exchange_rpc_operations",
 		Title:      "Client Requests being processed.",
 		Units:      "requests/s",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_operations",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
@@ -2269,7 +2269,7 @@ var (
 		ID:         "exchange_rpc_requests_total",
 		Title:      "Number of clients requests currently being processed.",
 		Units:      "requests",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_requests_total",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
@@ -2281,7 +2281,7 @@ var (
 		ID:         "exchange_rpc_user",
 		Title:      "Number of users.",
 		Units:      "users",
-		Fam:        "exchange",
+		Fam:        "rpc",
 		Ctx:        "exchange.rpc_user_count",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
