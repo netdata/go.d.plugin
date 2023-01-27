@@ -1603,7 +1603,7 @@ var (
 		ID:         "adfs_ad_login_connection_failures",
 		Title:      "Connection failures",
 		Units:      "failures/s",
-		Fam:        "adfs",
+		Fam:        "ad",
 		Ctx:        "adfs.ad_login_connection_failures",
 		Priority:   prioADFSADLoginConnectionFailures,
 		Dims: module.Dims{
@@ -1615,7 +1615,7 @@ var (
 		ID:         "adfs_certificate_authentications",
 		Title:      "User Certificate authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.certificate_authentications",
 		Priority:   prioADFSCertificateAuthentications,
 		Dims: module.Dims{
@@ -1628,7 +1628,7 @@ var (
 		ID:         "adfs_db_artifact_failures",
 		Title:      "Connection failures to the artifact database",
 		Units:      "failures/s",
-		Fam:        "adfs",
+		Fam:        "artifact",
 		Ctx:        "adfs.db_artifact_failures",
 		Priority:   prioADFSDBArtifactFailures,
 		Dims: module.Dims{
@@ -1640,7 +1640,7 @@ var (
 		ID:         "adfs_db_artifact_query_time_seconds",
 		Title:      "Time taken for an artifact database query",
 		Units:      "seconds/s",
-		Fam:        "adfs",
+		Fam:        "artifact",
 		Ctx:        "adfs.db_artifact_query_time_seconds",
 		Priority:   prioADFSDBArtifactQueryTimeSeconds,
 		Dims: module.Dims{
@@ -1652,7 +1652,7 @@ var (
 		ID:         "adfs_db_config_failures",
 		Title:      "Connection failures to the configuration database",
 		Units:      "failures/s",
-		Fam:        "adfs",
+		Fam:        "config",
 		Ctx:        "adfs.db_config_failures",
 		Priority:   prioADFSDBConfigFailures,
 		Dims: module.Dims{
@@ -1664,7 +1664,7 @@ var (
 		ID:         "adfs_db_config_query_time_seconds",
 		Title:      "Time taken for a configuration database query",
 		Units:      "seconds/s",
-		Fam:        "adfs",
+		Fam:        "config",
 		Ctx:        "adfs.db_config_query_time_seconds",
 		Priority:   prioADFSDBConfigQueryTimeSeconds,
 		Dims: module.Dims{
@@ -1676,7 +1676,7 @@ var (
 		ID:         "adfs_device_authentications",
 		Title:      "Device authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.device_authentications",
 		Priority:   prioADFSDeviceAuthentications,
 		Dims: module.Dims{
@@ -1688,7 +1688,7 @@ var (
 		ID:         "adfs_external_authentications",
 		Title:      "Authentications from external MFA providers",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.external_authentications",
 		Priority:   prioADFSExternalAuthentications,
 		Dims: module.Dims{
@@ -1701,7 +1701,7 @@ var (
 		ID:         "adfs_federated_authentications",
 		Title:      "Authentications from Federated Sources",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.federated_authentications",
 		Priority:   prioADFSFederatedAuthentications,
 		Dims: module.Dims{
@@ -1713,7 +1713,7 @@ var (
 		ID:         "adfs_federation_metadata_requests",
 		Title:      "Federation Metadata requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "requests",
 		Ctx:        "adfs.federation_metadata_requests",
 		Priority:   prioADFSFederationMetadataRequests,
 		Dims: module.Dims{
@@ -1726,7 +1726,7 @@ var (
 		ID:         "adfs_oauth_authorization_requests",
 		Title:      "Incoming requests to the OAuth Authorization endpoint",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_authorization_requests",
 		Priority:   prioADFSOauthAuthorizationRequests,
 		Dims: module.Dims{
@@ -1738,7 +1738,7 @@ var (
 		ID:         "adfs_oauth_client_authentications",
 		Title:      "OAuth client authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_authentications",
 		Priority:   prioADFSOauthClientAuthentications,
 		Dims: module.Dims{
@@ -1751,7 +1751,7 @@ var (
 		ID:         "adfs_oauth_client_credentials_requests",
 		Title:      "OAuth client credentials requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_credentials_requests",
 		Priority:   prioADFSOauthClientCredentials,
 		Dims: module.Dims{
@@ -1764,7 +1764,7 @@ var (
 		ID:         "adfs_oauth_client_privkey_jwt_authentications",
 		Title:      "OAuth client private key JWT authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_privkey_jwt_authentications",
 		Priority:   prioADFSOauthClientPrivkeyJwtAuthentication,
 		Dims: module.Dims{
@@ -1777,7 +1777,7 @@ var (
 		ID:         "adfs_oauth_client_secret_basic_authentications",
 		Title:      "OAuth client secret basic authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_secret_basic_authentications",
 		Type:       module.Line,
 		Priority:   prioADFSOauthClientSecretBasicAuthentications,
@@ -1791,7 +1791,7 @@ var (
 		ID:         "adfs_oauth_client_secret_post_authentications",
 		Title:      "OAuth client secret post authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_secret_post_authentications",
 		Priority:   prioADFSOauthClientSecretPostAuthentications,
 		Dims: module.Dims{
@@ -1804,7 +1804,7 @@ var (
 		ID:         "adfs_oauth_client_windows_authentications",
 		Title:      "OAuth client windows integrated authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_windows_authentications",
 		Priority:   prioADFSOauthClientWindowsAuthentications,
 		Dims: module.Dims{
@@ -1817,7 +1817,7 @@ var (
 		ID:         "adfs_oauth_logon_certificate_requests",
 		Title:      "OAuth logon certificate requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_logon_certificate_requests",
 		Priority:   prioADFSOauthLogonCertificateRequests,
 		Dims: module.Dims{
@@ -1830,7 +1830,7 @@ var (
 		ID:         "adfs_oauth_password_grant_requests",
 		Title:      "OAuth password grant requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_password_grant_requests",
 		Priority:   prioADFSOauthPasswordGrantRequests,
 		Dims: module.Dims{
@@ -1843,7 +1843,7 @@ var (
 		ID:         "adfs_oauth_token_requests_success",
 		Title:      "Successful RP token requests over OAuth protocol",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "oauth",
 		Ctx:        "adfs.oauth_token_requests_success",
 		Priority:   prioADFSOauthTokenRequestsSuccess,
 		Dims: module.Dims{
@@ -1856,7 +1856,7 @@ var (
 		ID:         "adfs_passive_requests",
 		Title:      "Passive requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.passive_requests",
 		Priority:   prioADFSPassiveRequests,
 		Dims: module.Dims{
@@ -1868,7 +1868,7 @@ var (
 		ID:         "adfs_passport_authentications",
 		Title:      "Microsoft Passport SSO authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.passport_authentications",
 		Priority:   prioADFSPassportAuthentications,
 		Dims: module.Dims{
@@ -1880,7 +1880,7 @@ var (
 		ID:         "adfs_password_change_requests",
 		Title:      "Password change requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.password_change_requests",
 		Priority:   prioADFSPasswordChangeRequests,
 		Dims: module.Dims{
@@ -1893,7 +1893,7 @@ var (
 		ID:         "adfs_samlp_token_requests_success",
 		Title:      "Successful RP token requests over SAML-P protocol",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.samlp_token_requests_success",
 		Priority:   prioADFSSAMLPTokenRequests,
 		Dims: module.Dims{
@@ -1905,7 +1905,7 @@ var (
 		ID:         "adfs_sso_authentications",
 		Title:      "SSO authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.sso_authentications",
 		Priority:   prioADFSSSOAuthentications,
 		Dims: module.Dims{
@@ -1918,7 +1918,7 @@ var (
 		ID:         "adfs_token_requests",
 		Title:      "Token access requests",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.token_requests",
 		Priority:   prioADFSTokenRequests,
 		Dims: module.Dims{
@@ -1930,7 +1930,7 @@ var (
 		ID:         "adfs_userpassword_authentications",
 		Title:      "AD U/P authentications",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.userpassword_authentications",
 		Priority:   prioADFSUserPasswordAuthentications,
 		Dims: module.Dims{
@@ -1943,7 +1943,7 @@ var (
 		ID:         "adfs_windows_integrated_authentications",
 		Title:      "f Windows integrated authentications using Kerberos or NTLM",
 		Units:      "authentications/s",
-		Fam:        "adfs",
+		Fam:        "auth",
 		Ctx:        "adfs.windows_integrated_authentications",
 		Priority:   prioADFSWindowsIntegratedAuthentications,
 		Dims: module.Dims{
@@ -1955,7 +1955,7 @@ var (
 		ID:         "adfs_wsfed_token_requests_success",
 		Title:      "Successful RP token requests over WS-Fed protocol",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.wsfed_token_requests_success",
 		Priority:   prioADFSWSFedTokenRequestsSuccess,
 		Dims: module.Dims{
@@ -1967,7 +1967,7 @@ var (
 		ID:         "adfs_wstrust_token_requests_success",
 		Title:      "Successful RP token requests over WS-Trust protocol",
 		Units:      "requests/s",
-		Fam:        "adfs",
+		Fam:        "request",
 		Ctx:        "adfs.wstrust_token_requests_success",
 		Priority:   prioADFSWSTrustTokenRequestsSuccess,
 		Dims: module.Dims{
