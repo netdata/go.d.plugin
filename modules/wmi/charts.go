@@ -128,17 +128,25 @@ const (
 	prioMSSQLStatsCompilations
 	prioMSSQLStatsRecompilations
 
+	// NET Framework
+	// Exceptions
 	prioNETFrameworkCLRExceptionsThrown
 	prioNETFrameworkCLRExceptionsFilters
 	prioNETFrameworkCLRExceptionsFinallys
 	prioNETFrameworkCLRExceptionsThrowCatchDepth
+
+	// InterOP
 	prioNETFrameworkCLRInteropCOMCalableWrapper
 	prioNETFrameworkCLRInteropMarshalling
 	prioNETFrameworkCLRInteropStubsCreated
 	prioNETFrameworkCLRJITMethods
+
+	// JIT
 	prioNETFrameworkCLRJITTime
 	prioNETFrameworkCLRJITStandardFailures
 	prioNETFrameworkCLRJITILBytes
+
+	// Loading
 	prioNETFrameworkCLRLoadingLoaderHeapSize
 	prioNETFrameworkCLRLoadingAppDomainsLoaded
 	prioNETFrameworkCLRLoadingAppDomainsUnloaded
@@ -150,6 +158,8 @@ const (
 	prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads
 	prioNETFrameworkCLRLockAndThreadsRecognizedThreads
 	prioNETFrameworkCLRLockAndThreadsContentions
+
+	// Memory
 	prioNETFrameworkCLRMemoryAllocatedBytes
 	prioNETFrameworkCLRMemoryFinalizationSurvivors
 	prioNETFrameworkCLRMemoryHeapSize
@@ -162,12 +172,16 @@ const (
 	prioNETFrameworkCLRMemoryCommitted
 	prioNETFrameworkCLRMemoryReserved
 	prioNETFrameworkCLRMemoryGCTime
+
+	// Remoting
 	prioNETFrameworkCLRRemotingChannels
 	prioNETFrameworkCLRRemotingContextBoundClassesLoaded
 	prioNETFrameworkCLRRemotingContextBoundObjects
 	prioNETFrameworkCLRRemotingContextProxies
 	prioNETFrameworkCLRRemotingContexts
 	prioNETFrameworkCLRRemotingRemoteCalls
+
+	// Security
 	prioNETFrameworkCLRSecurityLinkTimeChecks
 	prioNETFrameworkCLRSecurityRTChecksTime
 	prioNETFrameworkCLRSecurityStackWalkDepth
