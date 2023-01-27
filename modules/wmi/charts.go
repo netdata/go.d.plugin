@@ -710,7 +710,7 @@ var (
 		iisWebsiteUptimeChartTmpl.Copy(),
 	}
 	iisWebsiteUptimeChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_uptime",
 		Title:      "Website uptime",
 		Units:      "seconds",
@@ -722,7 +722,7 @@ var (
 		},
 	}
 	iisWebsiteTrafficChartTempl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_traffic",
 		Title:      "Website traffic",
 		Units:      "bytes/s",
@@ -736,7 +736,7 @@ var (
 		},
 	}
 	iisWebsiteFTPFileTransferRateChartTempl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_ftp_file_transfer_rate",
 		Title:      "Website FTP file transfer rate",
 		Units:      "files/s",
@@ -749,7 +749,7 @@ var (
 		},
 	}
 	iisWebsiteActiveConnectionsCountChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_active_connections_count",
 		Title:      "Website active connections",
 		Units:      "connections",
@@ -761,7 +761,7 @@ var (
 		},
 	}
 	iisWebsiteConnectionAttemptsRate = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_connection_attempts_rate",
 		Title:      "Website connections attempts",
 		Units:      "attempts/s",
@@ -773,7 +773,7 @@ var (
 		},
 	}
 	iisWebsiteRequestsRateChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_requests_rate",
 		Title:      "Website requests rate",
 		Units:      "requests/s",
@@ -785,7 +785,7 @@ var (
 		},
 	}
 	iisWebsiteUsersCountChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_users_count",
 		Title:      "Website users with pending requests",
 		Units:      "users",
@@ -799,7 +799,7 @@ var (
 		},
 	}
 	iisWebsiteISAPIExtRequestsCountChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_isapi_extension_requests_count",
 		Title:      "ISAPI extension requests",
 		Units:      "requests",
@@ -811,7 +811,7 @@ var (
 		},
 	}
 	iisWebsiteISAPIExtRequestsRateChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_isapi_extension_requests_rate",
 		Title:      "Website extensions request",
 		Units:      "requests/s",
@@ -823,7 +823,7 @@ var (
 		},
 	}
 	iisWebsiteErrorsRateChart = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_errors_rate",
 		Title:      "Website errors",
 		Units:      "errors/s",
@@ -837,7 +837,7 @@ var (
 		},
 	}
 	iisWebsiteLogonAttemptsRateChartTmpl = module.Chart{
-		OverModule: "IIS",
+		OverModule: "iis",
 		ID:         "iis_website_%s_logon_attempts_rate",
 		Title:      "Website logon attempts",
 		Units:      "attempts/s",
