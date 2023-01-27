@@ -66,15 +66,15 @@ const (
 	prioProcessesHandles
 
 	prioIISWebsiteTraffic
-	prioIISWebsiteRequestsRate
+	prioIISWebsiteFTPFileTransferRate
 	prioIISWebsiteActiveConnectionsCount
-	prioIISWebsiteUsersCount
+	prioIISWebsiteRequestsRate
 	prioIISWebsiteConnectionAttemptsRate
+	prioIISWebsiteUsersCount
 	prioIISWebsiteISAPIExtRequestsCount
 	prioIISWebsiteISAPIExtRequestsRate
-	prioIISWebsiteFTPFileTransferRate
-	prioIISWebsiteLogonAttemptsRate
 	prioIISWebsiteErrorsRate
+	prioIISWebsiteLogonAttemptsRate
 	prioIISWebsiteUptime
 
 	prioMSSQLAccessMethodPageSplits
@@ -82,21 +82,35 @@ const (
 	prioMSSQLBufferCheckpointPages
 	prioMSSQLBufferPageLifeExpectancy
 	prioMSSQLBufManIOPS
+
+	// Database
 	prioMSSQLDatabaseActiveTransactions
+	prioMSSQLDatabaseTransactions
+	prioMSSQLDatabaseWriteTransactions
+
+	// DB backup
 	prioMSSQLDatabaseBackupRestoreOperations
 	prioMSSQLDatabaseDataFileSize
 	prioMSSQLDatabaseLogFlushed
 	prioMSSQLDatabaseLogFlushes
-	prioMSSQLDatabaseTransactions
-	prioMSSQLDatabaseWriteTransactions
+
 	prioMSSQLBlockedProcess
+
 	prioMSSQLUserConnections
+
+	// Locks
 	prioMSSQLLocksLockWait
+
+	// Memory
 	prioMSSQLMemmgrConnectionMemoryBytes
 	prioMSSQLMemmgrExternalBenefitOfMemory
 	prioMSSQLMemmgrPendingMemoryGrants
 	prioMSSQLMemTotalServer
+
+	// Error
 	prioMSSQLSqlErrorsTotal
+
+	// SQL stats
 	prioMSSQLStatsAutoParameterization
 	prioMSSQLStatsBatchRequests
 	prioMSSQLStatsSafeAutoParameterization
@@ -119,32 +133,51 @@ const (
 	prioADBindsTotal
 	prioADLDAPSearchesTotal
 
+	// Requests
 	prioADCSCertTemplateRequests
 	prioADCSCertTemplateRequestProcessingTime
 	prioADCSCertTemplateRetrievals
-	prioADCSCertTemplateRetrievalProcessingTime
 	prioADCSCertTemplateFailedRequests
 	prioADCSCertTemplateIssuesRequests
 	prioADCSCertTemplatePendingRequests
+
+	// Response
+	prioADCSCertTemplateChallengeResponses
+
+	// Retrieval
+	prioADCSCertTemplateRetrievalProcessingTime
+
+	// Timing
 	prioADCSCertTemplateRequestCryptoSigningTime
 	prioADCSCertTemplateRequestPolicyModuleProcessingTime
-	prioADCSCertTemplateChallengeResponses
 	prioADCSCertTemplateChallengeResponseProcessingTime
 	prioADCSCertTemplateSignedCertificateTimestampLists
 	prioADCSCertTemplateSignedCertificateTimestampListProcessingTime
 
+	// ADFS
+	// AD
 	prioADFSADLoginConnectionFailures
-	prioADFSCertificateAuthentications
+
+	// DB Artifacts
 	prioADFSDBArtifactFailures
 	prioADFSDBArtifactQueryTimeSeconds
+
+	// DB Config
 	prioADFSDBConfigFailures
 	prioADFSDBConfigQueryTimeSeconds
+
+	// Auth
 	prioADFSDeviceAuthentications
 	prioADFSExternalAuthentications
-	prioADFSFederatedAuthentications
-	prioADFSFederationMetadataRequests
 	prioADFSOauthAuthorizationRequests
+	prioADFSCertificateAuthentications
 	prioADFSOauthClientAuthentications
+	prioADFSPassportAuthentications
+	prioADFSSSOAuthentications
+	prioADFSUserPasswordAuthentications
+	prioADFSWindowsIntegratedAuthentications
+
+	// OAuth
 	prioADFSOauthClientCredentials
 	prioADFSOauthClientPrivkeyJwtAuthentication
 	prioADFSOauthClientSecretBasicAuthentications
@@ -153,16 +186,16 @@ const (
 	prioADFSOauthLogonCertificateRequests
 	prioADFSOauthPasswordGrantRequests
 	prioADFSOauthTokenRequestsSuccess
+	prioADFSFederatedAuthentications
+
+	// Requests
+	prioADFSFederationMetadataRequests
 	prioADFSPassiveRequests
-	prioADFSPassportAuthentications
 	prioADFSPasswordChangeRequests
 	prioADFSSAMLPTokenRequests
-	prioADFSSSOAuthentications
-	prioADFSTokenRequests
-	prioADFSUserPasswordAuthentications
-	prioADFSWindowsIntegratedAuthentications
-	prioADFSWSFedTokenRequestsSuccess
 	prioADFSWSTrustTokenRequestsSuccess
+	prioADFSTokenRequests
+	prioADFSWSFedTokenRequestsSuccess
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -710,129 +743,140 @@ var (
 		iisWebsiteUptimeChartTmpl.Copy(),
 	}
 	iisWebsiteTrafficChartTempl = module.Chart{
-		ID:       "iis_website_%s_traffic",
-		Title:    "Website traffic",
-		Units:    "bytes/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_traffic",
-		Type:     module.Area,
-		Priority: prioIISWebsiteTraffic,
+		OverModule: "iis",
+		ID:         "iis_website_%s_traffic",
+		Title:      "Website traffic",
+		Units:      "bytes/s",
+		Fam:        "traffic",
+		Ctx:        "iis.website_traffic",
+		Type:       module.Area,
+		Priority:   prioIISWebsiteTraffic,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_received_bytes_total", Name: "received", Algo: module.Incremental},
 			{ID: "iis_website_%s_sent_bytes_total", Name: "sent", Algo: module.Incremental, Mul: -1},
 		},
 	}
-	iisWebsiteRequestsRateChartTmpl = module.Chart{
-		ID:       "iis_website_%s_requests_rate",
-		Title:    "Website requests rate",
-		Units:    "requests/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_requests_rate",
-		Priority: prioIISWebsiteRequestsRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_requests_total", Name: "requests", Algo: module.Incremental},
-		},
-	}
-	iisWebsiteActiveConnectionsCountChartTmpl = module.Chart{
-		ID:       "iis_website_%s_active_connections_count",
-		Title:    "Website active connections",
-		Units:    "connections",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_active_connections_count",
-		Priority: prioIISWebsiteActiveConnectionsCount,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_current_connections", Name: "active"},
-		},
-	}
-	iisWebsiteUsersCountChartTmpl = module.Chart{
-		ID:       "iis_website_%s_users_count",
-		Title:    "Website users with pending requests",
-		Units:    "users",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_users_count",
-		Type:     module.Stacked,
-		Priority: prioIISWebsiteUsersCount,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_current_anonymous_users", Name: "anonymous"},
-			{ID: "iis_website_%s_current_non_anonymous_users", Name: "non_anonymous"},
-		},
-	}
-	iisWebsiteConnectionAttemptsRate = module.Chart{
-		ID:       "iis_website_%s_connection_attempts_rate",
-		Title:    "Website connections attempts",
-		Units:    "attempts/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_connection_attempts_rate",
-		Priority: prioIISWebsiteConnectionAttemptsRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_connection_attempts_all_instances_total", Name: "connection", Algo: module.Incremental},
-		},
-	}
-	iisWebsiteISAPIExtRequestsCountChartTmpl = module.Chart{
-		ID:       "iis_website_%s_isapi_extension_requests_count",
-		Title:    "ISAPI extension requests",
-		Units:    "requests",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_isapi_extension_requests_count",
-		Priority: prioIISWebsiteISAPIExtRequestsCount,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_current_isapi_extension_requests", Name: "isapi"},
-		},
-	}
-	iisWebsiteISAPIExtRequestsRateChartTmpl = module.Chart{
-		ID:       "iis_website_%s_isapi_extension_requests_rate",
-		Title:    "Website extensions request",
-		Units:    "requests/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_isapi_extension_requests_rate",
-		Priority: prioIISWebsiteISAPIExtRequestsRate,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_isapi_extension_requests_total", Name: "isapi", Algo: module.Incremental},
-		},
-	}
 	iisWebsiteFTPFileTransferRateChartTempl = module.Chart{
-		ID:       "iis_website_%s_ftp_file_transfer_rate",
-		Title:    "Website FTP file transfer rate",
-		Units:    "files/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_ftp_file_transfer_rate",
-		Priority: prioIISWebsiteFTPFileTransferRate,
+		OverModule: "iis",
+		ID:         "iis_website_%s_ftp_file_transfer_rate",
+		Title:      "Website FTP file transfer rate",
+		Units:      "files/s",
+		Fam:        "traffic",
+		Ctx:        "iis.website_ftp_file_transfer_rate",
+		Priority:   prioIISWebsiteFTPFileTransferRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_files_received_total", Name: "received", Algo: module.Incremental},
 			{ID: "iis_website_%s_files_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	iisWebsiteLogonAttemptsRateChartTmpl = module.Chart{
-		ID:       "iis_website_%s_logon_attempts_rate",
-		Title:    "Website logon attempts",
-		Units:    "attempts/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_logon_attempts_rate",
-		Priority: prioIISWebsiteLogonAttemptsRate,
+	iisWebsiteActiveConnectionsCountChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_active_connections_count",
+		Title:      "Website active connections",
+		Units:      "connections",
+		Fam:        "connections",
+		Ctx:        "iis.website_active_connections_count",
+		Priority:   prioIISWebsiteActiveConnectionsCount,
 		Dims: module.Dims{
-			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
+			{ID: "iis_website_%s_current_connections", Name: "active"},
+		},
+	}
+	iisWebsiteConnectionAttemptsRate = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_connection_attempts_rate",
+		Title:      "Website connections attempts",
+		Units:      "attempts/s",
+		Fam:        "connections",
+		Ctx:        "iis.website_connection_attempts_rate",
+		Priority:   prioIISWebsiteConnectionAttemptsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_connection_attempts_all_instances_total", Name: "connection", Algo: module.Incremental},
+		},
+	}
+	iisWebsiteRequestsRateChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_requests_rate",
+		Title:      "Website requests rate",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "iis.website_requests_rate",
+		Priority:   prioIISWebsiteRequestsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_requests_total", Name: "requests", Algo: module.Incremental},
+		},
+	}
+	iisWebsiteUsersCountChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_users_count",
+		Title:      "Website users with pending requests",
+		Units:      "users",
+		Fam:        "requests",
+		Ctx:        "iis.website_users_count",
+		Type:       module.Stacked,
+		Priority:   prioIISWebsiteUsersCount,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_current_anonymous_users", Name: "anonymous"},
+			{ID: "iis_website_%s_current_non_anonymous_users", Name: "non_anonymous"},
+		},
+	}
+	iisWebsiteISAPIExtRequestsCountChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_isapi_extension_requests_count",
+		Title:      "ISAPI extension requests",
+		Units:      "requests",
+		Fam:        "requests",
+		Ctx:        "iis.website_isapi_extension_requests_count",
+		Priority:   prioIISWebsiteISAPIExtRequestsCount,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_current_isapi_extension_requests", Name: "isapi"},
+		},
+	}
+	iisWebsiteISAPIExtRequestsRateChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_isapi_extension_requests_rate",
+		Title:      "Website extensions request",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "iis.website_isapi_extension_requests_rate",
+		Priority:   prioIISWebsiteISAPIExtRequestsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_isapi_extension_requests_total", Name: "isapi", Algo: module.Incremental},
 		},
 	}
 	iisWebsiteErrorsRateChart = module.Chart{
-		ID:       "iis_website_%s_errors_rate",
-		Title:    "Website errors",
-		Units:    "errors/s",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_errors_rate",
-		Type:     module.Stacked,
-		Priority: prioIISWebsiteErrorsRate,
+		OverModule: "iis",
+		ID:         "iis_website_%s_errors_rate",
+		Title:      "Website errors",
+		Units:      "errors/s",
+		Fam:        "requests",
+		Ctx:        "iis.website_errors_rate",
+		Type:       module.Stacked,
+		Priority:   prioIISWebsiteErrorsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_locked_errors_total", Name: "document_locked", Algo: module.Incremental},
 			{ID: "iis_website_%s_not_found_errors_total", Name: "document_not_found", Algo: module.Incremental},
 		},
 	}
+	iisWebsiteLogonAttemptsRateChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_logon_attempts_rate",
+		Title:      "Website logon attempts",
+		Units:      "attempts/s",
+		Fam:        "logon",
+		Ctx:        "iis.website_logon_attempts_rate",
+		Priority:   prioIISWebsiteLogonAttemptsRate,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
+		},
+	}
 	iisWebsiteUptimeChartTmpl = module.Chart{
-		ID:       "iis_website_%s_uptime",
-		Title:    "Website uptime",
-		Units:    "seconds",
-		Fam:      "iis",
-		Ctx:      "wmi.iis_website_uptime",
-		Priority: prioIISWebsiteUptime,
+		OverModule: "iis",
+		ID:         "iis_website_%s_uptime",
+		Title:      "Website uptime",
+		Units:      "seconds",
+		Fam:        "uptime",
+		Ctx:        "iis.website_uptime",
+		Priority:   prioIISWebsiteUptime,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
 		},
@@ -873,12 +917,13 @@ var (
 	// Access Method:
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-access-methods-object?view=sql-server-ver16
 	mssqlAccessMethodPageSplitsChart = module.Chart{
-		ID:       "mssql_instance_%s_accessmethods_page_splits",
-		Title:    "Page splits",
-		Units:    "splits/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_accessmethods_page_splits",
-		Priority: prioMSSQLAccessMethodPageSplits,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_accessmethods_page_splits",
+		Title:      "Page splits",
+		Units:      "splits/s",
+		Fam:        "access",
+		Ctx:        "mssql.instance_accessmethods_page_splits",
+		Priority:   prioMSSQLAccessMethodPageSplits,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_accessmethods_page_splits", Name: "page", Algo: module.Incremental},
 		},
@@ -886,45 +931,49 @@ var (
 	// Buffer Management
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-buffer-manager-object?view=sql-server-ver16
 	mssqlCacheHitRatioChart = module.Chart{
-		ID:       "mssql_instance_%s_cache_hit_ratio",
-		Title:    "Buffer Cache hit ratio",
-		Units:    "percentage",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_cache_hit_ratio",
-		Priority: prioMSSQLCacheHitRatio,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_cache_hit_ratio",
+		Title:      "Buffer Cache hit ratio",
+		Units:      "percentage",
+		Fam:        "buffer",
+		Ctx:        "mssql.instance_cache_hit_ratio",
+		Priority:   prioMSSQLCacheHitRatio,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_cache_hit_ratio", Name: "hit_ratio"},
 		},
 	}
 	mssqlBufferCheckpointPageChart = module.Chart{
-		ID:       "mssql_instance_%s_bufman_checkpoint_pages",
-		Title:    "Flushed pages",
-		Units:    "pages/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_bufman_checkpoint_pages",
-		Priority: prioMSSQLBufferCheckpointPages,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_bufman_checkpoint_pages",
+		Title:      "Flushed pages",
+		Units:      "pages/s",
+		Fam:        "buffer",
+		Ctx:        "mssql.instance_bufman_checkpoint_pages",
+		Priority:   prioMSSQLBufferCheckpointPages,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_bufman_checkpoint_pages", Name: "flushed", Algo: module.Incremental},
 		},
 	}
 	mssqlBufferPageLifeExpectancyChart = module.Chart{
-		ID:       "mssql_instance_%s_bufman_page_life_expectancy",
-		Title:    "Page life expectancy",
-		Units:    "seconds",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_bufman_page_life_expectancy",
-		Priority: prioMSSQLBufferPageLifeExpectancy,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_bufman_page_life_expectancy",
+		Title:      "Page life expectancy",
+		Units:      "seconds",
+		Fam:        "buffer",
+		Ctx:        "mssql.instance_bufman_page_life_expectancy",
+		Priority:   prioMSSQLBufferPageLifeExpectancy,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_bufman_page_life_expectancy_seconds", Name: "life_expectancy"},
 		},
 	}
 	mssqlBufManIOPSChart = module.Chart{
-		ID:       "mssql_instance_%s_bufman_iops",
-		Title:    "Number of pages input and output",
-		Units:    "pages/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_bufman_iops",
-		Priority: prioMSSQLBufManIOPS,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_bufman_iops",
+		Title:      "Number of pages input and output",
+		Units:      "pages/s",
+		Fam:        "buffer",
+		Ctx:        "mssql.instance_bufman_iops",
+		Priority:   prioMSSQLBufManIOPS,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_bufman_page_reads", Name: "read", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_bufman_page_writes", Name: "written", Mul: -1, Algo: module.Incremental},
@@ -933,23 +982,25 @@ var (
 	// General Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-general-statistics-object?view=sql-server-ver16
 	mssqlBlockedProcessChart = module.Chart{
-		ID:       "mssql_instance_%s_blocked_process",
-		Title:    "Blocked processes",
-		Units:    "process",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_blocked_processes",
-		Priority: prioMSSQLBlockedProcess,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_blocked_process",
+		Title:      "Blocked processes",
+		Units:      "process",
+		Fam:        "processes",
+		Ctx:        "mssql.instance_blocked_processes",
+		Priority:   prioMSSQLBlockedProcess,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_genstats_blocked_processes", Name: "blocked"},
 		},
 	}
 	mssqlUserConnectionChart = module.Chart{
-		ID:       "mssql_instance_%s_user_connection",
-		Title:    "User connections",
-		Units:    "connections",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_user_connection",
-		Priority: prioMSSQLUserConnections,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_user_connection",
+		Title:      "User connections",
+		Units:      "connections",
+		Fam:        "connections",
+		Ctx:        "mssql.instance_user_connection",
+		Priority:   prioMSSQLUserConnections,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_genstats_user_connections", Name: "user"},
 		},
@@ -957,12 +1008,13 @@ var (
 	// Lock Wait
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-locks-object?view=sql-server-ver16
 	mssqlLocksWaitChart = module.Chart{
-		ID:       "mssql_instance_%s_locks_lock_wait",
-		Title:    "Lock requests that required the caller to wait",
-		Units:    "locks/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_locks_lock_wait",
-		Priority: prioMSSQLLocksLockWait,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_locks_lock_wait",
+		Title:      "Lock requests that required the caller to wait",
+		Units:      "locks/s",
+		Fam:        "locks",
+		Ctx:        "mssql.instance_locks_lock_wait",
+		Priority:   prioMSSQLLocksLockWait,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_resource_AllocUnit_locks_lock_wait_seconds", Name: "alloc_unit", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_resource_Application_locks_lock_wait_seconds", Name: "application", Algo: module.Incremental},
@@ -980,48 +1032,53 @@ var (
 			{ID: "mssql_instance_%s_resource_Xact_locks_lock_wait_seconds", Name: "xact", Algo: module.Incremental},
 		},
 	}
+
 	// Memory Manager
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-memory-manager-object?view=sql-server-ver16
 	mssqlMemmgrConnectionMemoryBytesChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_connection_memory_bytes",
-		Title:    "Amount of dynamic memory to maintain connections",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_connection_memory_bytes",
-		Priority: prioMSSQLMemmgrConnectionMemoryBytes,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_memmgr_connection_memory_bytes",
+		Title:      "Amount of dynamic memory to maintain connections",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "mssql.instance_memmgr_connection_memory_bytes",
+		Priority:   prioMSSQLMemmgrConnectionMemoryBytes,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_memmgr_connection_memory_bytes", Name: "memory", Algo: module.Incremental},
 		},
 	}
 	mssqlMemmgrExternalBenefitOfMemoryChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_external_benefit_of_memory",
-		Title:    "Performance benefit from adding memory to a specific cache",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_external_benefit_of_memory",
-		Priority: prioMSSQLMemmgrExternalBenefitOfMemory,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_memmgr_external_benefit_of_memory",
+		Title:      "Performance benefit from adding memory to a specific cache",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "mssql.instance_memmgr_external_benefit_of_memory",
+		Priority:   prioMSSQLMemmgrExternalBenefitOfMemory,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_memmgr_external_benefit_of_memory", Name: "benefit", Algo: module.Incremental},
 		},
 	}
 	mssqlMemmgrPendingMemoryChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_pending_memory_grants",
-		Title:    "Process waiting for memory grant",
-		Units:    "process",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_pending_memory_grants",
-		Priority: prioMSSQLMemmgrPendingMemoryGrants,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_memmgr_pending_memory_grants",
+		Title:      "Process waiting for memory grant",
+		Units:      "process",
+		Fam:        "memory",
+		Ctx:        "mssql.instance_memmgr_pending_memory_grants",
+		Priority:   prioMSSQLMemmgrPendingMemoryGrants,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_memmgr_pending_memory_grants", Name: "pending"},
 		},
 	}
 	mssqlMemmgrTotalServerChart = module.Chart{
-		ID:       "mssql_instance_%s_memmgr_server_memory",
-		Title:    "Memory committed",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_memmgr_server_memory",
-		Priority: prioMSSQLMemTotalServer,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_memmgr_server_memory",
+		Title:      "Memory committed",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "mssql.instance_memmgr_server_memory",
+		Priority:   prioMSSQLMemTotalServer,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_memmgr_total_server_memory_bytes", Name: "memory"},
 		},
@@ -1030,12 +1087,13 @@ var (
 	// SQL errors
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-errors-object?view=sql-server-ver16
 	mssqlSQLErrorsTotalChart = module.Chart{
-		ID:       "mssql_instance_%s_sql_errors_total",
-		Title:    "Errors",
-		Units:    "errors/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sql_errors",
-		Priority: prioMSSQLSqlErrorsTotal,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sql_errors_total",
+		Title:      "Errors",
+		Units:      "errors/s",
+		Fam:        "errors",
+		Ctx:        "mssql.instance_sql_errors",
+		Priority:   prioMSSQLSqlErrorsTotal,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sql_errors_total_db_offline_errors", Name: "db_offline", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_sql_errors_total_info_errors", Name: "info", Algo: module.Incremental},
@@ -1047,56 +1105,61 @@ var (
 	// SQL Statistic
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-sql-statistics-object?view=sql-server-ver16
 	mssqlStatsAutoParamChart = module.Chart{
-		ID:       "mssql_instance_%s_sqlstats_auto_parameterization_attempts",
-		Title:    "Failed auto-parameterization attempts",
-		Units:    "attempts/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sqlstats_auto_parameterization_attempts",
-		Priority: prioMSSQLStatsAutoParameterization,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sqlstats_auto_parameterization_attempts",
+		Title:      "Failed auto-parameterization attempts",
+		Units:      "attempts/s",
+		Fam:        "sql stats",
+		Ctx:        "mssql.instance_sqlstats_auto_parameterization_attempts",
+		Priority:   prioMSSQLStatsAutoParameterization,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_auto_parameterization_attempts", Name: "failed", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsBatchRequestsChart = module.Chart{
-		ID:       "mssql_instance_%s_sqlstats_batch_requests",
-		Title:    "Total of batches requests",
-		Units:    "requests/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sqlstats_batch_requests",
-		Priority: prioMSSQLStatsBatchRequests,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sqlstats_batch_requests",
+		Title:      "Total of batches requests",
+		Units:      "requests/s",
+		Fam:        "sql stats",
+		Ctx:        "mssql.instance_sqlstats_batch_requests",
+		Priority:   prioMSSQLStatsBatchRequests,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_batch_requests", Name: "batch", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsSafeAutoChart = module.Chart{
-		ID:       "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts",
-		Title:    "Safe auto-parameterization attempts",
-		Units:    "attempts/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sqlstats_safe_auto_parameterization_attempts",
-		Priority: prioMSSQLStatsSafeAutoParameterization,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts",
+		Title:      "Safe auto-parameterization attempts",
+		Units:      "attempts/s",
+		Fam:        "sql stats",
+		Ctx:        "mssql.instance_sqlstats_safe_auto_parameterization_attempts",
+		Priority:   prioMSSQLStatsSafeAutoParameterization,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_safe_auto_parameterization_attempts", Name: "safe", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsCompilationChart = module.Chart{
-		ID:       "mssql_instance_%s_sqlstats_sql_compilations",
-		Title:    "SQL compilations",
-		Units:    "compilations/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sqlstats_sql_compilations",
-		Priority: prioMSSQLStatsCompilations,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sqlstats_sql_compilations",
+		Title:      "SQL compilations",
+		Units:      "compilations/s",
+		Fam:        "sql stats",
+		Ctx:        "mssql.instance_sqlstats_sql_compilations",
+		Priority:   prioMSSQLStatsCompilations,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_sql_compilations", Name: "compilations", Algo: module.Incremental},
 		},
 	}
 	mssqlStatsRecompilationChart = module.Chart{
-		ID:       "mssql_instance_%s_sqlstats_sql_recompilations",
-		Title:    "SQL re-compilations",
-		Units:    "recompiles/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_sqlstats_sql_recompilations",
-		Priority: prioMSSQLStatsRecompilations,
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_sqlstats_sql_recompilations",
+		Title:      "SQL re-compilations",
+		Units:      "recompiles/s",
+		Fam:        "sql stats",
+		Ctx:        "mssql.instance_sqlstats_sql_recompilations",
+		Priority:   prioMSSQLStatsRecompilations,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_sqlstats_sql_recompilations", Name: "recompiles", Algo: module.Incremental},
 		},
@@ -1105,78 +1168,85 @@ var (
 	// Database
 	// Source: https://learn.microsoft.com/en-us/sql/relational-databases/performance-monitor/sql-server-databases-object?view=sql-server-2017
 	mssqlDatabaseActiveTransactionsChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_active_transactions",
-		Title:    "Active transactions per database",
-		Units:    "transactions",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_active_transactions",
-		Priority: prioMSSQLDatabaseActiveTransactions,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_active_transactions",
+		Title:      "Active transactions per database",
+		Units:      "transactions",
+		Fam:        "db transactions",
+		Ctx:        "mssql.database_active_transactions",
+		Priority:   prioMSSQLDatabaseActiveTransactions,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_active_transactions", Name: "active"},
 		},
 	}
 	mssqlDatabaseBackupRestoreOperationsChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_backup_restore_operations",
-		Title:    "Backup IO per database",
-		Units:    "operations/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_backup_restore_operations",
-		Priority: prioMSSQLDatabaseBackupRestoreOperations,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_backup_restore_operations",
+		Title:      "Backup IO per database",
+		Units:      "operations/s",
+		Fam:        "db backup",
+		Ctx:        "mssql.database_backup_restore_operations",
+		Priority:   prioMSSQLDatabaseBackupRestoreOperations,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_backup_restore_operations", Name: "backup", Algo: module.Incremental},
 		},
 	}
 	mssqlDatabaseSizeChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_data_files_size",
-		Title:    "Current database size",
-		Units:    "bytes",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_data_files_size",
-		Priority: prioMSSQLDatabaseDataFileSize,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_data_files_size",
+		Title:      "Current database size",
+		Units:      "bytes",
+		Fam:        "db size",
+		Ctx:        "mssql.database_data_files_size",
+		Priority:   prioMSSQLDatabaseDataFileSize,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_data_files_size_bytes", Name: "size"},
 		},
 	}
 	mssqlDatabaseLogFlushedChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_log_flushed",
-		Title:    "Log flushed",
-		Units:    "bytes/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_log_flushed",
-		Priority: prioMSSQLDatabaseLogFlushed,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_log_flushed",
+		Title:      "Log flushed",
+		Units:      "bytes/s",
+		Fam:        "db logs",
+		Ctx:        "mssql.database_log_flushed",
+		Priority:   prioMSSQLDatabaseLogFlushed,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_log_flushed_bytes", Name: "flushed", Algo: module.Incremental},
 		},
 	}
 	mssqlDatabaseLogFlushesChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_log_flushes",
-		Title:    "Log flushes",
-		Units:    "flushes/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_log_flushes",
-		Priority: prioMSSQLDatabaseLogFlushes,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_log_flushes",
+		Title:      "Log flushes",
+		Units:      "flushes/s",
+		Fam:        "db logs",
+		Ctx:        "mssql.database_log_flushes",
+		Priority:   prioMSSQLDatabaseLogFlushes,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_log_flushes", Name: "log", Algo: module.Incremental},
 		},
 	}
 	mssqlDatabaseTransactionsChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_transactions",
-		Title:    "Transactions",
-		Units:    "transactions/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_database_transactions",
-		Priority: prioMSSQLDatabaseTransactions,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_transactions",
+		Title:      "Transactions",
+		Units:      "transactions/s",
+		Fam:        "db transactions",
+		Ctx:        "mssql.database_transactions",
+		Priority:   prioMSSQLDatabaseTransactions,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_transactions", Name: "transactions", Algo: module.Incremental},
 		},
 	}
 	mssqlDatabaseWriteTransactionsChart = module.Chart{
-		ID:       "mssql_db_%s_instance_%s_write_transactions",
-		Title:    "Write transactions",
-		Units:    "transactions/s",
-		Fam:      "mssql",
-		Ctx:      "wmi.mssql_instance_write_transactions",
-		Priority: prioMSSQLDatabaseWriteTransactions,
+		OverModule: "mssql",
+		ID:         "mssql_db_%s_instance_%s_write_transactions",
+		Title:      "Write transactions",
+		Units:      "transactions/s",
+		Fam:        "db transactions",
+		Ctx:        "mssql.instance_write_transactions",
+		Priority:   prioMSSQLDatabaseWriteTransactions,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_write_transactions", Name: "write", Algo: module.Incremental},
 		},
@@ -1200,137 +1270,149 @@ var (
 		adLDAPSearchesChart.Copy(),
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
-		ID:       "ad_dra_replication_intersite_compressed_traffic",
-		Title:    "DRA replication compressed traffic withing site",
-		Units:    "bytes/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_intersite_compressed_traffic",
-		Priority: prioADDRAReplicationIntersiteCompressedTraffic,
-		Type:     module.Area,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_intersite_compressed_traffic",
+		Title:      "DRA replication compressed traffic withing site",
+		Units:      "bytes/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_intersite_compressed_traffic",
+		Priority:   prioADDRAReplicationIntersiteCompressedTraffic,
+		Type:       module.Area,
 		Dims: module.Dims{
 			{ID: "ad_replication_data_intersite_bytes_total_inbound", Name: "inbound", Algo: module.Incremental},
 			{ID: "ad_replication_data_intersite_bytes_total_outbound", Name: "outbound", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	adDRAReplicationIntrasiteCompressedTrafficChart = module.Chart{
-		ID:       "ad_dra_replication_intrasite_compressed_traffic",
-		Title:    "DRA replication compressed traffic between sites",
-		Units:    "bytes/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_intrasite_compressed_traffic",
-		Priority: prioADDRAReplicationIntrasiteCompressedTraffic,
-		Type:     module.Area,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_intrasite_compressed_traffic",
+		Title:      "DRA replication compressed traffic between sites",
+		Units:      "bytes/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_intrasite_compressed_traffic",
+		Priority:   prioADDRAReplicationIntrasiteCompressedTraffic,
+		Type:       module.Area,
 		Dims: module.Dims{
 			{ID: "ad_replication_data_intrasite_bytes_total_inbound", Name: "inbound", Algo: module.Incremental},
 			{ID: "ad_replication_data_intrasite_bytes_total_outbound", Name: "outbound", Algo: module.Incremental, Mul: -1},
 		},
 	}
 	adDRAReplicationSyncObjectRemainingChart = module.Chart{
-		ID:       "ad_dra_replication_sync_objects_remaining",
-		Title:    "DRA replication full sync objects remaining",
-		Units:    "objects",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_sync_objects_remaining",
-		Priority: prioADDRAReplicationSyncObjectsRemaining,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_sync_objects_remaining",
+		Title:      "DRA replication full sync objects remaining",
+		Units:      "objects",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_sync_objects_remaining",
+		Priority:   prioADDRAReplicationSyncObjectsRemaining,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_sync_objects_remaining", Name: "inbound"},
 		},
 	}
 	adDRAReplicationObjectsFilteredChart = module.Chart{
-		ID:       "ad_dra_replication_objects_filtered",
-		Title:    "DRA replication objects filtered",
-		Units:    "objects/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_objects_filtered",
-		Priority: prioADDRAReplicationObjectsFiltered,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_objects_filtered",
+		Title:      "DRA replication objects filtered",
+		Units:      "objects/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_objects_filtered",
+		Priority:   prioADDRAReplicationObjectsFiltered,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_objects_filtered_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
 	adDRAReplicationPropertiesUpdatedChart = module.Chart{
-		ID:       "ad_dra_replication_properties_updated",
-		Title:    "DRA replication properties updated",
-		Units:    "properties/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_properties_updated",
-		Priority: prioADDRAReplicationPropertiesUpdated,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_properties_updated",
+		Title:      "DRA replication properties updated",
+		Units:      "properties/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_properties_updated",
+		Priority:   prioADDRAReplicationPropertiesUpdated,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_properties_updated_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
 	adDRAReplicationPropertiesFilteredChart = module.Chart{
-		ID:       "ad_dra_replication_properties_filtered",
-		Title:    "DRA replication properties filtered",
-		Units:    "properties/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_properties_filtered",
-		Priority: prioADDRAReplicationPropertiesFiltered,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_properties_filtered",
+		Title:      "DRA replication properties filtered",
+		Units:      "properties/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_properties_filtered",
+		Priority:   prioADDRAReplicationPropertiesFiltered,
 		Dims: module.Dims{
 			{ID: "ad_replication_inbound_properties_filtered_total", Name: "inbound", Algo: module.Incremental},
 		},
 	}
 	adDRAReplicationPendingSyncsChart = module.Chart{
-		ID:       "ad_dra_replication_pending_syncs",
-		Title:    "DRA replication pending syncs",
-		Units:    "syncs",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_pending_syncs",
-		Priority: prioADReplicationPendingSyncs,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_pending_syncs",
+		Title:      "DRA replication pending syncs",
+		Units:      "syncs",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_pending_syncs",
+		Priority:   prioADReplicationPendingSyncs,
 		Dims: module.Dims{
 			{ID: "ad_replication_pending_synchronizations", Name: "pending"},
 		},
 	}
 	adDRAReplicationSyncRequestsChart = module.Chart{
-		ID:       "ad_dra_replication_sync_requests",
-		Title:    "DRA replication sync requests",
-		Units:    "requests/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_dra_replication_sync_requests",
-		Priority: prioADDRASyncRequests,
+		OverModule: "ad",
+		ID:         "ad_dra_replication_sync_requests",
+		Title:      "DRA replication sync requests",
+		Units:      "requests/s",
+		Fam:        "replication",
+		Ctx:        "ad.dra_replication_sync_requests",
+		Priority:   prioADDRASyncRequests,
 		Dims: module.Dims{
 			{ID: "ad_replication_sync_requests_total", Name: "request", Algo: module.Incremental},
 		},
 	}
 	adDirectoryServiceThreadsChart = module.Chart{
-		ID:       "ad_ds_threads",
-		Title:    "Directory Service threads",
-		Units:    "threads",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_ds_threads",
-		Priority: prioADDirectoryServiceThreadsInUse,
+		OverModule: "ad",
+		ID:         "ad_ds_threads",
+		Title:      "Directory Service threads",
+		Units:      "threads",
+		Fam:        "replication",
+		Ctx:        "ad.ds_threads",
+		Priority:   prioADDirectoryServiceThreadsInUse,
 		Dims: module.Dims{
 			{ID: "ad_directory_service_threads", Name: "in_use"},
 		},
 	}
 	adLDAPLastBindTimeChart = module.Chart{
-		ID:       "ad_ldap_last_bind_time",
-		Title:    "LDAP last successful bind time",
-		Units:    "seconds",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_ldap_last_bind_time",
-		Priority: prioADLDAPBindTime,
+		OverModule: "ad",
+		ID:         "ad_ldap_last_bind_time",
+		Title:      "LDAP last successful bind time",
+		Units:      "seconds",
+		Fam:        "bind",
+		Ctx:        "ad.ldap_last_bind_time",
+		Priority:   prioADLDAPBindTime,
 		Dims: module.Dims{
 			{ID: "ad_ldap_last_bind_time_seconds", Name: "last_bind"},
 		},
 	}
 	adBindsTotalChart = module.Chart{
-		ID:       "ad_binds",
-		Title:    "Successful binds",
-		Units:    "bind/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_binds",
-		Priority: prioADBindsTotal,
+		OverModule: "ad",
+		ID:         "ad_binds",
+		Title:      "Successful binds",
+		Units:      "bind/s",
+		Fam:        "bind",
+		Ctx:        "ad.binds",
+		Priority:   prioADBindsTotal,
 		Dims: module.Dims{
 			{ID: "ad_binds_total", Name: "binds", Algo: module.Incremental},
 		},
 	}
 	adLDAPSearchesChart = module.Chart{
-		ID:       "ad_ldap_searches",
-		Title:    "LDAP client search operations",
-		Units:    "searches/s",
-		Fam:      "ad",
-		Ctx:      "wmi.ad_ldap_searches",
-		Priority: prioADLDAPSearchesTotal,
+		OverModule: "ad",
+		ID:         "ad_ldap_searches",
+		Title:      "LDAP client search operations",
+		Units:      "searches/s",
+		Fam:        "ldap",
+		Ctx:        "ad.ldap_searches",
+		Priority:   prioADLDAPSearchesTotal,
 		Dims: module.Dims{
 			{ID: "ad_ldap_searches_total", Name: "searches", Algo: module.Incremental},
 		},
@@ -1356,144 +1438,157 @@ var (
 		adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl.Copy(),
 	}
 	adcsCertTemplateRequestsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template%s_requests",
-		Title:    "Certificate requests processed",
-		Units:    "requests/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_requests",
-		Priority: prioADCSCertTemplateRequests,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template%s_requests",
+		Title:      "Certificate requests processed",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adcs.cert_template_requests",
+		Priority:   prioADCSCertTemplateRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateFailedRequestsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_failed_requests",
-		Title:    "Certificate failed requests processed",
-		Units:    "requests/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_failed_requests",
-		Priority: prioADCSCertTemplateFailedRequests,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_failed_requests",
+		Title:      "Certificate failed requests processed",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adcs.cert_template_failed_requests",
+		Priority:   prioADCSCertTemplateFailedRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_failed_requests_total", Name: "failed", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateIssuedRequestsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_issued_requests",
-		Title:    "Certificate issued requests processed",
-		Units:    "requests/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_issued_requests",
-		Priority: prioADCSCertTemplateIssuesRequests,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_issued_requests",
+		Title:      "Certificate issued requests processed",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adcs.cert_template_issued_requests",
+		Priority:   prioADCSCertTemplateIssuesRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_issued_requests_total", Name: "issued", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplatePendingRequestsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_pending_requests",
-		Title:    "Certificate pending requests processed",
-		Units:    "requests/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_pending_requests",
-		Priority: prioADCSCertTemplatePendingRequests,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_pending_requests",
+		Title:      "Certificate pending requests processed",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adcs.cert_template_pending_requests",
+		Priority:   prioADCSCertTemplatePendingRequests,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_pending_requests_total", Name: "pending", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateRequestProcessingTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_request_processing_time",
-		Title:    "Certificate last request processing time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_request_processing_time",
-		Priority: prioADCSCertTemplateRequestProcessingTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_request_processing_time",
+		Title:      "Certificate last request processing time",
+		Units:      "seconds",
+		Fam:        "requests",
+		Ctx:        "adcs.cert_template_request_processing_time",
+		Priority:   prioADCSCertTemplateRequestProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
+	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_challenge_responses",
+		Title:      "Certificate challenge responses",
+		Units:      "responses/s",
+		Fam:        "responses",
+		Ctx:        "adcs.cert_template_challenge_responses",
+		Priority:   prioADCSCertTemplateChallengeResponses,
+		Dims: module.Dims{
+			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
+		},
+	}
 	adcsCertTemplateRetrievalsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_retrievals",
-		Title:    "Total of certificate retrievals",
-		Units:    "retrievals/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_retrievals",
-		Priority: prioADCSCertTemplateRetrievals,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_retrievals",
+		Title:      "Total of certificate retrievals",
+		Units:      "retrievals/s",
+		Fam:        "retrievals",
+		Ctx:        "adcs.cert_template_retrievals",
+		Priority:   prioADCSCertTemplateRetrievals,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_total", Name: "retrievals", Algo: module.Incremental},
 		},
 	}
 	adcsCertificateRetrievalsTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_retrievals_processing_time",
-		Title:    "Certificate last retrieval processing time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_retrieval_processing_time",
-		Priority: prioADCSCertTemplateRetrievalProcessingTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_retrievals_processing_time",
+		Title:      "Certificate last retrieval processing time",
+		Units:      "seconds",
+		Fam:        "retrievals",
+		Ctx:        "adcs.cert_template_retrieval_processing_time",
+		Priority:   prioADCSCertTemplateRetrievalProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_retrievals_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateRequestCryptoSigningTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_request_cryptographic_signing_time",
-		Title:    "Certificate last signing operation request time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_request_cryptographic_signing_time",
-		Priority: prioADCSCertTemplateRequestCryptoSigningTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_request_cryptographic_signing_time",
+		Title:      "Certificate last signing operation request time",
+		Units:      "seconds",
+		Fam:        "timings",
+		Ctx:        "adcs.cert_template_request_cryptographic_signing_time",
+		Priority:   prioADCSCertTemplateRequestCryptoSigningTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_cryptographic_signing_time_seconds", Name: "singing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateRequestPolicyModuleProcessingTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_request_policy_module_processing_time",
-		Title:    "Certificate last policy module processing request time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_request_policy_module_processing",
-		Priority: prioADCSCertTemplateRequestPolicyModuleProcessingTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_request_policy_module_processing_time",
+		Title:      "Certificate last policy module processing request time",
+		Units:      "seconds",
+		Fam:        "timings",
+		Ctx:        "adcs.cert_template_request_policy_module_processing",
+		Priority:   prioADCSCertTemplateRequestPolicyModuleProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_request_policy_module_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
-	adcsCertTemplateChallengeResponseChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_challenge_responses",
-		Title:    "Certificate challenge responses",
-		Units:    "responses/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_challenge_responses",
-		Priority: prioADCSCertTemplateChallengeResponses,
-		Dims: module.Dims{
-			{ID: "adcs_cert_template_%s_challenge_responses_total", Name: "challenge", Algo: module.Incremental},
-		},
-	}
 	adcsCertTemplateChallengeResponseProcessingTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_challenge_response_processing_time",
-		Title:    "Certificate last challenge response time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_challenge_response_processing_time",
-		Priority: prioADCSCertTemplateChallengeResponseProcessingTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_challenge_response_processing_time",
+		Title:      "Certificate last challenge response time",
+		Units:      "seconds",
+		Fam:        "timings",
+		Ctx:        "adcs.cert_template_challenge_response_processing_time",
+		Priority:   prioADCSCertTemplateChallengeResponseProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_challenge_response_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
 	}
 	adcsCertTemplateSignedCertificateTimestampListsChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_signed_certificate_timestamp_lists",
-		Title:    "Certificate Signed Certificate Timestamp Lists processed",
-		Units:    "lists/s",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_signed_certificate_timestamp_lists",
-		Priority: prioADCSCertTemplateSignedCertificateTimestampLists,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_lists",
+		Title:      "Certificate Signed Certificate Timestamp Lists processed",
+		Units:      "lists/s",
+		Fam:        "timings",
+		Ctx:        "adcs.cert_template_signed_certificate_timestamp_lists",
+		Priority:   prioADCSCertTemplateSignedCertificateTimestampLists,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_lists_total", Name: "processed", Algo: module.Incremental},
 		},
 	}
 	adcsCertTemplateSignedCertificateTimestampListProcessingTimeChartTmpl = module.Chart{
-		ID:       "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time",
-		Title:    "Certificate last Signed Certificate Timestamp List process time",
-		Units:    "seconds",
-		Fam:      "adcs",
-		Ctx:      "wmi.adcs_cert_template_signed_certificate_timestamp_list_processing_time",
-		Priority: prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
+		OverModule: "adcs",
+		ID:         "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time",
+		Title:      "Certificate last Signed Certificate Timestamp List process time",
+		Units:      "seconds",
+		Fam:        "timings",
+		Ctx:        "adcs.cert_template_signed_certificate_timestamp_list_processing_time",
+		Priority:   prioADCSCertTemplateSignedCertificateTimestampListProcessingTime,
 		Dims: module.Dims{
 			{ID: "adcs_cert_template_%s_signed_certificate_timestamp_list_processing_time_seconds", Name: "processing_time", Div: precision},
 		},
@@ -1538,349 +1633,379 @@ var (
 	}
 
 	adfsADLoginConnectionFailuresChart = module.Chart{
-		ID:       "adfs_ad_login_connection_failures",
-		Title:    "Connection failures",
-		Units:    "failures/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_ad_login_connection_failures",
-		Priority: prioADFSADLoginConnectionFailures,
+		OverModule: "adfs",
+		ID:         "adfs_ad_login_connection_failures",
+		Title:      "Connection failures",
+		Units:      "failures/s",
+		Fam:        "ad",
+		Ctx:        "adfs.ad_login_connection_failures",
+		Priority:   prioADFSADLoginConnectionFailures,
 		Dims: module.Dims{
 			{ID: "adfs_ad_login_connection_failures_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
 	adfsCertificateAuthenticationsChart = module.Chart{
-		ID:       "adfs_certificate_authentications",
-		Title:    "User Certificate authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_certificate_authentications",
-		Priority: prioADFSCertificateAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_certificate_authentications",
+		Title:      "User Certificate authentications",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.certificate_authentications",
+		Priority:   prioADFSCertificateAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_certificate_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
 
 	adfsDBArtifactFailuresChart = module.Chart{
-		ID:       "adfs_db_artifact_failures",
-		Title:    "Connection failures to the artifact database",
-		Units:    "failures/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_artifact_failures",
-		Priority: prioADFSDBArtifactFailures,
+		OverModule: "adfs",
+		ID:         "adfs_db_artifact_failures",
+		Title:      "Connection failures to the artifact database",
+		Units:      "failures/s",
+		Fam:        "db artifact",
+		Ctx:        "adfs.db_artifact_failures",
+		Priority:   prioADFSDBArtifactFailures,
 		Dims: module.Dims{
 			{ID: "adfs_db_artifact_failure_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
 	adfsDBArtifactQueryTimeSecondsChart = module.Chart{
-		ID:       "adfs_db_artifact_query_time_seconds",
-		Title:    "Time taken for an artifact database query",
-		Units:    "seconds/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_artifact_query_time_seconds",
-		Priority: prioADFSDBArtifactQueryTimeSeconds,
+		OverModule: "adfs",
+		ID:         "adfs_db_artifact_query_time_seconds",
+		Title:      "Time taken for an artifact database query",
+		Units:      "seconds/s",
+		Fam:        "db artifact",
+		Ctx:        "adfs.db_artifact_query_time_seconds",
+		Priority:   prioADFSDBArtifactQueryTimeSeconds,
 		Dims: module.Dims{
 			{ID: "adfs_db_artifact_query_time_seconds_total", Name: "query_time", Algo: module.Incremental, Div: precision},
 		},
 	}
 	adfsDBConfigFailuresChart = module.Chart{
-		ID:       "adfs_db_config_failures",
-		Title:    "Connection failures to the configuration database",
-		Units:    "failures/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_config_failures",
-		Priority: prioADFSDBConfigFailures,
+		OverModule: "adfs",
+		ID:         "adfs_db_config_failures",
+		Title:      "Connection failures to the configuration database",
+		Units:      "failures/s",
+		Fam:        "db config",
+		Ctx:        "adfs.db_config_failures",
+		Priority:   prioADFSDBConfigFailures,
 		Dims: module.Dims{
 			{ID: "adfs_db_config_failure_total", Name: "connection", Algo: module.Incremental},
 		},
 	}
 	adfsDBConfigQueryTimeSecondsChart = module.Chart{
-		ID:       "adfs_db_config_query_time_seconds",
-		Title:    "Time taken for a configuration database query",
-		Units:    "seconds/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_db_config_query_time_seconds",
-		Priority: prioADFSDBConfigQueryTimeSeconds,
+		OverModule: "adfs",
+		ID:         "adfs_db_config_query_time_seconds",
+		Title:      "Time taken for a configuration database query",
+		Units:      "seconds/s",
+		Fam:        "db config",
+		Ctx:        "adfs.db_config_query_time_seconds",
+		Priority:   prioADFSDBConfigQueryTimeSeconds,
 		Dims: module.Dims{
 			{ID: "adfs_db_config_query_time_seconds_total", Name: "query_time", Algo: module.Incremental, Div: precision},
 		},
 	}
 	adfsDeviceAuthenticationsChart = module.Chart{
-		ID:       "adfs_device_authentications",
-		Title:    "Device authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_device_authentications",
-		Priority: prioADFSDeviceAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_device_authentications",
+		Title:      "Device authentications",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.device_authentications",
+		Priority:   prioADFSDeviceAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_device_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
 	adfsExternalAuthenticationsChart = module.Chart{
-		ID:       "adfs_external_authentications",
-		Title:    "Authentications from external MFA providers",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_external_authentications",
-		Priority: prioADFSExternalAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_external_authentications",
+		Title:      "Authentications from external MFA providers",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.external_authentications",
+		Priority:   prioADFSExternalAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_external_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_external_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsFederatedAuthenticationsChart = module.Chart{
-		ID:       "adfs_federated_authentications",
-		Title:    "Authentications from Federated Sources",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_federated_authentications",
-		Priority: prioADFSFederatedAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_federated_authentications",
+		Title:      "Authentications from Federated Sources",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.federated_authentications",
+		Priority:   prioADFSFederatedAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_federated_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
 	adfsFederationMetadataRequestsChart = module.Chart{
-		ID:       "adfs_federation_metadata_requests",
-		Title:    "Federation Metadata requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_federation_metadata_requests",
-		Priority: prioADFSFederationMetadataRequests,
+		OverModule: "adfs",
+		ID:         "adfs_federation_metadata_requests",
+		Title:      "Federation Metadata requests",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.federation_metadata_requests",
+		Priority:   prioADFSFederationMetadataRequests,
 		Dims: module.Dims{
 			{ID: "adfs_federation_metadata_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 
 	adfsOAuthAuthorizationRequestsChart = module.Chart{
-		ID:       "adfs_oauth_authorization_requests",
-		Title:    "Incoming requests to the OAuth Authorization endpoint",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_authorization_requests",
-		Priority: prioADFSOauthAuthorizationRequests,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_authorization_requests",
+		Title:      "Incoming requests to the OAuth Authorization endpoint",
+		Units:      "requests/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_authorization_requests",
+		Priority:   prioADFSOauthAuthorizationRequests,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_authorization_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientAuthenticationsChart = module.Chart{
-		ID:       "adfs_oauth_client_authentications",
-		Title:    "OAuth client authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_authentications",
-		Priority: prioADFSOauthClientAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_authentications",
+		Title:      "OAuth client authentications",
+		Units:      "authentications/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_authentications",
+		Priority:   prioADFSOauthClientAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_authentication_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_authentication_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientCredentialRequestsChart = module.Chart{
-		ID:       "adfs_oauth_client_credentials_requests",
-		Title:    "OAuth client credentials requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_credentials_requests",
-		Priority: prioADFSOauthClientCredentials,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_credentials_requests",
+		Title:      "OAuth client credentials requests",
+		Units:      "requests/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_credentials_requests",
+		Priority:   prioADFSOauthClientCredentials,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_credentials_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_credentials_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientPrivKeyJwtAuthenticationsChart = module.Chart{
-		ID:       "adfs_oauth_client_privkey_jwt_authentications",
-		Title:    "OAuth client private key JWT authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_privkey_jwt_authentications",
-		Priority: prioADFSOauthClientPrivkeyJwtAuthentication,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_privkey_jwt_authentications",
+		Title:      "OAuth client private key JWT authentications",
+		Units:      "authentications/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_privkey_jwt_authentications",
+		Priority:   prioADFSOauthClientPrivkeyJwtAuthentication,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_privkey_jwt_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_privkey_jtw_authentication_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientSecretBasicAuthenticationsChart = module.Chart{
-		ID:       "adfs_oauth_client_secret_basic_authentications",
-		Title:    "OAuth client secret basic authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_secret_basic_authentications",
-		Type:     module.Line,
-		Priority: prioADFSOauthClientSecretBasicAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_secret_basic_authentications",
+		Title:      "OAuth client secret basic authentications",
+		Units:      "authentications/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_secret_basic_authentications",
+		Type:       module.Line,
+		Priority:   prioADFSOauthClientSecretBasicAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_secret_basic_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_basic_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientSecretPostAuthenticationsChart = module.Chart{
-		ID:       "adfs_oauth_client_secret_post_authentications",
-		Title:    "OAuth client secret post authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_secret_post_authentications",
-		Priority: prioADFSOauthClientSecretPostAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_secret_post_authentications",
+		Title:      "OAuth client secret post authentications",
+		Units:      "authentications/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_secret_post_authentications",
+		Priority:   prioADFSOauthClientSecretPostAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_secret_post_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_secret_post_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthClientWindowsAuthenticationsChart = module.Chart{
-		ID:       "adfs_oauth_client_windows_authentications",
-		Title:    "OAuth client windows integrated authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_client_windows_authentications",
-		Priority: prioADFSOauthClientWindowsAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_client_windows_authentications",
+		Title:      "OAuth client windows integrated authentications",
+		Units:      "authentications/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_client_windows_authentications",
+		Priority:   prioADFSOauthClientWindowsAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_windows_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_client_windows_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthLogonCertificateRequestsChart = module.Chart{
-		ID:       "adfs_oauth_logon_certificate_requests",
-		Title:    "OAuth logon certificate requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_logon_certificate_requests",
-		Priority: prioADFSOauthLogonCertificateRequests,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_logon_certificate_requests",
+		Title:      "OAuth logon certificate requests",
+		Units:      "requests/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_logon_certificate_requests",
+		Priority:   prioADFSOauthLogonCertificateRequests,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_logon_certificate_token_requests_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_logon_certificate_requests_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthPasswordGrantRequestsChart = module.Chart{
-		ID:       "adfs_oauth_password_grant_requests",
-		Title:    "OAuth password grant requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_password_grant_requests",
-		Priority: prioADFSOauthPasswordGrantRequests,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_password_grant_requests",
+		Title:      "OAuth password grant requests",
+		Units:      "requests/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_password_grant_requests",
+		Priority:   prioADFSOauthPasswordGrantRequests,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_password_grant_requests_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_oauth_password_grant_requests_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsOAuthTokenRequestsChart = module.Chart{
-		ID:       "adfs_oauth_token_requests_success",
-		Title:    "Successful RP token requests over OAuth protocol",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_oauth_token_requests_success",
-		Priority: prioADFSOauthTokenRequestsSuccess,
+		OverModule: "adfs",
+		ID:         "adfs_oauth_token_requests_success",
+		Title:      "Successful RP token requests over OAuth protocol",
+		Units:      "requests/s",
+		Fam:        "oauth",
+		Ctx:        "adfs.oauth_token_requests_success",
+		Priority:   prioADFSOauthTokenRequestsSuccess,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
 
 	adfsPassiveRequestsChart = module.Chart{
-		ID:       "adfs_passive_requests",
-		Title:    "Passive requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_passive_requests",
-		Priority: prioADFSPassiveRequests,
+		OverModule: "adfs",
+		ID:         "adfs_passive_requests",
+		Title:      "Passive requests",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.passive_requests",
+		Priority:   prioADFSPassiveRequests,
 		Dims: module.Dims{
 			{ID: "adfs_passive_requests_total", Name: "passive", Algo: module.Incremental},
 		},
 	}
 	adfsPassportAuthenticationsChart = module.Chart{
-		ID:       "adfs_passport_authentications",
-		Title:    "Microsoft Passport SSO authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_passport_authentications",
-		Priority: prioADFSPassportAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_passport_authentications",
+		Title:      "Microsoft Passport SSO authentications",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.passport_authentications",
+		Priority:   prioADFSPassportAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_passport_authentications_total", Name: "passport", Algo: module.Incremental},
 		},
 	}
 	adfsPasswordChangeChart = module.Chart{
-		ID:       "adfs_password_change_requests",
-		Title:    "Password change requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_password_change_requests",
-		Priority: prioADFSPasswordChangeRequests,
+		OverModule: "adfs",
+		ID:         "adfs_password_change_requests",
+		Title:      "Password change requests",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.password_change_requests",
+		Priority:   prioADFSPasswordChangeRequests,
 		Dims: module.Dims{
 			{ID: "adfs_password_change_succeeded_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_password_change_failed_total", Name: "failed", Algo: module.Incremental},
 		},
 	}
 	adfsSAMLPTokenRequestsChart = module.Chart{
-		ID:       "adfs_samlp_token_requests_success",
-		Title:    "Successful RP token requests over SAML-P protocol",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_samlp_token_requests_success",
-		Priority: prioADFSSAMLPTokenRequests,
+		OverModule: "adfs",
+		ID:         "adfs_samlp_token_requests_success",
+		Title:      "Successful RP token requests over SAML-P protocol",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.samlp_token_requests_success",
+		Priority:   prioADFSSAMLPTokenRequests,
 		Dims: module.Dims{
 			{ID: "adfs_samlp_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
+	adfsWSTrustTokenRequestsSuccessChart = module.Chart{
+		OverModule: "adfs",
+		ID:         "adfs_wstrust_token_requests_success",
+		Title:      "Successful RP token requests over WS-Trust protocol",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.wstrust_token_requests_success",
+		Priority:   prioADFSWSTrustTokenRequestsSuccess,
+		Dims: module.Dims{
+			{ID: "adfs_wstrust_token_requests_success_total", Name: "success", Algo: module.Incremental},
+		},
+	}
 	adfsSSOAuthenticationsChart = module.Chart{
-		ID:       "adfs_sso_authentications",
-		Title:    "SSO authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_sso_authentications",
-		Priority: prioADFSSSOAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_sso_authentications",
+		Title:      "SSO authentications",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.sso_authentications",
+		Priority:   prioADFSSSOAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsTokenRequestsChart = module.Chart{
-		ID:       "adfs_token_requests",
-		Title:    "Token access requests",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_token_requests",
-		Priority: prioADFSTokenRequests,
+		OverModule: "adfs",
+		ID:         "adfs_token_requests",
+		Title:      "Token access requests",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.token_requests",
+		Priority:   prioADFSTokenRequests,
 		Dims: module.Dims{
 			{ID: "adfs_token_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 	adfsUserPasswordAuthenticationsChart = module.Chart{
-		ID:       "adfs_userpassword_authentications",
-		Title:    "AD U/P authentications",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_userpassword_authentications",
-		Priority: prioADFSUserPasswordAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_userpassword_authentications",
+		Title:      "AD U/P authentications",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.userpassword_authentications",
+		Priority:   prioADFSUserPasswordAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_sso_authentications_success_total", Name: "success", Algo: module.Incremental},
 			{ID: "adfs_sso_authentications_failure_total", Name: "failure", Algo: module.Incremental},
 		},
 	}
 	adfsWindowsIntegratedAuthenticationsChart = module.Chart{
-		ID:       "adfs_windows_integrated_authentications",
-		Title:    "f Windows integrated authentications using Kerberos or NTLM",
-		Units:    "authentications/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_windows_integrated_authentications",
-		Priority: prioADFSWindowsIntegratedAuthentications,
+		OverModule: "adfs",
+		ID:         "adfs_windows_integrated_authentications",
+		Title:      "f Windows integrated authentications using Kerberos or NTLM",
+		Units:      "authentications/s",
+		Fam:        "auth",
+		Ctx:        "adfs.windows_integrated_authentications",
+		Priority:   prioADFSWindowsIntegratedAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_windows_integrated_authentications_total", Name: "authentications", Algo: module.Incremental},
 		},
 	}
 	adfsWSFedTokenRequestsSuccessChart = module.Chart{
-		ID:       "adfs_wsfed_token_requests_success",
-		Title:    "Successful RP token requests over WS-Fed protocol",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_wsfed_token_requests_success",
-		Priority: prioADFSWSFedTokenRequestsSuccess,
+		OverModule: "adfs",
+		ID:         "adfs_wsfed_token_requests_success",
+		Title:      "Successful RP token requests over WS-Fed protocol",
+		Units:      "requests/s",
+		Fam:        "requests",
+		Ctx:        "adfs.wsfed_token_requests_success",
+		Priority:   prioADFSWSFedTokenRequestsSuccess,
 		Dims: module.Dims{
 			{ID: "adfs_wsfed_token_requests_success_total", Name: "success", Algo: module.Incremental},
-		},
-	}
-	adfsWSTrustTokenRequestsSuccessChart = module.Chart{
-		ID:       "adfs_wstrust_token_requests_success",
-		Title:    "Successful RP token requests over WS-Trust protocol",
-		Units:    "requests/s",
-		Fam:      "adfs",
-		Ctx:      "wmi.adfs_wstrust_token_requests_success",
-		Priority: prioADFSWSTrustTokenRequestsSuccess,
-		Dims: module.Dims{
-			{ID: "adfs_wstrust_token_requests_success_total", Name: "success", Algo: module.Incremental},
 		},
 	}
 )
