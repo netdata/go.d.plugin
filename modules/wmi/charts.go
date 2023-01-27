@@ -65,7 +65,6 @@ const (
 	prioProcessesThreads
 	prioProcessesHandles
 
-	prioIISWebsiteUptime
 	prioIISWebsiteTraffic
 	prioIISWebsiteFTPFileTransferRate
 	prioIISWebsiteActiveConnectionsCount
@@ -76,6 +75,7 @@ const (
 	prioIISWebsiteISAPIExtRequestsRate
 	prioIISWebsiteErrorsRate
 	prioIISWebsiteLogonAttemptsRate
+	prioIISWebsiteUptime
 
 	prioMSSQLAccessMethodPageSplits
 	prioMSSQLCacheHitRatio
@@ -709,18 +709,6 @@ var (
 		iisWebsiteErrorsRateChart.Copy(),
 		iisWebsiteUptimeChartTmpl.Copy(),
 	}
-	iisWebsiteUptimeChartTmpl = module.Chart{
-		OverModule: "iis",
-		ID:         "iis_website_%s_uptime",
-		Title:      "Website uptime",
-		Units:      "seconds",
-		Fam:        "uptime",
-		Ctx:        "iis.website_uptime",
-		Priority:   prioIISWebsiteUptime,
-		Dims: module.Dims{
-			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
-		},
-	}
 	iisWebsiteTrafficChartTempl = module.Chart{
 		OverModule: "iis",
 		ID:         "iis_website_%s_traffic",
@@ -846,6 +834,18 @@ var (
 		Priority:   prioIISWebsiteLogonAttemptsRate,
 		Dims: module.Dims{
 			{ID: "iis_website_%s_logon_attempts_total", Name: "logon", Algo: module.Incremental},
+		},
+	}
+	iisWebsiteUptimeChartTmpl = module.Chart{
+		OverModule: "iis",
+		ID:         "iis_website_%s_uptime",
+		Title:      "Website uptime",
+		Units:      "seconds",
+		Fam:        "uptime",
+		Ctx:        "iis.website_uptime",
+		Priority:   prioIISWebsiteUptime,
+		Dims: module.Dims{
+			{ID: "iis_website_%s_service_uptime", Name: "uptime"},
 		},
 	}
 )
