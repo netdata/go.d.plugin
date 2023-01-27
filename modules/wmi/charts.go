@@ -2138,7 +2138,7 @@ var (
 		Title:      "Ping commands pending in queue.",
 		Units:      "commands",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_activesync_ping_cmds",
+		Ctx:        "exchange.activesync_ping_cmds",
 		Priority:   prioExchangeActiveSyncPingCMDsPending,
 		Dims: module.Dims{
 			{ID: "exchange_activesync_ping_cmds_pending", Name: "commands"},
@@ -2150,7 +2150,7 @@ var (
 		Title:      "HTTP requests received from ASP.NET.",
 		Units:      "requests/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_activesync_requests",
+		Ctx:        "exchange.activesync_requests",
 		Priority:   prioExchangeActiveSyncRequests,
 		Dims: module.Dims{
 			{ID: "exchange_activesync_requests_total", Name: "requests", Algo: module.Incremental},
@@ -2162,7 +2162,7 @@ var (
 		Title:      "Sync commands processed per second.",
 		Units:      "commands/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_activesync_sync_cmds",
+		Ctx:        "exchange.activesync_sync_cmds",
 		Priority:   prioExchangeActiveSyncSyncCMDs,
 		Dims: module.Dims{
 			{ID: "exchange_activesync_sync_cmds_total", Name: "commands", Algo: module.Incremental},
@@ -2174,7 +2174,7 @@ var (
 		Title:      "Number of autodiscover service requests proccessed.",
 		Units:      "requests/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_autodiscover_requests",
+		Ctx:        "exchange.autodiscover_requests",
 		Priority:   prioExchangeAutoDiscoverRequests,
 		Dims: module.Dims{
 			{ID: "exchange_autodiscover_requests_total", Name: "requests", Algo: module.Incremental},
@@ -2186,7 +2186,7 @@ var (
 		Title:      "Resquests serviced per second.",
 		Units:      "requests/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_avail_service_requests",
+		Ctx:        "exchange.avail_service_requests",
 		Priority:   prioExchangeAvailServiceRequests,
 		Dims: module.Dims{
 			{ID: "exchange_avail_service_requests_per_sec", Name: "requests", Algo: module.Incremental, Div: precision},
@@ -2198,7 +2198,7 @@ var (
 		Title:      "Number of Unique Users Currently logged on to Outlook Web App.",
 		Units:      "logins",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_owa_current_unique_users_counter",
+		Ctx:        "exchange.owa_current_unique_users_counter",
 		Priority:   prioExchangeOWACurrentUniqueUsers,
 		Dims: module.Dims{
 			{ID: "exchange_owa_current_unique_users", Name: "logins"},
@@ -2210,7 +2210,7 @@ var (
 		Title:      "Number of requests handled by Outlook Web App.",
 		Units:      "requests/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_owa_requests_total",
+		Ctx:        "exchange.owa_requests_total",
 		Priority:   prioExchangeOWARequestsTotal,
 		Dims: module.Dims{
 			{ID: "exchange_owa_requests_total", Name: "requests", Algo: module.Incremental},
@@ -2222,7 +2222,7 @@ var (
 		Title:      "Unique users showing activity in the last 2 minutes.",
 		Units:      "users",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_active_user_count",
+		Ctx:        "exchange.rpc_active_user_count",
 		Priority:   prioExchangeRPCActiveUserCount,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_active_user_count", Name: "users"},
@@ -2234,7 +2234,7 @@ var (
 		Title:      "Unique users showing activity in the last 2 minutes.",
 		Units:      "seconds",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_avg_latency",
+		Ctx:        "exchange.rpc_avg_latency",
 		Priority:   prioExchangeRPCAvgLatency,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_avg_latency_sec", Name: "latency", Div: precision},
@@ -2246,7 +2246,7 @@ var (
 		Title:      "Client connections maintained.",
 		Units:      "clients",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_connection",
+		Ctx:        "exchange.rpc_connection",
 		Priority:   prioExchangeRPCConnection,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_connection_count", Name: "clients"},
@@ -2258,7 +2258,7 @@ var (
 		Title:      "Client Requests being processed.",
 		Units:      "requests/s",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_operations",
+		Ctx:        "exchange.rpc_operations",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_operations_total", Name: "requests", Algo: module.Incremental},
@@ -2270,7 +2270,7 @@ var (
 		Title:      "Number of clients requests currently being processed.",
 		Units:      "requests",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_requests_total",
+		Ctx:        "exchange.rpc_requests_total",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_requests", Name: "requests"},
@@ -2282,7 +2282,7 @@ var (
 		Title:      "Number of users.",
 		Units:      "users",
 		Fam:        "exchange",
-		Ctx:        "wmi.exchange_rpc_user_count",
+		Ctx:        "exchange.rpc_user_count",
 		Priority:   prioExchangeRPCOperations,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_user_count", Name: "users"},
