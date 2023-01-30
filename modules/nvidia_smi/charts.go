@@ -17,6 +17,8 @@ const (
 	prioGPUMemUtilization
 	prioGPUDecoderUtilization
 	prioGPUEncoderUtilization
+	prioGPUMIGModeStatus
+	prioGPUMIGDevicesCount
 	prioGPUFBMemoryUsage
 	prioGPUMIGFBMemoryUsage
 	prioGPUBAR1MemoryUsage
@@ -37,6 +39,8 @@ var (
 		gpuMemUtilizationChartTmpl.Copy(),
 		gpuDecoderUtilizationChartTmpl.Copy(),
 		gpuEncoderUtilizationChartTmpl.Copy(),
+		gpuMIGModeCurrentStatusChartTmpl.Copy(),
+		gpuMIGDevicesCountChartTmpl.Copy(),
 		gpuFrameBufferMemoryUsageChartTmpl.Copy(),
 		gpuBAR1MemoryUsageChartTmpl.Copy(),
 		gpuVoltageChartTmpl.Copy(),
@@ -140,6 +144,29 @@ var (
 		Priority: prioGPUEncoderUtilization,
 		Dims: module.Dims{
 			{ID: "gpu_%s_encoder_utilization", Name: "encoder"},
+		},
+	}
+	gpuMIGModeCurrentStatusChartTmpl = module.Chart{
+		ID:       "gpu_%s_mig_mode_current_status",
+		Title:    "MIG current mode",
+		Units:    "status",
+		Fam:      "mig",
+		Ctx:      "nvidia_smi.gpu_mig_mode_current_status",
+		Priority: prioGPUMIGModeStatus,
+		Dims: module.Dims{
+			{ID: "gpu_%s_mig_current_mode_enabled", Name: "enabled"},
+			{ID: "gpu_%s_mig_current_mode_disabled", Name: "disabled"},
+		},
+	}
+	gpuMIGDevicesCountChartTmpl = module.Chart{
+		ID:       "gpu_%s_mig_devices_count",
+		Title:    "MIG devices",
+		Units:    "devices",
+		Fam:      "mig",
+		Ctx:      "nvidia_smi.gpu_mig_devices_count",
+		Priority: prioGPUMIGDevicesCount,
+		Dims: module.Dims{
+			{ID: "gpu_%s_mig_devices_count", Name: "mig"},
 		},
 	}
 	gpuFrameBufferMemoryUsageChartTmpl = module.Chart{
@@ -258,6 +285,10 @@ func (nv *NvidiaSMI) addGPUXMLCharts(gpu xmlGPUInfo) {
 	}
 	if !isValidValue(gpu.Utilization.EncoderUtil) {
 		_ = charts.Remove(gpuEncoderUtilizationChartTmpl.ID)
+	}
+	if !isValidValue(gpu.MIGMode.CurrentMIG) {
+		_ = charts.Remove(gpuMIGModeCurrentStatusChartTmpl.ID)
+		_ = charts.Remove(gpuMIGDevicesCountChartTmpl.ID)
 	}
 	if !isValidValue(gpu.FanSpeed) {
 		_ = charts.Remove(gpuFanSpeedPercChartTmpl.ID)

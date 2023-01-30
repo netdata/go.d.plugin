@@ -40,6 +40,8 @@ Labels per scope:
 | gpu_clock_freq                    |  gpu  | graphics, video, sm, mem |   MHz   | yes | yes |
 | gpu_power_draw                    |  gpu  |        power_draw        |  Watts  | yes | yes |
 | gpu_performance_state             |  gpu  |          P0-P15          |  state  | yes | yes |
+| gpu_mig_mode_current_status       |  gpu  |    enabled, disabled     | status  | yes | no  |
+| gpu_mig_devices_count             |  gpu  |           mig            | devices | yes | no  |
 | gpu_mig_frame_buffer_memory_usage |  mig  |   free, used, reserved   |    B    | yes | no  |
 | gpu_mig_bar1_memory_usage         |  mig  |        free, used        |    B    | yes | no  |
 

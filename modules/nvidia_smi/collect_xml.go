@@ -63,11 +63,14 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		addMetric(mx, px+"power_draw", gpu.PowerReadings.PowerDraw, 0)
 		addMetric(mx, px+"voltage", gpu.Voltage.GraphicsVolt, 0)
 		for i := 0; i < 16; i++ {
-			if s := "P" + strconv.Itoa(i); gpu.PerformanceState == s {
-				mx[px+"performance_state_"+s] = 1
-			} else {
-				mx[px+"performance_state_"+s] = 0
-			}
+			s := "P" + strconv.Itoa(i)
+			mx[px+"performance_state_"+s] = boolToInt(gpu.PerformanceState == s)
+		}
+		if isValidValue(gpu.MIGMode.CurrentMIG) {
+			mode := strings.ToLower(gpu.MIGMode.CurrentMIG)
+			mx[px+"mig_current_mode_enabled"] = boolToInt(mode == "enabled")
+			mx[px+"mig_current_mode_disabled"] = boolToInt(mode == "disabled")
+			mx[px+"mig_devices_count"] = int64(len(gpu.MIGDevices.MIGDevice))
 		}
 
 		for _, mig := range gpu.MIGDevices.MIGDevice {
@@ -151,7 +154,10 @@ type (
 		UUID                string `xml:"uuid"`
 		FanSpeed            string `xml:"fan_speed"`
 		PerformanceState    string `xml:"performance_state"`
-		MIGDevices          struct {
+		MIGMode             struct {
+			CurrentMIG string `xml:"current_mig"`
+		} `xml:"mig_mode"`
+		MIGDevices struct {
 			MIGDevice []xmlMIGDeviceInfo `xml:"mig_device"`
 		} `xml:"mig_devices"`
 		PCI struct {
