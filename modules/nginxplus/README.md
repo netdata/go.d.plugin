@@ -3,6 +3,9 @@ title: "NGINX Plus monitoring"
 description: "Monitor the health and performance of NGINX Plus web servers with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/nginxplus/README.md
 sidebar_label: "NGINX Plus"
+learn_status: "Published"
+learn_topic_type: "References"
+learn_rel_path: "References/Collectors references/Webapps"
 -->
 
 # NGINX Plus monitoring with Netdata
