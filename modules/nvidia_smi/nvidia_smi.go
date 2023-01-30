@@ -28,6 +28,7 @@ func New() *NvidiaSMI {
 		binName: "nvidia-smi",
 		charts:  &module.Charts{},
 		gpus:    make(map[string]bool),
+		migs:    make(map[string]bool),
 	}
 
 }
@@ -51,6 +52,7 @@ type (
 		gpuQueryProperties []string
 
 		gpus map[string]bool
+		migs map[string]bool
 	}
 	nvidiaSMI interface {
 		queryGPUInfoXML() ([]byte, error)

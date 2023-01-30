@@ -20,21 +20,22 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		return fmt.Errorf("error on unmarshaling XML GPU info response: %v", err)
 	}
 
-	seen := make(map[string]bool)
+	seenGPU := make(map[string]bool)
+	seenMIG := make(map[string]bool)
 
 	for _, gpu := range info.GPUs {
 		if !isValidValue(gpu.UUID) {
 			continue
 		}
 
-		seen[gpu.UUID] = true
+		px := "gpu_" + gpu.UUID + "_"
 
-		if !nv.gpus[gpu.UUID] {
-			nv.gpus[gpu.UUID] = true
+		seenGPU[px] = true
+
+		if !nv.gpus[px] {
+			nv.gpus[px] = true
 			nv.addGPUXMLCharts(gpu)
 		}
-
-		px := "gpu_" + gpu.UUID + "_"
 
 		addMetric(mx, px+"pcie_bandwidth_usage_rx", gpu.PCI.RxUtil, 1024) // KB => bytes
 		addMetric(mx, px+"pcie_bandwidth_usage_tx", gpu.PCI.TxUtil, 1024) // KB => bytes
@@ -70,7 +71,18 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		}
 
 		for _, mig := range gpu.MIGDevices.MIGDevice {
-			px := px + "mig_" + mig.GPUInstanceID + "_"
+			if !isValidValue(mig.GPUInstanceID) {
+				continue
+			}
+
+			px := "mig_instance_" + mig.GPUInstanceID + "_" + px
+
+			seenMIG[px] = true
+
+			if !nv.migs[px] {
+				nv.migs[px] = true
+				nv.addMIGDeviceXMLCharts(gpu, mig)
+			}
 
 			addMetric(mx, px+"ecc_error_sram_uncorrectable", mig.ECCErrorCount.VolatileCount.SRAMUncorrectable, 0)
 			addMetric(mx, px+"frame_buffer_memory_usage_free", mig.FBMemoryUsage.Free, 1024*1024)         // MiB => bytes
@@ -81,10 +93,17 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		}
 	}
 
-	for uuid := range nv.gpus {
-		if !seen[uuid] {
-			delete(nv.gpus, uuid)
-			nv.removeGPUCharts(uuid)
+	for px := range nv.gpus {
+		if !seenGPU[px] {
+			delete(nv.gpus, px)
+			nv.removeCharts(px)
+		}
+	}
+
+	for px := range nv.migs {
+		if !seenMIG[px] {
+			delete(nv.migs, px)
+			nv.removeCharts(px)
 		}
 	}
 
@@ -133,35 +152,7 @@ type (
 		FanSpeed            string `xml:"fan_speed"`
 		PerformanceState    string `xml:"performance_state"`
 		MIGDevices          struct {
-			MIGDevice []struct {
-				Index             string `xml:"index"`
-				GPUInstanceID     string `xml:"gpu_instance_id"`
-				ComputeInstanceID string `xml:"compute_instance_id"`
-				DeviceAttributes  struct {
-					Shared struct {
-						MultiprocessorCount string `xml:"multiprocessor_count"`
-						CopyEngineCount     string `xml:"copy_engine_count"`
-						EncoderCount        string `xml:"encoder_count"`
-						DecoderCount        string `xml:"decoder_count"`
-						OFACount            string `xml:"ofa_count"`
-						JPGCount            string `xml:"jpg_count"`
-					} `xml:"shared"`
-				} `xml:"device_attributes"`
-				ECCErrorCount struct {
-					VolatileCount struct {
-						SRAMUncorrectable string `xml:"sram_uncorrectable"`
-					} `xml:"volatile_count"`
-				} `xml:"ecc_error_count"`
-				FBMemoryUsage struct {
-					Free     string `xml:"free"`
-					Used     string `xml:"used"`
-					Reserved string `xml:"reserved"`
-				} `xml:"fb_memory_usage"`
-				BAR1MemoryUsage struct {
-					Free string `xml:"free"`
-					Used string `xml:"used"`
-				} `xml:"bar1_memory_usage"`
-			} `xml:"mig_device"`
+			MIGDevice []xmlMIGDeviceInfo `xml:"mig_device"`
 		} `xml:"mig_devices"`
 		PCI struct {
 			TxUtil         string `xml:"tx_util"`
@@ -227,5 +218,35 @@ type (
 				UsedMemory  string `xml:"used_memory"`
 			} `sml:"process_info"`
 		} `xml:"processes"`
+	}
+
+	xmlMIGDeviceInfo struct {
+		Index             string `xml:"index"`
+		GPUInstanceID     string `xml:"gpu_instance_id"`
+		ComputeInstanceID string `xml:"compute_instance_id"`
+		DeviceAttributes  struct {
+			Shared struct {
+				MultiprocessorCount string `xml:"multiprocessor_count"`
+				CopyEngineCount     string `xml:"copy_engine_count"`
+				EncoderCount        string `xml:"encoder_count"`
+				DecoderCount        string `xml:"decoder_count"`
+				OFACount            string `xml:"ofa_count"`
+				JPGCount            string `xml:"jpg_count"`
+			} `xml:"shared"`
+		} `xml:"device_attributes"`
+		ECCErrorCount struct {
+			VolatileCount struct {
+				SRAMUncorrectable string `xml:"sram_uncorrectable"`
+			} `xml:"volatile_count"`
+		} `xml:"ecc_error_count"`
+		FBMemoryUsage struct {
+			Free     string `xml:"free"`
+			Used     string `xml:"used"`
+			Reserved string `xml:"reserved"`
+		} `xml:"fb_memory_usage"`
+		BAR1MemoryUsage struct {
+			Free string `xml:"free"`
+			Used string `xml:"used"`
+		} `xml:"bar1_memory_usage"`
 	}
 )

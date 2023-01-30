@@ -137,14 +137,14 @@ func (nv *NvidiaSMI) collectGPUInfoCSV(mx map[string]int64) error {
 			continue
 		}
 
-		seen[gpu.uuid] = true
+		px := "gpu_" + gpu.uuid + "_"
 
-		if !nv.gpus[gpu.uuid] {
-			nv.gpus[gpu.uuid] = true
+		seen[px] = true
+
+		if !nv.gpus[px] {
+			nv.gpus[px] = true
 			nv.addGPUCSVCharts(gpu)
 		}
-
-		px := "gpu_" + gpu.uuid + "_"
 
 		addMetric(mx, px+"fan_speed_perc", gpu.fanSpeed, 0)
 		addMetric(mx, px+"gpu_utilization", gpu.utilizationGPU, 0)
@@ -167,10 +167,10 @@ func (nv *NvidiaSMI) collectGPUInfoCSV(mx map[string]int64) error {
 		}
 	}
 
-	for uuid := range nv.gpus {
-		if !seen[uuid] {
-			delete(nv.gpus, uuid)
-			nv.removeGPUCharts(uuid)
+	for px := range nv.gpus {
+		if !seen[px] {
+			delete(nv.gpus, px)
+			nv.removeCharts(px)
 		}
 	}
 
