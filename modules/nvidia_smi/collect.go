@@ -63,3 +63,10 @@ func removeUnits(s string) string {
 	}
 	return s
 }
+
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
+}
