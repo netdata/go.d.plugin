@@ -129,6 +129,26 @@ Configurations are written in [YAML](http://yaml.org/).
 - [plugin configuration](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf)
 - [specific module configuration](https://github.com/netdata/go.d.plugin/tree/master/config/go.d)
 
+### Enable a collector
+
+To enable a collector you should edit `go.d.conf` to uncomment the collector in question and change it from `no` to `yes`. 
+
+For example, to enable the `example` plugin you would need to update `go.d.conf` from something like:
+
+```yaml
+modules:
+#  example: no 
+```
+
+to
+
+```yaml
+modules:
+  example: yes
+```
+
+Then [restart netdata](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for the change to take effect.
+
 ## Contributing
 
 If you want to contribute to this project, we are humbled. Please take a look at
