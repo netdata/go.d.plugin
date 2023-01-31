@@ -135,14 +135,14 @@ To enable a collector you should edit `go.d.conf` to uncomment the collector in 
 
 For example, to enable the `example` plugin you would need to update `go.d.conf` from something like:
 
-```
+```yaml
 modules:
 #  example: no 
 ```
 
 to
 
-```
+```yaml
 modules:
   example: yes
 ```
