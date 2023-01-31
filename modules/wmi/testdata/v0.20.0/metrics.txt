@@ -1707,6 +1707,22 @@ windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Page"} 0
 windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="RID"} 0
 windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="RowGroup"} 0
 windows_mssql_locks_lock_waits{mssql_instance="SQLEXPRESS",resource="Xact"} 0
+# HELP windows_mssql_locks_deadlocks (Locks.NumberofDeadlocks)
+# TYPE windows_mssql_locks_deadlocks counter
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="AllocUnit"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Application"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Database"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Extent"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="File"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="HoBT"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Key"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Metadata"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="OIB"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Object"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Page"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="RID"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="RowGroup"} 0
+windows_mssql_locks_deadlocks{mssql_instance="MSSQLSERVER",resource="Xact"} 0
 # HELP windows_mssql_locks_wait_time_seconds (Locks.AverageWaitTimems Total time in seconds which locks have been holding resources)
 # TYPE windows_mssql_locks_wait_time_seconds gauge
 windows_mssql_locks_wait_time_seconds{mssql_instance="SQLEXPRESS",resource="AllocUnit"} 0
