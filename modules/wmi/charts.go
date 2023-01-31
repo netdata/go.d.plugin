@@ -100,6 +100,7 @@ const (
 
 	// Locks
 	prioMSSQLLocksLockWait
+	prioMSSQLLocksDeadLocks
 
 	// Memory
 	prioMSSQLMemmgrConnectionMemoryBytes
@@ -893,6 +894,7 @@ var (
 		mssqlBufManIOPSChart.Copy(),
 		mssqlBlockedProcessChart.Copy(),
 		mssqlLocksWaitChart.Copy(),
+		mssqlDeadLocksChart.Copy(),
 		mssqlMemmgrConnectionMemoryBytesChart.Copy(),
 		mssqlMemmgrExternalBenefitOfMemoryChart.Copy(),
 		mssqlMemmgrPendingMemoryChart.Copy(),
@@ -1030,6 +1032,31 @@ var (
 			{ID: "mssql_instance_%s_resource_RID_locks_lock_wait_seconds", Name: "rid", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_resource_RowGroup_locks_lock_wait_seconds", Name: "row_group", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_resource_Xact_locks_lock_wait_seconds", Name: "xact", Algo: module.Incremental},
+		},
+	}
+	mssqlDeadLocksChart = module.Chart{
+		OverModule: "mssql",
+		ID:         "mssql_instance_%s_locks_deadlocks",
+		Title:      "Lock requests that resulted in deadlock.",
+		Units:      "locks/s",
+		Fam:        "locks",
+		Ctx:        "mssql.instance_locks_deadlocks",
+		Priority:   prioMSSQLLocksLockWait,
+		Dims: module.Dims{
+			{ID: "mssql_instance_%s_resource_AllocUnit_locks_deadlocks_seconds", Name: "alloc_unit", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Application_locks_deadlocks_seconds", Name: "application", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Database_locks_deadlocks_seconds", Name: "database", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Extent_locks_deadlocks_seconds", Name: "extent", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_File_locks_deadlocks_seconds", Name: "file", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_HoBT_locks_deadlocks_seconds", Name: "hobt", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Key_locks_deadlocks_seconds", Name: "key", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Metadata_locks_deadlocks_seconds", Name: "metadata", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_OIB_locks_deadlocks_seconds", Name: "oib", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Object_locks_deadlocks_seconds", Name: "object", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Page_locks_deadlocks_seconds", Name: "page", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_RID_locks_deadlocks_seconds", Name: "rid", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_RowGroup_locks_deadlocks_seconds", Name: "row_group", Algo: module.Incremental},
+			{ID: "mssql_instance_%s_resource_Xact_locks_deadlocks_seconds", Name: "xact", Algo: module.Incremental},
 		},
 	}
 
