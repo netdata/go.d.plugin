@@ -2285,7 +2285,7 @@ var (
 
 	// Exceptions
 	netFrameworkCLRExceptionsThrown = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_exception_thrown",
 		Title:      "Number of exceptions thrown since start.",
 		Units:      "exceptions",
@@ -2295,7 +2295,7 @@ var (
 		Priority:   prioNETFrameworkCLRExceptionsThrown,
 	}
 	netFrameworkCLRExceptionsFilters = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_exception_filters",
 		Title:      "Number of exceptions filter executed.",
 		Units:      "exceptions",
@@ -2305,7 +2305,7 @@ var (
 		Priority:   prioNETFrameworkCLRExceptionsFilters,
 	}
 	netFrameworkCLRExceptionsFinallys = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_exception_finally",
 		Title:      "Number of finally blocks executed.",
 		Units:      "blocks",
@@ -2315,7 +2315,7 @@ var (
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
 	}
 	netFrameworkCLRExceptionsThrowCatchDepth = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_exception_throw_catch_depth",
 		Title:      "Number of stack frames transversed.",
 		Units:      "stack frames",
@@ -2327,7 +2327,7 @@ var (
 
 	// Interop
 	netFrameworkCLRInteropCOMCallableWrapper = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrinterop_com_callable_wrapper",
 		Title:      "Number of COM callable wrappers(CCW).",
 		Units:      "ccw",
@@ -2337,7 +2337,7 @@ var (
 		Priority:   prioNETFrameworkCLRInteropCOMCalableWrapper,
 	}
 	netFrameworkCLRInteropMarshalling = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrinterop_marshalling",
 		Title:      "Number of times arguments or return value have been marshaled.",
 		Units:      "values marshaled",
@@ -2347,7 +2347,7 @@ var (
 		Priority:   prioNETFrameworkCLRInteropMarshalling,
 	}
 	netFrameworkCLRInteropStubsCreated = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrinterop_stubs_created",
 		Title:      "Number of stubs created.",
 		Units:      "stubs",
@@ -2359,7 +2359,7 @@ var (
 
 	// JIT
 	netFrameworkCLRJITMethods = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrjit_methods",
 		Title:      "Number of JIT methods compiled.",
 		Units:      "JIT methods",
@@ -2369,7 +2369,7 @@ var (
 		Priority:   prioNETFrameworkCLRJITMethods,
 	}
 	netFrameworkCLRJITTime = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrjit_time",
 		Title:      "Percentage time spent in JIT compilation.",
 		Units:      "percentage",
@@ -2379,7 +2379,7 @@ var (
 		Priority:   prioNETFrameworkCLRJITTime,
 	}
 	netFrameworkCLRJITStandardFailure = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrjit_standard_failure",
 		Title:      "Number of methods the JIT compiler has failed.",
 		Units:      "Failures",
@@ -2389,7 +2389,7 @@ var (
 		Priority:   prioNETFrameworkCLRJITStandardFailures,
 	}
 	netFrameworkCLRJITILByes = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrjit_il_bytes",
 		Title:      "Number of Microsoft intermediate language (MSIL) bytes compiled.",
 		Units:      "bytes",
@@ -2401,7 +2401,7 @@ var (
 
 	// Loading
 	netFrameworkCLRLoadingLoaderHeapSize = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_loader_heap_size",
 		Title:      "Bytes committed by class loader.",
 		Units:      "bytes",
@@ -2411,7 +2411,7 @@ var (
 		Priority:   prioNETFrameworkCLRLoadingLoaderHeapSize,
 	}
 	netFrameworkCLRLoadingAppDomainsLoaded = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_appdomains_loaded",
 		Title:      "Application domain loaded since start.",
 		Units:      "application domain",
@@ -2421,7 +2421,7 @@ var (
 		Priority:   prioNETFrameworkCLRLoadingAppDomainsLoaded,
 	}
 	netFrameworkCLRLoadingAppDomainsUnloaded = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_appdomains_unloaded",
 		Title:      "Application domain unloaded since start.",
 		Units:      "application domain",
@@ -2431,7 +2431,7 @@ var (
 		Priority:   prioNETFrameworkCLRLoadingAppDomainsUnloaded,
 	}
 	netFrameworkCLRLoadingAssembliesLoaded = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_assemblies_loaded",
 		Title:      "Assemblies loaded since start.",
 		Units:      "assemblies",
@@ -2441,7 +2441,7 @@ var (
 		Priority:   prioNETFrameworkCLRLoadingAssembliesLoaded,
 	}
 	netFrameworkCLRLoadingClassesLoaded = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_classes_loaded",
 		Title:      "Classes loaded in all assemblies.",
 		Units:      "classes",
@@ -2451,7 +2451,7 @@ var (
 		Priority:   prioNETFrameworkCLRLoadingClassesLoaded,
 	}
 	netFrameworkCLRLoadingClassLoadFailure = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrloading_class_load_failure",
 		Title:      "Classes that have failed to load.",
 		Units:      "classes",
@@ -2463,7 +2463,7 @@ var (
 
 	// Lock and Threads
 	netFrameworkCLRLockAndThreadsQueueLength = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrlockandthreads_queue_length",
 		Title:      "Threads waiting for lock.",
 		Units:      "threads",
@@ -2473,7 +2473,7 @@ var (
 		Priority:   prioNETFrameworkCLRLockAndThreadsQueueLength,
 	}
 	netFrameworkCLRLockAndThreadsCurrentLogicalThreads = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrlockandthreads_current_logical_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
@@ -2483,7 +2483,7 @@ var (
 		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads,
 	}
 	netFrameworkCLRLockAndThreadsCurrentPhysicalThreads = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrlockandthreads_current_physical_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
@@ -2493,7 +2493,7 @@ var (
 		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads,
 	}
 	netFrameworkCLRLockAndThreadsRecognizedThreads = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrlockandthreads_recognized_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
@@ -2503,7 +2503,7 @@ var (
 		Priority:   prioNETFrameworkCLRLockAndThreadsRecognizedThreads,
 	}
 	netFrameworkCLRLockAndThreadsContentions = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrlockandthreads_contentions",
 		Title:      "Number of fails to acquire managed lock.",
 		Units:      "threads",
@@ -2515,7 +2515,7 @@ var (
 
 	// Memory
 	netFrameworkCLRMemoryAllocatedBytes = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_allocated_bytes",
 		Title:      "Total of bytes allocated on the garbage collection.",
 		Units:      "bytes",
@@ -2525,7 +2525,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryAllocatedBytes,
 	}
 	netFrameworkCLRMemoryFinalizationSurvivors = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_finalization_survivors",
 		Title:      "Number of garbage-collected objects that survived.",
 		Units:      "objects",
@@ -2535,7 +2535,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryFinalizationSurvivors,
 	}
 	netFrameworkCLRMemoryHeapSize = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_heap_size",
 		Title:      "Maximum bytes can be allocated.",
 		Units:      "bytes",
@@ -2545,7 +2545,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryHeapSize,
 	}
 	netFrameworkCLRMemoryPromoted = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_promoted",
 		Title:      "Bytes promoted from the generation to next.",
 		Units:      "bytes",
@@ -2555,7 +2555,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryPromoted,
 	}
 	netFrameworkCLRMemoryNumberGCHandles = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_number_gc_handles",
 		Title:      "Number of Garbage Collection Handle used.",
 		Units:      "handles",
@@ -2565,7 +2565,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryNumberGCHandles,
 	}
 	netFrameworkCLRMemoryCollections = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_collections",
 		Title:      "Number of times Garbage Collection (GC) happens.",
 		Units:      "GC",
@@ -2575,7 +2575,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryCollections,
 	}
 	netFrameworkCLRMemoryInducedGC = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_induced_gc",
 		Title:      "Peak number of times garbage collection was performed.",
 		Units:      "GC",
@@ -2585,7 +2585,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryInducedGC,
 	}
 	netFrameworkCLRMemoryNumberPinnedObjects = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_number_pinned_objects",
 		Title:      "Pinned objects in the last garbage collection.",
 		Units:      "objects",
@@ -2595,7 +2595,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryNumberPinnedObjects,
 	}
 	netFrameworkCLRMemoryNumberSinkBlocksInUse = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_number_sink_blocks_in_use",
 		Title:      "Number of synchronization blocks in use.",
 		Units:      "blocks",
@@ -2605,7 +2605,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryNumberSinkBlocksInUse,
 	}
 	netFrameworkCLRMemoryCommitted = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_committed",
 		Title:      "Amount of virtual memory currently committed.",
 		Units:      "bytes",
@@ -2615,7 +2615,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryCommitted,
 	}
 	netFrameworkCLRMemoryReserved = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_reserved",
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "bytes",
@@ -2625,7 +2625,7 @@ var (
 		Priority:   prioNETFrameworkCLRMemoryReserved,
 	}
 	netFrameworkCLRMemoryGCTime = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrmemory_gc_time",
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "percentage",
@@ -2637,7 +2637,7 @@ var (
 
 	// Remoting
 	netFrameworkCLRRemotingChannels = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_channels",
 		Title:      "Remoting channels registered.",
 		Units:      "channels",
@@ -2647,7 +2647,7 @@ var (
 		Priority:   prioNETFrameworkCLRRemotingChannels,
 	}
 	netFrameworkCLRContextBoundClassesLoaded = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_bound_classes_loaded",
 		Title:      "Context-bound classes loaded.",
 		Units:      "context-bound",
@@ -2657,7 +2657,7 @@ var (
 		Priority:   prioNETFrameworkCLRRemotingContextBoundClassesLoaded,
 	}
 	netFrameworkCLRContextBoundObjects = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_bound_objects",
 		Title:      "Total Context-bound objects allocated.",
 		Units:      "objects",
@@ -2667,7 +2667,7 @@ var (
 		Priority:   prioNETFrameworkCLRRemotingContextBoundObjects,
 	}
 	netFrameworkCLRContextProxies = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_proxies",
 		Title:      "Total remoting proxy objects.",
 		Units:      "objects",
@@ -2677,7 +2677,7 @@ var (
 		Priority:   prioNETFrameworkCLRRemotingContextProxies,
 	}
 	netFrameworkCLRContexts = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_contexts",
 		Title:      "Total of remoting contexts.",
 		Units:      "contexts",
@@ -2687,7 +2687,7 @@ var (
 		Priority:   prioNETFrameworkCLRRemotingContexts,
 	}
 	netFrameworkCLRRemotingCalls = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_calls",
 		Title:      "Total Remote Procedure Calls (RPC) invoked.",
 		Units:      "RPC",
@@ -2699,7 +2699,7 @@ var (
 
 	// Security
 	netFrameworkCLRSecurityLinkTimeChecks = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrsecurity_link_time_checks",
 		Title:      "Number of Link-time code access security.",
 		Units:      "access",
@@ -2709,7 +2709,7 @@ var (
 		Priority:   prioNETFrameworkCLRSecurityLinkTimeChecks,
 	}
 	netFrameworkCLRSecurityChecksTime = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrsecurity_checks_time",
 		Title:      "Percentage of time to access security checks.",
 		Units:      "percentage",
@@ -2719,7 +2719,7 @@ var (
 		Priority:   prioNETFrameworkCLRSecurityRTChecksTime,
 	}
 	netFrameworkCLRSecurityStackWalkDepth = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrsecurity_stack_walk_depth",
 		Title:      "Depth of stack.",
 		Units:      "depth",
@@ -2729,7 +2729,7 @@ var (
 		Priority:   prioNETFrameworkCLRSecurityStackWalkDepth,
 	}
 	netFrameworkCLRSecurityRuntimeChecks = module.Chart{
-		OverModule: "NET Framework",
+		OverModule: "netframework",
 		ID:         "net_framework_clrsecurity_runtime_checks",
 		Title:      "Total number of runtime code access.",
 		Units:      "access",
