@@ -121,13 +121,6 @@ const (
 	// Error
 	prioMSSQLSqlErrorsTotal
 
-	// SQL stats
-	prioMSSQLStatsAutoParameterization
-	prioMSSQLStatsBatchRequests
-	prioMSSQLStatsSafeAutoParameterization
-	prioMSSQLStatsCompilations
-	prioMSSQLStatsRecompilations
-
 	// NET Framework
 	// Exceptions
 	prioNETFrameworkCLRExceptionsThrown
