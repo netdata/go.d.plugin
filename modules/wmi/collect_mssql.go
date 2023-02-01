@@ -19,6 +19,7 @@ const (
 	metricMSSQLBlockedProcesses             = "windows_mssql_genstats_blocked_processes"
 	metricMSSQLUserConnections              = "windows_mssql_genstats_user_connections"
 	metricMSSQLLockWait                     = "windows_mssql_locks_lock_wait_seconds"
+	metricMSSQLDeadlocks                    = "windows_mssql_locks_deadlocks"
 	metricMSSQLConnectionMemoryBytes        = "windows_mssql_memmgr_connection_memory_bytes"
 	metricMSSQLExternalBenefitOfMemory      = "windows_mssql_memmgr_external_benefit_of_memory"
 	metricMSSQLPendingMemoryGrants          = "windows_mssql_memmgr_pending_memory_grants"
@@ -102,6 +103,14 @@ func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 			instances[name] = true
 			if res := pm.Labels.Get("resource"); res != "" {
 				mx[px+name+"_resource_"+res+"_locks_lock_wait_seconds"] = int64(pm.Value)
+			}
+		}
+	}
+	for _, pm := range pms.FindByName(metricMSSQLDeadlocks) {
+		if name := pm.Labels.Get("mssql_instance"); name != "" {
+			instances[name] = true
+			if res := pm.Labels.Get("resource"); res != "" {
+				mx[px+name+"_resource_"+res+"_locks_deadlocks"] = int64(pm.Value)
 			}
 		}
 	}
