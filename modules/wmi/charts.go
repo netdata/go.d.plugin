@@ -2315,7 +2315,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrown,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_thrown_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_thrown_total", Name: "exception", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRExceptionsFilters = module.Chart{
@@ -2328,7 +2328,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFilters,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_filters_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_filters_total", Name: "exception", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRExceptionsFinallys = module.Chart{
@@ -2341,7 +2341,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_finally_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_finally_total", Name: "exception", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRExceptionsThrowCatchDepth = module.Chart{
@@ -2354,7 +2354,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrowCatchDepth,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_throw_catch_depth_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_throw_catch_depth_total", Name: "exception", Algo: module.Incremental},
 		},
 	}
 
@@ -2369,7 +2369,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropCOMCalableWrapper,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrinterop_com_callable_wrapper_total", Name: "interop"},
+			{ID: "net_framework_%s_clrinterop_com_callable_wrapper_total", Name: "interop", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRInteropMarshalling = module.Chart{
@@ -2382,7 +2382,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropMarshalling,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrinterop_marshalling_total", Name: "interop"},
+			{ID: "net_framework_%s_clrinterop_marshalling_total", Name: "interop", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRInteropStubsCreated = module.Chart{
@@ -2395,7 +2395,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropStubsCreated,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrinterop_stubs_created_total", Name: "interop"},
+			{ID: "net_framework_%s_clrinterop_stubs_created_total", Name: "interop", Algo: module.Incremental},
 		},
 	}
 
