@@ -2605,123 +2605,159 @@ var (
 	// Memory
 	netFrameworkCLRMemoryAllocatedBytes = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_allocated_bytes",
+		ID:         "net_framework_%s_clrmemory_allocated_bytes",
 		Title:      "Total of bytes allocated on the garbage collection.",
 		Units:      "bytes",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_allocated_bytes",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryAllocatedBytes,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_allocated_bytes_total", Name: "memory", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRMemoryFinalizationSurvivors = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_finalization_survivors",
+		ID:         "net_framework_%s_clrmemory_finalization_survivors",
 		Title:      "Number of garbage-collected objects that survived.",
 		Units:      "objects",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_finalization_survivors",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryFinalizationSurvivors,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_finalization_survivors_current", Name: "gc"},
+		},
 	}
 	netFrameworkCLRMemoryHeapSize = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_heap_size",
+		ID:         "net_framework_%s_clrmemory_heap_size",
 		Title:      "Maximum bytes can be allocated.",
 		Units:      "bytes",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_heap_size",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryHeapSize,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_heap_size_bytes", Name: "heap"},
+		},
 	}
 	netFrameworkCLRMemoryPromoted = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_promoted",
+		ID:         "net_framework_%s_clrmemory_promoted",
 		Title:      "Bytes promoted from the generation to next.",
 		Units:      "bytes",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_promoted",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryPromoted,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_promoted", Name: "promoted"},
+		},
 	}
 	netFrameworkCLRMemoryNumberGCHandles = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_number_gc_handles",
+		ID:         "net_framework_%s_clrmemory_number_gc_handles",
 		Title:      "Number of Garbage Collection Handle used.",
 		Units:      "handles",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_number_gc_handles",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberGCHandles,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_number_gc_handles_current", Name: "handles"},
+		},
 	}
 	netFrameworkCLRMemoryCollections = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_collections",
+		ID:         "net_framework_%s_clrmemory_collections",
 		Title:      "Number of times Garbage Collection (GC) happens.",
 		Units:      "GC",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_collections",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryCollections,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_collections_total", Name: "gc", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRMemoryInducedGC = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_induced_gc",
+		ID:         "net_framework_%s_clrmemory_induced_gc",
 		Title:      "Peak number of times garbage collection was performed.",
 		Units:      "GC",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_induced_gc",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryInducedGC,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_induced_gc_total", Name: "gc", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRMemoryNumberPinnedObjects = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_number_pinned_objects",
+		ID:         "net_framework_%s_clrmemory_number_pinned_objects",
 		Title:      "Pinned objects in the last garbage collection.",
 		Units:      "objects",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_number_pinned_objects",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberPinnedObjects,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_number_pinned_objects_current", Name: "objects"},
+		},
 	}
 	netFrameworkCLRMemoryNumberSinkBlocksInUse = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_number_sink_blocks_in_use",
+		ID:         "net_framework_%s_clrmemory_number_sink_blocks_in_use",
 		Title:      "Number of synchronization blocks in use.",
 		Units:      "blocks",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_number_sink_blocks_in_use",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryNumberSinkBlocksInUse,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_number_sink_blocks_in_use_current", Name: "blocks"},
+		},
 	}
 	netFrameworkCLRMemoryCommitted = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_committed",
+		ID:         "net_framework_%s_clrmemory_committed",
 		Title:      "Amount of virtual memory currently committed.",
 		Units:      "bytes",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_committed",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryCommitted,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_committed_current", Name: "memory"},
+		},
 	}
 	netFrameworkCLRMemoryReserved = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_reserved",
+		ID:         "net_framework_%s_clrmemory_reserved",
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "bytes",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_reserved",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryReserved,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_reserved_current", Name: "memory"},
+		},
 	}
 	netFrameworkCLRMemoryGCTime = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrmemory_gc_time",
+		ID:         "net_framework_%s_clrmemory_gc_time",
 		Title:      "Amount of virtual memory currently reserved.",
 		Units:      "percentage",
 		Fam:        "memory",
 		Ctx:        "net_framework.clrmemory_gc_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryGCTime,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrmemory_gc_time_current", Name: "time"},
+		},
 	}
 
 	// Remoting
@@ -3443,98 +3479,29 @@ func (w *WMI) removeProcessFromNetFrameworkLocksandthreadsCharts(procID string) 
 }
 
 func (w *WMI) addProcessToNetFrameworkMemoryCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRMemoryAllocatedBytes.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryHeapSize.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryPromoted.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryNumberGCHandles.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryCollections.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRMemoryInducedGC.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryCommitted.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryReserved.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRMemoryGCTime.ID:
-			id := fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRMemoryChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrmemory", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkMemoryCharts(procID string) {
+	px := fmt.Sprintf("net_framework_%s_clrmemory", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRMemoryAllocatedBytes.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
-		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
-		case netFrameworkCLRMemoryHeapSize.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
-		case netFrameworkCLRMemoryPromoted.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
-		case netFrameworkCLRMemoryNumberGCHandles.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
-		case netFrameworkCLRMemoryCollections.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
-		case netFrameworkCLRMemoryInducedGC.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
-		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
-		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
-		case netFrameworkCLRMemoryCommitted.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
-		case netFrameworkCLRMemoryReserved.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
-		case netFrameworkCLRMemoryGCTime.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 

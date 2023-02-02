@@ -20,94 +20,89 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRMemory(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRMemory] {
-		w.cache.collection[collectorNetFrameworkCLRMemory] = true
-		w.addNetFrameworkCRLMemory()
-	}
-
 	seen := make(map[string]bool)
-	px := "netframework_clrmemory_"
+	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryAllocatedBytesTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_allocated_bytes_total"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_allocated_bytes_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryFinalizationSurvivors) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_finalization_survivors"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_finalization_survivors_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryHeapSizeBytes) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_heap_size"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_heap_size_bytes"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryPromotedBytes) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_promoted"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_promoted"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryNumberGCHandles) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_gc_handles"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_number_gc_handles_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryCollectionsTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_collection"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_collections_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryInducedGCTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_induced_gc_total"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_induced_gc_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryNumberPinnedObjects) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_pinned_objects"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_number_pinned_objects_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryNumberSinkBlockInUse) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_sink_block_in_use"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_number_sink_blocks_in_use_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryCommittedBytes) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_committed"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_committed_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryReservedBytes) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_reserved"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_reserved_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryGCTimePecent) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_gc_time"] += int64(pm.Value)
+			mx[px+name+"_clrmemory_gc_time_current"] += int64(pm.Value)
 		}
 	}
 
