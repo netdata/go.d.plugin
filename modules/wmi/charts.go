@@ -2361,33 +2361,42 @@ var (
 	// Interop
 	netFrameworkCLRInteropCOMCallableWrapper = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrinterop_com_callable_wrapper",
+		ID:         "net_framework_%s_clrinterop_com_callable_wrapper",
 		Title:      "Number of COM callable wrappers(CCW).",
 		Units:      "ccw",
 		Fam:        "interop",
 		Ctx:        "net_framework.clrinterop_com_callable_wrapper",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropCOMCalableWrapper,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrinterop_com_callable_wrapper_total", Name: "interop"},
+		},
 	}
 	netFrameworkCLRInteropMarshalling = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrinterop_marshalling",
+		ID:         "net_framework_%s_clrinterop_marshalling",
 		Title:      "Number of times arguments or return value have been marshaled.",
 		Units:      "values marshaled",
 		Fam:        "interop",
 		Ctx:        "net_framework.clrinterop_marshalling",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropMarshalling,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrinterop_marshalling_total", Name: "interop"},
+		},
 	}
 	netFrameworkCLRInteropStubsCreated = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrinterop_stubs_created",
+		ID:         "net_framework_%s_clrinterop_stubs_created",
 		Title:      "Number of stubs created.",
 		Units:      "stubs",
 		Fam:        "interop",
 		Ctx:        "net_framework.clrinterop_stubs_created",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRInteropStubsCreated,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrinterop_stubs_created_total", Name: "interop"},
+		},
 	}
 
 	// JIT
@@ -3113,14 +3122,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLInterop() {
-	charts := netFrameworkCLRInteropChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLJIT() {
 	charts := netFrameworkCLRJITChartsTmpl.Copy()
 
@@ -3311,53 +3312,29 @@ func (w *WMI) removeProcessFromNetFrameworkExceptionsCharts(procID string) {
 }
 
 func (w *WMI) addProcessToNetFrameworkInteropCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRInteropCOMCallableWrapper.ID:
-			id := fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRInteropMarshalling.ID:
-			id := fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRInteropStubsCreated.ID:
-			id := fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRInteropChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrinterop", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkInteropCharts(procID string) {
+	px := fmt.Sprintf("netframework_clrinterop_%s", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRInteropCOMCallableWrapper.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
-		case netFrameworkCLRInteropMarshalling.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
-		case netFrameworkCLRInteropStubsCreated.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 
