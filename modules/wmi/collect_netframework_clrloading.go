@@ -14,9 +14,9 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRLoading(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
-		w.addNetFrameworkCRLExceptions()
+	if !w.cache.collection[collectorNetFrameworkCLRLoading] {
+		w.cache.collection[collectorNetFrameworkCLRLoading] = true
+		w.addNetFrameworkCRLLoading()
 	}
 
 	seen := make(map[string]bool)

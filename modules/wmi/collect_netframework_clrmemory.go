@@ -20,9 +20,9 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRMemory(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
-		w.addNetFrameworkCRLExceptions()
+	if !w.cache.collection[collectorNetFrameworkCLRMemory] {
+		w.cache.collection[collectorNetFrameworkCLRMemory] = true
+		w.addNetFrameworkCRLMemory()
 	}
 
 	seen := make(map[string]bool)

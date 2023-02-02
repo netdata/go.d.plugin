@@ -12,9 +12,9 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRSecuriting(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
-		w.addNetFrameworkCRLExceptions()
+	if !w.cache.collection[collectorNetFrameworkCLRSecurity] {
+		w.cache.collection[collectorNetFrameworkCLRSecurity] = true
+		w.addNetFrameworkCRLSecurity()
 	}
 
 	seen := make(map[string]bool)

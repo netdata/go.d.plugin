@@ -10,10 +10,10 @@ const (
 	metricNetFrameworkCLRInteropStubsCreated       = "windows_netframework_clrinterop_interop_stubs_created_total"
 )
 
-func (w *WMI) collectNetFrameworkInteropCLR(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
-		w.addNetFrameworkCRLExceptions()
+func (w *WMI) collectNetFrameworkCLRInterop(mx map[string]int64, pms prometheus.Series) {
+	if !w.cache.collection[collectorNetFrameworkCLRInterop] {
+		w.cache.collection[collectorNetFrameworkCLRInterop] = true
+		w.addNetFrameworkCRLInterop()
 	}
 
 	seen := make(map[string]bool)
@@ -46,9 +46,9 @@ func (w *WMI) collectNetFrameworkInteropCLR(mx map[string]int64, pms prometheus.
 		}
 	}
 
-	for proc := range w.cache.netFrameworkCLRExceptions {
+	for proc := range w.cache.netFrameworkCLRInterops {
 		if !seen[proc] {
-			delete(w.cache.netFrameworkCLRExceptions, proc)
+			delete(w.cache.netFrameworkCLRInterops, proc)
 			w.removeProcessFromNetFrameworkInteropCharts(proc)
 		}
 	}

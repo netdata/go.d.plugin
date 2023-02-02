@@ -120,7 +120,21 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 		case collectorADFS:
 			w.collectADFS(mx, pms)
 		case collectorNetFrameworkCLRExceptions:
-			w.collectNetFrameworkCLR(mx, pms)
+			w.collectNetFrameworkCLRExceptions(mx, pms)
+		case collectorNetFrameworkCLRInterop:
+			w.collectNetFrameworkCLRInterop(mx, pms)
+		case collectorNetFrameworkCLRJIT:
+			w.collectNetFrameworkCLRJIT(mx, pms)
+		case collectorNetFrameworkCLRLoading:
+			w.collectNetFrameworkCLRLoading(mx, pms)
+		case collectorNetFrameworkCLRLocksAndThreads:
+			w.collectNetFrameworkCLRLocksandthreads(mx, pms)
+		case collectorNetFrameworkCLRMemory:
+			w.collectNetFrameworkCLRMemory(mx, pms)
+		case collectorNetFrameworkCLRRemoting:
+			w.collectNetFrameworkCLRRemoting(mx, pms)
+		case collectorNetFrameworkCLRSecurity:
+			w.collectNetFrameworkCLRSecuriting(mx, pms)
 		}
 	}
 }

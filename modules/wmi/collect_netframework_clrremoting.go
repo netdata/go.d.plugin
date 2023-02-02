@@ -14,9 +14,9 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRRemoting(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
-		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
-		w.addNetFrameworkCRLExceptions()
+	if !w.cache.collection[collectorNetFrameworkCLRRemoting] {
+		w.cache.collection[collectorNetFrameworkCLRRemoting] = true
+		w.addNetFrameworkCRLRemoting()
 	}
 
 	seen := make(map[string]bool)

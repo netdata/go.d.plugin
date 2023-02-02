@@ -55,9 +55,9 @@ func (w *WMI) collectNetFrameworkCLRJIT(mx map[string]int64, pms prometheus.Seri
 		}
 	}
 
-	for proc := range w.cache.netFrameworkCLRExceptions {
+	for proc := range w.cache.netFrameworkCLRJIT {
 		if !seen[proc] {
-			delete(w.cache.netFrameworkCLRExceptions, proc)
+			delete(w.cache.netFrameworkCLRJIT, proc)
 			w.removeProcessFromNetFrameworkJITCharts(proc)
 		}
 	}
