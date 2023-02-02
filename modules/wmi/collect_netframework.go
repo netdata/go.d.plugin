@@ -59,8 +59,8 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLR] {
-		w.cache.collection[collectorNetFrameworkCLR] = true
+	if !w.cache.collection[collectorNetFrameworkCLRExceptions] {
+		w.cache.collection[collectorNetFrameworkCLRExceptions] = true
 		w.addNetFrameworkCRLExceptions()
 	}
 
