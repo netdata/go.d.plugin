@@ -3316,7 +3316,7 @@ func (w *WMI) addProcessToNetFrameworkExceptionsCharts(procID string) {
 }
 
 func (w *WMI) removeProcessFromNetFrameworkExceptionsCharts(procID string) {
-	px := fmt.Sprintf("netframework_clrexception_%s", procID)
+	px := fmt.Sprintf("net_framework_%s_clrexception", procID)
 	for _, chart := range *w.Charts() {
 		if strings.HasPrefix(chart.ID, px) {
 			chart.MarkRemove()
@@ -3343,7 +3343,7 @@ func (w *WMI) addProcessToNetFrameworkInteropCharts(procID string) {
 }
 
 func (w *WMI) removeProcessFromNetFrameworkInteropCharts(procID string) {
-	px := fmt.Sprintf("netframework_clrinterop_%s", procID)
+	px := fmt.Sprintf("net_framework_%s_clrinterop", procID)
 	for _, chart := range *w.Charts() {
 		if strings.HasPrefix(chart.ID, px) {
 			chart.MarkRemove()
@@ -3370,7 +3370,7 @@ func (w *WMI) addProcessToNetFrameworkJITCharts(procID string) {
 }
 
 func (w *WMI) removeProcessFromNetFrameworkJITCharts(procID string) {
-	px := fmt.Sprintf("netframework_clrjit_%s", procID)
+	px := fmt.Sprintf("net_framework_%s_clrjit", procID)
 	for _, chart := range *w.Charts() {
 		if strings.HasPrefix(chart.ID, px) {
 			chart.MarkRemove()
