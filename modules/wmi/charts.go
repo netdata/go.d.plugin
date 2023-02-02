@@ -2236,29 +2236,44 @@ var (
 
 // .NET
 var (
-	netFrameworkCLRCharts = module.Charts{
+	netFrameworkCLRExceptionsCharts = module.Charts{
 		netFrameworkCLRExceptionsThrown.Copy(),
 		netFrameworkCLRExceptionsFilters.Copy(),
 		netFrameworkCLRExceptionsFinallys.Copy(),
 		netFrameworkCLRExceptionsThrowCatchDepth.Copy(),
+	}
+
+	netFrameworkCLRInteropCharts = module.Charts{
 		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
 		netFrameworkCLRInteropMarshalling.Copy(),
 		netFrameworkCLRInteropStubsCreated.Copy(),
+	}
+
+	netFrameworkCLRJIT = module.Charts{
 		netFrameworkCLRJITMethods.Copy(),
 		netFrameworkCLRJITTime.Copy(),
 		netFrameworkCLRJITStandardFailure.Copy(),
 		netFrameworkCLRJITILByes.Copy(),
+	}
+
+	netFrameworkCLRLoading = module.Charts{
 		netFrameworkCLRLoadingLoaderHeapSize.Copy(),
 		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
 		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
 		netFrameworkCLRLoadingAssembliesLoaded.Copy(),
 		netFrameworkCLRLoadingClassesLoaded.Copy(),
+	}
+
+	netFrameworkCLRLocksandthreads = module.Charts{
 		netFrameworkCLRLoadingClassLoadFailure.Copy(),
 		netFrameworkCLRLockAndThreadsQueueLength.Copy(),
 		netFrameworkCLRLockAndThreadsCurrentLogicalThreads.Copy(),
 		netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.Copy(),
 		netFrameworkCLRLockAndThreadsRecognizedThreads.Copy(),
 		netFrameworkCLRLockAndThreadsContentions.Copy(),
+	}
+
+	netFrameworkCLRMemory = module.Charts{
 		netFrameworkCLRMemoryAllocatedBytes.Copy(),
 		netFrameworkCLRMemoryFinalizationSurvivors.Copy(),
 		netFrameworkCLRMemoryHeapSize.Copy(),
@@ -2272,11 +2287,17 @@ var (
 		netFrameworkCLRMemoryReserved.Copy(),
 		netFrameworkCLRMemoryGCTime.Copy(),
 		netFrameworkCLRRemotingChannels.Copy(),
-		netFrameworkCLRContextBoundClassesLoaded.Copy(),
-		netFrameworkCLRContextBoundObjects.Copy(),
-		netFrameworkCLRContextProxies.Copy(),
-		netFrameworkCLRContexts.Copy(),
+	}
+
+	netFrameworkCLRRemoting = module.Charts{
+		netFrameworkCLRRemotingContextBoundClassesLoaded.Copy(),
+		netFrameworkCLRRemotingContextBoundObjects.Copy(),
+		netFrameworkCLRRemotingContextProxies.Copy(),
+		netFrameworkCLRRemotingContexts.Copy(),
 		netFrameworkCLRRemotingCalls.Copy(),
+	}
+
+	netFrameworkCLRSecurity = module.Charts{
 		netFrameworkCLRSecurityLinkTimeChecks.Copy(),
 		netFrameworkCLRSecurityChecksTime.Copy(),
 		netFrameworkCLRSecurityStackWalkDepth.Copy(),
@@ -2646,7 +2667,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingChannels,
 	}
-	netFrameworkCLRContextBoundClassesLoaded = module.Chart{
+	netFrameworkCLRRemotingContextBoundClassesLoaded = module.Chart{
 		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_bound_classes_loaded",
 		Title:      "Context-bound classes loaded.",
@@ -2656,7 +2677,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundClassesLoaded,
 	}
-	netFrameworkCLRContextBoundObjects = module.Chart{
+	netFrameworkCLRRemotingContextBoundObjects = module.Chart{
 		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_bound_objects",
 		Title:      "Total Context-bound objects allocated.",
@@ -2666,7 +2687,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundObjects,
 	}
-	netFrameworkCLRContextProxies = module.Chart{
+	netFrameworkCLRRemotingContextProxies = module.Chart{
 		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_context_proxies",
 		Title:      "Total remoting proxy objects.",
@@ -2676,7 +2697,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextProxies,
 	}
-	netFrameworkCLRContexts = module.Chart{
+	netFrameworkCLRRemotingContexts = module.Chart{
 		OverModule: "netframework",
 		ID:         "net_framework_clrremoting_contexts",
 		Title:      "Total of remoting contexts.",
@@ -3081,7 +3102,63 @@ func (w *WMI) addProcessesCharts() {
 }
 
 func (w *WMI) addNetFrameworkCRLExceptions() {
-	charts := netFrameworkCLRCharts.Copy()
+	charts := netFrameworkCLRExceptionsCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLInterop() {
+	charts := netFrameworkCLRInteropCharts.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLJIT() {
+	charts := netFrameworkCLRJIT.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLLoading() {
+	charts := netFrameworkCLRLoading.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLLocksanddthreads() {
+	charts := netFrameworkCLRLocksandthreads.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLMemory() {
+	charts := netFrameworkCLRMemory.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLRemoting() {
+	charts := netFrameworkCLRRemoting.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) addNetFrameworkCRLSecurity() {
+	charts := netFrameworkCLRSecurity.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3202,7 +3279,7 @@ func (w *WMI) removeProcessFromCharts(procID string) {
 	}
 }
 
-func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
+func (w *WMI) addProcessToNetFrameworkExceptionsCharts(procID string) {
 	for _, chart := range *w.Charts() {
 		var dim *module.Dim
 		switch chart.ID {
@@ -3218,6 +3295,50 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
 			id := fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkExceptionsCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRExceptionsThrown.ID:
+			id = fmt.Sprintf("netframework_clrexceptions_%s_thrown", procID)
+		case netFrameworkCLRExceptionsFilters.ID:
+			id = fmt.Sprintf("netframework_clrexceptions_%s_filters", procID)
+		case netFrameworkCLRExceptionsFinallys.ID:
+			id = fmt.Sprintf("netframework_clrexceptions_%s_finallys", procID)
+		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
+			id = fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkInteropCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRInteropCOMCallableWrapper.ID:
 			id := fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
@@ -3227,6 +3348,48 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRInteropStubsCreated.ID:
 			id := fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkInteropCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRInteropCOMCallableWrapper.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
+		case netFrameworkCLRInteropMarshalling.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
+		case netFrameworkCLRInteropStubsCreated.ID:
+			id = fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkJITCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRJITMethods.ID:
 			id := fmt.Sprintf("netframework_clrjit_%s_methods", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
@@ -3239,6 +3402,50 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRJITILByes.ID:
 			id := fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkJITCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRJITMethods.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_methods", procID)
+		case netFrameworkCLRJITTime.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_time", procID)
+		case netFrameworkCLRJITStandardFailure.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
+		case netFrameworkCLRJITILByes.ID:
+			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkLoadingCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRLoadingLoaderHeapSize.ID:
 			id := fmt.Sprintf("netframework_clrloading_%s_loader_heap_size", procID)
 			dim = &module.Dim{ID: id, Name: procID}
@@ -3257,6 +3464,54 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRLoadingClassLoadFailure.ID:
 			id := fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkLoadingCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRLoadingLoaderHeapSize.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_loader_heap_size", procID)
+		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
+		case netFrameworkCLRLoadingAppDomainsUnloaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_unloaded", procID)
+		case netFrameworkCLRLoadingAssembliesLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_assemblies_loaded", procID)
+		case netFrameworkCLRLoadingClassesLoaded.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_classes_loaded", procID)
+		case netFrameworkCLRLoadingClassLoadFailure.ID:
+			id = fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkLockandthreadsCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRLockAndThreadsQueueLength.ID:
 			id := fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
@@ -3272,6 +3527,52 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRLockAndThreadsContentions.ID:
 			id := fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkLocksandthreadsCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRLockAndThreadsQueueLength.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
+		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
+		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
+		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
+		case netFrameworkCLRLockAndThreadsContentions.ID:
+			id = fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkMemoryCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRMemoryAllocatedBytes.ID:
 			id := fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
@@ -3308,24 +3609,132 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 		case netFrameworkCLRMemoryGCTime.ID:
 			id := fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
 			dim = &module.Dim{ID: id, Name: procID}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkMemoryCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRMemoryAllocatedBytes.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
+		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
+		case netFrameworkCLRMemoryHeapSize.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
+		case netFrameworkCLRMemoryPromoted.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
+		case netFrameworkCLRMemoryNumberGCHandles.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
+		case netFrameworkCLRMemoryCollections.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
+		case netFrameworkCLRMemoryInducedGC.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
+		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
+		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
+		case netFrameworkCLRMemoryCommitted.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
+		case netFrameworkCLRMemoryReserved.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
+		case netFrameworkCLRMemoryGCTime.ID:
+			id = fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkRemotingCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRRemotingChannels.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_channels", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRContextBoundClassesLoaded.ID:
+		case netFrameworkCLRRemotingContextBoundClassesLoaded.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_context_bound_classes_loaded", procID)
 			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRContextBoundObjects.ID:
+		case netFrameworkCLRRemotingContextBoundObjects.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_context_bound_objects", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRContextProxies.ID:
+		case netFrameworkCLRRemotingContextProxies.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_context_proxies", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRContexts.ID:
+		case netFrameworkCLRRemotingContexts.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
 			dim = &module.Dim{ID: id, Name: procID}
 		case netFrameworkCLRRemotingCalls.ID:
 			id := fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
+		default:
+			dim = nil
+			continue
+		}
+
+		if dim == nil {
+			continue
+		}
+		if err := chart.AddDim(dim); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkRemotingCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var id string
+		switch chart.ID {
+		case netFrameworkCLRRemotingChannels.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_channels", procID)
+		case netFrameworkCLRRemotingContextBoundClassesLoaded.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_classes_loaded", procID)
+		case netFrameworkCLRRemotingContextBoundObjects.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_objects", procID)
+		case netFrameworkCLRRemotingContextProxies.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_context_proxies", procID)
+		case netFrameworkCLRRemotingContexts.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
+		case netFrameworkCLRRemotingCalls.ID:
+			id = fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
+		default:
+			continue
+		}
+
+		if err := chart.MarkDimRemove(id, false); err != nil {
+			w.Warning(err)
+			continue
+		}
+		chart.MarkNotCreated()
+	}
+}
+
+func (w *WMI) addProcessToNetFrameworkSecurityCharts(procID string) {
+	for _, chart := range *w.Charts() {
+		var dim *module.Dim
+		switch chart.ID {
 		case netFrameworkCLRSecurityLinkTimeChecks.ID:
 			id := fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
 			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
@@ -3354,90 +3763,10 @@ func (w *WMI) addProcessToNetFrameworkCharts(procID string) {
 	}
 }
 
-func (w *WMI) removeProcessFromNetFrameworkCharts(procID string) {
+func (w *WMI) removeProcessFromNetFrameworkSecuriyCharts(procID string) {
 	for _, chart := range *w.Charts() {
 		var id string
 		switch chart.ID {
-		case netFrameworkCLRExceptionsThrown.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_thrown", procID)
-		case netFrameworkCLRExceptionsFilters.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_filters", procID)
-		case netFrameworkCLRExceptionsFinallys.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_finallys", procID)
-		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
-		case netFrameworkCLRInteropCOMCallableWrapper.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_com_callable_wrappers", procID)
-		case netFrameworkCLRInteropMarshalling.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_marshalling", procID)
-		case netFrameworkCLRInteropStubsCreated.ID:
-			id = fmt.Sprintf("netframework_clrinterop_%s_stubs_created", procID)
-		case netFrameworkCLRJITMethods.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_methods", procID)
-		case netFrameworkCLRJITTime.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_time", procID)
-		case netFrameworkCLRJITStandardFailure.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
-		case netFrameworkCLRJITILByes.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
-		case netFrameworkCLRLoadingLoaderHeapSize.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_loader_heap_size", procID)
-		case netFrameworkCLRLoadingAppDomainsLoaded.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_loaded", procID)
-		case netFrameworkCLRLoadingAppDomainsUnloaded.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_app_domains_unloaded", procID)
-		case netFrameworkCLRLoadingAssembliesLoaded.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_assemblies_loaded", procID)
-		case netFrameworkCLRLoadingClassesLoaded.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_classes_loaded", procID)
-		case netFrameworkCLRLoadingClassLoadFailure.ID:
-			id = fmt.Sprintf("netframework_clrloading_%s_class_load_failure", procID)
-		case netFrameworkCLRLockAndThreadsQueueLength.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
-		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
-		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
-		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
-		case netFrameworkCLRLockAndThreadsContentions.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
-		case netFrameworkCLRMemoryAllocatedBytes.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_allocated_bytes_total", procID)
-		case netFrameworkCLRMemoryFinalizationSurvivors.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_finalization_survivors", procID)
-		case netFrameworkCLRMemoryHeapSize.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_heap_size", procID)
-		case netFrameworkCLRMemoryPromoted.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_promoted", procID)
-		case netFrameworkCLRMemoryNumberGCHandles.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_gc_handles", procID)
-		case netFrameworkCLRMemoryCollections.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_collection", procID)
-		case netFrameworkCLRMemoryInducedGC.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_induced_gc_total", procID)
-		case netFrameworkCLRMemoryNumberPinnedObjects.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_pinned_objects", procID)
-		case netFrameworkCLRMemoryNumberSinkBlocksInUse.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_sink_block_in_use", procID)
-		case netFrameworkCLRMemoryCommitted.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_committed", procID)
-		case netFrameworkCLRMemoryReserved.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_reserved", procID)
-		case netFrameworkCLRMemoryGCTime.ID:
-			id = fmt.Sprintf("netframework_clrmemory_%s_gc_time", procID)
-		case netFrameworkCLRRemotingChannels.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_channels", procID)
-		case netFrameworkCLRContextBoundClassesLoaded.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_classes_loaded", procID)
-		case netFrameworkCLRContextBoundObjects.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_objects", procID)
-		case netFrameworkCLRContextProxies.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_proxies", procID)
-		case netFrameworkCLRContexts.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
-		case netFrameworkCLRRemotingCalls.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
 		case netFrameworkCLRSecurityLinkTimeChecks.ID:
 			id = fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
 		case netFrameworkCLRSecurityChecksTime.ID:

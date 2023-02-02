@@ -48,16 +48,16 @@ func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms promethe
 	}
 
 	for proc := range seen {
-		if !w.cache.netFrameworkCLR[proc] {
-			w.cache.netFrameworkCLR[proc] = true
-			w.addProcessToNetFrameworkCharts(proc)
+		if !w.cache.netFrameworkCLRExceptions[proc] {
+			w.cache.netFrameworkCLRExceptions[proc] = true
+			w.addProcessToNetFrameworkExceptionsCharts(proc)
 		}
 	}
 
-	for proc := range w.cache.netFrameworkCLR {
+	for proc := range w.cache.netFrameworkCLRExceptions {
 		if !seen[proc] {
-			delete(w.cache.netFrameworkCLR, proc)
-			w.removeProcessFromNetFrameworkCharts(proc)
+			delete(w.cache.netFrameworkCLRExceptions, proc)
+			w.removeProcessFromNetFrameworkExceptionsCharts(proc)
 		}
 	}
 }

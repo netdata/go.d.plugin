@@ -342,15 +342,15 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 	}
 
 	for proc := range seen {
-		if !w.cache.netFrameworkCLR[proc] {
-			w.cache.netFrameworkCLR[proc] = true
+		if !w.cache.netFrameworkCLRExceptions[proc] {
+			w.cache.netFrameworkCLRExceptions[proc] = true
 			w.addProcessToNetFrameworkCharts(proc)
 		}
 	}
 
-	for proc := range w.cache.netFrameworkCLR {
+	for proc := range w.cache.netFrameworkCLRExceptions {
 		if !seen[proc] {
-			delete(w.cache.netFrameworkCLR, proc)
+			delete(w.cache.netFrameworkCLRExceptions, proc)
 			w.removeProcessFromNetFrameworkCharts(proc)
 		}
 	}
