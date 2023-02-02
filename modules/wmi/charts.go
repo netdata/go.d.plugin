@@ -2307,54 +2307,54 @@ var (
 	// Exceptions
 	netFrameworkCLRExceptionsThrown = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_%s_exception_thrown",
+		ID:         "net_framework_%s_clrexception_thrown",
 		Title:      "Number of exceptions thrown since start.",
 		Units:      "exceptions",
 		Fam:        "exceptions",
-		Ctx:        "net_framework.exception_thrown",
+		Ctx:        "net_framework.clrexception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrown,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_exception_thrown_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_thrown_total", Name: "exception"},
 		},
 	}
 	netFrameworkCLRExceptionsFilters = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_%s_exception_filters",
+		ID:         "net_framework_%s_clrexception_filters",
 		Title:      "Number of exceptions filter executed.",
 		Units:      "exceptions",
 		Fam:        "exceptions",
-		Ctx:        "net_framework.exception_filters",
+		Ctx:        "net_framework.clrexception_filters",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFilters,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_exception_filters_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_filters_total", Name: "exception"},
 		},
 	}
 	netFrameworkCLRExceptionsFinallys = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_%s_exception_finally",
+		ID:         "net_framework_%s_clrexception_finally",
 		Title:      "Number of finally blocks executed.",
 		Units:      "blocks",
 		Fam:        "exceptions",
-		Ctx:        "net_framework.exception_finally",
+		Ctx:        "net_framework.clrexception_finally",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_exception_finally_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_finally_total", Name: "exception"},
 		},
 	}
 	netFrameworkCLRExceptionsThrowCatchDepth = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_%s_exception_throw_catch_depth",
+		ID:         "net_framework_%s_clrexception_throw_catch_depth",
 		Title:      "Number of stack frames transversed.",
 		Units:      "stack frames",
 		Fam:        "exceptions",
-		Ctx:        "net_framework.exception_thrown",
+		Ctx:        "net_framework.clrexception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrowCatchDepth,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_exception_throw_catch_depth_total", Name: "exception"},
+			{ID: "net_framework_%s_clrexception_throw_catch_depth_total", Name: "exception"},
 		},
 	}
 
