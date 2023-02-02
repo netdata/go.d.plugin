@@ -2236,27 +2236,27 @@ var (
 
 // .NET
 var (
-	netFrameworkCLRExceptionsCharts = module.Charts{
+	netFrameworkCLRExceptionsChartsTmpl = module.Charts{
 		netFrameworkCLRExceptionsThrown.Copy(),
 		netFrameworkCLRExceptionsFilters.Copy(),
 		netFrameworkCLRExceptionsFinallys.Copy(),
 		netFrameworkCLRExceptionsThrowCatchDepth.Copy(),
 	}
 
-	netFrameworkCLRInteropCharts = module.Charts{
+	netFrameworkCLRInteropChartsTmpl = module.Charts{
 		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
 		netFrameworkCLRInteropMarshalling.Copy(),
 		netFrameworkCLRInteropStubsCreated.Copy(),
 	}
 
-	netFrameworkCLRJITCharts = module.Charts{
+	netFrameworkCLRJITChartsTmpl = module.Charts{
 		netFrameworkCLRJITMethods.Copy(),
 		netFrameworkCLRJITTime.Copy(),
 		netFrameworkCLRJITStandardFailure.Copy(),
 		netFrameworkCLRJITILByes.Copy(),
 	}
 
-	netFrameworkCLRLoadingCharts = module.Charts{
+	netFrameworkCLRLoadingChartsTmpl = module.Charts{
 		netFrameworkCLRLoadingLoaderHeapSize.Copy(),
 		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
 		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
@@ -2264,7 +2264,7 @@ var (
 		netFrameworkCLRLoadingClassesLoaded.Copy(),
 	}
 
-	netFrameworkCLRLocksandthreadsCharts = module.Charts{
+	netFrameworkCLRLocksandthreadsChartsTmpl = module.Charts{
 		netFrameworkCLRLoadingClassLoadFailure.Copy(),
 		netFrameworkCLRLockAndThreadsQueueLength.Copy(),
 		netFrameworkCLRLockAndThreadsCurrentLogicalThreads.Copy(),
@@ -2273,7 +2273,7 @@ var (
 		netFrameworkCLRLockAndThreadsContentions.Copy(),
 	}
 
-	netFrameworkCLRMemoryCharts = module.Charts{
+	netFrameworkCLRMemoryChartsTmpl = module.Charts{
 		netFrameworkCLRMemoryAllocatedBytes.Copy(),
 		netFrameworkCLRMemoryFinalizationSurvivors.Copy(),
 		netFrameworkCLRMemoryHeapSize.Copy(),
@@ -2289,7 +2289,7 @@ var (
 		netFrameworkCLRRemotingChannels.Copy(),
 	}
 
-	netFrameworkCLRRemotingCharts = module.Charts{
+	netFrameworkCLRRemotingChartsTmpl = module.Charts{
 		netFrameworkCLRRemotingContextBoundClassesLoaded.Copy(),
 		netFrameworkCLRRemotingContextBoundObjects.Copy(),
 		netFrameworkCLRRemotingContextProxies.Copy(),
@@ -2297,7 +2297,7 @@ var (
 		netFrameworkCLRRemotingCalls.Copy(),
 	}
 
-	netFrameworkCLRSecurityCharts = module.Charts{
+	netFrameworkCLRSecurityChartsTmpl = module.Charts{
 		netFrameworkCLRSecurityLinkTimeChecks.Copy(),
 		netFrameworkCLRSecurityChecksTime.Copy(),
 		netFrameworkCLRSecurityStackWalkDepth.Copy(),
@@ -3102,7 +3102,7 @@ func (w *WMI) addProcessesCharts() {
 }
 
 func (w *WMI) addNetFrameworkCRLExceptions() {
-	charts := netFrameworkCLRExceptionsCharts.Copy()
+	charts := netFrameworkCLRExceptionsChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3110,7 +3110,7 @@ func (w *WMI) addNetFrameworkCRLExceptions() {
 }
 
 func (w *WMI) addNetFrameworkCRLInterop() {
-	charts := netFrameworkCLRInteropCharts.Copy()
+	charts := netFrameworkCLRInteropChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3118,7 +3118,7 @@ func (w *WMI) addNetFrameworkCRLInterop() {
 }
 
 func (w *WMI) addNetFrameworkCRLJIT() {
-	charts := netFrameworkCLRJITCharts.Copy()
+	charts := netFrameworkCLRJITChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3126,7 +3126,7 @@ func (w *WMI) addNetFrameworkCRLJIT() {
 }
 
 func (w *WMI) addNetFrameworkCRLLoading() {
-	charts := netFrameworkCLRLoadingCharts.Copy()
+	charts := netFrameworkCLRLoadingChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3134,7 +3134,7 @@ func (w *WMI) addNetFrameworkCRLLoading() {
 }
 
 func (w *WMI) addNetFrameworkCRLLocksanddthreads() {
-	charts := netFrameworkCLRLocksandthreadsCharts.Copy()
+	charts := netFrameworkCLRLocksandthreadsChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3142,7 +3142,7 @@ func (w *WMI) addNetFrameworkCRLLocksanddthreads() {
 }
 
 func (w *WMI) addNetFrameworkCRLMemory() {
-	charts := netFrameworkCLRMemoryCharts.Copy()
+	charts := netFrameworkCLRMemoryChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3150,7 +3150,7 @@ func (w *WMI) addNetFrameworkCRLMemory() {
 }
 
 func (w *WMI) addNetFrameworkCRLRemoting() {
-	charts := netFrameworkCLRRemotingCharts.Copy()
+	charts := netFrameworkCLRRemotingChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
@@ -3158,7 +3158,7 @@ func (w *WMI) addNetFrameworkCRLRemoting() {
 }
 
 func (w *WMI) addNetFrameworkCRLSecurity() {
-	charts := netFrameworkCLRSecurityCharts.Copy()
+	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
