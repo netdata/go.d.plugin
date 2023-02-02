@@ -5,10 +5,6 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	metricNetFrameworkCLRInteropComCallableWrapper = "windows_netframework_clrinterop_com_callable_wrappers_total"
-	metricNetFrameworkCLRInteropMarshalling        = "windows_netframework_clrinterop_interop_marshalling_total"
-	metricNetFrameworkCLRInteropStubsCreated       = "windows_netframework_clrinterop_interop_stubs_created_total"
-
 	metricNetFrameworkCLRJITMethods         = "windows_netframework_clrjit_jit_methods_total"
 	metricNetFrameworkCLRJITTime            = "windows_netframework_clrjit_jit_time_percent"
 	metricNetFrameworkCLRJITStandardFailure = "windows_netframework_clrjit_jit_standard_failures_total"
@@ -61,27 +57,6 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 
 	seen := make(map[string]bool)
 	px := "netframework_clr"
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropComCallableWrapper) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"interop_"+name+"_com_callable_wrappers"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropMarshalling) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"interop_"+name+"_marshalling"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropStubsCreated) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"interop_"+name+"_stubs_created"] += int64(pm.Value)
-		}
-	}
-
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITMethods) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
