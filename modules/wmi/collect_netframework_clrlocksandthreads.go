@@ -13,8 +13,8 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRLocksandthreads(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRLocksAndThreads] {
-		w.cache.collection[collectorNetFrameworkCLRLocksAndThreads] = true
+	if !w.cache.collection[collectorNetFrameworkCLRLocksandthreads] {
+		w.cache.collection[collectorNetFrameworkCLRLocksandthreads] = true
 		w.addNetFrameworkCRLLocksanddthreads()
 	}
 

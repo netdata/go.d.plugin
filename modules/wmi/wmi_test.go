@@ -253,6 +253,9 @@ func TestWMI_Collect(t *testing.T) {
 				"collector_netframework_clrremoting_duration":                                                   1519,
 				"collector_netframework_clrremoting_status_fail":                                                0,
 				"collector_netframework_clrremoting_status_success":                                             1,
+				"collector_netframework_clrsecurity_duration":                                                   1467,
+				"collector_netframework_clrsecurity_status_fail":                                                0,
+				"collector_netframework_clrsecurity_status_success":                                             1,
 				"collector_os_duration":                                                                         2,
 				"collector_os_status_fail":                                                                      0,
 				"collector_os_status_success":                                                                   1,
@@ -696,6 +699,55 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 	}
 	for _, chart := range netFrameworkCLRExceptionsCharts {
 		if w.cache.collection[collectorNetFrameworkCLRExceptions] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRInteropCharts {
+		if w.cache.collection[collectorNetFrameworkCLRInterop] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRJITCharts {
+		if w.cache.collection[collectorNetFrameworkCLRJIT] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRLoadingCharts {
+		if w.cache.collection[collectorNetFrameworkCLRLoading] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRLocksandthreadsCharts {
+		if w.cache.collection[collectorNetFrameworkCLRLocksandthreads] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRMemoryCharts {
+		if w.cache.collection[collectorNetFrameworkCLRMemory] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRRemotingCharts {
+		if w.cache.collection[collectorNetFrameworkCLRRemoting] {
+			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
+		} else {
+			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
+		}
+	}
+	for _, chart := range netFrameworkCLRSecurityCharts {
+		if w.cache.collection[collectorNetFrameworkCLRSecurity] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
 		} else {
 			assert.Falsef(t, w.Charts().Has(chart.ID), "chart '%s' created", chart.ID)
