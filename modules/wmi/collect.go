@@ -32,6 +32,7 @@ const (
 	collectorNetFrameworkCLRLocksAndThreads = "netframework_clrlocksandthreads"
 	collectorNetFrameworkCLRMemory          = "netframework_clrmemory"
 	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
+	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
