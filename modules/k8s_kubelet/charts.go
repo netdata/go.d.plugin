@@ -163,7 +163,7 @@ var charts = Charts{
 		Fam:   "config error",
 		Ctx:   "k8s_kubelet.kubelet_node_config_error",
 		Dims: Dims{
-			{ID: "kubelet_node_config_error", Name: "experiencing error"},
+			{ID: "kubelet_node_config_error", Name: "experiencing_error"},
 		},
 	},
 	{
