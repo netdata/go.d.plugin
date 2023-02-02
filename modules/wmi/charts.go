@@ -2307,43 +2307,55 @@ var (
 	// Exceptions
 	netFrameworkCLRExceptionsThrown = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_exception_thrown",
+		ID:         "net_framework_%s_exception_thrown",
 		Title:      "Number of exceptions thrown since start.",
 		Units:      "exceptions",
 		Fam:        "exceptions",
 		Ctx:        "net_framework.exception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrown,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_exception_thrown_total", Name: "exception"},
+		},
 	}
 	netFrameworkCLRExceptionsFilters = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_exception_filters",
+		ID:         "net_framework_%s_exception_filters",
 		Title:      "Number of exceptions filter executed.",
 		Units:      "exceptions",
 		Fam:        "exceptions",
 		Ctx:        "net_framework.exception_filters",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFilters,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_exception_filters_total", Name: "exception"},
+		},
 	}
 	netFrameworkCLRExceptionsFinallys = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_exception_finally",
+		ID:         "net_framework_%s_exception_finally",
 		Title:      "Number of finally blocks executed.",
 		Units:      "blocks",
 		Fam:        "exceptions",
 		Ctx:        "net_framework.exception_finally",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_exception_finally_total", Name: "exception"},
+		},
 	}
 	netFrameworkCLRExceptionsThrowCatchDepth = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_exception_throw_catch_depth",
+		ID:         "net_framework_%s_exception_throw_catch_depth",
 		Title:      "Number of stack frames transversed.",
 		Units:      "stack frames",
 		Fam:        "exceptions",
 		Ctx:        "net_framework.exception_thrown",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrowCatchDepth,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_exception_throw_catch_depth_total", Name: "exception"},
+		},
 	}
 
 	// Interop
@@ -3101,14 +3113,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLExceptions() {
-	charts := netFrameworkCLRExceptionsChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLInterop() {
 	charts := netFrameworkCLRInteropChartsTmpl.Copy()
 
@@ -3280,58 +3284,29 @@ func (w *WMI) removeProcessFromCharts(procID string) {
 }
 
 func (w *WMI) addProcessToNetFrameworkExceptionsCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRExceptionsThrown.ID:
-			id := fmt.Sprintf("netframework_clrexceptions_%s_thrown", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRExceptionsFilters.ID:
-			id := fmt.Sprintf("netframework_clrexceptions_%s_filters", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRExceptionsFinallys.ID:
-			id := fmt.Sprintf("netframework_clrexceptions_%s_finallys", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
-			id := fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRExceptionsChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrexception", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkExceptionsCharts(procID string) {
+	px := fmt.Sprintf("netframework_clrexception_%s", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRExceptionsThrown.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_thrown", procID)
-		case netFrameworkCLRExceptionsFilters.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_filters", procID)
-		case netFrameworkCLRExceptionsFinallys.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_finallys", procID)
-		case netFrameworkCLRExceptionsThrowCatchDepth.ID:
-			id = fmt.Sprintf("netframework_clrexceptions_%s_throw_catch_depth", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 
