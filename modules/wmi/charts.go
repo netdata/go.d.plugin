@@ -2402,43 +2402,55 @@ var (
 	// JIT
 	netFrameworkCLRJITMethods = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrjit_methods",
+		ID:         "net_framework_%s_clrjit_methods",
 		Title:      "Number of JIT methods compiled.",
 		Units:      "JIT methods",
 		Fam:        "jit",
 		Ctx:        "net_framework.clrjit_methods",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITMethods,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrjit_methods_total", Name: "jit", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRJITTime = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrjit_time",
+		ID:         "net_framework_%s_clrjit_time",
 		Title:      "Percentage time spent in JIT compilation.",
 		Units:      "percentage",
 		Fam:        "jit",
 		Ctx:        "net_framework.clrjit_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITTime,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrjit_time_percent", Name: "jit"},
+		},
 	}
 	netFrameworkCLRJITStandardFailure = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrjit_standard_failure",
+		ID:         "net_framework_%s_clrjit_standard_failure",
 		Title:      "Number of methods the JIT compiler has failed.",
 		Units:      "Failures",
 		Fam:        "jit",
 		Ctx:        "net_framework.clrjit_standard_failure",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITStandardFailures,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrjit_standard_failure_total", Name: "jit", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRJITILByes = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrjit_il_bytes",
+		ID:         "net_framework_%s_clrjit_il_bytes",
 		Title:      "Number of Microsoft intermediate language (MSIL) bytes compiled.",
 		Units:      "bytes",
 		Fam:        "jit",
 		Ctx:        "net_framework.clrjit_il_bytes",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITILBytes,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrjit_il_bytes_total", Name: "jit", Algo: module.Incremental},
+		},
 	}
 
 	// Loading
@@ -3122,14 +3134,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLJIT() {
-	charts := netFrameworkCLRJITChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLLoading() {
 	charts := netFrameworkCLRLoadingChartsTmpl.Copy()
 
@@ -3339,58 +3343,29 @@ func (w *WMI) removeProcessFromNetFrameworkInteropCharts(procID string) {
 }
 
 func (w *WMI) addProcessToNetFrameworkJITCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRJITMethods.ID:
-			id := fmt.Sprintf("netframework_clrjit_%s_methods", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRJITTime.ID:
-			id := fmt.Sprintf("netframework_clrjit_%s_time", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRJITStandardFailure.ID:
-			id := fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRJITILByes.ID:
-			id := fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRJITChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrjit", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkJITCharts(procID string) {
+	px := fmt.Sprintf("netframework_clrjit_%s", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRJITMethods.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_methods", procID)
-		case netFrameworkCLRJITTime.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_time", procID)
-		case netFrameworkCLRJITStandardFailure.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_standard_failure", procID)
-		case netFrameworkCLRJITILByes.ID:
-			id = fmt.Sprintf("netframework_clrjit_%s_il_bytes", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 
