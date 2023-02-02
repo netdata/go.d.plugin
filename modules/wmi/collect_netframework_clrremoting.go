@@ -5,12 +5,6 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
-	metricNetFrameworkCLRLocksAndThreadsQueueLengthTotal      = "windows_netframework_clrlocksandthreads_queue_length_total"
-	metricNetFrameworkCLRLocksAndThreadsCurrentLogicalThreads = "windows_netframework_clrlocksandthreads_current_logical_threads"
-	metricNetFrameworkCLRLocksAndThreadsPhysicalThreads       = "windows_netframework_clrlocksandthreads_physical_threads_current"
-	metricNetFrameworkCLRLocksAndThreadsRecognizedThreads     = "windows_netframework_clrlocksandthreads_recognized_threads_total"
-	metricNetFrameworkCLRLocksAndThreadsContentions           = "windows_netframework_clrlocksandthreads_contentions_total"
-
 	metricNetFrameworkCLRMemoryAllocatedBytesTotal   = "windows_netframework_clrmemory_allocated_bytes_total"
 	metricNetFrameworkCLRMemoryFinalizationSurvivors = "windows_netframework_clrmemory_finalization_survivors"
 	metricNetFrameworkCLRMemoryHeapSizeBytes         = "windows_netframework_clrmemory_heap_size_bytes"
@@ -45,41 +39,6 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 
 	seen := make(map[string]bool)
 	px := "netframework_clr"
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsQueueLengthTotal) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"lockandthreads_"+name+"_queue_length"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsCurrentLogicalThreads) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"lockandthreads_"+name+"_current_logical_threads"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsPhysicalThreads) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"lockandthreads_"+name+"_current_physical_threads"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsRecognizedThreads) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"lockandthreads_"+name+"_recognized_threads"] += int64(pm.Value)
-		}
-	}
-
-	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsContentions) {
-		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
-			seen[name] = true
-			mx[px+"lockandthreads_"+name+"_contentions"] += int64(pm.Value)
-		}
-	}
-
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryAllocatedBytesTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
