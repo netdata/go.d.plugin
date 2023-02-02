@@ -8,49 +8,6 @@ const (
 	metricNetFrameworkCLRInteropComCallableWrapper = "windows_netframework_clrinterop_com_callable_wrappers_total"
 	metricNetFrameworkCLRInteropMarshalling        = "windows_netframework_clrinterop_interop_marshalling_total"
 	metricNetFrameworkCLRInteropStubsCreated       = "windows_netframework_clrinterop_interop_stubs_created_total"
-
-	metricNetFrameworkCLRJITMethods         = "windows_netframework_clrjit_jit_methods_total"
-	metricNetFrameworkCLRJITTime            = "windows_netframework_clrjit_jit_time_percent"
-	metricNetFrameworkCLRJITStandardFailure = "windows_netframework_clrjit_jit_standard_failures_total"
-	metricNetFrameworkCLRJITILBytes         = "windows_netframework_clrjit_jit_il_bytes_total"
-
-	metricNetFrameworkCLRLoadingLoaderHeapSize    = "windows_netframework_clrloading_loader_heap_size_bytes"
-	metricNetFrameworkCLRLoadingAppDomainLoaded   = "windows_netframework_clrloading_appdomains_loaded_total"
-	metricNetFrameworkCLRLoadingAppDomainUnloaded = "windows_netframework_clrloading_appdomains_unloaded_total"
-	metricNetFrameworkCLRLoadingAssembliesLoaded  = "windows_netframework_clrloading_assemblies_loaded_total"
-	metricNetFrameworkCLRLoadingClassesLoaded     = "windows_netframework_clrloading_classes_loaded_total"
-	metricNetFrameworkCLRLoadingClassLoadFailure  = "windows_netframework_clrloading_class_load_failures_total"
-
-	metricNetFrameworkCLRLocksAndThreadsQueueLengthTotal      = "windows_netframework_clrlocksandthreads_queue_length_total"
-	metricNetFrameworkCLRLocksAndThreadsCurrentLogicalThreads = "windows_netframework_clrlocksandthreads_current_logical_threads"
-	metricNetFrameworkCLRLocksAndThreadsPhysicalThreads       = "windows_netframework_clrlocksandthreads_physical_threads_current"
-	metricNetFrameworkCLRLocksAndThreadsRecognizedThreads     = "windows_netframework_clrlocksandthreads_recognized_threads_total"
-	metricNetFrameworkCLRLocksAndThreadsContentions           = "windows_netframework_clrlocksandthreads_contentions_total"
-
-	metricNetFrameworkCLRMemoryAllocatedBytesTotal   = "windows_netframework_clrmemory_allocated_bytes_total"
-	metricNetFrameworkCLRMemoryFinalizationSurvivors = "windows_netframework_clrmemory_finalization_survivors"
-	metricNetFrameworkCLRMemoryHeapSizeBytes         = "windows_netframework_clrmemory_heap_size_bytes"
-	metricNetFrameworkCLRMemoryPromotedBytes         = "windows_netframework_clrmemory_promoted_bytes"
-	metricNetFrameworkCLRMemoryNumberGCHandles       = "windows_netframework_clrmemory_number_gc_handles"
-	metricNetFrameworkCLRMemoryCollectionsTotal      = "windows_netframework_clrmemory_collections_total"
-	metricNetFrameworkCLRMemoryInducedGCTotal        = "windows_netframework_clrmemory_induced_gc_total"
-	metricNetFrameworkCLRMemoryNumberPinnedObjects   = "windows_netframework_clrmemory_number_pinned_objects"
-	metricNetFrameworkCLRMemoryNumberSinkBlockInUse  = "windows_netframework_clrmemory_number_sink_blocksinuse"
-	metricNetFrameworkCLRMemoryCommittedBytes        = "windows_netframework_clrmemory_committed_bytes"
-	metricNetFrameworkCLRMemoryReservedBytes         = "windows_netframework_clrmemory_reserved_bytes"
-	metricNetFrameworkCLRMemoryGCTimePecent          = "windows_netframework_clrmemory_gc_time_percent"
-
-	metricNetFrameworkCLRRemotingChannelsTotal             = "windows_netframework_clrremoting_channels_total"
-	metricNetFrameworkCLRRemotingContextBoundClassesLoaded = "windows_netframework_clrremoting_context_bound_classes_loaded"
-	metricNetFrameworkCLRRemotingContextBoundObjectsTotal  = "windows_netframework_clrremoting_context_bound_objects_total"
-	metricNetFrameworkCLRRemotingContextProxiesTotal       = "windows_netframework_clrremoting_context_proxies_total"
-	metricNetFrameworkCLRRemotingContexts                  = "windows_netframework_clrremoting_contexts"
-	metricNetFrameworkCLRRemotingRemoteCallsTotal          = "windows_netframework_clrremoting_remote_calls_total"
-
-	metricNetFrameworkCLRSecurityLinkTimeChecksTotal = "windows_netframework_clrsecurity_link_time_checks_total"
-	metricNetFrameworkCLRSecurityRTChecksTimePercent = "windows_netframework_clrsecurity_rt_checks_time_percent"
-	metricNetFrameworkCLRSecurityStackWalkDepth      = "windows_netframework_clrsecurity_stack_walk_depth"
-	metricNetFrameworkCLRSecurityRuntimeChecksTotal  = "windows_netframework_clrsecurity_runtime_checks_total"
 )
 
 func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series) {
@@ -60,11 +17,11 @@ func (w *WMI) collectNetFrameworkCLR(mx map[string]int64, pms prometheus.Series)
 	}
 
 	seen := make(map[string]bool)
-	px := "netframework_clr"
+	px := "netframework_clrinterop_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropComCallableWrapper) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+"interop_"+name+"_com_callable_wrappers"] += int64(pm.Value)
+			mx[px+""+name+"_com_callable_wrappers"] += int64(pm.Value)
 		}
 	}
 

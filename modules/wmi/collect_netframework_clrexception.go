@@ -18,7 +18,7 @@ func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms promethe
 	}
 
 	seen := make(map[string]bool)
-	px := "netframework_clrexceptions"
+	px := "netframework_clrexceptions_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsThrown) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
