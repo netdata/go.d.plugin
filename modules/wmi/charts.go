@@ -146,11 +146,13 @@ const (
 	prioNETFrameworkCLRLoadingAssembliesLoaded
 	prioNETFrameworkCLRLoadingClassesLoaded
 	prioNETFrameworkCLRLoadingClassLoadFailure
-	prioNETFrameworkCLRLockAndThreadsQueueLength
-	prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads
-	prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads
-	prioNETFrameworkCLRLockAndThreadsRecognizedThreads
-	prioNETFrameworkCLRLockAndThreadsContentions
+
+	// Locks and threads
+	prioNETFrameworkCLRLocksAndThreadsQueueLength
+	prioNETFrameworkCLRLocksAndThreadsCurrentLogicalThreads
+	prioNETFrameworkCLRLocksAndThreadsCurrentPhysicalThreads
+	prioNETFrameworkCLRLocksAndThreadsRecognizedThreads
+	prioNETFrameworkCLRLocksAndThreadsContentions
 
 	// Memory
 	prioNETFrameworkCLRMemoryAllocatedBytes
@@ -2536,53 +2538,68 @@ var (
 	// Lock and Threads
 	netFrameworkCLRLockAndThreadsQueueLength = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrlockandthreads_queue_length",
+		ID:         "net_framework_%s_clrlocksandthreads_queue_length",
 		Title:      "Threads waiting for lock.",
 		Units:      "threads",
 		Fam:        "locks_threads",
-		Ctx:        "net_framework.clrlockandthreads_queue_length",
+		Ctx:        "net_framework.clrlocksandthreads_queue_length",
 		Type:       module.Stacked,
-		Priority:   prioNETFrameworkCLRLockAndThreadsQueueLength,
+		Priority:   prioNETFrameworkCLRLocksAndThreadsQueueLength,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrlocksandthreads_queue_length_total", Name: "threads", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRLockAndThreadsCurrentLogicalThreads = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrlockandthreads_current_logical_threads",
+		ID:         "net_framework_%s_clrlocksandthreads_current_logical_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "locks_threads",
-		Ctx:        "net_framework.clrlockandthreads_current_logical_threads",
+		Ctx:        "net_framework.clrlocksandthreads_current_logical_threads",
 		Type:       module.Stacked,
-		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentLogicalThreads,
+		Priority:   prioNETFrameworkCLRLocksAndThreadsCurrentLogicalThreads,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrlocksandthreads_current_logical_threads_total", Name: "threads", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRLockAndThreadsCurrentPhysicalThreads = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrlockandthreads_current_physical_threads",
+		ID:         "net_framework_%s_clrlocksandthreads_current_physical_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "locks_threads",
-		Ctx:        "net_framework.clrlockandthreads_current_physical_threads",
+		Ctx:        "net_framework.clrlocksandthreads_current_physical_threads",
 		Type:       module.Stacked,
-		Priority:   prioNETFrameworkCLRLockAndThreadsCurrentPhysicalThreads,
+		Priority:   prioNETFrameworkCLRLocksAndThreadsCurrentPhysicalThreads,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrlocksandthreads_current_physical_threads_total", Name: "threads"},
+		},
 	}
 	netFrameworkCLRLockAndThreadsRecognizedThreads = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrlockandthreads_recognized_threads",
+		ID:         "net_framework_%s_clrlocksandthreads_recognized_threads",
 		Title:      "Number of running and stopped threads.",
 		Units:      "threads",
 		Fam:        "locks_threads",
-		Ctx:        "net_framework.clrlockandthreads_recognized_threads",
+		Ctx:        "net_framework.clrlocksandthreads_recognized_threads",
 		Type:       module.Stacked,
-		Priority:   prioNETFrameworkCLRLockAndThreadsRecognizedThreads,
+		Priority:   prioNETFrameworkCLRLocksAndThreadsRecognizedThreads,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrlocksandthreads_recognized_threads_total", Name: "threads", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRLockAndThreadsContentions = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrlockandthreads_contentions",
+		ID:         "net_framework_%s_clrlocksandthreads_contentions",
 		Title:      "Number of fails to acquire managed lock.",
 		Units:      "threads",
 		Fam:        "locks_threads",
-		Ctx:        "net_framework.clrlockandthreads_contentions",
+		Ctx:        "net_framework.clrlocksandthreads_contentions",
 		Type:       module.Stacked,
-		Priority:   prioNETFrameworkCLRLockAndThreadsContentions,
+		Priority:   prioNETFrameworkCLRLocksAndThreadsContentions,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrlocksandthreads_contentions_total", Name: "threads", Algo: module.Incremental},
+		},
 	}
 
 	// Memory
@@ -3152,14 +3169,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLLocksanddthreads() {
-	charts := netFrameworkCLRLocksandthreadsChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLMemory() {
 	charts := netFrameworkCLRMemoryChartsTmpl.Copy()
 
@@ -3406,64 +3415,30 @@ func (w *WMI) removeProcessFromNetFrameworkLoadingCharts(procID string) {
 	}
 }
 
-func (w *WMI) addProcessToNetFrameworkLockandthreadsCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRLockAndThreadsQueueLength.ID:
-			id := fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
-			id := fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
-			id := fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
-			id := fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRLockAndThreadsContentions.ID:
-			id := fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+func (w *WMI) addProcessToNetFrameworkLocksandthreadsCharts(procID string) {
+	charts := netFrameworkCLRLocksandthreadsChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrlocksandthreads", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkLocksandthreadsCharts(procID string) {
+	px := fmt.Sprintf("net_framework_%s_clrlocksandthreads", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRLockAndThreadsQueueLength.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_queue_length", procID)
-		case netFrameworkCLRLockAndThreadsCurrentLogicalThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_logical_threads", procID)
-		case netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_current_physical_threads", procID)
-		case netFrameworkCLRLockAndThreadsRecognizedThreads.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_recognized_threads", procID)
-		case netFrameworkCLRLockAndThreadsContentions.ID:
-			id = fmt.Sprintf("netframework_clrlockandthreads_%s_contentions", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 
