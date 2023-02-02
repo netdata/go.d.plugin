@@ -3223,14 +3223,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLMemory() {
-	charts := netFrameworkCLRMemoryChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLSecurity() {
 	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
 
