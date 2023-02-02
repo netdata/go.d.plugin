@@ -2763,63 +2763,81 @@ var (
 	// Remoting
 	netFrameworkCLRRemotingChannels = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_channels",
+		ID:         "net_framework_%s_clrremoting_channels",
 		Title:      "Remoting channels registered.",
 		Units:      "channels",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_channels",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingChannels,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_channels_total", Name: "channels", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRRemotingContextBoundClassesLoaded = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_context_bound_classes_loaded",
+		ID:         "net_framework_%s_clrremoting_context_bound_classes_loaded",
 		Title:      "Context-bound classes loaded.",
 		Units:      "context-bound",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_context_bound_classes_loaded",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundClassesLoaded,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_context_bound_classes_loaded_total", Name: "classes"},
+		},
 	}
 	netFrameworkCLRRemotingContextBoundObjects = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_context_bound_objects",
+		ID:         "net_framework_%s_clrremoting_context_bound_objects",
 		Title:      "Total Context-bound objects allocated.",
 		Units:      "objects",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_context_bound_objects",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextBoundObjects,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_context_bound_objects_total", Name: "objects", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRRemotingContextProxies = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_context_proxies",
+		ID:         "net_framework_%s_clrremoting_context_proxies",
 		Title:      "Total remoting proxy objects.",
 		Units:      "objects",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_context_proxies",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContextProxies,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_context_proxies_total", Name: "objects", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRRemotingContexts = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_contexts",
+		ID:         "net_framework_%s_clrremoting_contexts",
 		Title:      "Total of remoting contexts.",
 		Units:      "contexts",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_contexts",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingContexts,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_context_current", Name: "contexts"},
+		},
 	}
 	netFrameworkCLRRemotingCalls = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrremoting_calls",
+		ID:         "net_framework_%s_clrremoting_calls",
 		Title:      "Total Remote Procedure Calls (RPC) invoked.",
 		Units:      "RPC",
 		Fam:        "remoting",
 		Ctx:        "net_framework.clrremoting_calls",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRRemotingRemoteCalls,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrremoting_calls_total", Name: "RPC", Algo: module.Incremental},
+		},
 	}
 
 	// Security
@@ -3213,14 +3231,6 @@ func (w *WMI) addNetFrameworkCRLMemory() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLRemoting() {
-	charts := netFrameworkCLRRemotingChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addNetFrameworkCRLSecurity() {
 	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
 
@@ -3506,68 +3516,29 @@ func (w *WMI) removeProcessFromNetFrameworkMemoryCharts(procID string) {
 }
 
 func (w *WMI) addProcessToNetFrameworkRemotingCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRRemotingChannels.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_channels", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRRemotingContextBoundClassesLoaded.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_context_bound_classes_loaded", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRRemotingContextBoundObjects.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_context_bound_objects", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRRemotingContextProxies.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_context_proxies", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRRemotingContexts.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRRemotingCalls.ID:
-			id := fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRRemotingChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrmemory", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkRemotingCharts(procID string) {
+	px := fmt.Sprintf("net_framework_%s_clrremoting", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRRemotingChannels.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_channels", procID)
-		case netFrameworkCLRRemotingContextBoundClassesLoaded.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_classes_loaded", procID)
-		case netFrameworkCLRRemotingContextBoundObjects.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_bound_objects", procID)
-		case netFrameworkCLRRemotingContextProxies.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_context_proxies", procID)
-		case netFrameworkCLRRemotingContexts.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_contexts", procID)
-		case netFrameworkCLRRemotingCalls.ID:
-			id = fmt.Sprintf("netframework_clrremoting_%s_calls", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 
