@@ -2843,43 +2843,55 @@ var (
 	// Security
 	netFrameworkCLRSecurityLinkTimeChecks = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrsecurity_link_time_checks",
+		ID:         "net_framework_%s_clrsecurity_link_time_checks",
 		Title:      "Number of Link-time code access security.",
 		Units:      "access",
 		Fam:        "security",
 		Ctx:        "net_framework.clrsecurity_link_time_checks",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityLinkTimeChecks,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrsecurity_link_time_checks_total", Name: "access", Algo: module.Incremental},
+		},
 	}
 	netFrameworkCLRSecurityChecksTime = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrsecurity_checks_time",
+		ID:         "net_framework_%s_clrsecurity_checks_time",
 		Title:      "Percentage of time to access security checks.",
 		Units:      "percentage",
 		Fam:        "security",
 		Ctx:        "net_framework.clrsecurity_checks_time",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityRTChecksTime,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrsecurity_checks_time_current", Name: "time"},
+		},
 	}
 	netFrameworkCLRSecurityStackWalkDepth = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrsecurity_stack_walk_depth",
+		ID:         "net_framework_%s_clrsecurity_stack_walk_depth",
 		Title:      "Depth of stack.",
 		Units:      "depth",
 		Fam:        "security",
 		Ctx:        "net_framework.clrsecurity_stack_walk_depth",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityStackWalkDepth,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrsecurity_stack_walk_depth_current", Name: "stack"},
+		},
 	}
 	netFrameworkCLRSecurityRuntimeChecks = module.Chart{
 		OverModule: "netframework",
-		ID:         "net_framework_clrsecurity_runtime_checks",
+		ID:         "net_framework_%s_clrsecurity_runtime_checks",
 		Title:      "Total number of runtime code access.",
 		Units:      "access",
 		Fam:        "security",
-		Ctx:        "net_framework.clrsecurity_checks_time",
+		Ctx:        "net_framework.clrsecurity_runtime_checks",
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRSecurityRuntimeChecks,
+		Dims: module.Dims{
+			{ID: "net_framework_%s_clrsecurity_runtime_checks_total", Name: "access", Algo: module.Incremental},
+		},
 	}
 )
 
@@ -3223,14 +3235,6 @@ func (w *WMI) addProcessesCharts() {
 	}
 }
 
-func (w *WMI) addNetFrameworkCRLSecurity() {
-	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
 func (w *WMI) addADCharts() {
 	charts := adCharts.Copy()
 
@@ -3535,58 +3539,29 @@ func (w *WMI) removeProcessFromNetFrameworkRemotingCharts(procID string) {
 }
 
 func (w *WMI) addProcessToNetFrameworkSecurityCharts(procID string) {
-	for _, chart := range *w.Charts() {
-		var dim *module.Dim
-		switch chart.ID {
-		case netFrameworkCLRSecurityLinkTimeChecks.ID:
-			id := fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		case netFrameworkCLRSecurityChecksTime.ID:
-			id := fmt.Sprintf("netframework_clrsecurity_%s_checks_time", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRSecurityStackWalkDepth.ID:
-			id := fmt.Sprintf("netframework_clrsecurity_%s_stack_walk_depth", procID)
-			dim = &module.Dim{ID: id, Name: procID}
-		case netFrameworkCLRSecurityRuntimeChecks.ID:
-			id := fmt.Sprintf("netframework_clrsecurity_%s_runtime_checks", procID)
-			dim = &module.Dim{ID: id, Name: procID, Algo: module.Incremental}
-		default:
-			dim = nil
-			continue
+	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, procID)
+		chart.Labels = []module.Label{
+			{Key: "netframework_clrsecurity", Value: procID},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procID)
 		}
 
-		if dim == nil {
-			continue
-		}
-		if err := chart.AddDim(dim); err != nil {
+		if err := w.Charts().Add(*charts...); err != nil {
 			w.Warning(err)
-			continue
 		}
-		chart.MarkNotCreated()
 	}
 }
 
 func (w *WMI) removeProcessFromNetFrameworkSecuriyCharts(procID string) {
+	px := fmt.Sprintf("net_framework_%s_clrsecurity", procID)
 	for _, chart := range *w.Charts() {
-		var id string
-		switch chart.ID {
-		case netFrameworkCLRSecurityLinkTimeChecks.ID:
-			id = fmt.Sprintf("netframework_clrsecurity_%s_link_time_checks", procID)
-		case netFrameworkCLRSecurityChecksTime.ID:
-			id = fmt.Sprintf("netframework_clrsecurity_%s_checks_time", procID)
-		case netFrameworkCLRSecurityStackWalkDepth.ID:
-			id = fmt.Sprintf("netframework_clrsecurity_%s_stack_walk_depth", procID)
-		case netFrameworkCLRSecurityRuntimeChecks.ID:
-			id = fmt.Sprintf("netframework_clrsecurity_%s_runtime_checks", procID)
-		default:
-			continue
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
 		}
-
-		if err := chart.MarkDimRemove(id, false); err != nil {
-			w.Warning(err)
-			continue
-		}
-		chart.MarkNotCreated()
 	}
 }
 

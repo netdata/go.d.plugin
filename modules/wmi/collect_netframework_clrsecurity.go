@@ -12,38 +12,33 @@ const (
 )
 
 func (w *WMI) collectNetFrameworkCLRSecuriting(mx map[string]int64, pms prometheus.Series) {
-	if !w.cache.collection[collectorNetFrameworkCLRSecurity] {
-		w.cache.collection[collectorNetFrameworkCLRSecurity] = true
-		w.addNetFrameworkCRLSecurity()
-	}
-
 	seen := make(map[string]bool)
-	px := "netframework_clrsecurity_"
+	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRSecurityLinkTimeChecksTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_link_time_checks"] += int64(pm.Value)
+			mx[px+name+"_clrsecurity_link_time_checks_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRSecurityRTChecksTimePercent) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_checks_time"] += int64(pm.Value)
+			mx[px+name+"_clrsecurity_checks_time_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRSecurityStackWalkDepth) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_stack_walk_depth"] += int64(pm.Value)
+			mx[px+name+"_clrsecurity_stack_walk_depth_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRSecurityRuntimeChecksTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_runtime_checks"] += int64(pm.Value)
+			mx[px+name+"_clrsecurity_runtime_checks_total"] += int64(pm.Value)
 		}
 	}
 
