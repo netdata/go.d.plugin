@@ -2343,7 +2343,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsFinallys,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_finally_total", Name: "exception", Algo: module.Incremental},
+			{ID: "net_framework_%s_clrexception_finally_total", Name: "blocks", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRExceptionsThrowCatchDepth = module.Chart{
@@ -2356,7 +2356,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRExceptionsThrowCatchDepth,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrexception_throw_catch_depth_total", Name: "exception", Algo: module.Incremental},
+			{ID: "net_framework_%s_clrexception_throw_catch_depth_total", Name: "stack frames", Algo: module.Incremental},
 		},
 	}
 
@@ -2425,7 +2425,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITTime,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrjit_time_percent", Name: "jit"},
+			{ID: "net_framework_%s_clrjit_time_percent", Name: "time"},
 		},
 	}
 	netFrameworkCLRJITStandardFailure = module.Chart{
@@ -2438,7 +2438,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITStandardFailures,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrjit_standard_failure_total", Name: "jit", Algo: module.Incremental},
+			{ID: "net_framework_%s_clrjit_standard_failure_total", Name: "methods", Algo: module.Incremental},
 		},
 	}
 	netFrameworkCLRJITILByes = module.Chart{
@@ -2451,7 +2451,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRJITILBytes,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrjit_il_bytes_total", Name: "jit", Algo: module.Incremental},
+			{ID: "net_framework_%s_clrjit_il_bytes_total", Name: "MSIL", Algo: module.Incremental},
 		},
 	}
 
@@ -2652,7 +2652,7 @@ var (
 		Type:       module.Stacked,
 		Priority:   prioNETFrameworkCLRMemoryPromoted,
 		Dims: module.Dims{
-			{ID: "net_framework_%s_clrmemory_promoted", Name: "promoted"},
+			{ID: "net_framework_%s_clrmemory_promoted", Name: "bytes"},
 		},
 	}
 	netFrameworkCLRMemoryNumberGCHandles = module.Chart{
