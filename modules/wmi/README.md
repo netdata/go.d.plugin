@@ -263,6 +263,10 @@ Labels per scope:
 | net_framework.clrremoting_context_proxies                            |        global        |                                                                                        objects                                                                        |      objects      |
 | net_framework.clrremoting_contexts                                   |        global        |                                                                                        contexts                                                                       |      contexts     |
 | net_framework.clrremoting_calls                                      |        global        |                                                                                            RPC                                                                        |        RPC        |
+| net_framework.clrsecurity_link_time_checks                           |        global        |                                                                                           access                                                                      |      access      |
+| net_framework.clrsecurity_checks_time                                |        global        |                                                                                            time                                                                       |    percentage    |
+| net_framework.clrsecurity_stack_walk_depth                           |        global        |                                                                                            stack                                                                      |      depth      |
+| net_framework.clrsecurity_runtime_checks                             |        global        |                                                                                           access                                                                      |      access      |
 
 ## Configuration
 
