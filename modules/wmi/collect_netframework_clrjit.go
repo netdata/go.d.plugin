@@ -13,33 +13,32 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRJIT(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITMethods) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrjit_methods_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrjit_methods_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITStandardFailure) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrjit_standard_failure_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrjit_standard_failure_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITTime) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrjit_time_percent"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrjit_time_percent"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITILBytes) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrjit_il_bytes_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrjit_il_bytes_total"] += int64(pm.Value)
 		}
 	}
 

@@ -15,46 +15,45 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRRemoting(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingChannelsTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_channels_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_channels_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextBoundClassesLoaded) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_context_bound_classes_loaded_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_context_bound_classes_loaded_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextBoundObjectsTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_context_bound_objects_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_context_bound_objects_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContextProxiesTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_context_proxies_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_context_proxies_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingContexts) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_context_current"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_context_current"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingRemoteCallsTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrremoting_calls_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrremoting_calls_total"] += int64(pm.Value)
 		}
 	}
 

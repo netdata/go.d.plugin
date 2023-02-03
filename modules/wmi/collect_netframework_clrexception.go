@@ -5,6 +5,10 @@ package wmi
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
 const (
+	netframeworkPrefix = "netframework_"
+)
+
+const (
 	metricNetFrameworkCLRExceptionsThrown          = "windows_netframework_clrexceptions_exceptions_thrown_total"
 	metricNetFrameworkCLRExceptionsFilters         = "windows_netframework_clrexceptions_exceptions_filters_total"
 	metricNetFrameworkCLRExceptionsFinallys        = "windows_netframework_clrexceptions_exceptions_finallys_total"
@@ -13,32 +17,31 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsThrown) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrexception_thrown_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrexception_thrown_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsFilters) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrexception_filters_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrexception_filters_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsFinallys) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrexception_finally_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrexception_finally_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsThrowCatchDepth) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrexception_throw_catch_depth_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrexception_throw_catch_depth_total"] += int64(pm.Value)
 		}
 	}
 

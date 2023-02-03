@@ -12,25 +12,24 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRInterop(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropComCallableWrapper) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrinterop_com_callable_wrapper_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrinterop_com_callable_wrapper_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropMarshalling) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrinterop_marshalling_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrinterop_marshalling_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropStubsCreated) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrinterop_stubs_created_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrinterop_stubs_created_total"] += int64(pm.Value)
 		}
 	}
 

@@ -15,46 +15,45 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRLoading(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingLoaderHeapSize) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_loader_heap_size_bytes"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_loader_heap_size_bytes"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAppDomainLoaded) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_appdomains_loaded_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_appdomains_loaded_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAppDomainUnloaded) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_appdomains_unloaded_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_appdomains_unloaded_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingAssembliesLoaded) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_assemblies_loaded_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_assemblies_loaded_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingClassesLoaded) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_classes_loaded_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_classes_loaded_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingClassLoadFailure) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrloading_class_load_failures_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrloading_class_load_failures_total"] += int64(pm.Value)
 		}
 	}
 

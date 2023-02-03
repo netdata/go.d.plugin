@@ -14,39 +14,38 @@ const (
 
 func (w *WMI) collectNetFrameworkCLRLocksandthreads(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
-	px := "net_framework_"
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsQueueLengthTotal) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrlocksandthreads_queue_length_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrlocksandthreads_queue_length_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsCurrentLogicalThreads) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrlocksandthreads_current_logical_threads_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrlocksandthreads_current_logical_threads_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsPhysicalThreads) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrlocksandthreads_current_physical_threads_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrlocksandthreads_current_physical_threads_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsRecognizedThreads) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrlocksandthreads_recognized_threads_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrlocksandthreads_recognized_threads_total"] += int64(pm.Value)
 		}
 	}
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsContentions) {
 		if name := cleanProcessName(pm.Labels.Get("process")); name != "" {
 			seen[name] = true
-			mx[px+name+"_clrlocksandthreads_contentions_total"] += int64(pm.Value)
+			mx[netframeworkPrefix+name+"_clrlocksandthreads_contentions_total"] += int64(pm.Value)
 		}
 	}
 
