@@ -29,7 +29,7 @@ const (
 	collectorNetFrameworkCLRInterop         = "netframework_clrinterop"
 	collectorNetFrameworkCLRJIT             = "netframework_clrjit"
 	collectorNetFrameworkCLRLoading         = "netframework_clrloading"
-	collectorNetFrameworkCLRLocksandthreads = "netframework_clrlocksandthreads"
+	collectorNetFrameworkCLRLocksAndThreads = "netframework_clrlocksandthreads"
 	collectorNetFrameworkCLRMemory          = "netframework_clrmemory"
 	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
 	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
@@ -127,14 +127,14 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectNetFrameworkCLRJIT(mx, pms)
 		case collectorNetFrameworkCLRLoading:
 			w.collectNetFrameworkCLRLoading(mx, pms)
-		case collectorNetFrameworkCLRLocksandthreads:
-			w.collectNetFrameworkCLRLocksandthreads(mx, pms)
+		case collectorNetFrameworkCLRLocksAndThreads:
+			w.collectNetFrameworkCLRLocksAndThreads(mx, pms)
 		case collectorNetFrameworkCLRMemory:
 			w.collectNetFrameworkCLRMemory(mx, pms)
 		case collectorNetFrameworkCLRRemoting:
 			w.collectNetFrameworkCLRRemoting(mx, pms)
 		case collectorNetFrameworkCLRSecurity:
-			w.collectNetFrameworkCLRSecuriting(mx, pms)
+			w.collectNetFrameworkCLRSecurity(mx, pms)
 		}
 	}
 }
