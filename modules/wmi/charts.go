@@ -121,6 +121,67 @@ const (
 	// Error
 	prioMSSQLSqlErrorsTotal
 
+	// NET Framework
+	// Exceptions
+	prioNETFrameworkCLRExceptionsThrown
+	prioNETFrameworkCLRExceptionsFilters
+	prioNETFrameworkCLRExceptionsFinallys
+	prioNETFrameworkCLRExceptionsThrowToCatchDepth
+
+	// InterOP
+	prioNETFrameworkCLRInteropCOMCallableWrappers
+	prioNETFrameworkCLRInteropMarshalling
+	prioNETFrameworkCLRInteropStubsCreated
+	prioNETFrameworkCLRJITMethods
+
+	// JIT
+	prioNETFrameworkCLRJITTime
+	prioNETFrameworkCLRJITStandardFailures
+	prioNETFrameworkCLRJITILBytes
+
+	// Loading
+	prioNETFrameworkCLRLoadingLoaderHeapSize
+	prioNETFrameworkCLRLoadingAppDomainsLoaded
+	prioNETFrameworkCLRLoadingAppDomainsUnloaded
+	prioNETFrameworkCLRLoadingAssembliesLoaded
+	prioNETFrameworkCLRLoadingClassesLoaded
+	prioNETFrameworkCLRLoadingClassLoadFailure
+
+	// Locks and threads
+	prioNETFrameworkCLRLocksAndThreadsQueueLength
+	prioNETFrameworkCLRLocksAndThreadsCurrentLogicalThreads
+	prioNETFrameworkCLRLocksAndThreadsCurrentPhysicalThreads
+	prioNETFrameworkCLRLocksAndThreadsRecognizedThreads
+	prioNETFrameworkCLRLocksAndThreadsContentions
+
+	// Memory
+	prioNETFrameworkCLRMemoryAllocatedBytes
+	prioNETFrameworkCLRMemoryFinalizationSurvivors
+	prioNETFrameworkCLRMemoryHeapSize
+	prioNETFrameworkCLRMemoryPromoted
+	prioNETFrameworkCLRMemoryNumberGCHandles
+	prioNETFrameworkCLRMemoryCollections
+	prioNETFrameworkCLRMemoryInducedGC
+	prioNETFrameworkCLRMemoryNumberPinnedObjects
+	prioNETFrameworkCLRMemoryNumberSinkBlocksInUse
+	prioNETFrameworkCLRMemoryCommitted
+	prioNETFrameworkCLRMemoryReserved
+	prioNETFrameworkCLRMemoryGCTime
+
+	// Remoting
+	prioNETFrameworkCLRRemotingChannels
+	prioNETFrameworkCLRRemotingContextBoundClassesLoaded
+	prioNETFrameworkCLRRemotingContextBoundObjects
+	prioNETFrameworkCLRRemotingContextProxies
+	prioNETFrameworkCLRRemotingContexts
+	prioNETFrameworkCLRRemotingRemoteCalls
+
+	// Security
+	prioNETFrameworkCLRSecurityLinkTimeChecks
+	prioNETFrameworkCLRSecurityRTChecksTime
+	prioNETFrameworkCLRSecurityStackWalkDepth
+	prioNETFrameworkCLRSecurityRuntimeChecks
+
 	prioServiceState
 	prioServiceStatus
 
@@ -1044,7 +1105,7 @@ var (
 		Units:      "locks/s",
 		Fam:        "locks",
 		Ctx:        "mssql.instance_locks_deadlocks",
-		Priority:   prioMSSQLLocksLockWait,
+		Priority:   prioMSSQLLocksDeadLocks,
 		Dims: module.Dims{
 			{ID: "mssql_instance_%s_resource_AllocUnit_locks_deadlocks", Name: "alloc_unit", Algo: module.Incremental},
 			{ID: "mssql_instance_%s_resource_Application_locks_deadlocks", Name: "application", Algo: module.Incremental},
@@ -2175,6 +2236,621 @@ var (
 	}
 )
 
+// .NET
+var (
+	netFrameworkCLRExceptionsChartsTmpl = module.Charts{
+		netFrameworkCLRExceptionsThrown.Copy(),
+		netFrameworkCLRExceptionsFilters.Copy(),
+		netFrameworkCLRExceptionsFinallys.Copy(),
+		netFrameworkCLRExceptionsThrowToCatchDepth.Copy(),
+	}
+
+	netFrameworkCLRInteropChartsTmpl = module.Charts{
+		netFrameworkCLRInteropCOMCallableWrapper.Copy(),
+		netFrameworkCLRInteropMarshalling.Copy(),
+		netFrameworkCLRInteropStubsCreated.Copy(),
+	}
+
+	netFrameworkCLRJITChartsTmpl = module.Charts{
+		netFrameworkCLRJITMethods.Copy(),
+		netFrameworkCLRJITTime.Copy(),
+		netFrameworkCLRJITStandardFailures.Copy(),
+		netFrameworkCLRJITILBytes.Copy(),
+	}
+
+	netFrameworkCLRLoadingChartsTmpl = module.Charts{
+		netFrameworkCLRLoadingLoaderHeapSize.Copy(),
+		netFrameworkCLRLoadingAppDomainsLoaded.Copy(),
+		netFrameworkCLRLoadingAppDomainsUnloaded.Copy(),
+		netFrameworkCLRLoadingAssembliesLoaded.Copy(),
+		netFrameworkCLRLoadingClassesLoaded.Copy(),
+		netFrameworkCLRLoadingClassLoadFailure.Copy(),
+	}
+
+	netFrameworkCLRLocksAndThreadsChartsTmpl = module.Charts{
+		netFrameworkCLRLockAndThreadsQueueLength.Copy(),
+		netFrameworkCLRLockAndThreadsCurrentLogicalThreads.Copy(),
+		netFrameworkCLRLockAndThreadsCurrentPhysicalThreads.Copy(),
+		netFrameworkCLRLockAndThreadsRecognizedThreads.Copy(),
+		netFrameworkCLRLockAndThreadsContentions.Copy(),
+	}
+
+	netFrameworkCLRMemoryChartsTmpl = module.Charts{
+		netFrameworkCLRMemoryAllocatedBytes.Copy(),
+		netFrameworkCLRMemoryFinalizationSurvivors.Copy(),
+		netFrameworkCLRMemoryHeapSize.Copy(),
+		netFrameworkCLRMemoryPromoted.Copy(),
+		netFrameworkCLRMemoryNumberGCHandles.Copy(),
+		netFrameworkCLRMemoryCollections.Copy(),
+		netFrameworkCLRMemoryInducedGC.Copy(),
+		netFrameworkCLRMemoryNumberPinnedObjects.Copy(),
+		netFrameworkCLRMemoryNumberSinkBlocksInUse.Copy(),
+		netFrameworkCLRMemoryCommitted.Copy(),
+		netFrameworkCLRMemoryReserved.Copy(),
+		netFrameworkCLRMemoryGCTime.Copy(),
+	}
+
+	netFrameworkCLRRemotingChartsTmpl = module.Charts{
+		netFrameworkCLRRemotingChannels.Copy(),
+		netFrameworkCLRRemotingContextBoundClassesLoaded.Copy(),
+		netFrameworkCLRRemotingContextBoundObjects.Copy(),
+		netFrameworkCLRRemotingContextProxies.Copy(),
+		netFrameworkCLRRemotingContexts.Copy(),
+		netFrameworkCLRRemotingCalls.Copy(),
+	}
+
+	netFrameworkCLRSecurityChartsTmpl = module.Charts{
+		netFrameworkCLRSecurityLinkTimeChecks.Copy(),
+		netFrameworkCLRSecurityChecksTime.Copy(),
+		netFrameworkCLRSecurityStackWalkDepth.Copy(),
+		netFrameworkCLRSecurityRuntimeChecks.Copy(),
+	}
+
+	// Exceptions
+	netFrameworkCLRExceptionsThrown = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrexception_thrown",
+		Title:      "Thrown exceptions",
+		Units:      "exceptions/s",
+		Fam:        "exceptions",
+		Ctx:        "netframework.clrexception_thrown",
+		Priority:   prioNETFrameworkCLRExceptionsThrown,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrexception_thrown_total", Name: "exceptions", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRExceptionsFilters = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrexception_filters",
+		Title:      "Executed exception filters",
+		Units:      "filters/s",
+		Fam:        "exceptions",
+		Ctx:        "netframework.clrexception_filters",
+		Priority:   prioNETFrameworkCLRExceptionsFilters,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrexception_filters_total", Name: "filters", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRExceptionsFinallys = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrexception_finallys",
+		Title:      "Executed finally blocks",
+		Units:      "finallys/s",
+		Fam:        "exceptions",
+		Ctx:        "netframework.clrexception_finallys",
+		Priority:   prioNETFrameworkCLRExceptionsFinallys,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrexception_finallys_total", Name: "finallys", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRExceptionsThrowToCatchDepth = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrexception_throw_to_catch_depth",
+		Title:      "Traversed stack frames",
+		Units:      "stack_frames/s",
+		Fam:        "exceptions",
+		Ctx:        "netframework.clrexception_throw_to_catch_depth",
+		Priority:   prioNETFrameworkCLRExceptionsThrowToCatchDepth,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrexception_throw_to_catch_depth_total", Name: "traversed", Algo: module.Incremental},
+		},
+	}
+
+	// Interop
+	netFrameworkCLRInteropCOMCallableWrapper = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrinterop_com_callable_wrappers",
+		Title:      "COM callable wrappers (CCW)",
+		Units:      "ccw/s",
+		Fam:        "interop",
+		Ctx:        "netframework.clrinterop_com_callable_wrappers",
+		Priority:   prioNETFrameworkCLRInteropCOMCallableWrappers,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrinterop_com_callable_wrappers_total", Name: "com_callable_wrappers", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRInteropMarshalling = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrinterop_interop_marshalling",
+		Title:      "Arguments and return values marshallings",
+		Units:      "marshalling/s",
+		Fam:        "interop",
+		Ctx:        "netframework.clrinterop_interop_marshallings",
+		Priority:   prioNETFrameworkCLRInteropMarshalling,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrinterop_interop_marshalling_total", Name: "marshallings", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRInteropStubsCreated = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrinterop_interop_stubs_created",
+		Title:      "Created stubs",
+		Units:      "stubs/s",
+		Fam:        "interop",
+		Ctx:        "netframework.clrinterop_interop_stubs_created",
+		Priority:   prioNETFrameworkCLRInteropStubsCreated,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrinterop_interop_stubs_created_total", Name: "created", Algo: module.Incremental},
+		},
+	}
+
+	// JIT
+	netFrameworkCLRJITMethods = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrjit_methods",
+		Title:      "JIT-compiled methods",
+		Units:      "methods/s",
+		Fam:        "jit",
+		Ctx:        "netframework.clrjit_methods",
+		Priority:   prioNETFrameworkCLRJITMethods,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrjit_methods_total", Name: "jit-compiled", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRJITTime = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrjit_time",
+		Title:      "Time spent in JIT compilation",
+		Units:      "percentage",
+		Fam:        "jit",
+		Ctx:        "netframework.clrjit_time",
+		Priority:   prioNETFrameworkCLRJITTime,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrjit_time_percent", Name: "time"},
+		},
+	}
+	netFrameworkCLRJITStandardFailures = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrjit_standard_failures",
+		Title:      "JIT compiler failures",
+		Units:      "failures/s",
+		Fam:        "jit",
+		Ctx:        "netframework.clrjit_standard_failures",
+		Priority:   prioNETFrameworkCLRJITStandardFailures,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrjit_standard_failures_total", Name: "failures", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRJITILBytes = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrjit_il_bytes",
+		Title:      "Compiled Microsoft intermediate language (MSIL) bytes",
+		Units:      "bytes/s",
+		Fam:        "jit",
+		Ctx:        "netframework.clrjit_il_bytes",
+		Priority:   prioNETFrameworkCLRJITILBytes,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrjit_il_bytes_total", Name: "compiled_msil", Algo: module.Incremental},
+		},
+	}
+
+	// Loading
+	netFrameworkCLRLoadingLoaderHeapSize = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_loader_heap_size",
+		Title:      "Memory committed by class loader",
+		Units:      "bytes",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_loader_heap_size",
+		Priority:   prioNETFrameworkCLRLoadingLoaderHeapSize,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_loader_heap_size_bytes", Name: "committed"},
+		},
+	}
+	netFrameworkCLRLoadingAppDomainsLoaded = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_appdomains_loaded",
+		Title:      "Loaded application domains",
+		Units:      "domain/s",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_appdomains_loaded",
+		Priority:   prioNETFrameworkCLRLoadingAppDomainsLoaded,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_appdomains_loaded_total", Name: "loaded", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLoadingAppDomainsUnloaded = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_appdomains_unloaded",
+		Title:      "Unloaded application domains",
+		Units:      "domain/s",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_appdomains_unloaded",
+		Priority:   prioNETFrameworkCLRLoadingAppDomainsUnloaded,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_appdomains_unloaded_total", Name: "unloaded", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLoadingAssembliesLoaded = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_assemblies_loaded",
+		Title:      "Loaded assemblies",
+		Units:      "assemblies/s",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_assemblies_loaded",
+		Priority:   prioNETFrameworkCLRLoadingAssembliesLoaded,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_assemblies_loaded_total", Name: "loaded", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLoadingClassesLoaded = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_classes_loaded",
+		Title:      "Loaded classes in all assemblies",
+		Units:      "classes/s",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_classes_loaded",
+		Priority:   prioNETFrameworkCLRLoadingClassesLoaded,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_classes_loaded_total", Name: "loaded", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLoadingClassLoadFailure = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrloading_class_load_failure",
+		Title:      "Class load failures",
+		Units:      "failures/s",
+		Fam:        "loading",
+		Ctx:        "netframework.clrloading_class_load_failures",
+		Priority:   prioNETFrameworkCLRLoadingClassLoadFailure,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrloading_class_load_failures_total", Name: "class_load", Algo: module.Incremental},
+		},
+	}
+
+	// Lock and Threads
+	netFrameworkCLRLockAndThreadsQueueLength = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrlocksandthreads_queue_length",
+		Title:      "Threads waited to acquire a managed lock",
+		Units:      "threads/s",
+		Fam:        "locks threads",
+		Ctx:        "netframework.clrlocksandthreads_queue_length",
+		Priority:   prioNETFrameworkCLRLocksAndThreadsQueueLength,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrlocksandthreads_queue_length_total", Name: "threads", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLockAndThreadsCurrentLogicalThreads = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrlocksandthreads_current_logical_threads",
+		Title:      "Logical threads",
+		Units:      "threads",
+		Fam:        "locks threads",
+		Ctx:        "netframework.clrlocksandthreads_current_logical_threads",
+		Priority:   prioNETFrameworkCLRLocksAndThreadsCurrentLogicalThreads,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrlocksandthreads_current_logical_threads", Name: "logical"},
+		},
+	}
+	netFrameworkCLRLockAndThreadsCurrentPhysicalThreads = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrlocksandthreads_current_physical_threads",
+		Title:      "Physical threads",
+		Units:      "threads",
+		Fam:        "locks threads",
+		Ctx:        "netframework.clrlocksandthreads_current_physical_threads",
+		Priority:   prioNETFrameworkCLRLocksAndThreadsCurrentPhysicalThreads,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrlocksandthreads_physical_threads_current", Name: "physical"},
+		},
+	}
+	netFrameworkCLRLockAndThreadsRecognizedThreads = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrlocksandthreads_recognized_threads",
+		Title:      "Threads recognized by the runtime",
+		Units:      "threads/s",
+		Fam:        "locks threads",
+		Ctx:        "netframework.clrlocksandthreads_recognized_threads",
+		Priority:   prioNETFrameworkCLRLocksAndThreadsRecognizedThreads,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrlocksandthreads_recognized_threads_total", Name: "threads", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRLockAndThreadsContentions = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrlocksandthreads_contentions",
+		Title:      "Fails to acquire a managed lock",
+		Units:      "contentions/s",
+		Fam:        "locks threads",
+		Ctx:        "netframework.clrlocksandthreads_contentions",
+		Priority:   prioNETFrameworkCLRLocksAndThreadsContentions,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrlocksandthreads_contentions_total", Name: "contentions", Algo: module.Incremental},
+		},
+	}
+
+	// Memory
+	netFrameworkCLRMemoryAllocatedBytes = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_allocated_bytes",
+		Title:      "Memory allocated on the garbage collection heap",
+		Units:      "bytes/s",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_allocated_bytes",
+		Priority:   prioNETFrameworkCLRMemoryAllocatedBytes,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_allocated_bytes_total", Name: "allocated", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRMemoryFinalizationSurvivors = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_finalization_survivors",
+		Title:      "Objects that survived garbage-collection",
+		Units:      "objects",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_finalization_survivors",
+		Priority:   prioNETFrameworkCLRMemoryFinalizationSurvivors,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_finalization_survivors", Name: "survived"},
+		},
+	}
+	netFrameworkCLRMemoryHeapSize = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_heap_size",
+		Title:      "Maximum bytes that can be allocated",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_heap_size",
+		Priority:   prioNETFrameworkCLRMemoryHeapSize,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_heap_size_bytes", Name: "heap"},
+		},
+	}
+	netFrameworkCLRMemoryPromoted = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_promoted",
+		Title:      "Memory promoted to the next generation",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_promoted",
+		Priority:   prioNETFrameworkCLRMemoryPromoted,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_promoted_bytes", Name: "promoted"},
+		},
+	}
+	netFrameworkCLRMemoryNumberGCHandles = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_number_gc_handles",
+		Title:      "Garbage collection handles",
+		Units:      "handles",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_number_gc_handles",
+		Priority:   prioNETFrameworkCLRMemoryNumberGCHandles,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_number_gc_handles", Name: "used"},
+		},
+	}
+	netFrameworkCLRMemoryCollections = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_collections",
+		Title:      "Garbage collections",
+		Units:      "gc/s",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_collections",
+		Priority:   prioNETFrameworkCLRMemoryCollections,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_collections_total", Name: "gc", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRMemoryInducedGC = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_induced_gc",
+		Title:      "Garbage collections induced",
+		Units:      "gc/s",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_induced_gc",
+		Priority:   prioNETFrameworkCLRMemoryInducedGC,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_induced_gc_total", Name: "gc", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRMemoryNumberPinnedObjects = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_number_pinned_objects",
+		Title:      "Pinned objects encountered",
+		Units:      "objects",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_number_pinned_objects",
+		Priority:   prioNETFrameworkCLRMemoryNumberPinnedObjects,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_number_pinned_objects", Name: "pinned"},
+		},
+	}
+	netFrameworkCLRMemoryNumberSinkBlocksInUse = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_number_sink_blocks_in_use",
+		Title:      "Synchronization blocks in use",
+		Units:      "blocks",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_number_sink_blocks_in_use",
+		Priority:   prioNETFrameworkCLRMemoryNumberSinkBlocksInUse,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_number_sink_blocksinuse", Name: "used"},
+		},
+	}
+	netFrameworkCLRMemoryCommitted = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_committed",
+		Title:      "Virtual memory committed by GC",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_committed",
+		Priority:   prioNETFrameworkCLRMemoryCommitted,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_committed_bytes", Name: "committed"},
+		},
+	}
+	netFrameworkCLRMemoryReserved = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_reserved",
+		Title:      "Virtual memory reserved by GC",
+		Units:      "bytes",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_reserved",
+		Priority:   prioNETFrameworkCLRMemoryReserved,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_reserved_bytes", Name: "reserved"},
+		},
+	}
+	netFrameworkCLRMemoryGCTime = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrmemory_gc_time",
+		Title:      "Time spent on GC",
+		Units:      "percentage",
+		Fam:        "memory",
+		Ctx:        "netframework.clrmemory_gc_time",
+		Priority:   prioNETFrameworkCLRMemoryGCTime,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrmemory_gc_time_percent", Name: "time"},
+		},
+	}
+
+	// Remoting
+	netFrameworkCLRRemotingChannels = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_channels",
+		Title:      "Registered channels",
+		Units:      "channels/s",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_channels",
+		Priority:   prioNETFrameworkCLRRemotingChannels,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_channels_total", Name: "registered", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRRemotingContextBoundClassesLoaded = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_context_bound_classes_loaded",
+		Title:      "Loaded context-bound classes",
+		Units:      "classes",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_context_bound_classes_loaded",
+		Priority:   prioNETFrameworkCLRRemotingContextBoundClassesLoaded,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_context_bound_classes_loaded", Name: "loaded"},
+		},
+	}
+	netFrameworkCLRRemotingContextBoundObjects = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_context_bound_objects",
+		Title:      "Allocated context-bound objects",
+		Units:      "objects/s",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_context_bound_objects",
+		Priority:   prioNETFrameworkCLRRemotingContextBoundObjects,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_context_bound_objects_total", Name: "allocated", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRRemotingContextProxies = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_context_proxies",
+		Title:      "Remoting proxy objects",
+		Units:      "objects/s",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_context_proxies",
+		Priority:   prioNETFrameworkCLRRemotingContextProxies,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_context_proxies_total", Name: "objects", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRRemotingContexts = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_contexts",
+		Title:      "Total of remoting contexts.",
+		Units:      "contexts",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_contexts",
+		Priority:   prioNETFrameworkCLRRemotingContexts,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_contexts", Name: "contexts"},
+		},
+	}
+	netFrameworkCLRRemotingCalls = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrremoting_calls",
+		Title:      "Remote Procedure Calls (RPC) invoked",
+		Units:      "calls/s",
+		Fam:        "remoting",
+		Ctx:        "netframework.clrremoting_remote_calls",
+		Priority:   prioNETFrameworkCLRRemotingRemoteCalls,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrremoting_remote_calls_total", Name: "rpc", Algo: module.Incremental},
+		},
+	}
+
+	// Security
+	netFrameworkCLRSecurityLinkTimeChecks = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrsecurity_link_time_checks",
+		Title:      "Link-time code access security checks",
+		Units:      "checks/s",
+		Fam:        "security",
+		Ctx:        "netframework.clrsecurity_link_time_checks",
+		Priority:   prioNETFrameworkCLRSecurityLinkTimeChecks,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrsecurity_link_time_checks_total", Name: "linktime", Algo: module.Incremental},
+		},
+	}
+	netFrameworkCLRSecurityChecksTime = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrsecurity_checks_time",
+		Title:      "Time spent performing runtime code access security checks",
+		Units:      "percentage",
+		Fam:        "security",
+		Ctx:        "netframework.clrsecurity_checks_time",
+		Priority:   prioNETFrameworkCLRSecurityRTChecksTime,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrsecurity_checks_time_percent", Name: "time"},
+		},
+	}
+	netFrameworkCLRSecurityStackWalkDepth = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrsecurity_stack_walk_depth",
+		Title:      "Depth of the stack",
+		Units:      "depth",
+		Fam:        "security",
+		Ctx:        "netframework.clrsecurity_stack_walk_depth",
+		Priority:   prioNETFrameworkCLRSecurityStackWalkDepth,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrsecurity_stack_walk_depth", Name: "stack"},
+		},
+	}
+	netFrameworkCLRSecurityRuntimeChecks = module.Chart{
+		OverModule: "netframework",
+		ID:         "netframework_%s_clrsecurity_runtime_checks",
+		Title:      "Runtime code access security checks performed",
+		Units:      "checks/s",
+		Fam:        "security",
+		Ctx:        "netframework.clrsecurity_runtime_checks",
+		Priority:   prioNETFrameworkCLRSecurityRuntimeChecks,
+		Dims: module.Dims{
+			{ID: "netframework_%s_clrsecurity_runtime_checks_total", Name: "runtime", Algo: module.Incremental},
+		},
+	}
+)
+
 // Service
 var (
 	serviceChartsTmpl = module.Charts{
@@ -2282,12 +2958,7 @@ func (w *WMI) addCPUCoreCharts(core string) {
 
 func (w *WMI) removeCPUCoreCharts(core string) {
 	px := fmt.Sprintf("cpu_core_%s", core)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addMemoryCharts() {
@@ -2318,12 +2989,7 @@ func (w *WMI) addDiskCharts(disk string) {
 
 func (w *WMI) removeDiskCharts(disk string) {
 	px := fmt.Sprintf("logical_disk_%s", disk)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addNICCharts(nic string) {
@@ -2346,12 +3012,7 @@ func (w *WMI) addNICCharts(nic string) {
 
 func (w *WMI) removeNICCharts(nic string) {
 	px := fmt.Sprintf("nic_%s", nic)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addTCPCharts() {
@@ -2414,12 +3075,7 @@ func (w *WMI) addThermalZoneCharts(zone string) {
 
 func (w *WMI) removeThermalZoneCharts(zone string) {
 	px := fmt.Sprintf("thermalzone_%s", zone)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addIISWebsiteCharts(website string) {
@@ -2442,12 +3098,7 @@ func (w *WMI) addIISWebsiteCharts(website string) {
 
 func (w *WMI) removeIIWebsiteSCharts(website string) {
 	px := fmt.Sprintf("iis_website_%s", website)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addMSSQLDBCharts(instance string, dbname string) {
@@ -2471,12 +3122,7 @@ func (w *WMI) addMSSQLDBCharts(instance string, dbname string) {
 
 func (w *WMI) removeMSSQLDBCharts(instance string, dbname string) {
 	px := fmt.Sprintf("mssql_db_%s_instance_%s", dbname, instance)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addMSSQLInstanceCharts(instance string) {
@@ -2499,12 +3145,7 @@ func (w *WMI) addMSSQLInstanceCharts(instance string) {
 
 func (w *WMI) removeMSSQLInstanceCharts(instance string) {
 	px := fmt.Sprintf("mssql_instance_%s", instance)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addProcessesCharts() {
@@ -2543,12 +3184,7 @@ func (w *WMI) addCertificateTemplateCharts(template string) {
 
 func (w *WMI) removeCertificateTemplateCharts(template string) {
 	px := fmt.Sprintf("adcs_cert_template_%s", template)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addProcessToCharts(procID string) {
@@ -2629,6 +3265,190 @@ func (w *WMI) removeProcessFromCharts(procID string) {
 	}
 }
 
+func (w *WMI) addProcessNetFrameworkExceptionsCharts(procName string) {
+	charts := netFrameworkCLRExceptionsChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessFromNetFrameworkExceptionsCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrexception", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkInteropCharts(procName string) {
+	charts := netFrameworkCLRInteropChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkInteropCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrinterop", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkJITCharts(procName string) {
+	charts := netFrameworkCLRJITChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkJITCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrjit", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkLoadingCharts(procName string) {
+	charts := netFrameworkCLRLoadingChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkLoadingCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrloading", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkLocksAndThreadsCharts(procName string) {
+	charts := netFrameworkCLRLocksAndThreadsChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkLocksAndThreadsCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrlocksandthreads", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkMemoryCharts(procName string) {
+	charts := netFrameworkCLRMemoryChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkMemoryCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrmemory", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkRemotingCharts(procName string) {
+	charts := netFrameworkCLRRemotingChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkRemotingCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrremoting", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
+func (w *WMI) addProcessNetFrameworkSecurityCharts(procName string) {
+	charts := netFrameworkCLRSecurityChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, strings.ToLower(procName))
+		chart.Labels = []module.Label{
+			{Key: "process", Value: procName},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, procName)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *WMI) removeProcessNetFrameworkSecurityCharts(procName string) {
+	px := fmt.Sprintf("netframework_%s_clrsecurity", strings.ToLower(procName))
+	w.removeCharts(px)
+}
+
 func (w *WMI) addServiceCharts(svc string) {
 	charts := serviceChartsTmpl.Copy()
 
@@ -2649,12 +3469,7 @@ func (w *WMI) addServiceCharts(svc string) {
 
 func (w *WMI) removeServiceCharts(svc string) {
 	px := fmt.Sprintf("service_%s", svc)
-	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
-			chart.MarkRemove()
-			chart.MarkNotCreated()
-		}
-	}
+	w.removeCharts(px)
 }
 
 func (w *WMI) addCollectorCharts(name string) {
@@ -2677,8 +3492,12 @@ func (w *WMI) addCollectorCharts(name string) {
 
 func (w *WMI) removeCollectorCharts(name string) {
 	px := fmt.Sprintf("collector_%s", name)
+	w.removeCharts(px)
+}
+
+func (w *WMI) removeCharts(prefix string) {
 	for _, chart := range *w.Charts() {
-		if strings.HasPrefix(chart.ID, px) {
+		if strings.HasPrefix(chart.ID, prefix) {
 			chart.MarkRemove()
 			chart.MarkNotCreated()
 		}

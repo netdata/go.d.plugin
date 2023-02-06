@@ -9,22 +9,30 @@ import (
 const precision = 1000
 
 const (
-	collectorAD          = "ad"
-	collectorADCS        = "adcs"
-	collectorADFS        = "adfs"
-	collectorCPU         = "cpu"
-	collectorMemory      = "memory"
-	collectorNet         = "net"
-	collectorLogicalDisk = "logical_disk"
-	collectorOS          = "os"
-	collectorSystem      = "system"
-	collectorLogon       = "logon"
-	collectorThermalZone = "thermalzone"
-	collectorTCP         = "tcp"
-	collectorIIS         = "iis"
-	collectorMSSQL       = "mssql"
-	collectorProcess     = "process"
-	collectorService     = "service"
+	collectorAD                             = "ad"
+	collectorADCS                           = "adcs"
+	collectorADFS                           = "adfs"
+	collectorCPU                            = "cpu"
+	collectorMemory                         = "memory"
+	collectorNet                            = "net"
+	collectorLogicalDisk                    = "logical_disk"
+	collectorOS                             = "os"
+	collectorSystem                         = "system"
+	collectorLogon                          = "logon"
+	collectorThermalZone                    = "thermalzone"
+	collectorTCP                            = "tcp"
+	collectorIIS                            = "iis"
+	collectorMSSQL                          = "mssql"
+	collectorProcess                        = "process"
+	collectorService                        = "service"
+	collectorNetFrameworkCLRExceptions      = "netframework_clrexceptions"
+	collectorNetFrameworkCLRInterop         = "netframework_clrinterop"
+	collectorNetFrameworkCLRJIT             = "netframework_clrjit"
+	collectorNetFrameworkCLRLoading         = "netframework_clrloading"
+	collectorNetFrameworkCLRLocksAndThreads = "netframework_clrlocksandthreads"
+	collectorNetFrameworkCLRMemory          = "netframework_clrmemory"
+	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
+	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
 )
 
 func (w *WMI) collect() (map[string]int64, error) {
@@ -111,6 +119,22 @@ func (w *WMI) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectADCS(mx, pms)
 		case collectorADFS:
 			w.collectADFS(mx, pms)
+		case collectorNetFrameworkCLRExceptions:
+			w.collectNetFrameworkCLRExceptions(mx, pms)
+		case collectorNetFrameworkCLRInterop:
+			w.collectNetFrameworkCLRInterop(mx, pms)
+		case collectorNetFrameworkCLRJIT:
+			w.collectNetFrameworkCLRJIT(mx, pms)
+		case collectorNetFrameworkCLRLoading:
+			w.collectNetFrameworkCLRLoading(mx, pms)
+		case collectorNetFrameworkCLRLocksAndThreads:
+			w.collectNetFrameworkCLRLocksAndThreads(mx, pms)
+		case collectorNetFrameworkCLRMemory:
+			w.collectNetFrameworkCLRMemory(mx, pms)
+		case collectorNetFrameworkCLRRemoting:
+			w.collectNetFrameworkCLRRemoting(mx, pms)
+		case collectorNetFrameworkCLRSecurity:
+			w.collectNetFrameworkCLRSecurity(mx, pms)
 		}
 	}
 }
