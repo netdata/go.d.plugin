@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -12,7 +12,7 @@ const (
 	metricThermalzoneTemperatureCelsius = "windows_thermalzone_temperature_celsius"
 )
 
-func (w *WMI) collectThermalzone(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectThermalzone(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	for _, pm := range pms.FindByName(metricThermalzoneTemperatureCelsius) {
 		if name := cleanZoneName(pm.Labels.Get("name")); name != "" {

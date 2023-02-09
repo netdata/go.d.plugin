@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
@@ -15,7 +15,7 @@ const (
 	metricTCPConnectionSegmentsSent          = "windows_tcp_segments_sent_total"
 )
 
-func (w *WMI) collectTCP(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectTCP(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorTCP] {
 		w.cache.collection[collectorTCP] = true
 		w.addTCPCharts()

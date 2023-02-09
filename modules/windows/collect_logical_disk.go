@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -19,7 +19,7 @@ const (
 	metricLDWriteLatencyTotal = "windows_logical_disk_write_latency_seconds_total"
 )
 
-func (w *WMI) collectLogicalDisk(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectLogicalDisk(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "logical_disk_"
 	for _, pm := range pms.FindByName(metricLDReadBytesTotal) {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"errors"
@@ -10,17 +10,17 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (w *WMI) validateConfig() error {
+func (w *Windows) validateConfig() error {
 	if w.URL == "" {
 		return errors.New("'url' is not set")
 	}
 	return nil
 }
 
-func (w *WMI) initHTTPClient() (*http.Client, error) {
+func (w *Windows) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(w.Client)
 }
 
-func (w *WMI) initPrometheusClient(client *http.Client) (prometheus.Prometheus, error) {
+func (w *Windows) initPrometheusClient(client *http.Client) (prometheus.Prometheus, error) {
 	return prometheus.New(client, w.Request), nil
 }

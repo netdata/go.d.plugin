@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -24,7 +24,7 @@ const (
 	metricMemStandbyCacheReserveBytes        = "windows_memory_standby_cache_reserve_bytes"
 )
 
-func (w *WMI) collectMemory(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectMemory(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorMemory] {
 		w.cache.collection[collectorMemory] = true
 		w.addMemoryCharts()

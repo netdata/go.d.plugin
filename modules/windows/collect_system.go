@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"time"
@@ -13,7 +13,7 @@ const (
 	metricSysThreads      = "windows_system_threads"
 )
 
-func (w *WMI) collectSystem(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectSystem(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorSystem] {
 		w.cache.collection[collectorSystem] = true
 		w.addSystemCharts()

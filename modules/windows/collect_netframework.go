@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -17,7 +17,7 @@ const (
 	metricNetFrameworkCLRExceptionsThrowCatchDepthTotal = "windows_netframework_clrexceptions_throw_to_catch_depth_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRExceptions(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRExceptions(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRExceptionsThrownTotal) {
@@ -69,7 +69,7 @@ const (
 	metricNetFrameworkCLRInteropStubsCreatedTotal        = "windows_netframework_clrinterop_interop_stubs_created_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRInterop(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRInterop(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRInteropComCallableWrappersTotal) {
@@ -115,7 +115,7 @@ const (
 	metricNetFrameworkCLRJITILBytesTotal          = "windows_netframework_clrjit_jit_il_bytes_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRJIT(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRJIT(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRJITMethodsTotal) {
@@ -170,7 +170,7 @@ const (
 	metricNetFrameworkCLRLoadingClassLoadFailuresTotal = "windows_netframework_clrloading_class_load_failures_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRLoading(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRLoading(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLoadingLoaderHeapSizeBytes) {
@@ -238,7 +238,7 @@ const (
 	metricNetFrameworkCLRLocksAndThreadsContentionsTotal       = "windows_netframework_clrlocksandthreads_contentions_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRLocksAndThreads(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRLocksAndThreads(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRLocksAndThreadsQueueLengthTotal) {
@@ -306,7 +306,7 @@ const (
 	metricNetFrameworkCLRMemoryGCTimePercent         = "windows_netframework_clrmemory_gc_time_percent"
 )
 
-func (w *WMI) collectNetFrameworkCLRMemory(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRMemory(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRMemoryAllocatedBytesTotal) {
@@ -417,7 +417,7 @@ const (
 	metricNetFrameworkCLRRemotingRemoteCallsTotal          = "windows_netframework_clrremoting_remote_calls_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRRemoting(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRRemoting(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRRemotingChannelsTotal) {
@@ -484,7 +484,7 @@ const (
 	metricNetFrameworkCLRSecurityRuntimeChecksTotal  = "windows_netframework_clrsecurity_runtime_checks_total"
 )
 
-func (w *WMI) collectNetFrameworkCLRSecurity(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNetFrameworkCLRSecurity(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
 	for _, pm := range pms.FindByName(metricNetFrameworkCLRSecurityLinkTimeChecksTotal) {

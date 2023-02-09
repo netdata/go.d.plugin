@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import "github.com/netdata/go.d.plugin/pkg/prometheus"
 
@@ -23,7 +23,7 @@ const (
 	metricADLDAPSearchesTotal                         = "windows_ad_ldap_searches_total"
 )
 
-func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectAD(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorAD] {
 		w.cache.collection[collectorAD] = true
 		w.addADCharts()

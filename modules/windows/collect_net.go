@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -19,7 +19,7 @@ const (
 	metricNetPacketsOutboundErrorsTotal    = "windows_net_packets_outbound_errors_total"
 )
 
-func (w *WMI) collectNet(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectNet(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "net_nic_"
 	for _, pm := range pms.FindByName(metricNetBytesReceivedTotal) {

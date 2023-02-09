@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"fmt"
@@ -29,10 +29,10 @@ func Test_TestData(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	assert.IsType(t, (*WMI)(nil), New())
+	assert.IsType(t, (*Windows)(nil), New())
 }
 
-func TestWMI_Init(t *testing.T) {
+func TestWindows_Init(t *testing.T) {
 	tests := map[string]struct {
 		config   Config
 		wantFail bool
@@ -53,71 +53,71 @@ func TestWMI_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi := New()
-			wmi.Config = test.config
+			win := New()
+			win.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, wmi.Init())
+				assert.False(t, win.Init())
 			} else {
-				assert.True(t, wmi.Init())
+				assert.True(t, win.Init())
 			}
 		})
 	}
 }
 
-func TestWMI_Check(t *testing.T) {
+func TestWindows_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (wmi *WMI, cleanup func())
+		prepare  func() (win *Windows, cleanup func())
 		wantFail bool
 	}{
 		"success on valid response v0.20.0": {
-			prepare: prepareWMIv0200,
+			prepare: prepareWindowsV0200,
 		},
 		"fails if endpoint returns invalid data": {
 			wantFail: true,
-			prepare:  prepareWMIReturnsInvalidData,
+			prepare:  prepareWindowsReturnsInvalidData,
 		},
 		"fails on connection refused": {
 			wantFail: true,
-			prepare:  prepareWMIConnectionRefused,
+			prepare:  prepareWindowsConnectionRefused,
 		},
 		"fails on 404 response": {
 			wantFail: true,
-			prepare:  prepareWMIResponse404,
+			prepare:  prepareWindowsResponse404,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi, cleanup := test.prepare()
+			win, cleanup := test.prepare()
 			defer cleanup()
 
-			require.True(t, wmi.Init())
+			require.True(t, win.Init())
 
 			if test.wantFail {
-				assert.False(t, wmi.Check())
+				assert.False(t, win.Check())
 			} else {
-				assert.True(t, wmi.Check())
+				assert.True(t, win.Check())
 			}
 		})
 	}
 }
 
-func TestWMI_Charts(t *testing.T) {
+func TestWindows_Charts(t *testing.T) {
 	assert.NotNil(t, New().Charts())
 }
 
-func TestWMI_Cleanup(t *testing.T) {
+func TestWindows_Cleanup(t *testing.T) {
 	assert.NotPanics(t, New().Cleanup)
 }
 
-func TestWMI_Collect(t *testing.T) {
+func TestWindows_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (wmi *WMI, cleanup func())
+		prepare       func() (win *Windows, cleanup func())
 		wantCollected map[string]int64
 	}{
 		"success on valid response v0.20.0": {
-			prepare: prepareWMIv0200,
+			prepare: prepareWindowsV0200,
 			wantCollected: map[string]int64{
 				"ad_binds_total":                                                                                184,
 				"ad_directory_service_threads":                                                                  0,
@@ -611,24 +611,24 @@ func TestWMI_Collect(t *testing.T) {
 			},
 		},
 		"fails if endpoint returns invalid data": {
-			prepare: prepareWMIReturnsInvalidData,
+			prepare: prepareWindowsReturnsInvalidData,
 		},
 		"fails on connection refused": {
-			prepare: prepareWMIConnectionRefused,
+			prepare: prepareWindowsConnectionRefused,
 		},
 		"fails on 404 response": {
-			prepare: prepareWMIResponse404,
+			prepare: prepareWindowsResponse404,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi, cleanup := test.prepare()
+			win, cleanup := test.prepare()
 			defer cleanup()
 
-			require.True(t, wmi.Init())
+			require.True(t, win.Init())
 
-			mx := wmi.Collect()
+			mx := win.Collect()
 
 			if mx != nil && test.wantCollected != nil {
 				mx["system_up_time"] = test.wantCollected["system_up_time"]
@@ -636,18 +636,18 @@ func TestWMI_Collect(t *testing.T) {
 
 			assert.Equal(t, test.wantCollected, mx)
 			if len(test.wantCollected) > 0 {
-				testCharts(t, wmi, mx)
+				testCharts(t, win, mx)
 			}
 		})
 	}
 }
 
-func testCharts(t *testing.T, wmi *WMI, mx map[string]int64) {
-	ensureChartsDimsCreated(t, wmi)
-	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, mx)
+func testCharts(t *testing.T, win *Windows, mx map[string]int64) {
+	ensureChartsDimsCreated(t, win)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, win, mx)
 }
 
-func ensureChartsDimsCreated(t *testing.T, w *WMI) {
+func ensureChartsDimsCreated(t *testing.T, w *Windows) {
 	for _, chart := range cpuCharts {
 		if w.cache.collection[collectorCPU] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
@@ -842,7 +842,7 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 	}
 }
 
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, mx map[string]int64) {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *Windows, mx map[string]int64) {
 	for _, chart := range *w.Charts() {
 		for _, dim := range chart.Dims {
 			_, ok := mx[dim.ID]
@@ -855,41 +855,41 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, mx map[string]
 	}
 }
 
-func prepareWMIv0200() (wmi *WMI, cleanup func()) {
+func prepareWindowsV0200() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write(v0200Metrics)
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }
 
-func prepareWMIReturnsInvalidData() (wmi *WMI, cleanup func()) {
+func prepareWindowsReturnsInvalidData() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }
 
-func prepareWMIConnectionRefused() (wmi *WMI, cleanup func()) {
-	wmi = New()
-	wmi.URL = "http://127.0.0.1:38001"
-	return wmi, func() {}
+func prepareWindowsConnectionRefused() (win *Windows, cleanup func()) {
+	win = New()
+	win.URL = "http://127.0.0.1:38001"
+	return win, func() {}
 }
 
-func prepareWMIResponse404() (wmi *WMI, cleanup func()) {
+func prepareWindowsResponse404() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -13,7 +13,7 @@ const (
 	metricServiceStatus = "windows_service_status"
 )
 
-func (w *WMI) collectService(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectService(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "service_"
 	for _, pm := range pms.FindByName(metricServiceState) {

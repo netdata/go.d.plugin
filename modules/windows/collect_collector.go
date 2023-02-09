@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -11,7 +11,7 @@ const (
 	metricCollectorSuccess  = "windows_exporter_collector_success"
 )
 
-func (w *WMI) collectCollector(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectCollector(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "collector_"
 	for _, pm := range pms.FindByName(metricCollectorDuration) {

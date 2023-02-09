@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -19,7 +19,7 @@ const (
 	metricProcessCPUHandles      = "windows_process_handles"
 )
 
-func (w *WMI) collectProcess(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectProcess(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorProcess] {
 		w.cache.collection[collectorProcess] = true
 		w.addProcessesCharts()

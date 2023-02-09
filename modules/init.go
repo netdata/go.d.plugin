@@ -78,8 +78,8 @@ import (
 	_ "github.com/netdata/go.d.plugin/modules/vsphere"
 	_ "github.com/netdata/go.d.plugin/modules/weblog"
 	_ "github.com/netdata/go.d.plugin/modules/whoisquery"
+	_ "github.com/netdata/go.d.plugin/modules/windows"
 	_ "github.com/netdata/go.d.plugin/modules/wireguard"
-	_ "github.com/netdata/go.d.plugin/modules/wmi"
 	_ "github.com/netdata/go.d.plugin/modules/x509check"
 	_ "github.com/netdata/go.d.plugin/modules/zookeeper"
 )

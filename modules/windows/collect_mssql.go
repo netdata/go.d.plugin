@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -40,7 +40,7 @@ const (
 	metricMSSQLDatabaseWriteTransactions       = "windows_mssql_databases_write_transactions"
 )
 
-func (w *WMI) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 	instances := make(map[string]bool)
 	dbs := make(map[string]bool)
 	px := "mssql_instance_"

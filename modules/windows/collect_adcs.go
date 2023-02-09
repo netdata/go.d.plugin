@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -24,7 +24,7 @@ const (
 	metricADCSSignedCertTimestampListProcessingTime = "windows_adcs_signed_certificate_timestamp_list_processing_time_seconds"
 )
 
-func (w *WMI) collectADCS(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectADCS(mx map[string]int64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricADCSRequestsTotal,
 		metricADCSFailedRequestsTotal,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"net/http"
@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	module.Register("wmi", module.Creator{
+	module.Register("windows", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
@@ -20,8 +20,8 @@ func init() {
 	})
 }
 
-func New() *WMI {
-	return &WMI{
+func New() *Windows {
+	return &Windows{
 		Config: Config{
 			HTTP: web.HTTP{
 				Client: web.Client{
@@ -60,7 +60,7 @@ type Config struct {
 }
 
 type (
-	WMI struct {
+	Windows struct {
 		module.Base
 		Config `yaml:",inline"`
 
@@ -97,7 +97,7 @@ type (
 	}
 )
 
-func (w *WMI) Init() bool {
+func (w *Windows) Init() bool {
 	if err := w.validateConfig(); err != nil {
 		w.Errorf("config validation: %v", err)
 		return false
@@ -120,15 +120,15 @@ func (w *WMI) Init() bool {
 	return true
 }
 
-func (w *WMI) Check() bool {
+func (w *Windows) Check() bool {
 	return len(w.Collect()) > 0
 }
 
-func (w *WMI) Charts() *module.Charts {
+func (w *Windows) Charts() *module.Charts {
 	return w.charts
 }
 
-func (w *WMI) Collect() map[string]int64 {
+func (w *Windows) Collect() map[string]int64 {
 	ms, err := w.collect()
 	if err != nil {
 		w.Error(err)
@@ -140,7 +140,7 @@ func (w *WMI) Collect() map[string]int64 {
 	return ms
 }
 
-func (w *WMI) Cleanup() {
+func (w *Windows) Cleanup() {
 	if w.httpClient != nil {
 		w.httpClient.CloseIdleConnections()
 	}

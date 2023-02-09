@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -102,7 +102,7 @@ var adfsMetrics = []string{
 	metricADFSWSTrustTokenRequestsSuccessTotal,
 }
 
-func (w *WMI) collectADFS(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectADFS(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorADFS] {
 		w.cache.collection[collectorADFS] = true
 		w.addADFSCharts()

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -13,7 +13,7 @@ const (
 	metricCPUCStateTotal     = "windows_cpu_cstate_seconds_total"
 )
 
-func (w *WMI) collectCPU(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectCPU(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorCPU] {
 		w.cache.collection[collectorCPU] = true
 		w.addCPUCharts()

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package wmi
+package windows
 
 import (
 	"strings"
@@ -27,7 +27,7 @@ const (
 	metricIISNotFoundErrorsTotal           = "windows_iis_not_found_errors_total"
 )
 
-func (w *WMI) collectIIS(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectIIS(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "iis_website_"
 	for _, pm := range pms.FindByName(metricIISCurrentAnonymousUsers) {
