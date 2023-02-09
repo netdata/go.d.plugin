@@ -10,7 +10,7 @@ const (
 	metricLogonType = "windows_logon_logon_type"
 )
 
-func (w *WMI) collectLogon(mx map[string]int64, pms prometheus.Series) {
+func (w *WINDOWS) collectLogon(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorLogon] {
 		w.cache.collection[collectorLogon] = true
 		w.addLogonCharts()

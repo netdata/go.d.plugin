@@ -29,7 +29,7 @@ func Test_TestData(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	assert.IsType(t, (*WMI)(nil), New())
+	assert.IsType(t, (*WINDOWS)(nil), New())
 }
 
 func TestWMI_Init(t *testing.T) {
@@ -67,7 +67,7 @@ func TestWMI_Init(t *testing.T) {
 
 func TestWMI_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (wmi *WMI, cleanup func())
+		prepare  func() (wmi *WINDOWS, cleanup func())
 		wantFail bool
 	}{
 		"success on valid response v0.20.0": {
@@ -113,7 +113,7 @@ func TestWMI_Cleanup(t *testing.T) {
 
 func TestWMI_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (wmi *WMI, cleanup func())
+		prepare       func() (wmi *WINDOWS, cleanup func())
 		wantCollected map[string]int64
 	}{
 		"success on valid response v0.20.0": {
@@ -642,12 +642,12 @@ func TestWMI_Collect(t *testing.T) {
 	}
 }
 
-func testCharts(t *testing.T, wmi *WMI, mx map[string]int64) {
+func testCharts(t *testing.T, wmi *WINDOWS, mx map[string]int64) {
 	ensureChartsDimsCreated(t, wmi)
 	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, mx)
 }
 
-func ensureChartsDimsCreated(t *testing.T, w *WMI) {
+func ensureChartsDimsCreated(t *testing.T, w *WINDOWS) {
 	for _, chart := range cpuCharts {
 		if w.cache.collection[collectorCPU] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
@@ -842,7 +842,7 @@ func ensureChartsDimsCreated(t *testing.T, w *WMI) {
 	}
 }
 
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, mx map[string]int64) {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WINDOWS, mx map[string]int64) {
 	for _, chart := range *w.Charts() {
 		for _, dim := range chart.Dims {
 			_, ok := mx[dim.ID]
@@ -855,7 +855,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WMI, mx map[string]
 	}
 }
 
-func prepareWMIv0200() (wmi *WMI, cleanup func()) {
+func prepareWMIv0200() (wmi *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write(v0200Metrics)
@@ -866,7 +866,7 @@ func prepareWMIv0200() (wmi *WMI, cleanup func()) {
 	return wmi, ts.Close
 }
 
-func prepareWMIReturnsInvalidData() (wmi *WMI, cleanup func()) {
+func prepareWMIReturnsInvalidData() (wmi *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
@@ -877,13 +877,13 @@ func prepareWMIReturnsInvalidData() (wmi *WMI, cleanup func()) {
 	return wmi, ts.Close
 }
 
-func prepareWMIConnectionRefused() (wmi *WMI, cleanup func()) {
+func prepareWMIConnectionRefused() (wmi *WINDOWS, cleanup func()) {
 	wmi = New()
 	wmi.URL = "http://127.0.0.1:38001"
 	return wmi, func() {}
 }
 
-func prepareWMIResponse404() (wmi *WMI, cleanup func()) {
+func prepareWMIResponse404() (wmi *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)

@@ -10,17 +10,17 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
-func (w *WMI) validateConfig() error {
+func (w *WINDOWS) validateConfig() error {
 	if w.URL == "" {
 		return errors.New("'url' is not set")
 	}
 	return nil
 }
 
-func (w *WMI) initHTTPClient() (*http.Client, error) {
+func (w *WINDOWS) initHTTPClient() (*http.Client, error) {
 	return web.NewHTTPClient(w.Client)
 }
 
-func (w *WMI) initPrometheusClient(client *http.Client) (prometheus.Prometheus, error) {
+func (w *WINDOWS) initPrometheusClient(client *http.Client) (prometheus.Prometheus, error) {
 	return prometheus.New(client, w.Request), nil
 }

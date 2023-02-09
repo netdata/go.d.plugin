@@ -19,7 +19,7 @@ const (
 	metricProcessCPUHandles      = "windows_process_handles"
 )
 
-func (w *WMI) collectProcess(mx map[string]int64, pms prometheus.Series) {
+func (w *WINDOWS) collectProcess(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorProcess] {
 		w.cache.collection[collectorProcess] = true
 		w.addProcessesCharts()

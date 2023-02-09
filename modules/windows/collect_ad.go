@@ -23,7 +23,7 @@ const (
 	metricADLDAPSearchesTotal                         = "windows_ad_ldap_searches_total"
 )
 
-func (w *WMI) collectAD(mx map[string]int64, pms prometheus.Series) {
+func (w *WINDOWS) collectAD(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorAD] {
 		w.cache.collection[collectorAD] = true
 		w.addADCharts()

@@ -20,8 +20,8 @@ func init() {
 	})
 }
 
-func New() *WMI {
-	return &WMI{
+func New() *WINDOWS {
+	return &WINDOWS{
 		Config: Config{
 			HTTP: web.HTTP{
 				Client: web.Client{
@@ -60,7 +60,7 @@ type Config struct {
 }
 
 type (
-	WMI struct {
+	WINDOWS struct {
 		module.Base
 		Config `yaml:",inline"`
 
@@ -97,7 +97,7 @@ type (
 	}
 )
 
-func (w *WMI) Init() bool {
+func (w *WINDOWS) Init() bool {
 	if err := w.validateConfig(); err != nil {
 		w.Errorf("config validation: %v", err)
 		return false
@@ -120,15 +120,15 @@ func (w *WMI) Init() bool {
 	return true
 }
 
-func (w *WMI) Check() bool {
+func (w *WINDOWS) Check() bool {
 	return len(w.Collect()) > 0
 }
 
-func (w *WMI) Charts() *module.Charts {
+func (w *WINDOWS) Charts() *module.Charts {
 	return w.charts
 }
 
-func (w *WMI) Collect() map[string]int64 {
+func (w *WINDOWS) Collect() map[string]int64 {
 	ms, err := w.collect()
 	if err != nil {
 		w.Error(err)
@@ -140,7 +140,7 @@ func (w *WMI) Collect() map[string]int64 {
 	return ms
 }
 
-func (w *WMI) Cleanup() {
+func (w *WINDOWS) Cleanup() {
 	if w.httpClient != nil {
 		w.httpClient.CloseIdleConnections()
 	}

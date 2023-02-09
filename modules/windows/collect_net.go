@@ -19,7 +19,7 @@ const (
 	metricNetPacketsOutboundErrorsTotal    = "windows_net_packets_outbound_errors_total"
 )
 
-func (w *WMI) collectNet(mx map[string]int64, pms prometheus.Series) {
+func (w *WINDOWS) collectNet(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "net_nic_"
 	for _, pm := range pms.FindByName(metricNetBytesReceivedTotal) {

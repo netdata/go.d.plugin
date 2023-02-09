@@ -24,7 +24,7 @@ const (
 	metricADCSSignedCertTimestampListProcessingTime = "windows_adcs_signed_certificate_timestamp_list_processing_time_seconds"
 )
 
-func (w *WMI) collectADCS(mx map[string]int64, pms prometheus.Series) {
+func (w *WINDOWS) collectADCS(mx map[string]int64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricADCSRequestsTotal,
 		metricADCSFailedRequestsTotal,
