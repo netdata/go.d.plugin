@@ -53,13 +53,13 @@ func TestWindows_Init(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi := New()
-			wmi.Config = test.config
+			win := New()
+			win.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, wmi.Init())
+				assert.False(t, win.Init())
 			} else {
-				assert.True(t, wmi.Init())
+				assert.True(t, win.Init())
 			}
 		})
 	}
@@ -67,7 +67,7 @@ func TestWindows_Init(t *testing.T) {
 
 func TestWindows_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (wmi *WINDOWS, cleanup func())
+		prepare  func() (win *WINDOWS, cleanup func())
 		wantFail bool
 	}{
 		"success on valid response v0.20.0": {
@@ -89,15 +89,15 @@ func TestWindows_Check(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi, cleanup := test.prepare()
+			win, cleanup := test.prepare()
 			defer cleanup()
 
-			require.True(t, wmi.Init())
+			require.True(t, win.Init())
 
 			if test.wantFail {
-				assert.False(t, wmi.Check())
+				assert.False(t, win.Check())
 			} else {
-				assert.True(t, wmi.Check())
+				assert.True(t, win.Check())
 			}
 		})
 	}
@@ -113,7 +113,7 @@ func TestWindows_Cleanup(t *testing.T) {
 
 func TestWindows_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (wmi *WINDOWS, cleanup func())
+		prepare       func() (win *WINDOWS, cleanup func())
 		wantCollected map[string]int64
 	}{
 		"success on valid response v0.20.0": {
@@ -623,12 +623,12 @@ func TestWindows_Collect(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			wmi, cleanup := test.prepare()
+			win, cleanup := test.prepare()
 			defer cleanup()
 
-			require.True(t, wmi.Init())
+			require.True(t, win.Init())
 
-			mx := wmi.Collect()
+			mx := win.Collect()
 
 			if mx != nil && test.wantCollected != nil {
 				mx["system_up_time"] = test.wantCollected["system_up_time"]
@@ -636,15 +636,15 @@ func TestWindows_Collect(t *testing.T) {
 
 			assert.Equal(t, test.wantCollected, mx)
 			if len(test.wantCollected) > 0 {
-				testCharts(t, wmi, mx)
+				testCharts(t, win, mx)
 			}
 		})
 	}
 }
 
-func testCharts(t *testing.T, wmi *WINDOWS, mx map[string]int64) {
-	ensureChartsDimsCreated(t, wmi)
-	ensureCollectedHasAllChartsDimsVarsIDs(t, wmi, mx)
+func testCharts(t *testing.T, win *WINDOWS, mx map[string]int64) {
+	ensureChartsDimsCreated(t, win)
+	ensureCollectedHasAllChartsDimsVarsIDs(t, win, mx)
 }
 
 func ensureChartsDimsCreated(t *testing.T, w *WINDOWS) {
@@ -855,41 +855,41 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WINDOWS, mx map[str
 	}
 }
 
-func prepareWindowsV0200() (wmi *WINDOWS, cleanup func()) {
+func prepareWindowsV0200() (win *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write(v0200Metrics)
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }
 
-func prepareWindowsReturnsInvalidData() (wmi *WINDOWS, cleanup func()) {
+func prepareWindowsReturnsInvalidData() (win *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }
 
-func prepareWindowsConnectionRefused() (wmi *WINDOWS, cleanup func()) {
-	wmi = New()
-	wmi.URL = "http://127.0.0.1:38001"
-	return wmi, func() {}
+func prepareWindowsConnectionRefused() (win *WINDOWS, cleanup func()) {
+	win = New()
+	win.URL = "http://127.0.0.1:38001"
+	return win, func() {}
 }
 
-func prepareWindowsResponse404() (wmi *WINDOWS, cleanup func()) {
+func prepareWindowsResponse404() (win *WINDOWS, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
 
-	wmi = New()
-	wmi.URL = ts.URL
-	return wmi, ts.Close
+	win = New()
+	win.URL = ts.URL
+	return win, ts.Close
 }
