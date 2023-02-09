@@ -16,7 +16,7 @@ const (
 	metricOSVisibleMemoryBytes      = "windows_os_visible_memory_bytes"
 )
 
-func (w *WINDOWS) collectOS(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectOS(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorOS] {
 		w.cache.collection[collectorOS] = true
 		w.addOSCharts()

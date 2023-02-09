@@ -29,7 +29,7 @@ func Test_TestData(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	assert.IsType(t, (*WINDOWS)(nil), New())
+	assert.IsType(t, (*Windows)(nil), New())
 }
 
 func TestWindows_Init(t *testing.T) {
@@ -67,7 +67,7 @@ func TestWindows_Init(t *testing.T) {
 
 func TestWindows_Check(t *testing.T) {
 	tests := map[string]struct {
-		prepare  func() (win *WINDOWS, cleanup func())
+		prepare  func() (win *Windows, cleanup func())
 		wantFail bool
 	}{
 		"success on valid response v0.20.0": {
@@ -113,7 +113,7 @@ func TestWindows_Cleanup(t *testing.T) {
 
 func TestWindows_Collect(t *testing.T) {
 	tests := map[string]struct {
-		prepare       func() (win *WINDOWS, cleanup func())
+		prepare       func() (win *Windows, cleanup func())
 		wantCollected map[string]int64
 	}{
 		"success on valid response v0.20.0": {
@@ -642,12 +642,12 @@ func TestWindows_Collect(t *testing.T) {
 	}
 }
 
-func testCharts(t *testing.T, win *WINDOWS, mx map[string]int64) {
+func testCharts(t *testing.T, win *Windows, mx map[string]int64) {
 	ensureChartsDimsCreated(t, win)
 	ensureCollectedHasAllChartsDimsVarsIDs(t, win, mx)
 }
 
-func ensureChartsDimsCreated(t *testing.T, w *WINDOWS) {
+func ensureChartsDimsCreated(t *testing.T, w *Windows) {
 	for _, chart := range cpuCharts {
 		if w.cache.collection[collectorCPU] {
 			assert.Truef(t, w.Charts().Has(chart.ID), "chart '%s' not created", chart.ID)
@@ -842,7 +842,7 @@ func ensureChartsDimsCreated(t *testing.T, w *WINDOWS) {
 	}
 }
 
-func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WINDOWS, mx map[string]int64) {
+func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *Windows, mx map[string]int64) {
 	for _, chart := range *w.Charts() {
 		for _, dim := range chart.Dims {
 			_, ok := mx[dim.ID]
@@ -855,7 +855,7 @@ func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, w *WINDOWS, mx map[str
 	}
 }
 
-func prepareWindowsV0200() (win *WINDOWS, cleanup func()) {
+func prepareWindowsV0200() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write(v0200Metrics)
@@ -866,7 +866,7 @@ func prepareWindowsV0200() (win *WINDOWS, cleanup func()) {
 	return win, ts.Close
 }
 
-func prepareWindowsReturnsInvalidData() (win *WINDOWS, cleanup func()) {
+func prepareWindowsReturnsInvalidData() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("hello and\n goodbye"))
@@ -877,13 +877,13 @@ func prepareWindowsReturnsInvalidData() (win *WINDOWS, cleanup func()) {
 	return win, ts.Close
 }
 
-func prepareWindowsConnectionRefused() (win *WINDOWS, cleanup func()) {
+func prepareWindowsConnectionRefused() (win *Windows, cleanup func()) {
 	win = New()
 	win.URL = "http://127.0.0.1:38001"
 	return win, func() {}
 }
 
-func prepareWindowsResponse404() (win *WINDOWS, cleanup func()) {
+func prepareWindowsResponse404() (win *Windows, cleanup func()) {
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)

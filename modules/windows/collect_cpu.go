@@ -13,7 +13,7 @@ const (
 	metricCPUCStateTotal     = "windows_cpu_cstate_seconds_total"
 )
 
-func (w *WINDOWS) collectCPU(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectCPU(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorCPU] {
 		w.cache.collection[collectorCPU] = true
 		w.addCPUCharts()

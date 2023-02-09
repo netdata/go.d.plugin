@@ -40,7 +40,7 @@ const (
 	metricMSSQLDatabaseWriteTransactions       = "windows_mssql_databases_write_transactions"
 )
 
-func (w *WINDOWS) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectMSSQL(mx map[string]int64, pms prometheus.Series) {
 	instances := make(map[string]bool)
 	dbs := make(map[string]bool)
 	px := "mssql_instance_"
