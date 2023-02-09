@@ -284,6 +284,49 @@ windows_adfs_wsfed_token_requests_success_total 0
 # HELP windows_adfs_wstrust_token_requests_success_total Total number of successful RP tokens issued over WS-Trust protocol
 # TYPE windows_adfs_wstrust_token_requests_success_total counter
 windows_adfs_wstrust_token_requests_success_total 0
+# HELP windows_ad_atq_average_request_latency 
+# TYPE windows_ad_atq_average_request_latency gauge
+windows_ad_atq_average_request_latency 0
+# HELP windows_ad_atq_outstanding_requests 
+# TYPE windows_ad_atq_outstanding_requests gauge
+windows_ad_atq_outstanding_requests 0
+# HELP windows_ad_database_operations_total 
+# TYPE windows_ad_database_operations_total counter
+windows_ad_database_operations_total{operation="add"} 1
+windows_ad_database_operations_total{operation="delete"} 0
+windows_ad_database_operations_total{operation="modify"} 30
+windows_ad_database_operations_total{operation="recycle"} 0
+# HELP windows_ad_directory_operations_total 
+# TYPE windows_ad_directory_operations_total counter
+windows_ad_directory_operations_total{operation="read",origin="directory_service_api"} 0
+windows_ad_directory_operations_total{operation="read",origin="knowledge_consistency_checker"} 60
+windows_ad_directory_operations_total{operation="read",origin="local_security_authority"} 20
+windows_ad_directory_operations_total{operation="read",origin="name_service_provider_interface"} 0
+windows_ad_directory_operations_total{operation="read",origin="other"} 50
+windows_ad_directory_operations_total{operation="read",origin="replication_agent"} 0
+windows_ad_directory_operations_total{operation="read",origin="security_account_manager"} 596
+windows_ad_directory_operations_total{operation="search",origin="directory_service_api"} 101
+windows_ad_directory_operations_total{operation="search",origin="knowledge_consistency_checker"} 21
+windows_ad_directory_operations_total{operation="search",origin="ldap"} 606
+windows_ad_directory_operations_total{operation="search",origin="local_security_authority"} 9
+windows_ad_directory_operations_total{operation="search",origin="name_service_provider_interface"} 0
+windows_ad_directory_operations_total{operation="search",origin="other"} 56
+windows_ad_directory_operations_total{operation="search",origin="replication_agent"} 0
+windows_ad_directory_operations_total{operation="search",origin="security_account_manager"} 38
+windows_ad_directory_operations_total{operation="write",origin="directory_service_api"} 3
+windows_ad_directory_operations_total{operation="write",origin="knowledge_consistency_checker"} 0
+windows_ad_directory_operations_total{operation="write",origin="ldap"} 1
+windows_ad_directory_operations_total{operation="write",origin="local_security_authority"} 0
+windows_ad_directory_operations_total{operation="write",origin="name_service_provider_interface"} 0
+windows_ad_directory_operations_total{operation="write",origin="other"} 1
+windows_ad_directory_operations_total{operation="write",origin="replication_agent"} 0
+windows_ad_directory_operations_total{operation="write",origin="security_account_manager"} 26
+# HELP windows_ad_name_cache_lookups_total 
+# TYPE windows_ad_name_cache_lookups_total counter
+windows_ad_name_cache_lookups_total 53046
+# HELP windows_ad_name_cache_hits_total 
+# TYPE windows_ad_name_cache_hits_total counter
+windows_ad_name_cache_hits_total 41161
 # HELP windows_ad_replication_inbound_objects_filtered_total
 # TYPE windows_ad_replication_inbound_objects_filtered_total counter
 windows_ad_replication_inbound_objects_filtered_total 0
