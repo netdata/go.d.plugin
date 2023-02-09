@@ -120,6 +120,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 
 	for name := range enabled {
 		// TODO: properly handle module renaming
+		// We need to announce this change in Netdata v1.39.0 release notes and then remove this workaround.
 		// This is just a quick fix for wmi=>windows. We need to prefer user wmi.conf over windows.conf
 		// 2nd part of this fix is in /agent/job/discovery/file/parse.go parseStaticFormat()
 		if name == "windows" {
