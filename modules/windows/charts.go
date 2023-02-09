@@ -276,7 +276,7 @@ var (
 		Title:    "Total CPU Utilization (all cores)",
 		Units:    "percentage",
 		Fam:      "cpu",
-		Ctx:      "wmi.cpu_utilization_total",
+		Ctx:      "windows.cpu_utilization_total",
 		Type:     module.Stacked,
 		Priority: prioCPUUtil,
 		Dims: module.Dims{
@@ -302,7 +302,7 @@ var (
 		Title:    "Core CPU Utilization",
 		Units:    "percentage",
 		Fam:      "cpu",
-		Ctx:      "wmi.cpu_core_utilization",
+		Ctx:      "windows.cpu_core_utilization",
 		Type:     module.Stacked,
 		Priority: prioCPUCoreUtil,
 		Dims: module.Dims{
@@ -318,7 +318,7 @@ var (
 		Title:    "Received and Serviced Hardware Interrupts",
 		Units:    "interrupts/s",
 		Fam:      "cpu",
-		Ctx:      "wmi.cpu_core_interrupts",
+		Ctx:      "windows.cpu_core_interrupts",
 		Priority: prioCPUInterrupts,
 		Dims: module.Dims{
 			{ID: "cpu_core_%s_interrupts", Name: "interrupts", Algo: module.Incremental},
@@ -329,7 +329,7 @@ var (
 		Title:    "Received and Serviced Deferred Procedure Calls (DPC)",
 		Units:    "dpc/s",
 		Fam:      "cpu",
-		Ctx:      "wmi.cpu_core_dpcs",
+		Ctx:      "windows.cpu_core_dpcs",
 		Priority: prioCPUDPCs,
 		Dims: module.Dims{
 			{ID: "cpu_core_%s_dpcs", Name: "dpcs", Algo: module.Incremental},
@@ -340,7 +340,7 @@ var (
 		Title:    "Core Time Spent in Low-Power Idle State",
 		Units:    "percentage",
 		Fam:      "cpu",
-		Ctx:      "wmi.cpu_core_cstate",
+		Ctx:      "windows.cpu_core_cstate",
 		Type:     module.Stacked,
 		Priority: prioCPUCoreCState,
 		Dims: module.Dims{
@@ -368,7 +368,7 @@ var (
 		Title:    "Memory Utilization",
 		Units:    "bytes",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_utilization",
+		Ctx:      "windows.memory_utilization",
 		Type:     module.Stacked,
 		Priority: prioMemUtil,
 		Dims: module.Dims{
@@ -381,7 +381,7 @@ var (
 		Title:    "Memory Page Faults",
 		Units:    "pgfaults/s",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_page_faults",
+		Ctx:      "windows.memory_page_faults",
 		Priority: prioMemPageFaults,
 		Dims: module.Dims{
 			{ID: "memory_page_faults_total", Name: "page_faults", Algo: module.Incremental},
@@ -392,7 +392,7 @@ var (
 		Title:    "Swap Utilization",
 		Units:    "bytes",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_utilization",
+		Ctx:      "windows.memory_swap_utilization",
 		Type:     module.Stacked,
 		Priority: prioMemSwapUtil,
 		Dims: module.Dims{
@@ -408,7 +408,7 @@ var (
 		Title:    "Swap Operations",
 		Units:    "operations/s",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_operations",
+		Ctx:      "windows.memory_swap_operations",
 		Type:     module.Area,
 		Priority: prioMemSwapOperations,
 		Dims: module.Dims{
@@ -421,7 +421,7 @@ var (
 		Title:    "Swap Pages",
 		Units:    "pages/s",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_swap_pages",
+		Ctx:      "windows.memory_swap_pages",
 		Priority: prioMemSwapPages,
 		Dims: module.Dims{
 			{ID: "memory_swap_pages_read_total", Name: "read", Algo: module.Incremental},
@@ -433,7 +433,7 @@ var (
 		Title:    "Cached",
 		Units:    "bytes",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_cached",
+		Ctx:      "windows.memory_cached",
 		Type:     module.Area,
 		Priority: prioMemCache,
 		Dims: module.Dims{
@@ -445,7 +445,7 @@ var (
 		Title:    "Cache Faults",
 		Units:    "faults/s",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_cache_faults",
+		Ctx:      "windows.memory_cache_faults",
 		Priority: prioMemCacheFaults,
 		Dims: module.Dims{
 			{ID: "memory_cache_faults_total", Name: "cache_faults", Algo: module.Incremental},
@@ -456,7 +456,7 @@ var (
 		Title:    "System Memory Pool",
 		Units:    "bytes",
 		Fam:      "mem",
-		Ctx:      "wmi.memory_system_pool",
+		Ctx:      "windows.memory_system_pool",
 		Type:     module.Stacked,
 		Priority: prioMemSystemPool,
 		Dims: module.Dims{
@@ -479,7 +479,7 @@ var (
 		Title:    "Space usage",
 		Units:    "bytes",
 		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_space_usage",
+		Ctx:      "windows.logical_disk_space_usage",
 		Type:     module.Stacked,
 		Priority: prioDiskSpaceUsage,
 		Dims: module.Dims{
@@ -492,7 +492,7 @@ var (
 		Title:    "Bandwidth",
 		Units:    "bytes/s",
 		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_bandwidth",
+		Ctx:      "windows.logical_disk_bandwidth",
 		Type:     module.Area,
 		Priority: prioDiskBandwidth,
 		Dims: module.Dims{
@@ -505,7 +505,7 @@ var (
 		Title:    "Operations",
 		Units:    "operations/s",
 		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_operations",
+		Ctx:      "windows.logical_disk_operations",
 		Priority: prioDiskOperations,
 		Dims: module.Dims{
 			{ID: "logical_disk_%s_reads_total", Name: "reads", Algo: module.Incremental},
@@ -517,7 +517,7 @@ var (
 		Title:    "Average Read/Write Latency",
 		Units:    "seconds",
 		Fam:      "disk",
-		Ctx:      "wmi.logical_disk_latency",
+		Ctx:      "windows.logical_disk_latency",
 		Priority: prioDiskAvgLatency,
 		Dims: module.Dims{
 			{ID: "logical_disk_%s_read_latency", Name: "read", Algo: module.Incremental, Div: precision},
@@ -539,7 +539,7 @@ var (
 		Title:    "Bandwidth",
 		Units:    "kilobits/s",
 		Fam:      "net",
-		Ctx:      "wmi.net_nic_bandwidth",
+		Ctx:      "windows.net_nic_bandwidth",
 		Type:     module.Area,
 		Priority: prioNICBandwidth,
 		Dims: module.Dims{
@@ -552,7 +552,7 @@ var (
 		Title:    "Packets",
 		Units:    "packets/s",
 		Fam:      "net",
-		Ctx:      "wmi.net_nic_packets",
+		Ctx:      "windows.net_nic_packets",
 		Priority: prioNICPackets,
 		Dims: module.Dims{
 			{ID: "net_nic_%s_packets_received_total", Name: "received", Algo: module.Incremental},
@@ -564,7 +564,7 @@ var (
 		Title:    "Errors",
 		Units:    "errors/s",
 		Fam:      "net",
-		Ctx:      "wmi.net_nic_errors",
+		Ctx:      "windows.net_nic_errors",
 		Priority: prioNICErrors,
 		Dims: module.Dims{
 			{ID: "net_nic_%s_packets_received_errors", Name: "inbound", Algo: module.Incremental},
@@ -576,7 +576,7 @@ var (
 		Title:    "Discards",
 		Units:    "discards/s",
 		Fam:      "net",
-		Ctx:      "wmi.net_nic_discarded",
+		Ctx:      "windows.net_nic_discarded",
 		Priority: prioNICDiscards,
 		Dims: module.Dims{
 			{ID: "net_nic_%s_packets_received_discarded", Name: "inbound", Algo: module.Incremental},
@@ -602,7 +602,7 @@ var (
 		Title:    "TCP established connections",
 		Units:    "connections",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_established",
+		Ctx:      "windows.tcp_conns_established",
 		Priority: prioTCPConnsEstablished,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_conns_established", Name: "ipv4"},
@@ -614,7 +614,7 @@ var (
 		Title:    "TCP active connections",
 		Units:    "connections/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_active",
+		Ctx:      "windows.tcp_conns_active",
 		Priority: prioTCPConnsActive,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_conns_active", Name: "ipv4", Algo: module.Incremental},
@@ -626,7 +626,7 @@ var (
 		Title:    "TCP passive connections",
 		Units:    "connections/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_passive",
+		Ctx:      "windows.tcp_conns_passive",
 		Priority: prioTCPConnsPassive,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_conns_passive", Name: "ipv4", Algo: module.Incremental},
@@ -638,7 +638,7 @@ var (
 		Title:    "TCP connection failures",
 		Units:    "failures/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_failures",
+		Ctx:      "windows.tcp_conns_failures",
 		Priority: prioTCPConnsFailure,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_conns_failures", Name: "ipv4", Algo: module.Incremental},
@@ -650,7 +650,7 @@ var (
 		Title:    "TCP connections resets",
 		Units:    "resets/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_conns_resets",
+		Ctx:      "windows.tcp_conns_resets",
 		Priority: prioTCPConnsReset,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_conns_resets", Name: "ipv4", Algo: module.Incremental},
@@ -662,7 +662,7 @@ var (
 		Title:    "Number of TCP segments received",
 		Units:    "segments/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_received",
+		Ctx:      "windows.tcp_segments_received",
 		Priority: prioTCPSegmentsReceived,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_segments_received", Name: "ipv4", Algo: module.Incremental},
@@ -674,7 +674,7 @@ var (
 		Title:    "Number of TCP segments sent",
 		Units:    "segments/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_sent",
+		Ctx:      "windows.tcp_segments_sent",
 		Priority: prioTCPSegmentsSent,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_segments_sent", Name: "ipv4", Algo: module.Incremental},
@@ -686,7 +686,7 @@ var (
 		Title:    "Number of TCP segments retransmitted",
 		Units:    "segments/s",
 		Fam:      "tcp",
-		Ctx:      "wmi.tcp_segments_retransmitted",
+		Ctx:      "windows.tcp_segments_retransmitted",
 		Priority: prioTCPSegmentsRetransmitted,
 		Dims: module.Dims{
 			{ID: "tcp_ipv4_segments_retransmitted", Name: "ipv4", Algo: module.Incremental},
@@ -708,7 +708,7 @@ var (
 		Title:    "Processes",
 		Units:    "number",
 		Fam:      "os",
-		Ctx:      "wmi.os_processes",
+		Ctx:      "windows.os_processes",
 		Priority: prioOSProcesses,
 		Dims: module.Dims{
 			{ID: "os_processes", Name: "processes"},
@@ -722,7 +722,7 @@ var (
 		Title:    "Number of Users",
 		Units:    "users",
 		Fam:      "os",
-		Ctx:      "wmi.os_users",
+		Ctx:      "windows.os_users",
 		Priority: prioOSUsers,
 		Dims: module.Dims{
 			{ID: "os_users", Name: "users"},
@@ -733,7 +733,7 @@ var (
 		Title:    "Visible Memory Usage",
 		Units:    "bytes",
 		Fam:      "os",
-		Ctx:      "wmi.os_visible_memory_usage",
+		Ctx:      "windows.os_visible_memory_usage",
 		Type:     module.Stacked,
 		Priority: prioOSVisibleMemoryUsage,
 		Dims: module.Dims{
@@ -749,7 +749,7 @@ var (
 		Title:    "Paging Files Usage",
 		Units:    "bytes",
 		Fam:      "os",
-		Ctx:      "wmi.os_paging_files_usage",
+		Ctx:      "windows.os_paging_files_usage",
 		Type:     module.Stacked,
 		Priority: prioOSPagingUsage,
 		Dims: module.Dims{
@@ -773,7 +773,7 @@ var (
 		Title:    "Threads",
 		Units:    "number",
 		Fam:      "system",
-		Ctx:      "wmi.system_threads",
+		Ctx:      "windows.system_threads",
 		Priority: prioSystemThreads,
 		Dims: module.Dims{
 			{ID: "system_threads", Name: "threads"},
@@ -784,7 +784,7 @@ var (
 		Title:    "Uptime",
 		Units:    "seconds",
 		Fam:      "system",
-		Ctx:      "wmi.system_uptime",
+		Ctx:      "windows.system_uptime",
 		Priority: prioSystemUptime,
 		Dims: module.Dims{
 			{ID: "system_up_time", Name: "time"},
@@ -2111,7 +2111,7 @@ var (
 		Title:    "Active User Logon Sessions By Type",
 		Units:    "sessions",
 		Fam:      "logon",
-		Ctx:      "wmi.logon_type_sessions",
+		Ctx:      "windows.logon_type_sessions",
 		Type:     module.Stacked,
 		Priority: prioLogonSessions,
 		Dims: module.Dims{
@@ -2142,7 +2142,7 @@ var (
 		Title:    "Thermal zone temperature",
 		Units:    "celsius",
 		Fam:      "thermalzone",
-		Ctx:      "wmi.thermalzone_temperature",
+		Ctx:      "windows.thermalzone_temperature",
 		Priority: prioThermalzoneTemperature,
 		Dims: module.Dims{
 			{ID: "thermalzone_%s_temperature", Name: "temperature"},
@@ -2167,7 +2167,7 @@ var (
 		Title:    "CPU usage (100% = 1 core)",
 		Units:    "percentage",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_cpu_utilization",
+		Ctx:      "windows.processes_cpu_utilization",
 		Type:     module.Stacked,
 		Priority: prioProcessesCPUUtilization,
 	}
@@ -2176,7 +2176,7 @@ var (
 		Title:    "Memory usage",
 		Units:    "bytes",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_memory_usage",
+		Ctx:      "windows.processes_memory_usage",
 		Type:     module.Stacked,
 		Priority: prioProcessesMemoryUsage,
 	}
@@ -2185,7 +2185,7 @@ var (
 		Title:    "Total of IO bytes (read, write, other)",
 		Units:    "bytes/s",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_io_bytes",
+		Ctx:      "windows.processes_io_bytes",
 		Type:     module.Stacked,
 		Priority: prioProcessesIOBytes,
 	}
@@ -2194,7 +2194,7 @@ var (
 		Title:    "Total of IO events (read, write, other)",
 		Units:    "operations/s",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_io_operations",
+		Ctx:      "windows.processes_io_operations",
 		Type:     module.Stacked,
 		Priority: prioProcessesIOOperations,
 	}
@@ -2203,7 +2203,7 @@ var (
 		Title:    "Number of page faults",
 		Units:    "pgfaults/s",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_page_faults",
+		Ctx:      "windows.processes_page_faults",
 		Type:     module.Stacked,
 		Priority: prioProcessesPageFaults,
 	}
@@ -2212,7 +2212,7 @@ var (
 		Title:    "Bytes used in page file(s)",
 		Units:    "bytes",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_file_bytes",
+		Ctx:      "windows.processes_file_bytes",
 		Type:     module.Stacked,
 		Priority: prioProcessesPageFileBytes,
 	}
@@ -2221,7 +2221,7 @@ var (
 		Title:    "Active threads",
 		Units:    "threads",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_threads",
+		Ctx:      "windows.processes_threads",
 		Type:     module.Stacked,
 		Priority: prioProcessesThreads,
 	}
@@ -2230,7 +2230,7 @@ var (
 		Title:    "Number of handles open",
 		Units:    "handles",
 		Fam:      "processes",
-		Ctx:      "wmi.processes_handles",
+		Ctx:      "windows.processes_handles",
 		Type:     module.Stacked,
 		Priority: prioProcessesHandles,
 	}
@@ -2862,7 +2862,7 @@ var (
 		Title:    "Service state",
 		Units:    "state",
 		Fam:      "services",
-		Ctx:      "wmi.service_state",
+		Ctx:      "windows.service_state",
 		Priority: prioServiceState,
 		Dims: module.Dims{
 			{ID: "service_%s_state_running", Name: "running"},
@@ -2880,7 +2880,7 @@ var (
 		Title:    "Service status",
 		Units:    "status",
 		Fam:      "services",
-		Ctx:      "wmi.service_status",
+		Ctx:      "windows.service_status",
 		Priority: prioServiceStatus,
 		Dims: module.Dims{
 			{ID: "service_%s_status_ok", Name: "ok"},
@@ -2910,7 +2910,7 @@ var (
 		Title:    "Duration of a data collection",
 		Units:    "seconds",
 		Fam:      "collection",
-		Ctx:      "wmi.collector_duration",
+		Ctx:      "windows.collector_duration",
 		Priority: prioCollectorDuration,
 		Dims: module.Dims{
 			{ID: "collector_%s_duration", Name: "duration", Div: precision},
@@ -2921,7 +2921,7 @@ var (
 		Title:    "Status of a data collection",
 		Units:    "status",
 		Fam:      "collection",
-		Ctx:      "wmi.collector_status",
+		Ctx:      "windows.collector_status",
 		Priority: prioCollectorStatus,
 		Dims: module.Dims{
 			{ID: "collector_%s_status_success", Name: "success"},
