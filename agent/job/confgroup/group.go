@@ -37,6 +37,7 @@ func (c Config) Provider() string          { v, _ := c.get("__provider__").(stri
 func (c Config) SetModule(source string)   { c.set("module", source) }
 func (c Config) SetSource(source string)   { c.set("__source__", source) }
 func (c Config) SetProvider(source string) { c.set("__provider__", source) }
+func (c Config) Vnode() string             { v, _ := c.get("vnode").(string); return v }
 
 func (c Config) set(key string, value interface{}) { c[key] = value }
 func (c Config) get(key string) interface{}        { return c[key] }

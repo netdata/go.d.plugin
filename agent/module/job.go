@@ -38,6 +38,9 @@ var reSpace = regexp.MustCompile(`\s+`)
 
 var ndInternalMonitoringDisabled = os.Getenv("NETDATA_INTERNALS_MONITORING") == "NO"
 
+var lastGUID = ""
+var lastGUIDLock = &sync.Mutex{}
+
 func newRuntimeChart(pluginName string) *Chart {
 	// this is needed to keep the same name as we had before https://github.com/netdata/go.d.plugin/issues/650
 	ctxName := pluginName
@@ -69,6 +72,10 @@ type JobConfig struct {
 	UpdateEvery     int
 	AutoDetectEvery int
 	Priority        int
+
+	VnodeGUID     string
+	VnodeHostname string
+	VnodeLabels   map[string]string
 }
 
 const (
@@ -96,6 +103,10 @@ func NewJob(cfg JobConfig) *Job {
 		tick:            make(chan int),
 		buf:             &buf,
 		api:             netdataapi.New(&buf),
+
+		vnodeGUID:     cfg.VnodeGUID,
+		vnodeHostname: cfg.VnodeHostname,
+		vnodeLabels:   cfg.VnodeLabels,
 	}
 }
 
@@ -130,6 +141,11 @@ type Job struct {
 	prevRun time.Time
 
 	stop chan struct{}
+
+	vnodeCreated  bool
+	vnodeGUID     string
+	vnodeHostname string
+	vnodeLabels   map[string]string
 }
 
 // NetdataChartIDMaxLength is the chart ID max length. See RRD_ID_LENGTH_MAX in the netdata source code.
@@ -340,6 +356,18 @@ func (j *Job) collect() (result map[string]int64) {
 }
 
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
+	if !j.vnodeCreated && j.vnodeGUID != "" {
+		_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
+		j.vnodeCreated = true
+	}
+
+	lastGUIDLock.Lock()
+	if lastGUID != j.vnodeGUID {
+		lastGUID = j.vnodeGUID
+		_ = j.api.HOST(j.vnodeGUID)
+	}
+	lastGUIDLock.Unlock()
+
 	if !ndInternalMonitoringDisabled && !j.runChart.created {
 		j.runChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
 		j.createChart(j.runChart)
@@ -378,6 +406,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 	if !ndInternalMonitoringDisabled {
 		j.updateChart(j.runChart, map[string]int64{"time": elapsed}, sinceLastRun)
 	}
+
 	return true
 }
 

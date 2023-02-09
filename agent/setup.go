@@ -33,7 +33,7 @@ type config struct {
 	Modules    map[string]bool `yaml:"modules"`
 }
 
-func (c config) String() string {
+func (c *config) String() string {
 	return fmt.Sprintf("enabled '%v', default_run '%v', max_procs '%d'",
 		c.Enabled, c.DefaultRun, c.MaxProcs)
 }
@@ -171,15 +171,15 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 	}
 }
 
-func (c config) isExplicitlyEnabled(moduleName string) bool {
+func (c *config) isExplicitlyEnabled(moduleName string) bool {
 	return c.isEnabled(moduleName, true)
 }
 
-func (c config) isImplicitlyEnabled(moduleName string) bool {
+func (c *config) isImplicitlyEnabled(moduleName string) bool {
 	return c.isEnabled(moduleName, false)
 }
 
-func (c config) isEnabled(moduleName string, explicit bool) bool {
+func (c *config) isEnabled(moduleName string, explicit bool) bool {
 	if enabled, ok := c.Modules[moduleName]; ok {
 		return enabled
 	}
