@@ -110,7 +110,7 @@ Go.d.plugin is shipped with Netdata.
 | [web_log](https://github.com/netdata/go.d.plugin/tree/master/modules/weblog)                        |         Apache/NGINX          |
 | [wireguard](https://github.com/netdata/go.d.plugin/tree/master/modules/wireguard)                   |           WireGuard           |
 | [whoisquery](https://github.com/netdata/go.d.plugin/tree/master/modules/whoisquery)                 |         Domain Expiry         |
-| [windows](https://github.com/netdata/go.d.plugin/tree/master/modules/windows)                       |       Windows Monitoring      |
+| [windows](https://github.com/netdata/go.d.plugin/tree/master/modules/windows)                       |            Windows            |
 | [x509check](https://github.com/netdata/go.d.plugin/tree/master/modules/x509check)                   |     Digital Certificates      |
 | [zookeeper](https://github.com/netdata/go.d.plugin/tree/master/modules/zookeeper)                   |           ZooKeeper           |
 

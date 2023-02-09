@@ -1,5 +1,5 @@
 <!--
-title: "Windows Monitoring with Netdata"
+title: "Windows with Netdata"
 description: "Monitor the health and performance of Windows machines with zero configuration, per-second metric granularity, and interactive visualizations."
 custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/windows/README.md"
 sidebar_label: "Windows machines"
