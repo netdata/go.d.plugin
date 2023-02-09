@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	module.Register("wmi", module.Creator{
+	module.Register("windows", module.Creator{
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},
