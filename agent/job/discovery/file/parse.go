@@ -44,6 +44,11 @@ func parse(req confgroup.Registry, path string) (*confgroup.Group, error) {
 
 func parseStaticFormat(reg confgroup.Registry, path string, bs []byte) (*confgroup.Group, error) {
 	name := fileName(path)
+	// TODO: properly handle module renaming
+	// See agent/setup.go buildDiscoveryConf() for details
+	if name == "wmi" {
+		name = "windows"
+	}
 	modDef, ok := reg.Lookup(name)
 	if !ok {
 		return nil, nil
