@@ -185,6 +185,13 @@ const (
 	prioServiceState
 	prioServiceStatus
 
+	// Database
+	prioADDatabaseOperations
+	prioADDirectoryOperations
+	prioADNameCacheLookups
+	prioADCacheHits
+
+	// Replication
 	prioADDRAReplicationIntersiteCompressedTraffic
 	prioADDRAReplicationIntrasiteCompressedTraffic
 	prioADDRAReplicationSyncObjectsRemaining
@@ -194,9 +201,17 @@ const (
 	prioADReplicationPendingSyncs
 	prioADDRASyncRequests
 	prioADDirectoryServiceThreadsInUse
+
+	// Bind
 	prioADLDAPBindTime
 	prioADBindsTotal
+
+	// LDAP
 	prioADLDAPSearchesTotal
+
+	// Thread Queue
+	prioADATQAverageRequestLatency
+	prioADATQOutstandingRequests
 
 	// Requests
 	prioADCSCertTemplateRequests
@@ -1347,6 +1362,10 @@ var (
 // AD
 var (
 	adCharts = module.Charts{
+		adDatabaseOperationsChart.Copy(),
+		adDirectoryOperationsChart.Copy(),
+		adNameCacheLookupsChart.Copy(),
+		adNameCacheHitsChart.Copy(),
 		adDRAReplicationIntersiteCompressedTrafficChart.Copy(),
 		adDRAReplicationIntrasiteCompressedTrafficChart.Copy(),
 		adDRAReplicationSyncObjectRemainingChart.Copy(),
@@ -1359,6 +1378,61 @@ var (
 		adLDAPLastBindTimeChart.Copy(),
 		adBindsTotalChart.Copy(),
 		adLDAPSearchesChart.Copy(),
+		adATQAverageRequestLatencyChart.Copy(),
+		adATQOutstandingRequestsChart.Copy(),
+	}
+	adDatabaseOperationsChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_database_operations",
+		Title:      "AD database operations",
+		Units:      "operations/s",
+		Fam:        "database",
+		Ctx:        "ad.database_operations",
+		Priority:   prioADDatabaseOperations,
+		Dims: module.Dims{
+			{ID: "ad_database_operations_total_add", Name: "add", Algo: module.Incremental},
+			{ID: "ad_database_operations_total_delete", Name: "delete", Algo: module.Incremental},
+			{ID: "ad_database_operations_total_modify", Name: "modify", Algo: module.Incremental},
+			{ID: "ad_database_operations_total_recycle", Name: "recycle", Algo: module.Incremental},
+		},
+	}
+	adDirectoryOperationsChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_directory_operations_read",
+		Title:      "AD directory operations",
+		Units:      "operations/s",
+		Fam:        "database",
+		Ctx:        "ad.directory_operations",
+		Priority:   prioADDirectoryOperations,
+		Dims: module.Dims{
+			{ID: "ad_directory_operations_total_read", Name: "read", Algo: module.Incremental},
+			{ID: "ad_directory_operations_total_write", Name: "write", Algo: module.Incremental},
+			{ID: "ad_directory_operations_total_search", Name: "search", Algo: module.Incremental},
+		},
+	}
+	adNameCacheLookupsChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_name_cache_lookups",
+		Title:      "Name cache lookups",
+		Units:      "lookups/s",
+		Fam:        "database",
+		Ctx:        "ad.name_cache_lookups",
+		Priority:   prioADNameCacheLookups,
+		Dims: module.Dims{
+			{ID: "ad_name_cache_lookups_total", Name: "lookups", Algo: module.Incremental},
+		},
+	}
+	adNameCacheHitsChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_name_cache_hits",
+		Title:      "Name cache hits",
+		Units:      "hits/s",
+		Fam:        "database",
+		Ctx:        "ad.name_cache_hits",
+		Priority:   prioADCacheHits,
+		Dims: module.Dims{
+			{ID: "ad_name_cache_hits_total", Name: "hits", Algo: module.Incremental},
+		},
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
 		OverModule: "ad",
@@ -1506,6 +1580,31 @@ var (
 		Priority:   prioADLDAPSearchesTotal,
 		Dims: module.Dims{
 			{ID: "ad_ldap_searches_total", Name: "searches", Algo: module.Incremental},
+		},
+	}
+	// https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/understanding-atq-performance-counters-yet-another-twist-in-the/ba-p/400293
+	adATQAverageRequestLatencyChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_atq_average_request_latency",
+		Title:      "Average request processing time",
+		Units:      "seconds",
+		Fam:        "queue",
+		Ctx:        "ad.atq_average_request_latency",
+		Priority:   prioADATQAverageRequestLatency,
+		Dims: module.Dims{
+			{ID: "ad_atq_average_request_latency", Name: "time", Div: precision},
+		},
+	}
+	adATQOutstandingRequestsChart = module.Chart{
+		OverModule: "ad",
+		ID:         "ad_atq_outstanding_requests",
+		Title:      "Outstanding requests",
+		Units:      "requests",
+		Fam:        "queue",
+		Ctx:        "ad.atq_outstanding_requests",
+		Priority:   prioADATQOutstandingRequests,
+		Dims: module.Dims{
+			{ID: "ad_atq_outstanding_requests", Name: "outstanding"},
 		},
 	}
 )
