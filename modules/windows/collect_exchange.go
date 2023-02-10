@@ -23,14 +23,14 @@ const (
 	metricRPCRequests                = "windows_exchange_rpc_requests"
 	metricRPCUserCount               = "windows_exchange_rpc_user_count"
 
-	metricTransportQueuesActiveMailboxDelivery = "windows_exchange_transport_queues_active_mailbox_delivery"
+	metricTransportQueuesActiveMailboxDelivery         = "windows_exchange_transport_queues_active_mailbox_delivery"
 	metricTransportQueuesExternanlActiveRemoteDelivery = "windows_exchange_transport_queues_external_active_remote_delivery"
-	metricTransportQueuesExternalLargestDelivery = "windows_exchange_transport_queues_external_largest_delivery"
-	metricTransportQueuesInternalActiveRemoteDelivery = "windows_exchange_transport_queues_internal_active_remote_delivery"
-	metricTransportQueuesInternalLargestDelivery = "windows_exchange_transport_queues_internal_largest_delivery"
-	metricTransportQueuesPoison = "windows_exchange_transport_queues_poison"
-	metricTransportQueuesRetryMailboxDelivery = "windows_exchange_transport_queues_retry_mailbox_delivery"
-	metricTransportQueuesUnreachable = "windows_exchange_transport_queues_unreachable"
+	metricTransportQueuesExternalLargestDelivery       = "windows_exchange_transport_queues_external_largest_delivery"
+	metricTransportQueuesInternalActiveRemoteDelivery  = "windows_exchange_transport_queues_internal_active_remote_delivery"
+	metricTransportQueuesInternalLargestDelivery       = "windows_exchange_transport_queues_internal_largest_delivery"
+	metricTransportQueuesPoison                        = "windows_exchange_transport_queues_poison"
+	metricTransportQueuesRetryMailboxDelivery          = "windows_exchange_transport_queues_retry_mailbox_delivery"
+	metricTransportQueuesUnreachable                   = "windows_exchange_transport_queues_unreachable"
 )
 
 var exchangeMetrics = []string{
@@ -112,9 +112,9 @@ func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series)
 
 	for _, pm := range pms {
 		if name := pm.Labels.Get("name"); name != "" && name != "total_excluding_priority_none" {
-				metric := strings.TrimPrefix(pm.Name(), "windows_exchange_")
-				v := pm.Value
-				mx["exchange_transport_"+metric+"_"+name] += int64(v)
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_")
+			v := pm.Value
+			mx["exchange_transport_"+metric+"_"+name] += int64(v)
 		}
 	}
 }

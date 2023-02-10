@@ -299,14 +299,14 @@ const (
 	prioExchangeRpcUserCount
 
 	// Transport Queue
-	prioExchangeTransportQueueActiveMailboxDelivery
-	prioExchangeTransportQueueExternalActiveRemoteDelivery
-	prioExchangeTransportQueueExternalLargestDelivery
-	prioExchangeTransportQueueInternalActiveRemoteDeliery
-	prioExchangeTransportQueueInternalLargestDelivery
-	prioExchangeTransportQueueRetryMailboxDelivery
-	prioExchangeTransportQueueUnreachable
-	prioExchangeTransportQueuePoison
+	prioExchangeTransportQueuesActiveMailboxDelivery
+	prioExchangeTransportQueuesExternalActiveRemoteDelivery
+	prioExchangeTransportQueuesExternalLargestDelivery
+	prioExchangeTransportQueuesInternalActiveRemoteDeliery
+	prioExchangeTransportQueuesInternalLargestDelivery
+	prioExchangeTransportQueuesRetryMailboxDelivery
+	prioExchangeTransportQueuesUnreachable
+	prioExchangeTransportQueuesPoison
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -2247,6 +2247,14 @@ var (
 		exchangeRPCOperationsChart.Copy(),
 		exchangeRPCRequestsChart.Copy(),
 		exchangeRPCUserChart.Copy(),
+		exchangeTransportQueuesActiveMailBoxDelivery.Copy(),
+		exchangeTransportQueuesExternalActiveRemoteDelivery.Copy(),
+		exchangeTransportQueuesExternalLargestDelivery.Copy(),
+		exchangeTransportQueuesInternalActiveRemoteDelivery.Copy(),
+		exchangeTransportQueuesInternalLargestDelivery.Copy(),
+		exchangeTransportQueuesRetryMailboxDelivery.Copy(),
+		exchangeTransportQueuesUnreachable.Copy(),
+		exchangeTransportQueuesPoison.Copy(),
 	}
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
 		OverModule: "exchange",
@@ -2406,124 +2414,124 @@ var (
 	}
 
 	// Source: https://learn.microsoft.com/en-us/exchange/mail-flow/queues/queues?view=exchserver-2019
-	exchangeTransportQueueActiveMailBoxDelivery = module.Chart{
+	exchangeTransportQueuesActiveMailBoxDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_active_mail_box_delivery",
+		ID:         "exchange_transport_queues_active_mail_box_delivery",
 		Title:      "Active Mailbox Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_active_mail_box_delivery",
-		Priority:   prioExchangeTransportQueueActiveMailboxDelivery,
+		Ctx:        "exchange.transport_queues_active_mail_box_delivery",
+		Priority:   prioExchangeTransportQueuesActiveMailboxDelivery,
 		Dims: module.Dims{
-			{ID: "transport_queue_active_mail_box_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_active_mail_box_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_active_mail_box_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_active_mail_box_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueExternalActiveRemoteDelivery = module.Chart{
+	exchangeTransportQueuesExternalActiveRemoteDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_external_active_remote_delivery",
+		ID:         "exchange_transport_queues_external_active_remote_delivery",
 		Title:      "External Active Remote Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_external_active_remote_delivery",
-		Priority:   prioExchangeTransportQueueExternalActiveRemoteDelivery,
+		Ctx:        "exchange.transport_queues_external_active_remote_delivery",
+		Priority:   prioExchangeTransportQueuesExternalActiveRemoteDelivery,
 		Dims: module.Dims{
-			{ID: "transport_queue_external_active_remote_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_external_active_remote_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_external_active_remote_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_external_active_remote_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueExternalLargestDelivery = module.Chart{
+	exchangeTransportQueuesExternalLargestDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_external_largest_delivery",
+		ID:         "exchange_transport_queues_external_largest_delivery",
 		Title:      "External Largest Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_external_largest_delivery",
-		Priority:   prioExchangeTransportQueueExternalLargestDelivery,
+		Ctx:        "exchange.transport_queues_external_largest_delivery",
+		Priority:   prioExchangeTransportQueuesExternalLargestDelivery,
 		Dims: module.Dims{
-			{ID: "transport_queue_external_largest_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_external_largest_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_external_largest_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_external_largest_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_external_largest_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_external_largest_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_external_largest_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_external_largest_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueInternalActiveRemoteDelivery = module.Chart{
+	exchangeTransportQueuesInternalActiveRemoteDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_internal_active_remote_delivery",
+		ID:         "exchange_transport_queues_internal_active_remote_delivery",
 		Title:      "Internal Active Remote Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_internal_active_remote_delivery",
-		Priority:   prioExchangeTransportQueueInternalActiveRemoteDeliery,
+		Ctx:        "exchange.transport_queues_internal_active_remote_delivery",
+		Priority:   prioExchangeTransportQueuesInternalActiveRemoteDeliery,
 		Dims: module.Dims{
-			{ID: "transport_queue_internal_active_remote_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_internal_active_remote_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_internal_active_remote_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_internal_active_remote_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueInternalLargestDelivery = module.Chart{
+	exchangeTransportQueuesInternalLargestDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_internal_largest_delivery",
+		ID:         "exchange_transport_queues_internal_largest_delivery",
 		Title:      "Internal Largest Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_internal_largest_delivery",
-		Priority:   prioExchangeTransportQueueInternalLargestDelivery,
+		Ctx:        "exchange.transport_queues_internal_largest_delivery",
+		Priority:   prioExchangeTransportQueuesInternalLargestDelivery,
 		Dims: module.Dims{
-			{ID: "transport_queue_internal_largest_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_internal_largest_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_internal_largest_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_internal_largest_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueRetryMailboxDelivery = module.Chart{
+	exchangeTransportQueuesRetryMailboxDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_retry_mailbox_delivery",
+		ID:         "exchange_transport_queues_retry_mailbox_delivery",
 		Title:      "Internal Active Remote Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_retry_mailbox_delivery",
-		Priority:   prioExchangeTransportQueueRetryMailboxDelivery,
+		Ctx:        "exchange.transport_queues_retry_mailbox_delivery",
+		Priority:   prioExchangeTransportQueuesRetryMailboxDelivery,
 		Dims: module.Dims{
-			{ID: "transport_queue_retry_mailbox_delivery_high_priority", Name: "Hight"},
-			{ID: "transport_queue_retry_mailbox_delivery_low_priority", Name: "Low"},
-			{ID: "transport_queue_retry_mailbox_delivery_none_priority", Name: "None"},
-			{ID: "transport_queue_retry_mailbox_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueueUnreachable = module.Chart{
+	exchangeTransportQueuesUnreachable = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_unreachable",
+		ID:         "exchange_transport_queues_unreachable",
 		Title:      "Unreachable Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_unreachable",
-		Priority:   prioExchangeTransportQueueUnreachable,
+		Ctx:        "exchange.transport_queues_unreachable",
+		Priority:   prioExchangeTransportQueuesUnreachable,
 		Dims: module.Dims{
-			{ID: "transport_queue_unreachable_high_priority", Name: "Hight"},
-			{ID: "transport_queue_unreachable_low_priority", Name: "Low"},
-			{ID: "transport_queue_unreachable_none_priority", Name: "None"},
-			{ID: "transport_queue_unreachable_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_unreachable_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_unreachable_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_unreachable_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_unreachable_normal_priority", Name: "Normal"},
 		},
 	}
-	exchangeTransportQueuePoison = module.Chart{
+	exchangeTransportQueuesPoison = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queue_poison",
+		ID:         "exchange_transport_queues_poison",
 		Title:      "Poison Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
-		Ctx:        "exchange.transport_queue_poison",
-		Priority:   prioExchangeTransportQueuePoison,
+		Ctx:        "exchange.transport_queues_poison",
+		Priority:   prioExchangeTransportQueuesPoison,
 		Dims: module.Dims{
-			{ID: "transport_queue_poison_high_priority", Name: "Hight"},
-			{ID: "transport_queue_poison_low_priority", Name: "Low"},
-			{ID: "transport_queue_poison_none_priority", Name: "None"},
-			{ID: "transport_queue_poison_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_poison_high_priority", Name: "Hight"},
+			{ID: "exchange_transport_queues_poison_low_priority", Name: "Low"},
+			{ID: "exchange_transport_queues_poison_none_priority", Name: "None"},
+			{ID: "exchange_transport_queues_poison_normal_priority", Name: "Normal"},
 		},
 	}
 )
