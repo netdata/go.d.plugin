@@ -112,9 +112,9 @@ func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series)
 
 	for _, pm := range pms {
 		if name := pm.Labels.Get("name"); name != "" && name != "total_excluding_priority_none" {
-			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_")
+			metric := strings.TrimPrefix(pm.Name(), "windows_")
 			v := pm.Value
-			mx["exchange_transport_"+metric+"_"+name] += int64(v)
+			mx[metric+"_"+name] += int64(v)
 		}
 	}
 }

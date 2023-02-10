@@ -2416,7 +2416,7 @@ var (
 	// Source: https://learn.microsoft.com/en-us/exchange/mail-flow/queues/queues?view=exchserver-2019
 	exchangeTransportQueuesActiveMailBoxDelivery = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_transport_queues_active_mail_box_delivery",
+		ID:         "exchange_transport_queues_active_mailbox_delivery",
 		Title:      "Active Mailbox Delivery Queue Length.",
 		Units:      "messages/s",
 		Fam:        "queue",
