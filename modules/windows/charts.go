@@ -293,9 +293,9 @@ const (
 	// RPC
 	prioExchangeRPCActiveUserCount
 	prioExchangeRPCAvgLatency
-	prioExchangeRPCConnection
-	prioExchangeRPCOperations
-	prioExchangeRPCRequests
+	prioExchangeRPCConnectionCount
+	prioExchangeRPCOperationsTotal
+	prioExchangeRPCRequestsTotal
 	prioExchangeRpcUserCount
 
 	prioCollectorDuration
@@ -2353,7 +2353,7 @@ var (
 		Units:      "clients",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_connection",
-		Priority:   prioExchangeRPCConnection,
+		Priority:   prioExchangeRPCConnectionCount,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_connection_count", Name: "clients"},
 		},
@@ -2365,7 +2365,7 @@ var (
 		Units:      "requests/s",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_operations",
-		Priority:   prioExchangeRPCOperations,
+		Priority:   prioExchangeRPCOperationsTotal,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_operations_total", Name: "requests", Algo: module.Incremental},
 		},
@@ -2377,7 +2377,7 @@ var (
 		Units:      "requests",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_requests_total",
-		Priority:   prioExchangeRPCOperations,
+		Priority:   prioExchangeRPCRequestsTotal,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_requests", Name: "requests"},
 		},
@@ -2389,7 +2389,7 @@ var (
 		Units:      "users",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_user_count",
-		Priority:   prioExchangeRPCOperations,
+		Priority:   prioExchangeRpcUserCount,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_user_count", Name: "users"},
 		},
