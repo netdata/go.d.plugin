@@ -49,7 +49,7 @@ func (w *Windows) collectAD(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByName(metricADDirectoryOperations) {
 		if operation := pm.Labels.Get("operation"); operation != "" {
 			if origin := pm.Labels.Get("origin"); origin != "" {
-				mx["ad_directory_operations_"+ operation +"_total_"+origin] = int64(pm.Value)
+				mx["ad_directory_operations_"+operation+"_total_"+origin] = int64(pm.Value)
 			}
 		}
 	}
