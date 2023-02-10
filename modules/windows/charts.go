@@ -1586,7 +1586,7 @@ var (
 	adATQAverageRequestLatencyChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_atq_average_request_latency",
-		Title:      "Request processing time",
+		Title:      "Average request processing time",
 		Units:      "seconds",
 		Fam:        "queue",
 		Ctx:        "ad.atq_average_request_latency",
