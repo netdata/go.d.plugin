@@ -9,6 +9,10 @@ import "github.com/netdata/go.d.plugin/pkg/prometheus"
 // Microsoft:
 // https://learn.microsoft.com/en-us/previous-versions/ms803980(v=msdn.10)
 const (
+	metricADATQAverageRequestLatency                  = "windows_ad_atq_average_request_latency"
+	metricADATQOutstandingRequests                    = "windows_ad_atq_outstanding_requests"
+	metricADDatabaseOperations                        = "windows_ad_database_operations_total"
+	metricADDirectoryOperations                       = "windows_ad_directory_operations_total"
 	metricADReplicationInboundObjectsFilteringTotal   = "windows_ad_replication_inbound_objects_filtered_total"
 	metricADReplicationInboundPropertiesFilteredTotal = "windows_ad_replication_inbound_properties_filtered_total"
 	metricADReplicationInboundPropertiesUpdatedTotal  = "windows_ad_replication_inbound_properties_updated_total"
@@ -21,6 +25,8 @@ const (
 	metricADLDAPLastBindTimeSecondsTotal              = "windows_ad_ldap_last_bind_time_seconds"
 	metricADBindsTotal                                = "windows_ad_binds_total"
 	metricADLDAPSearchesTotal                         = "windows_ad_ldap_searches_total"
+	metricADNameCacheLookups                          = "windows_ad_name_cache_lookups_total"
+	metricADNameCacheHits                             = "windows_ad_name_cache_hits_total"
 )
 
 func (w *Windows) collectAD(mx map[string]int64, pms prometheus.Series) {
@@ -29,6 +35,24 @@ func (w *Windows) collectAD(mx map[string]int64, pms prometheus.Series) {
 		w.addADCharts()
 	}
 
+	if pm := pms.FindByName(metricADATQAverageRequestLatency); pm.Len() > 0 {
+		mx["ad_atq_average_request_latency_period"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADATQOutstandingRequests); pm.Len() > 0 {
+		mx["ad_atq_outstanding_requests_total"] = int64(pm.Max())
+	}
+	for _, pm := range pms.FindByName(metricADDatabaseOperations) {
+		if operation := pm.Labels.Get("operation"); operation != "" {
+			mx["ad_database_operations_total_"+operation] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricADDirectoryOperations) {
+		if operation := pm.Labels.Get("operation"); operation != "" {
+			if origin := pm.Labels.Get("origin"); origin != "" {
+				mx["ad_directory_operations_"+ operation +"_total_"+origin] = int64(pm.Value)
+			}
+		}
+	}
 	if pm := pms.FindByName(metricADReplicationInboundObjectsFilteringTotal); pm.Len() > 0 {
 		mx["ad_replication_inbound_objects_filtered_total"] = int64(pm.Max())
 	}
@@ -68,5 +92,11 @@ func (w *Windows) collectAD(mx map[string]int64, pms prometheus.Series) {
 	}
 	if pm := pms.FindByName(metricADLDAPSearchesTotal); pm.Len() > 0 {
 		mx["ad_ldap_searches_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADNameCacheLookups); pm.Len() > 0 {
+		mx["ad_name_cache_lookups_total"] = int64(pm.Max())
+	}
+	if pm := pms.FindByName(metricADNameCacheHits); pm.Len() > 0 {
+		mx["ad_name_cache_hits_total"] = int64(pm.Max())
 	}
 }

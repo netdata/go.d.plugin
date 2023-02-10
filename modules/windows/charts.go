@@ -1480,7 +1480,7 @@ var (
 		Units:      "names/s",
 		Fam:        "database",
 		Ctx:        "ad.name_cache_hits",
-		Priority:   prioADDatabaseOperations,
+		Priority:   prioADCacheHits,
 		Type:       module.Area,
 		Dims: module.Dims{
 			{ID: "ad_name_cache_hits_total", Name: "names", Algo: module.Incremental},
