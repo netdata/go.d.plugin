@@ -187,9 +187,7 @@ const (
 
 	// Database
 	prioADDatabaseOperations
-	prioADDirectoryOperationsRead
-	prioADDirectoryOperationsSearch
-	prioADDirectoryOperationsWrite
+	prioADDirectoryOperations
 	prioADNameCacheLookups
 	prioADCacheHits
 
@@ -1364,12 +1362,10 @@ var (
 // AD
 var (
 	adCharts = module.Charts{
-		adDatabaseOperations.Copy(),
-		adDirectoryOperationsRead.Copy(),
-		adDirectoryOperationsSearch.Copy(),
-		adDirectoryOperationsWrite.Copy(),
-		adNameCacheLookups.Copy(),
-		adNameCacheHits.Copy(),
+		adDatabaseOperationsChart.Copy(),
+		adDirectoryOperationsChart.Copy(),
+		adNameCacheLookupsChart.Copy(),
+		adNameCacheHitsChart.Copy(),
 		adDRAReplicationIntersiteCompressedTrafficChart.Copy(),
 		adDRAReplicationIntrasiteCompressedTrafficChart.Copy(),
 		adDRAReplicationSyncObjectRemainingChart.Copy(),
@@ -1382,18 +1378,17 @@ var (
 		adLDAPLastBindTimeChart.Copy(),
 		adBindsTotalChart.Copy(),
 		adLDAPSearchesChart.Copy(),
-		adATQAverageRequestLatency.Copy(),
-		adATQOutstandingRequests.Copy(),
+		adATQAverageRequestLatencyChart.Copy(),
+		adATQOutstandingRequestsChart.Copy(),
 	}
-	adDatabaseOperations = module.Chart{
+	adDatabaseOperationsChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_database_operations",
-		Title:      "Total number of Operations in AD database.",
+		Title:      "AD database operations",
 		Units:      "operations/s",
 		Fam:        "database",
 		Ctx:        "ad.database_operations",
 		Priority:   prioADDatabaseOperations,
-		Type:       module.Area,
 		Dims: module.Dims{
 			{ID: "ad_database_operations_total_add", Name: "add", Algo: module.Incremental},
 			{ID: "ad_database_operations_total_delete", Name: "delete", Algo: module.Incremental},
@@ -1401,89 +1396,42 @@ var (
 			{ID: "ad_database_operations_total_recycle", Name: "recycle", Algo: module.Incremental},
 		},
 	}
-	adDirectoryOperationsRead = module.Chart{
+	adDirectoryOperationsChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_directory_operations_read",
-		Title:      "Operations to read from Directory.",
+		Title:      "AD directory operations",
 		Units:      "operations/s",
 		Fam:        "database",
-		Ctx:        "ad.directory_operations_read",
-		Priority:   prioADDirectoryOperationsRead,
-		Type:       module.Area,
+		Ctx:        "ad.directory_operations",
+		Priority:   prioADDirectoryOperations,
 		Dims: module.Dims{
-			{ID: "ad_directory_operations_read_total_directory_service_api", Name: "directory_service_api", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_knowledge_consistency_checker", Name: "knowledge_consistency_checker", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_local_security_authority", Name: "local_security_authority", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_name_service_provider_interface", Name: "name_service_provider_interface", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_other", Name: "other", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_replication_agent", Name: "replication_agent", Algo: module.Incremental},
-			{ID: "ad_directory_operations_read_total_security_account_manager", Name: "security_account_manager", Algo: module.Incremental},
+			{ID: "ad_directory_operations_total_read", Name: "read", Algo: module.Incremental},
+			{ID: "ad_directory_operations_total_write", Name: "write", Algo: module.Incremental},
+			{ID: "ad_directory_operations_total_search", Name: "search", Algo: module.Incremental},
 		},
 	}
-	adDirectoryOperationsSearch = module.Chart{
-		OverModule: "ad",
-		ID:         "ad_directory_operations_search",
-		Title:      "Operators to search inside Directory.",
-		Units:      "operations/s",
-		Fam:        "database",
-		Ctx:        "ad.directory_operations_search",
-		Priority:   prioADDirectoryOperationsSearch,
-		Type:       module.Area,
-		Dims: module.Dims{
-			{ID: "ad_directory_operations_search_total_directory_service_api", Name: "directory_service_api", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_knowledge_consistency_checker", Name: "knowledge_consistency_checker", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_ldap", Name: "ldap", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_local_security_authority", Name: "local_security_authority", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_name_service_provider_interface", Name: "name_service_provider_interface", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_other", Name: "other", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_replication_agent", Name: "replication_agent", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_security_account_manager", Name: "security_account_manager", Algo: module.Incremental},
-		},
-	}
-	adDirectoryOperationsWrite = module.Chart{
-		OverModule: "ad",
-		ID:         "ad_directory_operations_write",
-		Title:      "Operators to write inside Directory.",
-		Units:      "operations/s",
-		Fam:        "database",
-		Ctx:        "ad.directory_operations_write",
-		Priority:   prioADDirectoryOperationsWrite,
-		Type:       module.Area,
-		Dims: module.Dims{
-			{ID: "ad_directory_operations_search_total_directory_service_api", Name: "directory_service_api", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_knowledge_consistency_checker", Name: "knowledge_consistency_checker", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_ldap", Name: "ldap", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_local_security_authority", Name: "local_security_authority", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_name_service_provider_interface", Name: "name_service_provider_interface", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_other", Name: "other", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_replication_agent", Name: "replication_agent", Algo: module.Incremental},
-			{ID: "ad_directory_operations_search_total_security_account_manager", Name: "security_account_manager", Algo: module.Incremental},
-		},
-	}
-	adNameCacheLookups = module.Chart{
+	adNameCacheLookupsChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_name_cache_lookups",
-		Title:      "Lookup inside AD.",
-		Units:      "names/s",
+		Title:      "Name cache lookups",
+		Units:      "lookups/s",
 		Fam:        "database",
 		Ctx:        "ad.name_cache_lookups",
 		Priority:   prioADNameCacheLookups,
-		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "ad_name_cache_lookups_total", Name: "names", Algo: module.Incremental},
+			{ID: "ad_name_cache_lookups_total", Name: "lookups", Algo: module.Incremental},
 		},
 	}
-	adNameCacheHits = module.Chart{
+	adNameCacheHitsChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_name_cache_hits",
-		Title:      "Search inside AD cache.",
-		Units:      "names/s",
+		Title:      "Name cache hits",
+		Units:      "hits/s",
 		Fam:        "database",
 		Ctx:        "ad.name_cache_hits",
 		Priority:   prioADCacheHits,
-		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "ad_name_cache_hits_total", Name: "names", Algo: module.Incremental},
+			{ID: "ad_name_cache_hits_total", Name: "hits", Algo: module.Incremental},
 		},
 	}
 	adDRAReplicationIntersiteCompressedTrafficChart = module.Chart{
@@ -1635,30 +1583,28 @@ var (
 		},
 	}
 	// https://techcommunity.microsoft.com/t5/ask-the-directory-services-team/understanding-atq-performance-counters-yet-another-twist-in-the/ba-p/400293
-	adATQAverageRequestLatency = module.Chart{
+	adATQAverageRequestLatencyChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_atq_average_request_latency",
-		Title:      "Time to process a request.",
+		Title:      "Request processing time",
 		Units:      "seconds",
 		Fam:        "queue",
 		Ctx:        "ad.atq_average_request_latency",
 		Priority:   prioADATQAverageRequestLatency,
-		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "ad_atq_average_request_latency_period", Name: "interval", Algo: module.Incremental},
+			{ID: "ad_atq_average_request_latency", Name: "time", Div: precision},
 		},
 	}
-	adATQOutstandingRequests = module.Chart{
+	adATQOutstandingRequestsChart = module.Chart{
 		OverModule: "ad",
 		ID:         "ad_atq_outstanding_requests",
-		Title:      "Current Number of requests in the queue.",
+		Title:      "Outstanding requests",
 		Units:      "requests",
 		Fam:        "queue",
-		Ctx:        "ad.",
+		Ctx:        "ad.atq_outstanding_requests",
 		Priority:   prioADATQOutstandingRequests,
-		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "ad_atq_outstanding_requests_total", Name: "queue", Algo: module.Incremental},
+			{ID: "ad_atq_outstanding_requests", Name: "outstanding"},
 		},
 	}
 )
