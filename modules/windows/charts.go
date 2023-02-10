@@ -282,7 +282,7 @@ const (
 	prioExchangeActiveSyncPingCMDsPending
 	prioExchangeActiveSyncRequests
 	prioExchangeActiveSyncSyncCMDs
-	
+
 	// Request
 	prioExchangeAutoDiscoverRequests
 	prioExchangeAvailServiceRequests

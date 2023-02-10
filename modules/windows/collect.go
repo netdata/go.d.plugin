@@ -33,6 +33,7 @@ const (
 	collectorNetFrameworkCLRMemory          = "netframework_clrmemory"
 	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
 	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
+	collectorExchange                       = "exchange"
 )
 
 func (w *Windows) collect() (map[string]int64, error) {
@@ -135,6 +136,8 @@ func (w *Windows) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectNetFrameworkCLRRemoting(mx, pms)
 		case collectorNetFrameworkCLRSecurity:
 			w.collectNetFrameworkCLRSecurity(mx, pms)
+		case collectorExchange:
+			w.collectExchange(mx, pms)
 		}
 	}
 }
