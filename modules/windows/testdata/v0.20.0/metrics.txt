@@ -625,6 +625,26 @@ windows_exchange_transport_queues_unreachable{name="low_priority"} 0
 windows_exchange_transport_queues_unreachable{name="none_priority"} 0
 windows_exchange_transport_queues_unreachable{name="normal_priority"} 0
 windows_exchange_transport_queues_unreachable{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_workload_active_tasks Number of active tasks currently running in the background for workload management
+# TYPE windows_exchange_workload_active_tasks gauge
+windows_exchange_workload_active_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_active_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_completed_tasks Number of workload management tasks that have been completed
+# TYPE windows_exchange_workload_completed_tasks counter
+windows_exchange_workload_completed_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_completed_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_is_active Active indicates whether the workload is in an active (1) or paused (0) state
+# TYPE windows_exchange_workload_is_active gauge
+windows_exchange_workload_is_active{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 1
+windows_exchange_workload_is_active{name="microsoft_exchange_servicehost_darruntime"} 1
+# HELP windows_exchange_workload_queued_tasks Number of workload management tasks that are currently queued up waiting to be processed
+# TYPE windows_exchange_workload_queued_tasks counter
+windows_exchange_workload_queued_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_queued_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_yielded_tasks The total number of tasks that have been yielded by a workload
+# TYPE windows_exchange_workload_yielded_tasks counter
+windows_exchange_workload_yielded_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_yielded_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
 # HELP windows_iis_anonymous_users_total Total number of users who established an anonymous connection with the Web service (WebService.TotalAnonymousUsers)
 # TYPE windows_iis_anonymous_users_total counter
 windows_iis_anonymous_users_total{site="Default Web Site"} 3
