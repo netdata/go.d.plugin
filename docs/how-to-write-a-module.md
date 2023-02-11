@@ -5,7 +5,8 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/docs/how-to
 sidebar_label: "How to write a Netdata collector in Go"
 learn_status: "Published"
 learn_topic_type: "Tasks"
-learn_rel_path: "Developers/Collectors"
+learn_rel_path: "Developers"
+sidebar_position: 20
 -->
 
 # How to write a Netdata collector in Go
