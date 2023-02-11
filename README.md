@@ -5,7 +5,8 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 sidebar_label: "go.d.plugin"
 learn_status: "Published"
 learn_topic_type: "Tasks"
-learn_rel_path: "Developers/Collectors"
+learn_rel_path: "Developers/External plugis"
+sidebar_position: 1
 -->
 
 # go.d.plugin
