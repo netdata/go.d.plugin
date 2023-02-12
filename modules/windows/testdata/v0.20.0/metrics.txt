@@ -527,6 +527,25 @@ windows_exporter_collector_timeout{collector="process"} 0
 windows_exporter_collector_timeout{collector="service"} 0
 windows_exporter_collector_timeout{collector="system"} 0
 windows_exporter_collector_timeout{collector="tcp"} 0
+# HELP windows_exchange_ldap_long_running_ops_per_sec Long Running LDAP operations per second
+# TYPE windows_exchange_ldap_long_running_ops_per_sec counter
+windows_exchange_ldap_long_running_ops_per_sec{name="complianceauditservice"} 0
+windows_exchange_ldap_long_running_ops_per_sec{name="complianceauditservice_10"} 0
+# HELP windows_exchange_ldap_read_time_sec Time (sec) to send an LDAP read request and receive a response
+# TYPE windows_exchange_ldap_read_time_sec counter
+windows_exchange_ldap_read_time_sec{name="complianceauditservice"} 0.008
+windows_exchange_ldap_read_time_sec{name="complianceauditservice_10"} 0.018
+# HELP windows_exchange_ldap_search_time_sec Time (sec) to send an LDAP search request and receive a response
+# TYPE windows_exchange_ldap_search_time_sec counter
+windows_exchange_ldap_search_time_sec{name="complianceauditservice"} 0.046
+windows_exchange_ldap_search_time_sec{name="complianceauditservice_10"} 0.058
+# TYPE windows_exchange_ldap_timeout_errors_total counter
+windows_exchange_ldap_timeout_errors_total{name="complianceauditservice"} 0
+windows_exchange_ldap_timeout_errors_total{name="complianceauditservice_10"} 0
+# HELP windows_exchange_ldap_write_time_sec Time (sec) to send an LDAP Add/Modify/Delete request and receive a response
+# TYPE windows_exchange_ldap_write_time_sec counter
+windows_exchange_ldap_write_time_sec{name="complianceauditservice"} 0
+windows_exchange_ldap_write_time_sec{name="complianceauditservice_10"} 0
 # HELP windows_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
 # TYPE windows_exporter_perflib_snapshot_duration_seconds gauge
 windows_exporter_perflib_snapshot_duration_seconds 0.0054258
