@@ -5,7 +5,7 @@ description: "Monitors performance metrics using the nvidia-smi CLI tool."
 sidebar_label: "nvidia_smi-go.d.plugin (Recommended)"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Devices"
+learn_rel_path: "Integrations/Monitoring/Devices"
 -->
 
 # Nvidia GPU monitoring with Netdata

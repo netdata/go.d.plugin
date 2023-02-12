@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/dns
 sidebar_label: "DNS queries"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Networking"
+learn_rel_path: "Integrations/Monitoring/Networking"
 -->
 
 # DNS query monitoring with Netdata

@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/ela
 sidebar_label: "Elasticsearch"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Apps"
+learn_rel_path: "Integrations/Monitoring/Apps"
 -->
 
 # Elasticsearch monitoring with Netdata

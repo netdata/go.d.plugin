@@ -5,7 +5,7 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/ping
 sidebar_label: "Ping"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/QoS"
+learn_rel_path: "Integrations/Monitoring/QoS"
 -->
 
 # Ping monitoring with Netdata

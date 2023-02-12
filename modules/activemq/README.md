@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/act
 sidebar_label: "ActiveMQ"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Message brokers"
+learn_rel_path: "Integrations/Monitoring/Message brokers"
 -->
 
 # ActiveMQ monitoring with Netdata

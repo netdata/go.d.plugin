@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/red
 sidebar_label: "Redis"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Databases"
+learn_rel_path: "Integrations/Monitoring/Databases"
 -->
 
 # Redis monitoring with Netdata
