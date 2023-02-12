@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/pow
 sidebar_label: "PowerDNS Authoritative Server"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Devices"
+learn_rel_path: "Integrations/Monitor/Devices"
 -->
 
 # PowerDNS Authoritative Server monitoring with Netdata

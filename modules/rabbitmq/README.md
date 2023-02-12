@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/rab
 sidebar_label: "rabbitmq-go.d.plugin (Recommended)"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Message brokers"
+learn_rel_path: "Integrations/Monitor/Message brokers"
 -->
 
 # RabbitMQ monitoring with Netdata

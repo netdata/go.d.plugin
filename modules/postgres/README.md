@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/pos
 sidebar_label: "PostgresSQL"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Databases"
+learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
 # PostgreSQL monitoring with Netdata

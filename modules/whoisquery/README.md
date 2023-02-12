@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/who
 sidebar_label: "Whois domain expiry"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Webapps"
+learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
 # Whois domain expiry monitoring with Netdata

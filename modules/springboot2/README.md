@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/spr
 sidebar_label: "Java Spring Boot 2 applications"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Apm"
+learn_rel_path: "Integrations/Monitor/Apm"
 -->
 
 # Java Spring Boot 2 application monitoring with Netdata

@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/x50
 sidebar_label: "x509 certificates"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Webapps"
+learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
 # x509 certificate monitoring with Netdata
