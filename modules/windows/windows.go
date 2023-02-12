@@ -48,6 +48,7 @@ func New() *Windows {
 			netFrameworkCLRMemory:       make(map[string]bool),
 			netFrameworkCLRRemoting:     make(map[string]bool),
 			netFrameworkCLRSecurity:     make(map[string]bool),
+			exchangeWorkload:            make(map[string]bool),
 			mssqlInstances:              make(map[string]bool),
 			mssqlDBs:                    make(map[string]bool),
 		},
@@ -94,6 +95,7 @@ type (
 		netFrameworkCLRSecurity     map[string]bool
 		collectors                  map[string]bool
 		collection                  map[string]bool
+		exchangeWorkload            map[string]bool
 	}
 )
 

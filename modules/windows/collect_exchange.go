@@ -31,6 +31,12 @@ const (
 	metricTransportQueuesPoison                        = "windows_exchange_transport_queues_poison"
 	metricTransportQueuesRetryMailboxDelivery          = "windows_exchange_transport_queues_retry_mailbox_delivery"
 	metricTransportQueuesUnreachable                   = "windows_exchange_transport_queues_unreachable"
+
+	metricExchangeWorkloadActiveTasks    = "windows_exchange_workload_active_tasks"
+	metricExchangeWorkloadCompletedTasks = "windows_exchange_workload_completed_tasks"
+	metricExchangeWorkloadIsActive       = "windows_exchange_workload_is_active"
+	metricExchangeWorkloadQueuedTasks    = "windows_exchange_workload_queued_tasks"
+	metricExchangeWorkloadYeldedTasks    = "windows_exchange_workload_yielded_tasks"
 )
 
 var exchangeMetrics = []string{
@@ -96,6 +102,7 @@ func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 	}
 
 	exchangeAddTransportQueueMetric(mx, pms)
+	exchangeAddWorkloadMetric(mx, pms, w)
 }
 
 func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series) {
@@ -115,6 +122,39 @@ func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series)
 			metric := strings.TrimPrefix(pm.Name(), "windows_")
 			v := pm.Value
 			mx[metric+"_"+name] += int64(v)
+		}
+	}
+}
+
+func exchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
+	pms = pms.FindByNames(
+		metricExchangeWorkloadActiveTasks,
+		metricExchangeWorkloadCompletedTasks,
+		metricExchangeWorkloadIsActive,
+		metricExchangeWorkloadQueuedTasks,
+		metricExchangeWorkloadYeldedTasks,
+	)
+	seen := make(map[string]bool)
+
+	for _, pm := range pms {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_workload_")
+			v := pm.Value
+			mx["exchange_workload_"+name+"_"+metric] += int64(v)
+		}
+	}
+
+	for name := range seen {
+		if !w.cache.exchangeWorkload[name] {
+			w.cache.exchangeWorkload[name] = true
+			w.addExchangeWorkloadCharts(name)
+		}
+	}
+	for name := range w.cache.exchangeWorkload {
+		if !seen[name] {
+			delete(w.cache.exchangeWorkload, name)
+			w.removeCertificateTemplateCharts(name)
 		}
 	}
 }
