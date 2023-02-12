@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/flu
 sidebar_label: "Fluentd"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Logs"
+learn_rel_path: "Integrations/Monitor/Logs"
 -->
 
 # Fluentd monitoring with Netdata

@@ -4,7 +4,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/chr
 sidebar_label: "Chrony"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Apps"
+learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
 # Chrony monitoring with Netdata

@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/por
 sidebar_label: "TCP endpoints"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitoring/Remotes"
+learn_rel_path: "Integrations/Monitor/Remotes"
 -->
 
 # TCP endpoint monitoring with Netdata
