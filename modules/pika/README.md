@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/pik
 sidebar_label: "Pika"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Storage"
+learn_rel_path: "Integrations/Monitoring/Storage"
 -->
 
 # Pika monitoring with Netdata

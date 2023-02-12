@@ -5,7 +5,7 @@ description: "Monitors NVMe devices health metrics using the nvme CLI tool."
 sidebar_label: "NVMe devices"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Devices"
+learn_rel_path: "Integrations/Monitoring/Devices"
 -->
 
 # NVMe devices monitoring with Netdata

@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/sup
 sidebar_label: "Supervisord"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Virtualized environments/Virtualize hosts"
+learn_rel_path: "Integrations/Monitoring/Virtualized environments/Virtualize hosts"
 -->
 
 # Supervisord monitoring with Netdata

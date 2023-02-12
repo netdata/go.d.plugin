@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/php
 sidebar_label: "PHP-FPM"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Webapps"
+learn_rel_path: "Integrations/Monitoring/Webapps"
 -->
 
 # PHP-FPM monitoring with Netdata

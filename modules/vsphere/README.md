@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/vsp
 sidebar_label: "vCenter Servers"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Virtualized environments/Virtualize hosts"
+learn_rel_path: "Integrations/Monitoring/Virtualized environments/Virtualize hosts"
 -->
 
 # vCenter Server monitoring with Netdata

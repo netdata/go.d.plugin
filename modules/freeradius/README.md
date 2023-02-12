@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/fre
 sidebar_label: "FreeRADIUS"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Networking"
+learn_rel_path: "Integrations/Monitoring/Networking"
 -->
 
 # FreeRADIUS monitoring with Netdata

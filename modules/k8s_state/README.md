@@ -5,7 +5,7 @@ custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/k8s
 sidebar_label: "Kubernetes cluster state"
 learn_status: "Published"
 learn_topic_type: "References"
-learn_rel_path: "References/Collectors references/Container orchestrators/Kubernetes"
+learn_rel_path: "Integrations/Monitoring/Container orchestrators/Kubernetes"
 -->
 
 # Kubernetes cluster state monitoring with Netdata
