@@ -308,6 +308,13 @@ const (
 	prioExchangeTransportQueuesUnreachable
 	prioExchangeTransportQueuesPoison
 
+	// Workiload
+	prioExchangeWorkloadActiveTasks
+	prioExchangeWorkloadCompleteTasks
+	prioExchangeWorkloadQueueTasks
+	prioExchangeWorkloadYeldedTasks
+	prioExchangeWorkloadIsActive
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -2256,6 +2263,13 @@ var (
 		exchangeTransportQueuesUnreachable.Copy(),
 		exchangeTransportQueuesPoison.Copy(),
 	}
+	exchangeWorkloadChartsTmpl = module.Charts{
+		exchangeWorkloadActiveTasks.Copy(),
+		exchangeWorkloadCompletedTasks.Copy(),
+		exchangeWorkloadQueuedTasks.Copy(),
+		exchangeWorkloadYeldedTasks.Copy(),
+		exchangeWorkloadIsActiveTasks.Copy(),
+	}
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_activesync_ping_cmds",
@@ -2532,6 +2546,67 @@ var (
 			{ID: "exchange_transport_queues_poison_low_priority", Name: "Low"},
 			{ID: "exchange_transport_queues_poison_none_priority", Name: "None"},
 			{ID: "exchange_transport_queues_poison_normal_priority", Name: "Normal"},
+		},
+	}
+
+	exchangeWorkloadActiveTasks = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_workload_active_tasks",
+		Title:      "Number of active tasks",
+		Units:      "tasks",
+		Fam:        "workload",
+		Ctx:        "exchange.workload_active_tasks",
+		Priority:   prioExchangeWorkloadActiveTasks,
+		Dims: module.Dims{
+			{ID: "exchange_workload_%s_active_tasks", Name: "task"},
+		},
+	}
+	exchangeWorkloadCompletedTasks = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_workload_completed_tasks",
+		Title:      "Number of completed tasks",
+		Units:      "tasks",
+		Fam:        "workload",
+		Ctx:        "exchange.workload_completed_tasks",
+		Priority:   prioExchangeWorkloadCompleteTasks,
+		Dims: module.Dims{
+			{ID: "exchange_workload_%s_completed_tasks", Name: "task"},
+		},
+	}
+	exchangeWorkloadQueuedTasks = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_workload_queued_tasks",
+		Title:      "Number of queued tasks",
+		Units:      "tasks",
+		Fam:        "workload",
+		Ctx:        "exchange.workload_queued_tasks",
+		Priority:   prioExchangeWorkloadQueueTasks,
+		Dims: module.Dims{
+			{ID: "exchange_workload_%s_queued_tasks", Name: "task"},
+		},
+	}
+	exchangeWorkloadYeldedTasks = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_workload_yelded_tasks",
+		Title:      "Number of yelded tasks",
+		Units:      "tasks",
+		Fam:        "workload",
+		Ctx:        "exchange.workload_yelded_tasks",
+		Priority:   prioExchangeWorkloadYeldedTasks,
+		Dims: module.Dims{
+			{ID: "exchange_workload_%s_yelded_tasks", Name: "task"},
+		},
+	}
+	exchangeWorkloadIsActiveTasks = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_workload_isactive_tasks",
+		Title:      "Is task active?",
+		Units:      "boolean",
+		Fam:        "workload",
+		Ctx:        "exchange.workload_isactive_tasks",
+		Priority:   prioExchangeWorkloadIsActive,
+		Dims: module.Dims{
+			{ID: "exchange_workload_%s_isactive_tasks", Name: "task"},
 		},
 	}
 )
@@ -3496,6 +3571,29 @@ func (w *Windows) addExchangeCharts() {
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
 	}
+}
+
+func (w *Windows) addExchangeWorkloadCharts(loader string) {
+	charts := exchangeWorkloadChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, loader)
+		chart.Labels = []module.Label{
+			{Key: "exchange_workload", Value: loader},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, loader)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) removeExchangeWorkloadCharts(loader string) {
+	px := fmt.Sprintf("exchange_workload_%s", loader)
+	w.removeCharts(px)
 }
 
 func (w *Windows) addThermalZoneCharts(zone string) {
