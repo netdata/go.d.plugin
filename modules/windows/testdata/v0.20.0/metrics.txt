@@ -527,6 +527,30 @@ windows_exporter_collector_timeout{collector="process"} 0
 windows_exporter_collector_timeout{collector="service"} 0
 windows_exporter_collector_timeout{collector="system"} 0
 windows_exporter_collector_timeout{collector="tcp"} 0
+# HELP windows_exchange_http_proxy_avg_auth_latency Average time spent authenticating CAS requests over the last 200 samples
+# TYPE windows_exchange_http_proxy_avg_auth_latency gauge
+windows_exchange_http_proxy_avg_auth_latency{name="autodiscover"} 1
+windows_exchange_http_proxy_avg_auth_latency{name="eas"} 0
+# HELP windows_exchange_http_proxy_avg_cas_proccessing_latency_sec Average latency (sec) of CAS processing time over the last 200 reqs
+# TYPE windows_exchange_http_proxy_avg_cas_proccessing_latency_sec gauge
+windows_exchange_http_proxy_avg_cas_proccessing_latency_sec{name="autodiscover"} 0.003
+windows_exchange_http_proxy_avg_cas_proccessing_latency_sec{name="eas"} 0.003
+# HELP windows_exchange_http_proxy_mailbox_proxy_failure_rate % of failures between this CAS and MBX servers over the last 200 samples
+# TYPE windows_exchange_http_proxy_mailbox_proxy_failure_rate gauge
+windows_exchange_http_proxy_mailbox_proxy_failure_rate{name="autodiscover"} 0
+windows_exchange_http_proxy_mailbox_proxy_failure_rate{name="eas"} 0
+# HELP windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec Average latency (sec) of MailboxServerLocator web service calls
+# TYPE windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec gauge
+windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec{name="autodiscover"} 0.008
+windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec{name="eas"} 0.008
+# HELP windows_exchange_http_proxy_outstanding_proxy_requests Number of concurrent outstanding proxy requests
+# TYPE windows_exchange_http_proxy_outstanding_proxy_requests gauge
+windows_exchange_http_proxy_outstanding_proxy_requests{name="autodiscover"} 0
+windows_exchange_http_proxy_outstanding_proxy_requests{name="eas"} 0
+# HELP windows_exchange_http_proxy_requests_total Number of proxy requests processed each second
+# TYPE windows_exchange_http_proxy_requests_total counter
+windows_exchange_http_proxy_requests_total{name="autodiscover"} 27122
+windows_exchange_http_proxy_requests_total{name="eas"} 32519
 # HELP windows_exchange_ldap_long_running_ops_per_sec Long Running LDAP operations per second
 # TYPE windows_exchange_ldap_long_running_ops_per_sec counter
 windows_exchange_ldap_long_running_ops_per_sec{name="complianceauditservice"} 0
