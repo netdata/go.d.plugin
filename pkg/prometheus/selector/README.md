@@ -1,3 +1,11 @@
+<!--
+title: "Time series selector"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/pkg/prometheus/selector/README.md"
+sidebar_label: "Time series selector"
+learn_status: "Published"
+learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
+-->
+
 # Time Series Selector
 
 Selectors allow selecting and filtering of a set of time series.

@@ -1,3 +1,11 @@
+<!--
+title: "web"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/pkg/web/README.md"
+sidebar_label: "web"
+learn_status: "Published"
+learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
+-->
+
 # web
 
 This package contains HTTP related configurations (`Request`, `Client` and `HTTP` structs) and functions to
