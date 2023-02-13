@@ -315,12 +315,20 @@ const (
 	prioExchangeWorkloadYeldedTasks
 	prioExchangeWorkloadIsActive
 
-	// Exchange
+	// LDAP
 	prioExchangeLDAPLongRunningOPS
 	prioExchangeLDAPReadTime
 	prioExchangeLDAPSearchTime
 	prioExchangeLDAPTimeoutErrors
 	prioExchangeLDAPWriteTime
+
+	// HTTP Proxy
+	prioExchangeHTTPProxyAVGAuthLatency
+	prioExchangeHTTPProxyAVGCASProcessingLatency
+	prioExchangeHTTPProxyMailboxProxyFailureRate
+	prioExchangeHTTPProxyServerLocatorAvgLatency
+	prioExchangeHTTPProxyOutstandingProxyRequests
+	prioExchangeHTTPProxyRequestsTotal
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -2284,6 +2292,15 @@ var (
 		exchangeLDAPTimeoutErrors.Copy(),
 		exchangeLDAPWriteTime.Copy(),
 	}
+	exchangeHTTPProxyChartsTmpl = module.Charts{
+		exchangeProxyAvgAuthLatency.Copy(),
+		exchangeProxyAvgCasProcessingLatencySec.Copy(),
+		exchangeProxyMailboxProxyFailureRace.Copy(),
+		exchangeProxyMailboxServerLocatorAvgLatencySec.Copy(),
+		exchangeProxyOutstandingProxyRequests.Copy(),
+		exchangeProxyRequestsTotal.Copy(),
+	}
+
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_activesync_ping_cmds",
@@ -2682,6 +2699,79 @@ var (
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
 			{ID: "exchange_ldap_%s_write_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+		},
+	}
+
+	exchangeProxyAvgAuthLatency = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_avg_auth_latency",
+		Title:      "Average time spent authenticating CAS.",
+		Units:      "seconds",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_avg_auth_latency",
+		Priority:   prioExchangeHTTPProxyAVGAuthLatency,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_avg_auth_latency", Name: "period"},
+		},
+	}
+	exchangeProxyAvgCasProcessingLatencySec = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_avg_cas_proccessing_latency_sec",
+		Title:      "Average time spent authenticating CAS.",
+		Units:      "seconds",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_avg_cas_proccessing_latency_sec",
+		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_avg_cas_proccessing_latency_sec", Name: "average"},
+		},
+	}
+	exchangeProxyMailboxProxyFailureRace = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_mailbox_proxy_failure_rate",
+		Title:      "Average time spent authenticating CAS.",
+		Units:      "percentage",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_mailbox_proxy_failure_rate",
+		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: 1000},
+		},
+	}
+	exchangeProxyMailboxServerLocatorAvgLatencySec = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_mailbox_server_locator_avg_latency_sec",
+		Title:      "Average time spent authenticating CAS.",
+		Units:      "seconds",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_mailbox_server_locator_avg_latency_sec",
+		Priority:   prioExchangeHTTPProxyServerLocatorAvgLatency,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_mailbox_server_locator_avg_latency_sec", Name: "latency", Div: 1000},
+		},
+	}
+	exchangeProxyOutstandingProxyRequests = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_outstanding_proxy_requests",
+		Title:      "Average time spent authenticating CAS.",
+		Units:      "seconds",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_outstanding_proxy_requests",
+		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_outstanding_proxy_requests", Name: "average"},
+		},
+	}
+	exchangeProxyRequestsTotal = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_proxy_%s_requests_total",
+		Title:      "Number of proxy requests processed each second",
+		Units:      "requests",
+		Fam:        "proxy",
+		Ctx:        "exchange.proxy_requests_total",
+		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
+		Dims: module.Dims{
+			{ID: "exchange_proxy_%s_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 )
@@ -3691,6 +3781,29 @@ func (w *Windows) addExchangeLDAPCharts(name string) {
 
 func (w *Windows) removeExchangeLDAPCharts(name string) {
 	px := fmt.Sprintf("exchange_ldap_%s", name)
+	w.removeCharts(px)
+}
+
+func (w *Windows) addExchangeHTTPCharts(name string) {
+	charts := exchangeHTTPProxyChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "exchange_http_proxy", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) removeExchangeHTTPProxyCharts(name string) {
+	px := fmt.Sprintf("exchange_http_proxy_%s", name)
 	w.removeCharts(px)
 }
 
