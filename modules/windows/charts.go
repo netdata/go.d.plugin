@@ -2413,12 +2413,12 @@ var (
 		OverModule: "exchange",
 		ID:         "exchange_rpc_connection",
 		Title:      "Client connections maintained.",
-		Units:      "clients",
+		Units:      "connections",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_connection",
 		Priority:   prioExchangeRPCConnectionCount,
 		Dims: module.Dims{
-			{ID: "exchange_rpc_connection_count", Name: "clients"},
+			{ID: "exchange_rpc_connection_count", Name: "connections"},
 		},
 	}
 	exchangeRPCOperationsChart = module.Chart{
@@ -2695,7 +2695,7 @@ var (
 		Title:      "Time to send an LDAP search request and receive a response",
 		Units:      "second",
 		Fam:        "ldap",
-		Ctx:        "exchange.ldap_timeout_errors",
+		Ctx:        "exchange.ldap_write_time",
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
 			{ID: "exchange_ldap_%s_write_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
@@ -2729,7 +2729,7 @@ var (
 	exchangeProxyMailboxProxyFailureRace = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_mailbox_proxy_failure_rate",
-		Title:      "Average time spent authenticating CAS.",
+		Title:      "Percentage of failures between this CAS and MBX servers.",
 		Units:      "percentage",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_mailbox_proxy_failure_rate",
@@ -2741,7 +2741,7 @@ var (
 	exchangeProxyMailboxServerLocatorAvgLatencySec = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_mailbox_server_locator_avg_latency_sec",
-		Title:      "Average time spent authenticating CAS.",
+		Title:      "Average latency of MailboxServerLocator web service calls",
 		Units:      "seconds",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_mailbox_server_locator_avg_latency_sec",
@@ -2753,7 +2753,7 @@ var (
 	exchangeProxyOutstandingProxyRequests = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_outstanding_proxy_requests",
-		Title:      "Average time spent authenticating CAS.",
+		Title:      "Number of concurrent outstanding proxy requests.",
 		Units:      "seconds",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_outstanding_proxy_requests",
