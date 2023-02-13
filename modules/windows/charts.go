@@ -2565,7 +2565,7 @@ var (
 
 	exchangeWorkloadActiveTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_active_tasks",
+		ID:         "exchange_workload_%s_active_tasks",
 		Title:      "Number of active tasks",
 		Units:      "tasks",
 		Fam:        "workload",
@@ -2577,7 +2577,7 @@ var (
 	}
 	exchangeWorkloadCompletedTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_completed_tasks",
+		ID:         "exchange_workload_%s_completed_tasks",
 		Title:      "Number of completed tasks",
 		Units:      "tasks",
 		Fam:        "workload",
@@ -2589,7 +2589,7 @@ var (
 	}
 	exchangeWorkloadQueuedTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_queued_tasks",
+		ID:         "exchange_workload_%s_queued_tasks",
 		Title:      "Number of queued tasks",
 		Units:      "tasks",
 		Fam:        "workload",
@@ -2601,7 +2601,7 @@ var (
 	}
 	exchangeWorkloadYeldedTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_yelded_tasks",
+		ID:         "exchange_workload_%s_yelded_tasks",
 		Title:      "Number of yelded tasks",
 		Units:      "tasks",
 		Fam:        "workload",
@@ -2613,7 +2613,7 @@ var (
 	}
 	exchangeWorkloadIsActiveTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_isactive_tasks",
+		ID:         "exchange_workload_%s_isactive_tasks",
 		Title:      "Is task active?",
 		Units:      "boolean",
 		Fam:        "workload",
@@ -2626,7 +2626,7 @@ var (
 
 	exchangeLDAPLongRunningOPS = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_ldap_long_running_ops",
+		ID:         "exchange_ldap_%s_long_running_ops",
 		Title:      "Long Running LDAP operations per second.",
 		Units:      "boolean",
 		Fam:        "ldap",
