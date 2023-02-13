@@ -52,6 +52,7 @@ func New() *Windows {
 			mssqlDBs:                    make(map[string]bool),
 			exchangeWorkload:            make(map[string]bool),
 			exchangeLDAP:                make(map[string]bool),
+			exchangeHTTPProxy:           make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -98,6 +99,7 @@ type (
 		collection                  map[string]bool
 		exchangeWorkload            map[string]bool
 		exchangeLDAP                map[string]bool
+		exchangeHTTPProxy           map[string]bool
 	}
 )
 

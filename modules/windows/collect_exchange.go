@@ -43,6 +43,13 @@ const (
 	metricExchangeLDAPSearchTmeSec         = "windows_exchange_ldap_search_time_sec"
 	metricExchangeLDAPTimeoutErrorsTotal   = "windows_exchange_ldap_timeout_errors_total"
 	metricExchangeLDAPTimeSec              = "windows_exchange_ldap_write_time_sec"
+
+	metricExchangeHTTPProxyAvgAuthLatency                    = "windows_exchange_http_proxy_avg_auth_latency"
+	metricExchangeHTTPProxyAvgCASProcessingLatencySec        = "windows_exchange_http_proxy_avg_cas_proccessing_latency_sec"
+	metricExchangeHTTPProxyMailboxProxyFailureRate           = "windows_exchange_http_proxy_mailbox_proxy_failure_rate"
+	metricExchangeHTTPProxyMailboxServerLocatorAvgLatencySec = "windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec"
+	metricExchangeHTTPProxyOutstandingProxyRequests          = "windows_exchange_http_proxy_outstanding_proxy_requests"
+	metricExchangeHTTPProxyRequestsTotal                     = "windows_exchange_http_proxy_requests_total"
 )
 
 var exchangeMetrics = []string{
@@ -198,6 +205,43 @@ func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Window
 		if !seen[name] {
 			delete(w.cache.exchangeLDAP, name)
 			w.removeExchangeLDAPCharts(name)
+		}
+	}
+}
+
+func exchangeAddHTTPProxyMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
+	pms = pms.FindByNames(
+		metricExchangeHTTPProxyAvgAuthLatency,
+		metricExchangeHTTPProxyAvgCASProcessingLatencySec,
+		metricExchangeHTTPProxyMailboxProxyFailureRate,
+		metricExchangeHTTPProxyMailboxServerLocatorAvgLatencySec,
+		metricExchangeHTTPProxyOutstandingProxyRequests,
+		metricExchangeHTTPProxyRequestsTotal,
+	)
+	seen := make(map[string]bool)
+
+	for _, pm := range pms {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_http_proxy_")
+			v := pm.Value
+			if strings.HasSuffix(pm.Name(), "_sec") {
+				v *= precision
+			}
+			mx["exchange_http_proxy_"+name+"_"+metric] += int64(v)
+		}
+	}
+
+	for name := range seen {
+		if !w.cache.exchangeHTTPProxy[name] {
+			w.cache.exchangeHTTPProxy[name] = true
+			w.addExchangeHTTPCharts(name)
+		}
+	}
+	for name := range w.cache.exchangeHTTPProxy {
+		if !seen[name] {
+			delete(w.cache.exchangeHTTPProxy, name)
+			w.removeExchangeHTTPProxyCharts(name)
 		}
 	}
 }
