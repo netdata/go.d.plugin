@@ -68,13 +68,11 @@ Each Windows host (data collection job) will be identifiable as an "instance" in
 
 ### Windows Exporter Options
 
-[Prometheus windows exporter](https://github.com/prometheus-community/windows_exporter) does not expose all metrics by default. To enable a specific metric, it is necessary to pass as argument for the option `--collectors.enabled` the module name. 
+Some `windows_exporter` collectors are [disabled by default](https://github.com/prometheus-community/windows_exporter#collectors). To enable a specific collector, pass its name as an argument to the `--collectors.enabled` option.
 
-Suppose you want to monitor on your environment Active Directory, IIS, and Memory. To achieve this goal you need to start Windows exporter with the following options:
+E.g.:
 
 > .\windows_exporter-0.20.0-amd64.exe --collectors.enabled "ad,iis,memory"
-
-After windows exporter is running you can start netdata.
 
 ## Metrics
 
@@ -337,6 +335,3 @@ give you clues as to why the collector isn't working.
   ./go.d.plugin -d -m windows
   ```
 
-### Slow response
-
-When windows exporter is slow to answer queries from `go.d.plugin`, it is possible the collector will stop the module. To avoid this set a higher `timeout` value for the `job`.
