@@ -2645,60 +2645,60 @@ var (
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_long_running_ops",
 		Title:      "Long Running LDAP operations per second.",
-		Units:      "boolean",
+		Units:      "operations",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_long_running_ops_per_sec",
 		Priority:   prioExchangeLDAPLongRunningOPS,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_long_running_ops_per_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_long_running_ops_per_sec", Name: "ldap", Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPReadTime = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_read_time",
 		Title:      "Time to send an LDAP read request and receive a response.",
-		Units:      "boolean",
+		Units:      "seconds",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_read_time",
 		Priority:   prioExchangeLDAPReadTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_read_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_read_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPSearchTime = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_search_time",
 		Title:      "Time to send an LDAP search request and receive a response",
-		Units:      "boolean",
+		Units:      "seconds",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_search_time",
 		Priority:   prioExchangeLDAPSearchTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_search_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_search_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPTimeoutErrors = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_timeout_errors",
 		Title:      "Time to send an LDAP search request and receive a response",
-		Units:      "boolean",
+		Units:      "errors",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_timeout_errors",
 		Priority:   prioExchangeLDAPTimeoutErrors,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "errors", Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPWriteTime = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_write_time",
 		Title:      "Time to send an LDAP search request and receive a response",
-		Units:      "boolean",
+		Units:      "second",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_timeout_errors",
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_write_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_write_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
 		},
 	}
 

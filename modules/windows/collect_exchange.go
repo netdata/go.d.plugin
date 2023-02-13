@@ -181,7 +181,7 @@ func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Window
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_ldap_")
 			v := pm.Value
-			if strings.HasSuffix(pm.Name(), "_sec") {
+			if strings.HasSuffix(pm.Name(), "_sec") && strings.HasSuffix(pm.Name(), "_per_sec") == false {
 				v *= precision
 			}
 			mx["exchange_ldap_"+name+"_"+metric] += int64(v)
