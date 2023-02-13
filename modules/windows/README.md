@@ -336,3 +336,7 @@ give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m windows
   ```
+
+### Slow response
+
+When windows exporter is slow to answer queries from `go.d.plugin`, it is possible the collector will stop the module. To avoid this set a higher `timeout` value for the `job`.
