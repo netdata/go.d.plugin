@@ -99,7 +99,7 @@ func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 		mx["exchange_rpc_active_user_count"] = int64(pm.Max())
 	}
 	if pm := pms.FindByName(metricExchangeRPCAvgLatencySec); pm.Len() > 0 {
-		mx["exchange_rpc_avg_latency_sec"] = int64(pm.Max())
+		mx["exchange_rpc_avg_latency_sec"] = int64(pm.Max() * precision)
 	}
 	if pm := pms.FindByName(metricExchangeRPCConnectionCount); pm.Len() > 0 {
 		mx["exchange_rpc_connection_count"] = int64(pm.Max())
@@ -189,7 +189,7 @@ func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Window
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_ldap_")
 			v := pm.Value
-			if strings.HasSuffix(pm.Name(), "_sec") && strings.HasSuffix(pm.Name(), "_per_sec") == false {
+			if strings.HasSuffix(pm.Name(), "_sec") || strings.HasSuffix(pm.Name(), "_per_sec") {
 				v *= precision
 			}
 			mx["exchange_ldap_"+name+"_"+metric] += int64(v)
@@ -226,7 +226,7 @@ func exchangeAddHTTPProxyMetric(mx map[string]int64, pms prometheus.Series, w *W
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_http_proxy_")
 			v := pm.Value
-			if strings.HasSuffix(pm.Name(), "_sec") {
+			if strings.HasSuffix(pm.Name(), "_sec") || strings.HasSuffix(pm.Name(), "_rate") {
 				v *= precision
 			}
 			mx["exchange_http_proxy_"+name+"_"+metric] += int64(v)

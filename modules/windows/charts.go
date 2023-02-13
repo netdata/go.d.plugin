@@ -2662,7 +2662,7 @@ var (
 		Ctx:        "exchange.ldap_read_time",
 		Priority:   prioExchangeLDAPReadTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_read_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_read_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPSearchTime = module.Chart{
@@ -2674,7 +2674,7 @@ var (
 		Ctx:        "exchange.ldap_search_time",
 		Priority:   prioExchangeLDAPSearchTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_search_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_search_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPTimeoutErrors = module.Chart{
@@ -2698,7 +2698,7 @@ var (
 		Ctx:        "exchange.ldap_timeout_errors",
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_write_time_sec", Name: "period", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_write_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
 		},
 	}
 
@@ -2735,7 +2735,7 @@ var (
 		Ctx:        "exchange.http_proxy_mailbox_proxy_failure_rate",
 		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: 1000},
+			{ID: "exchange_http_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: precision},
 		},
 	}
 	exchangeProxyMailboxServerLocatorAvgLatencySec = module.Chart{
@@ -2747,7 +2747,7 @@ var (
 		Ctx:        "exchange.http_proxy_mailbox_server_locator_avg_latency_sec",
 		Priority:   prioExchangeHTTPProxyServerLocatorAvgLatency,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_mailbox_server_locator_avg_latency_sec", Name: "latency", Div: 1000},
+			{ID: "exchange_http_proxy_%s_mailbox_server_locator_avg_latency_sec", Name: "latency", Div: precision},
 		},
 	}
 	exchangeProxyOutstandingProxyRequests = module.Chart{

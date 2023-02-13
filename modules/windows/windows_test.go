@@ -360,7 +360,7 @@ func TestWindows_Collect(t *testing.T) {
 				"exchange_owa_current_unique_users":                                                             0,
 				"exchange_owa_requests_total":                                                                   0,
 				"exchange_rpc_active_user_count":                                                                0,
-				"exchange_rpc_avg_latency_sec":                                                                  0,
+				"exchange_rpc_avg_latency_sec":                                                                  1,
 				"exchange_rpc_connection_count":                                                                 0,
 				"exchange_rpc_operations_total":                                                                 9,
 				"exchange_rpc_requests":                                                                         0,
