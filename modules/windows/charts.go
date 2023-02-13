@@ -2601,7 +2601,7 @@ var (
 		Ctx:        "exchange.workload_completed_tasks",
 		Priority:   prioExchangeWorkloadCompleteTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_completed_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_completed_tasks", Name: "task", Algo: module.Incremental},
 		},
 	}
 	exchangeWorkloadQueuedTasks = module.Chart{
@@ -2613,7 +2613,7 @@ var (
 		Ctx:        "exchange.workload_queued_tasks",
 		Priority:   prioExchangeWorkloadQueueTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_queued_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_queued_tasks", Name: "task", Algo: module.Incremental},
 		},
 	}
 	exchangeWorkloadYeldedTasks = module.Chart{
@@ -2625,7 +2625,7 @@ var (
 		Ctx:        "exchange.workload_yelded_tasks",
 		Priority:   prioExchangeWorkloadYeldedTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_yielded_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_yielded_tasks", Name: "task", Algo: module.Incremental},
 		},
 	}
 	exchangeWorkloadIsActiveTasks = module.Chart{
