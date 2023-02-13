@@ -2630,10 +2630,10 @@ var (
 		Title:      "Long Running LDAP operations per second.",
 		Units:      "boolean",
 		Fam:        "ldap",
-		Ctx:        "exchange.ldap_long_running_ops",
+		Ctx:        "exchange.ldap_long_running_ops_per_sec",
 		Priority:   prioExchangeLDAPLongRunningOPS,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_long_running_ops_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_long_running_ops_per_sec", Name: "task", Div: 1000, Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPReadTime = module.Chart{
@@ -2681,7 +2681,7 @@ var (
 		Ctx:        "exchange.ldap_timeout_errors",
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "task", Div: 1000, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_write_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
 		},
 	}
 )

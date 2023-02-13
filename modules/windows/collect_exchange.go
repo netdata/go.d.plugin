@@ -37,6 +37,12 @@ const (
 	metricExchangeWorkloadIsActive       = "windows_exchange_workload_is_active"
 	metricExchangeWorkloadQueuedTasks    = "windows_exchange_workload_queued_tasks"
 	metricExchangeWorkloadYeldedTasks    = "windows_exchange_workload_yielded_tasks"
+
+	metricExchangeLDAPLongRunningOPSPerSec    = "windows_exchange_ldap_long_running_ops_per_sec"
+	metricExchangeLDAPReadTimeSec    = "windows_exchange_ldap_read_time_sec"
+	metricExchangeLDAPSearchTmeSec    = "windows_exchange_ldap_search_time_sec"
+	metricExchangeLDAPTimeoutErrorsTotal    = "windows_exchange_ldap_timeout_errors_total"
+	metricExchangeLDAPTimeSec    = "windows_exchange_ldap_write_time_sec"
 )
 
 var exchangeMetrics = []string{
@@ -103,6 +109,7 @@ func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 
 	exchangeAddTransportQueueMetric(mx, pms)
 	exchangeAddWorkloadMetric(mx, pms, w)
+	exchangeAddLDAPMetric(mx, pms, w)
 }
 
 func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series) {
@@ -154,6 +161,42 @@ func exchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series, w *Wi
 	for name := range w.cache.exchangeWorkload {
 		if !seen[name] {
 			delete(w.cache.exchangeWorkload, name)
+			w.removeCertificateTemplateCharts(name)
+		}
+	}
+}
+
+func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
+	pms = pms.FindByNames(
+		metricExchangeLDAPLongRunningOPSPerSec,
+		metricExchangeLDAPReadTimeSec,
+		metricExchangeLDAPSearchTmeSec,
+		metricExchangeLDAPTimeoutErrorsTotal,
+		metricExchangeLDAPTimeSec,
+	)
+	seen := make(map[string]bool)
+
+	for _, pm := range pms {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_ldap_")
+			v := pm.Value
+			if strings.HasSuffix(pm.Name(), "_sec") {
+				v *= precision
+			}
+			mx["exchange_ldap_"+name+"_"+metric] += int64(v)
+		}
+	}
+
+	for name := range seen {
+		if !w.cache.exchangeLDAP[name] {
+			w.cache.exchangeLDAP[name] = true
+			w.addExchangeWorkloadCharts(name)
+		}
+	}
+	for name := range w.cache.exchangeLDAP{
+		if !seen[name] {
+			delete(w.cache.exchangeLDAP, name)
 			w.removeCertificateTemplateCharts(name)
 		}
 	}
