@@ -52,22 +52,6 @@ const (
 	metricExchangeHTTPProxyRequestsTotal                     = "windows_exchange_http_proxy_requests_total"
 )
 
-var exchangeMetrics = []string{
-	metricExchangeActiveSyncPingCmdsPending,
-	metricExchangeActiveSyncRequestsTotal,
-	metricExchangeActiveSyncCMDsTotal,
-	metricExchangeAutoDiscoverRequestsTotal,
-	metricExchangeAvailServiceRequestsPerSec,
-	metricExchangeOWACurrentUniqueUsers,
-	metricExchangeOWARequestsTotal,
-	metricExchangeRPCActiveUserCount,
-	metricExchangeRPCAvgLatencySec,
-	metricExchangeRPCConnectionCount,
-	metricExchangeRPCOperationsTotal,
-	metricExchangeRPCRequests,
-	metricExchangeRPCUserCount,
-}
-
 func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 	if !w.cache.collection[collectorExchange] {
 		w.cache.collection[collectorExchange] = true
