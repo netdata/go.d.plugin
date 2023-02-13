@@ -278,26 +278,6 @@ const (
 	prioADFSWSFedTokenRequestsSuccess
 
 	// Exchange
-	// Sync
-	prioExchangeActiveSyncPingCMDsPending
-	prioExchangeActiveSyncRequests
-	prioExchangeActiveSyncSyncCMDs
-
-	// Request
-	prioExchangeAutoDiscoverRequests
-	prioExchangeAvailServiceRequests
-
-	//  OWA
-	prioExchangeOWACurrentUniqueUsers
-	prioExchangeOWARequestsTotal
-	// RPC
-	prioExchangeRPCActiveUserCount
-	prioExchangeRPCAvgLatency
-	prioExchangeRPCConnectionCount
-	prioExchangeRPCOperationsTotal
-	prioExchangeRPCRequestsTotal
-	prioExchangeRpcUserCount
-
 	// Transport Queue
 	prioExchangeTransportQueuesActiveMailboxDelivery
 	prioExchangeTransportQueuesExternalActiveRemoteDelivery
@@ -308,19 +288,36 @@ const (
 	prioExchangeTransportQueuesUnreachable
 	prioExchangeTransportQueuesPoison
 
-	// Workload
-	prioExchangeWorkloadActiveTasks
-	prioExchangeWorkloadCompleteTasks
-	prioExchangeWorkloadQueueTasks
-	prioExchangeWorkloadYeldedTasks
-	prioExchangeWorkloadIsActive
-
 	// LDAP
 	prioExchangeLDAPLongRunningOPS
 	prioExchangeLDAPReadTime
 	prioExchangeLDAPSearchTime
 	prioExchangeLDAPTimeoutErrors
 	prioExchangeLDAPWriteTime
+
+	//  OWA
+	prioExchangeOWACurrentUniqueUsers
+	prioExchangeOWARequestsTotal
+
+	// Sync
+	prioExchangeActiveSyncPingCMDsPending
+	prioExchangeActiveSyncRequests
+	prioExchangeActiveSyncSyncCMDs
+
+	// RPC
+	prioExchangeRPCActiveUserCount
+	prioExchangeRPCAvgLatency
+	prioExchangeRPCConnectionCount
+	prioExchangeRPCOperationsTotal
+	prioExchangeRPCRequestsTotal
+	prioExchangeRpcUserCount
+
+	// Workload
+	prioExchangeWorkloadActiveTasks
+	prioExchangeWorkloadCompleteTasks
+	prioExchangeWorkloadQueueTasks
+	prioExchangeWorkloadYeldedTasks
+	prioExchangeWorkloadIsActive
 
 	// HTTP Proxy
 	prioExchangeHTTPProxyAVGAuthLatency
@@ -329,6 +326,10 @@ const (
 	prioExchangeHTTPProxyServerLocatorAvgLatency
 	prioExchangeHTTPProxyOutstandingProxyRequests
 	prioExchangeHTTPProxyRequestsTotal
+
+	// Request
+	prioExchangeAutoDiscoverRequests
+	prioExchangeAvailServiceRequests
 
 	prioCollectorDuration
 	prioCollectorStatus
