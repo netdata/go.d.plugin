@@ -38,11 +38,11 @@ const (
 	metricExchangeWorkloadQueuedTasks    = "windows_exchange_workload_queued_tasks"
 	metricExchangeWorkloadYeldedTasks    = "windows_exchange_workload_yielded_tasks"
 
-	metricExchangeLDAPLongRunningOPSPerSec    = "windows_exchange_ldap_long_running_ops_per_sec"
-	metricExchangeLDAPReadTimeSec    = "windows_exchange_ldap_read_time_sec"
-	metricExchangeLDAPSearchTmeSec    = "windows_exchange_ldap_search_time_sec"
-	metricExchangeLDAPTimeoutErrorsTotal    = "windows_exchange_ldap_timeout_errors_total"
-	metricExchangeLDAPTimeSec    = "windows_exchange_ldap_write_time_sec"
+	metricExchangeLDAPLongRunningOPSPerSec = "windows_exchange_ldap_long_running_ops_per_sec"
+	metricExchangeLDAPReadTimeSec          = "windows_exchange_ldap_read_time_sec"
+	metricExchangeLDAPSearchTmeSec         = "windows_exchange_ldap_search_time_sec"
+	metricExchangeLDAPTimeoutErrorsTotal   = "windows_exchange_ldap_timeout_errors_total"
+	metricExchangeLDAPTimeSec              = "windows_exchange_ldap_write_time_sec"
 )
 
 var exchangeMetrics = []string{
@@ -161,7 +161,7 @@ func exchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series, w *Wi
 	for name := range w.cache.exchangeWorkload {
 		if !seen[name] {
 			delete(w.cache.exchangeWorkload, name)
-			w.removeCertificateTemplateCharts(name)
+			w.removeExchangeWorkloadCharts(name)
 		}
 	}
 }
@@ -191,13 +191,13 @@ func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Window
 	for name := range seen {
 		if !w.cache.exchangeLDAP[name] {
 			w.cache.exchangeLDAP[name] = true
-			w.addExchangeWorkloadCharts(name)
+			w.addExchangeLDAPCharts(name)
 		}
 	}
-	for name := range w.cache.exchangeLDAP{
+	for name := range w.cache.exchangeLDAP {
 		if !seen[name] {
 			delete(w.cache.exchangeLDAP, name)
-			w.removeCertificateTemplateCharts(name)
+			w.removeExchangeLDAPCharts(name)
 		}
 	}
 }

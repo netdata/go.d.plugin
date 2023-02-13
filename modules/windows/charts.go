@@ -2601,26 +2601,26 @@ var (
 	}
 	exchangeWorkloadYeldedTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_%s_yelded_tasks",
-		Title:      "Number of yelded tasks",
+		ID:         "exchange_workload_%s_yielded_tasks",
+		Title:      "Number of yielded tasks",
 		Units:      "tasks",
 		Fam:        "workload",
 		Ctx:        "exchange.workload_yelded_tasks",
 		Priority:   prioExchangeWorkloadYeldedTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_yelded_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_yielded_tasks", Name: "task"},
 		},
 	}
 	exchangeWorkloadIsActiveTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_%s_isactive_tasks",
+		ID:         "exchange_workload_%s_is_active_tasks",
 		Title:      "Is task active?",
 		Units:      "boolean",
 		Fam:        "workload",
 		Ctx:        "exchange.workload_isactive_tasks",
 		Priority:   prioExchangeWorkloadIsActive,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_isactive_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_is_active", Name: "task"},
 		},
 	}
 
