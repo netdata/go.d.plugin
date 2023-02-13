@@ -308,12 +308,19 @@ const (
 	prioExchangeTransportQueuesUnreachable
 	prioExchangeTransportQueuesPoison
 
-	// Workiload
+	// Workload
 	prioExchangeWorkloadActiveTasks
 	prioExchangeWorkloadCompleteTasks
 	prioExchangeWorkloadQueueTasks
 	prioExchangeWorkloadYeldedTasks
 	prioExchangeWorkloadIsActive
+
+	// Exchange
+	prioExchangeLDAPLongRunningOPS
+	prioExchangeLDAPReadTime
+	prioExchangeLDAPSearchTime
+	prioExchangeLDAPTimeoutErrors
+	prioExchangeLDAPWriteTime
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -2270,6 +2277,13 @@ var (
 		exchangeWorkloadYeldedTasks.Copy(),
 		exchangeWorkloadIsActiveTasks.Copy(),
 	}
+	exchangeLDAPChartsTmpl = module.Charts{
+		exchangeLDAPLongRunningOPS.Copy(),
+		exchangeLDAPReadTime.Copy(),
+		exchangeLDAPSearchTime.Copy(),
+		exchangeLDAPTimeoutErrors.Copy(),
+		exchangeLDAPWriteTime.Copy(),
+	}
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_activesync_ping_cmds",
@@ -2607,6 +2621,67 @@ var (
 		Priority:   prioExchangeWorkloadIsActive,
 		Dims: module.Dims{
 			{ID: "exchange_workload_%s_isactive_tasks", Name: "task"},
+		},
+	}
+
+	exchangeLDAPLongRunningOPS = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_long_running_ops",
+		Title:      "Long Running LDAP operations per second.",
+		Units:      "boolean",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_long_running_ops",
+		Priority:   prioExchangeLDAPLongRunningOPS,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_long_running_ops_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+		},
+	}
+	exchangeLDAPReadTime = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_%s_read_time",
+		Title:      "Time to send an LDAP read request and receive a response.",
+		Units:      "boolean",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_read_time",
+		Priority:   prioExchangeLDAPReadTime,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_read_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+		},
+	}
+	exchangeLDAPSearchTime = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_%s_search_time",
+		Title:      "Time to send an LDAP search request and receive a response",
+		Units:      "boolean",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_search_time",
+		Priority:   prioExchangeLDAPSearchTime,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_search_time_sec", Name: "task", Div: 1000, Algo: module.Incremental},
+		},
+	}
+	exchangeLDAPTimeoutErrors = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_%s_timeout_errors",
+		Title:      "Time to send an LDAP search request and receive a response",
+		Units:      "boolean",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_timeout_errors",
+		Priority:   prioExchangeLDAPTimeoutErrors,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "task", Div: 1000, Algo: module.Incremental},
+		},
+	}
+	exchangeLDAPWriteTime = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_%s_write_time",
+		Title:      "Time to send an LDAP search request and receive a response",
+		Units:      "boolean",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_timeout_errors",
+		Priority:   prioExchangeLDAPWriteTime,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "task", Div: 1000, Algo: module.Incremental},
 		},
 	}
 )
@@ -3593,6 +3668,29 @@ func (w *Windows) addExchangeWorkloadCharts(loader string) {
 
 func (w *Windows) removeExchangeWorkloadCharts(loader string) {
 	px := fmt.Sprintf("exchange_workload_%s", loader)
+	w.removeCharts(px)
+}
+
+func (w *Windows) addExchangeLDAPCharts(name string) {
+	charts := exchangeLDAPChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "exchange_ldap", Value: name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) removeExchangeLDAPCharts(name string) {
+	px := fmt.Sprintf("exchange_ldap_%s", name)
 	w.removeCharts(px)
 }
 
