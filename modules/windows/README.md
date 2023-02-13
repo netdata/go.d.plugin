@@ -66,6 +66,16 @@ For production use, you need to install Netdata on one or more nodes running Lin
 Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
 Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
 
+### Windows Exporter Options
+
+[Prometheus windows exporter](https://github.com/prometheus-community/windows_exporter) does not expose all metrics by default. To enable a specific metric, it is necessary to pass as argument for the option `--collectors.enabled` the module name. 
+
+Suppose you want to monitor on your environment Active Directory, IIS, and Memory. To achieve this goal you need to start Windows exporter with the following options:
+
+> .\windows_exporter-0.20.0-amd64.exe --collectors.enabled "ad,iis,memory"
+
+After windows exporter is running you can start netdata.
+
 ## Metrics
 
 All metrics have prefix.
