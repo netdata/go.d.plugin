@@ -117,6 +117,7 @@ func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 	exchangeAddTransportQueueMetric(mx, pms)
 	exchangeAddWorkloadMetric(mx, pms, w)
 	exchangeAddLDAPMetric(mx, pms, w)
+	exchangeAddHTTPProxyMetric(mx, pms, w)
 }
 
 func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series) {

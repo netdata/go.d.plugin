@@ -2708,10 +2708,10 @@ var (
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "seconds",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_avg_auth_latency",
+		Ctx:        "exchange.http_proxy_avg_auth_latency",
 		Priority:   prioExchangeHTTPProxyAVGAuthLatency,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_avg_auth_latency", Name: "period"},
+			{ID: "exchange_http_proxy_%s_avg_auth_latency", Name: "period"},
 		},
 	}
 	exchangeProxyAvgCasProcessingLatencySec = module.Chart{
@@ -2720,10 +2720,10 @@ var (
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "seconds",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_avg_cas_proccessing_latency_sec",
+		Ctx:        "exchange.http_proxy_avg_cas_proccessing_latency_sec",
 		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_avg_cas_proccessing_latency_sec", Name: "average"},
+			{ID: "exchange_http_proxy_%s_avg_cas_proccessing_latency_sec", Name: "average"},
 		},
 	}
 	exchangeProxyMailboxProxyFailureRace = module.Chart{
@@ -2732,10 +2732,10 @@ var (
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "percentage",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_mailbox_proxy_failure_rate",
+		Ctx:        "exchange.http_proxy_mailbox_proxy_failure_rate",
 		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: 1000},
+			{ID: "exchange_http_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: 1000},
 		},
 	}
 	exchangeProxyMailboxServerLocatorAvgLatencySec = module.Chart{
@@ -2744,10 +2744,10 @@ var (
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "seconds",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_mailbox_server_locator_avg_latency_sec",
+		Ctx:        "exchange.http_proxy_mailbox_server_locator_avg_latency_sec",
 		Priority:   prioExchangeHTTPProxyServerLocatorAvgLatency,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_mailbox_server_locator_avg_latency_sec", Name: "latency", Div: 1000},
+			{ID: "exchange_http_proxy_%s_mailbox_server_locator_avg_latency_sec", Name: "latency", Div: 1000},
 		},
 	}
 	exchangeProxyOutstandingProxyRequests = module.Chart{
@@ -2756,10 +2756,10 @@ var (
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "seconds",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_outstanding_proxy_requests",
+		Ctx:        "exchange.http_proxy_outstanding_proxy_requests",
 		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_outstanding_proxy_requests", Name: "average"},
+			{ID: "exchange_http_proxy_%s_outstanding_proxy_requests", Name: "average"},
 		},
 	}
 	exchangeProxyRequestsTotal = module.Chart{
@@ -2768,10 +2768,10 @@ var (
 		Title:      "Number of proxy requests processed each second",
 		Units:      "requests",
 		Fam:        "proxy",
-		Ctx:        "exchange.proxy_requests_total",
+		Ctx:        "exchange.http_proxy_requests_total",
 		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
 		Dims: module.Dims{
-			{ID: "exchange_proxy_%s_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_http_proxy_%s_requests_total", Name: "requests", Algo: module.Incremental},
 		},
 	}
 )
