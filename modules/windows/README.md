@@ -68,11 +68,7 @@ Each Windows host (data collection job) will be identifiable as an "instance" in
 
 ### Windows Exporter Options
 
-Some `windows_exporter` collectors are [disabled by default](https://github.com/prometheus-community/windows_exporter#collectors). To enable a specific collector, pass its name as an argument to the `--collectors.enabled` option.
-
-E.g.:
-
-> .\windows_exporter-0.20.0-amd64.exe --collectors.enabled "ad,iis,memory"
+Some `windows_exporter` collectors are [disabled by default](https://github.com/prometheus-community/windows_exporter#collectors). To enable a specific collector, pass its name as an argument to the `--collectors.enabled` option. See [examples](https://github.com/prometheus-community/windows_exporter#examples).
 
 ## Metrics
 
