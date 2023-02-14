@@ -66,6 +66,10 @@ For production use, you need to install Netdata on one or more nodes running Lin
 Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
 Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
 
+### Windows Exporter Options
+
+Some `windows_exporter` collectors are [disabled by default](https://github.com/prometheus-community/windows_exporter#collectors). To enable a specific collector, pass its name as an argument to the `--collectors.enabled` option. See [examples](https://github.com/prometheus-community/windows_exporter#examples).
+
 ## Metrics
 
 All metrics have prefix.
@@ -326,3 +330,4 @@ give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m windows
   ```
+
