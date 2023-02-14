@@ -1,3 +1,11 @@
+<!--
+title: "stm"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/pkg/stm/README.md"
+sidebar_label: "stm"
+learn_status: "Published"
+learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
+-->
+
 # stm
 
 This package helps you to convert a struct to `map[string]int64`.

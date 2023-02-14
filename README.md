@@ -5,7 +5,7 @@ custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/README.md
 sidebar_label: "go.d.plugin"
 learn_status: "Published"
 learn_topic_type: "Tasks"
-learn_rel_path: "Developers/External plugins"
+learn_rel_path: "Developers/External plugins/go.d.plugin"
 sidebar_position: 1
 -->
 
@@ -159,9 +159,6 @@ forums. We have a whole [category](https://community.netdata.cloud/c/agent-devel
 ### How to develop a collector
 
 - Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
-- Read
-  the [How to develop a collector in Go](https://github.com/netdata/go.d.plugin/tree/master/docs/how-to-write-a-module.md)
-  guide.
 - [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal
   GitHub account.
 - [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.)

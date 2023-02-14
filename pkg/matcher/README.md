@@ -1,4 +1,13 @@
-# Supported Format
+<!--
+title: "matcher"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/pkg/matcher/README.md"
+sidebar_label: "matcher"
+learn_status: "Published"
+learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
+-->
+
+# matcher
+## Supported Format
 
 * string
 * glob

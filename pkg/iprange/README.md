@@ -1,3 +1,11 @@
+<!--
+title: "iprange"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/pkg/iprange/README.md"
+sidebar_label: "iprange"
+learn_status: "Published"
+learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
+-->
+
 # iprange
 
 This package helps you to work with IP ranges.
