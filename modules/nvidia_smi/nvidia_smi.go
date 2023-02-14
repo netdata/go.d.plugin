@@ -22,7 +22,7 @@ func init() {
 func New() *NvidiaSMI {
 	return &NvidiaSMI{
 		Config: Config{
-			Timeout:      web.Duration{Duration: time.Second * 5},
+			Timeout:      web.Duration{Duration: time.Second * 10},
 			UseCSVFormat: true,
 		},
 		binName: "nvidia-smi",
