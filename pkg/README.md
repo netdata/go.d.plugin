@@ -9,7 +9,7 @@ learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
 # Helper Packages
 
 - if you need IP ranges consider to
-  use [`iprange`](https://github.com/netdata/go.d.plugin/blob/master/modules/pulsar/README.md).
+  use [`iprange`](https://github.com/netdata/go.d.plugin/blob/master/pkg/iprange/README.md).
 - if you parse an application log files, then [`log`](https://github.com/netdata/go.d.plugin/tree/master/pkg/logs) is
   handy.
 - if you need filtering
