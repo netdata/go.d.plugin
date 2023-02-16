@@ -38,9 +38,6 @@ var reSpace = regexp.MustCompile(`\s+`)
 
 var ndInternalMonitoringDisabled = os.Getenv("NETDATA_INTERNALS_MONITORING") == "NO"
 
-var lastGUID = ""
-var lastGUIDLock = &sync.Mutex{}
-
 func newRuntimeChart(pluginName string) *Chart {
 	// this is needed to keep the same name as we had before https://github.com/netdata/go.d.plugin/issues/650
 	ctxName := pluginName
@@ -361,12 +358,7 @@ func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinc
 		j.vnodeCreated = true
 	}
 
-	lastGUIDLock.Lock()
-	if lastGUID != j.vnodeGUID {
-		lastGUID = j.vnodeGUID
-		_ = j.api.HOST(j.vnodeGUID)
-	}
-	lastGUIDLock.Unlock()
+	_ = j.api.HOST(j.vnodeGUID)
 
 	if !ndInternalMonitoringDisabled && !j.runChart.created {
 		j.runChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())
