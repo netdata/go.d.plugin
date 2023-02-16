@@ -11,22 +11,46 @@ sidebar_position: 20
 
 # How to write a Netdata collector in Go
 
-Let's assume you want to write a collector named `example`.
+## Prerequisites
 
-Steps are:
+- Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
+- [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal
+  GitHub account.
+- [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.)
+  locally the **forked** repository (e.g `git clone https://github.com/odyslam/go.d.plugin`).
+- Using a terminal, `cd` into the directory (e.g `cd go.d.plugin`)
 
-- Add the source code to [`modules/example/`](https://github.com/netdata/go.d.plugin/tree/master/modules).
+
+## Write and test a simple collector
+
+> :exclamation: You can skip most of these steps if you first experiment directy with the existing 
+> [example module](https://github.com/netdata/go.d.plugin/tree/master/modules/example), which will 
+> give you an idea of  how things work.
+
+Let's assume you want to write a collector named `example2`.
+
+The steps are:
+
+- Add the source code to [`modules/example2/`](https://github.com/netdata/go.d.plugin/tree/master/modules).
     - [module interface](#module-interface).
     - [suggested module layout](#module-layout).
     - [helper packages](#helper-packages).
-- Add the configuration to [`config/go.d/example.conf`](https://github.com/netdata/go.d.plugin/tree/master/config/go.d).
+- Add the configuration to [`config/go.d/example2.conf`](https://github.com/netdata/go.d.plugin/tree/master/config/go.d).
 - Add the module to [`config/go.d.conf`](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
 - Import the module in [`modules/init.go`](https://github.com/netdata/go.d.plugin/blob/master/modules/init.go).
 - Update the [`available modules list`](https://github.com/netdata/go.d.plugin#available-modules).
+- To build it, run `make` from the plugin root dir. This will create a new `go.d.plugin` binary that includes your newly
+  developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
+- Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same
+  output that is sent to the Netdata Agent and is transformed into charts. You can read more about this collector API in
+  our [documentation](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#external-plugins-api).
+- If you want to test the collector with the actual Netdata Agent, you need to replace the `go.d.plugin` binary that
+  exists in the Netdata Agent installation directory with the one you just compiled. Once
+  you [restart](https://learn.netdata.cloud/docs/configure/start-stop-restart) the Netdata Agent, it will detect and run
+  it, creating all the charts. It is advised not to remove the default `go.d.plugin` binary, but simply rename it
+  to `go.d.plugin.old` so that the Agent doesn't run it, but you can easily rename it back once you are done.
+- Run `make clean` when you are done with testing.
 
-> :exclamation: If you prefer reading the source code, then check
-> [the implementation](https://github.com/netdata/go.d.plugin/tree/master/modules/example) of the `example` module,
-> it should give you an idea of  how things work.
 
 ## Module Interface
 
@@ -262,3 +286,4 @@ be [`testdata`](https://golang.org/cmd/go/#hdr-Package_lists_and_patterns).
 ## Helper packages
 
 There are [some helper packages](https://github.com/netdata/go.d.plugin/tree/master/pkg) for writing a module.
+
