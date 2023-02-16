@@ -154,11 +154,11 @@ Then [restart netdata](https://github.com/netdata/netdata/blob/master/docs/confi
 
 If you want to contribute to this project, we are humbled. Please take a look at
 our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook) and don't hesitate to contact us in our
-forums. We have a whole [category](https://community.netdata.cloud/c/agent-development/9) just for this purpose!
+forums.
 
 ### How to develop a collector
 
-Read [how to write a Netdata collector in Go](https://github.com/netdata/netdata/blob/master/docs/how-to-write-a-module.md).
+Read [how to write a Netdata collector in Go](https://github.com/netdata/go.d.plugin/blob/master/docs/how-to-write-a-module.md).
 
 ## Troubleshooting
 
