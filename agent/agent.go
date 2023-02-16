@@ -17,6 +17,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/job/registry"
 	"github.com/netdata/go.d.plugin/agent/job/run"
 	"github.com/netdata/go.d.plugin/agent/job/state"
+	"github.com/netdata/go.d.plugin/agent/job/vnode"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/logger"
@@ -33,6 +34,7 @@ type Config struct {
 	ConfDir           []string
 	ModulesConfDir    []string
 	ModulesSDConfPath []string
+	VnodesConfDir     []string
 	StateFile         string
 	LockDir           string
 	ModuleRegistry    module.Registry
@@ -46,6 +48,7 @@ type Agent struct {
 	ConfDir           multipath.MultiPath
 	ModulesConfDir    multipath.MultiPath
 	ModulesSDConfPath []string
+	VnodesConfDir     multipath.MultiPath
 	StateFile         string
 	LockDir           string
 	RunModule         string
@@ -63,6 +66,7 @@ func New(cfg Config) *Agent {
 		ConfDir:           cfg.ConfDir,
 		ModulesConfDir:    cfg.ModulesConfDir,
 		ModulesSDConfPath: cfg.ModulesSDConfPath,
+		VnodesConfDir:     cfg.VnodesConfDir,
 		StateFile:         cfg.StateFile,
 		LockDir:           cfg.LockDir,
 		RunModule:         cfg.RunModule,
@@ -137,7 +141,7 @@ func (a *Agent) run(ctx context.Context) {
 	defer func() { a.Info("instance is stopped") }()
 
 	cfg := a.loadPluginConfig()
-	a.Infof("using config: %s", cfg)
+	a.Infof("using config: %s", cfg.String())
 	if !cfg.Enabled {
 		a.Info("plugin is disabled in the configuration file, exiting...")
 		if isTerminal {
@@ -175,6 +179,14 @@ func (a *Agent) run(ctx context.Context) {
 	builder.PluginName = a.Name
 	builder.Out = a.Out
 	builder.Modules = enabled
+
+	if len(a.VnodesConfDir) > 0 {
+		a.Infof("looking for 'vnodes/' in %v", a.VnodesConfDir)
+		if s, _ := a.VnodesConfDir.Find("vnodes/"); s != "" {
+			a.Infof("found '%s'", s)
+			builder.VNodeRegistry = vnode.NewRegistry(s)
+		}
+	}
 
 	if a.LockDir != "" {
 		builder.Registry = registry.NewFileLockRegistry(a.LockDir)

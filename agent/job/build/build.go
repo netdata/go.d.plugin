@@ -13,6 +13,7 @@ import (
 
 	jobpkg "github.com/netdata/go.d.plugin/agent/job"
 	"github.com/netdata/go.d.plugin/agent/job/confgroup"
+	"github.com/netdata/go.d.plugin/agent/job/vnode"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/logger"
 
@@ -38,19 +39,26 @@ type Registry interface {
 	Unregister(name string) error
 }
 
+type VNodeRegistry interface {
+	Lookup(key string) (*vnode.VirtualNode, bool)
+}
+
 type (
-	dummySaver    struct{}
-	dummyState    struct{}
-	dummyRegistry struct{}
+	noopSaver         struct{}
+	noopState         struct{}
+	noopRegistry      struct{}
+	noopVnodeRegistry struct{}
 )
 
-func (d dummySaver) Save(_ confgroup.Config, _ string) {}
-func (d dummySaver) Remove(_ confgroup.Config)         {}
+func (n noopSaver) Save(_ confgroup.Config, _ string) {}
+func (n noopSaver) Remove(_ confgroup.Config)         {}
 
-func (d dummyState) Contains(_ confgroup.Config, _ ...string) bool { return false }
+func (n noopState) Contains(_ confgroup.Config, _ ...string) bool { return false }
 
-func (d dummyRegistry) Register(_ string) (bool, error) { return true, nil }
-func (d dummyRegistry) Unregister(_ string) error       { return nil }
+func (n noopRegistry) Register(_ string) (bool, error) { return true, nil }
+func (n noopRegistry) Unregister(_ string) error       { return nil }
+
+func (n noopVnodeRegistry) Lookup(_ string) (*vnode.VirtualNode, bool) { return nil, false }
 
 type state = string
 
@@ -71,10 +79,11 @@ type (
 		Modules    module.Registry
 		*logger.Logger
 
-		Runner    Runner
-		CurState  StateSaver
-		PrevState State
-		Registry  Registry
+		Runner        Runner
+		CurState      StateSaver
+		PrevState     State
+		Registry      Registry
+		VNodeRegistry VNodeRegistry
 
 		grpCache   *groupCache
 		startCache *startedCache
@@ -88,17 +97,18 @@ type (
 
 func NewManager() *Manager {
 	mgr := &Manager{
-		CurState:   dummySaver{},
-		PrevState:  dummyState{},
-		Registry:   dummyRegistry{},
-		Out:        io.Discard,
-		Logger:     logger.New("build", "manager"),
-		grpCache:   newGroupCache(),
-		startCache: newStartedCache(),
-		retryCache: newRetryCache(),
-		addCh:      make(chan []confgroup.Config),
-		removeCh:   make(chan []confgroup.Config),
-		retryCh:    make(chan confgroup.Config),
+		CurState:      noopSaver{},
+		PrevState:     noopState{},
+		Registry:      noopRegistry{},
+		VNodeRegistry: noopVnodeRegistry{},
+		Out:           io.Discard,
+		Logger:        logger.New("build", "manager"),
+		grpCache:      newGroupCache(),
+		startCache:    newStartedCache(),
+		retryCache:    newRetryCache(),
+		addCh:         make(chan []confgroup.Config),
+		removeCh:      make(chan []confgroup.Config),
+		retryCh:       make(chan confgroup.Config),
 	}
 	return mgr
 }
@@ -315,7 +325,7 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 		}
 	}
 
-	job := module.NewJob(module.JobConfig{
+	jobCfg := module.JobConfig{
 		PluginName:      m.PluginName,
 		Name:            cfg.Name(),
 		ModuleName:      cfg.Module(),
@@ -326,7 +336,21 @@ func (m *Manager) buildJob(cfg confgroup.Config) (*module.Job, error) {
 		Labels:          labels,
 		Module:          mod,
 		Out:             m.Out,
-	})
+	}
+
+	if cfg.Vnode() != "" {
+		n, ok := m.VNodeRegistry.Lookup(cfg.Vnode())
+		if !ok {
+			return nil, fmt.Errorf("vnode '%s' is not found", cfg.Vnode())
+		}
+
+		jobCfg.VnodeGUID = n.GUID
+		jobCfg.VnodeHostname = n.Hostname
+		jobCfg.VnodeLabels = n.Labels
+	}
+
+	job := module.NewJob(jobCfg)
+
 	return job, nil
 }
 

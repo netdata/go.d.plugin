@@ -113,3 +113,35 @@ func (a *API) EMPTYLINE() error {
 	_, err := fmt.Fprintf(a, "\n")
 	return err
 }
+
+func (a *API) HOSTINFO(guid, hostname string, labels map[string]string) error {
+	if err := a.HOSTDEFINE(guid, hostname); err != nil {
+		return err
+	}
+	for k, v := range labels {
+		if err := a.HOSTLABEL(k, v); err != nil {
+			return err
+		}
+	}
+	return a.HOSTDEFINEEND()
+}
+
+func (a *API) HOSTDEFINE(guid, hostname string) error {
+	_, err := fmt.Fprintf(a, "HOST_DEFINE '%s' '%s'\n", guid, hostname)
+	return err
+}
+
+func (a *API) HOSTLABEL(name, value string) error {
+	_, err := fmt.Fprintf(a, "HOST_LABEL '%s' '%s'\n", name, value)
+	return err
+}
+
+func (a *API) HOSTDEFINEEND() error {
+	_, err := fmt.Fprintf(a, "HOST_DEFINE_END\n\n")
+	return err
+}
+
+func (a *API) HOST(guid string) error {
+	_, err := fmt.Fprintf(a, "HOST '%s'\n\n", guid)
+	return err
+}
