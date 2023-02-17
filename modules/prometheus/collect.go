@@ -5,6 +5,7 @@ package prometheus
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -17,6 +18,18 @@ import (
 const (
 	precision = 1000
 )
+
+func (p *Prometheus) make_chart_id(name string) string {
+	for i := 0; i < len(p.WordStrips); i++ {
+		name = strings.ReplaceAll(name, p.WordStrips[i], "")
+	}
+	for i := 0; i < len(p.Replacements); i++ {
+		e := p.Replacements[i]
+		r := regexp.MustCompile(e.regex)
+		name = r.ReplaceAllString(name, e.replace)
+	}
+	return name
+}
 
 func (p *Prometheus) collect() (map[string]int64, error) {
 	mfs, err := p.prom.Scrape()
@@ -81,7 +94,7 @@ func (p *Prometheus) collectGauge(mx map[string]int64, mf *prometheus.MetricFami
 			continue
 		}
 
-		id := mf.Name() + p.joinLabels(m.Labels())
+		id := p.make_chart_id(mf.Name() + p.joinLabels(m.Labels()))
 
 		if !p.cache.hasP(id) {
 			p.addGaugeChart(id, mf.Name(), mf.Help(), m.Labels())
@@ -97,7 +110,7 @@ func (p *Prometheus) collectCounter(mx map[string]int64, mf *prometheus.MetricFa
 			continue
 		}
 
-		id := mf.Name() + p.joinLabels(m.Labels())
+		id := p.make_chart_id(mf.Name() + p.joinLabels(m.Labels()))
 
 		if !p.cache.hasP(id) {
 			p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())
@@ -113,7 +126,7 @@ func (p *Prometheus) collectSummary(mx map[string]int64, mf *prometheus.MetricFa
 			continue
 		}
 
-		id := mf.Name() + p.joinLabels(m.Labels())
+		id := p.make_chart_id(mf.Name() + p.joinLabels(m.Labels()))
 
 		if !p.cache.hasP(id) {
 			p.addSummaryCharts(id, mf.Name(), mf.Help(), m.Labels(), m.Summary().Quantiles())
@@ -137,7 +150,7 @@ func (p *Prometheus) collectHistogram(mx map[string]int64, mf *prometheus.Metric
 			continue
 		}
 
-		id := mf.Name() + p.joinLabels(m.Labels())
+		id := p.make_chart_id(mf.Name() + p.joinLabels(m.Labels()))
 
 		if !p.cache.hasP(id) {
 			p.addHistogramCharts(id, mf.Name(), mf.Help(), m.Labels(), m.Histogram().Buckets())
@@ -161,7 +174,7 @@ func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFa
 			continue
 		}
 		if strings.HasSuffix(mf.Name(), "_total") {
-			id := mf.Name() + p.joinLabels(m.Labels())
+			id := p.make_chart_id(mf.Name() + p.joinLabels(m.Labels()))
 
 			if !p.cache.hasP(id) {
 				p.addCounterChart(id, mf.Name(), mf.Help(), m.Labels())

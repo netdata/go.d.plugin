@@ -36,6 +36,11 @@ func New() *Prometheus {
 	}
 }
 
+type RegexReplace struct {
+	regex   string `yaml:"regex"`
+	replace string `yaml:"replace"`
+}
+
 type Config struct {
 	web.HTTP        `yaml:",inline"`
 	Name            string `yaml:"name"`
@@ -47,6 +52,9 @@ type Config struct {
 	ExpectedPrefix string `yaml:"expected_prefix"`
 	MaxTS          int    `yaml:"max_time_series"`
 	MaxTSPerMetric int    `yaml:"max_time_series_per_metric"`
+
+	WordStrips   []string       `yaml:"strip"`
+	Replacements []RegexReplace `yaml:"replacements"`
 }
 
 type Prometheus struct {

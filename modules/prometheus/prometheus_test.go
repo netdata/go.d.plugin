@@ -113,6 +113,57 @@ test_counter_no_meta_metric_1_total{label1="value2"} 11
 				return prom, srv.Close
 			},
 		},
+		"fail if the chart.id exceed 200 chars": {
+			wantFail: true,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`
+test_counter_no_meta_metric_1_total{label1="value1",label2="a_very_long_label_name",label3="anoterh_very_long_label_name",label4="yet_another_very_long_label_name"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 11
+`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.MaxTSPerMetric = 1
+
+				return prom, srv.Close
+			},
+		},
+		"Success if the chart.id exceed 200 chars but strip brings it down": {
+			wantFail: false,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`
+test_counter_no_meta_metric_1_total{label1="value1",label2="a_very_long_label_name",label3="anoterh_very_long_label_name",label4="yet_another_very_long_label_name"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 11
+`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.WordStrips = []string{"very", "long", "label", "name"}
+
+				return prom, srv.Close
+			},
+		},
+		"Success if the chart.id exceed 200 chars but regexp replace brings it down": {
+			wantFail: false,
+			prepare: func() (prom *Prometheus, cleanup func()) {
+				srv := httptest.NewServer(http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						_, _ = w.Write([]byte(`
+test_counter_no_meta_metric_1_total{label1="value1",label2="a_very_long_label_name",label3="anoterh_very_long_label_name",label4="yet_another_very_long_label_name"} 11
+test_counter_no_meta_metric_1_total{label1="value2"} 11
+`))
+					}))
+				prom = New()
+				prom.URL = srv.URL
+				prom.Replacements = []RegexReplace{{regex: "label(\\d)=(.+)_long_label_name", replace: "$1=$2"}, {regex: "_very_", replace: ""}}
+
+				return prom, srv.Close
+			},
+		},
 		"fail if metrics have no expected prefix": {
 			wantFail: true,
 			prepare: func() (prom *Prometheus, cleanup func()) {
