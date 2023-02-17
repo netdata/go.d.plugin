@@ -23,26 +23,26 @@ const (
 	metricExchangeRPCRequests                = "windows_exchange_rpc_requests"
 	metricExchangeRPCUserCount               = "windows_exchange_rpc_user_count"
 
-	metricExchangeTransportQueuesActiveMailboxDelivery         = "windows_exchange_transport_queues_active_mailbox_delivery"
-	metricExchangeTransportQueuesExternanlActiveRemoteDelivery = "windows_exchange_transport_queues_external_active_remote_delivery"
-	metricExchangeTransportQueuesExternalLargestDelivery       = "windows_exchange_transport_queues_external_largest_delivery"
-	metricExchangeTransportQueuesInternalActiveRemoteDelivery  = "windows_exchange_transport_queues_internal_active_remote_delivery"
-	metricExchangeTransportQueuesInternalLargestDelivery       = "windows_exchange_transport_queues_internal_largest_delivery"
-	metricExchangeTransportQueuesPoison                        = "windows_exchange_transport_queues_poison"
-	metricExchangeTransportQueuesRetryMailboxDelivery          = "windows_exchange_transport_queues_retry_mailbox_delivery"
-	metricExchangeTransportQueuesUnreachable                   = "windows_exchange_transport_queues_unreachable"
+	metricExchangeTransportQueuesActiveMailboxDelivery        = "windows_exchange_transport_queues_active_mailbox_delivery"
+	metricExchangeTransportQueuesExternalActiveRemoteDelivery = "windows_exchange_transport_queues_external_active_remote_delivery"
+	metricExchangeTransportQueuesExternalLargestDelivery      = "windows_exchange_transport_queues_external_largest_delivery"
+	metricExchangeTransportQueuesInternalActiveRemoteDelivery = "windows_exchange_transport_queues_internal_active_remote_delivery"
+	metricExchangeTransportQueuesInternalLargestDelivery      = "windows_exchange_transport_queues_internal_largest_delivery"
+	metricExchangeTransportQueuesPoison                       = "windows_exchange_transport_queues_poison"
+	metricExchangeTransportQueuesRetryMailboxDelivery         = "windows_exchange_transport_queues_retry_mailbox_delivery"
+	metricExchangeTransportQueuesUnreachable                  = "windows_exchange_transport_queues_unreachable"
 
 	metricExchangeWorkloadActiveTasks    = "windows_exchange_workload_active_tasks"
 	metricExchangeWorkloadCompletedTasks = "windows_exchange_workload_completed_tasks"
-	metricExchangeWorkloadIsActive       = "windows_exchange_workload_is_active"
 	metricExchangeWorkloadQueuedTasks    = "windows_exchange_workload_queued_tasks"
-	metricExchangeWorkloadYeldedTasks    = "windows_exchange_workload_yielded_tasks"
+	metricExchangeWorkloadYieldedTasks   = "windows_exchange_workload_yielded_tasks"
+	metricExchangeWorkloadIsActive       = "windows_exchange_workload_is_active"
 
 	metricExchangeLDAPLongRunningOPSPerSec = "windows_exchange_ldap_long_running_ops_per_sec"
 	metricExchangeLDAPReadTimeSec          = "windows_exchange_ldap_read_time_sec"
 	metricExchangeLDAPSearchTmeSec         = "windows_exchange_ldap_search_time_sec"
+	metricExchangeLDAPWriteTimeSec         = "windows_exchange_ldap_write_time_sec"
 	metricExchangeLDAPTimeoutErrorsTotal   = "windows_exchange_ldap_timeout_errors_total"
-	metricExchangeLDAPTimeSec              = "windows_exchange_ldap_write_time_sec"
 
 	metricExchangeHTTPProxyAvgAuthLatency                    = "windows_exchange_http_proxy_avg_auth_latency"
 	metricExchangeHTTPProxyAvgCASProcessingLatencySec        = "windows_exchange_http_proxy_avg_cas_proccessing_latency_sec"
@@ -98,16 +98,16 @@ func (w *Windows) collectExchange(mx map[string]int64, pms prometheus.Series) {
 		mx["exchange_rpc_user_count"] = int64(pm.Max())
 	}
 
-	exchangeAddTransportQueueMetric(mx, pms)
-	exchangeAddWorkloadMetric(mx, pms, w)
-	exchangeAddLDAPMetric(mx, pms, w)
-	exchangeAddHTTPProxyMetric(mx, pms, w)
+	w.collectExchangeAddTransportQueueMetric(mx, pms)
+	w.collectExchangeAddWorkloadMetric(mx, pms)
+	w.collectExchangeAddLDAPMetric(mx, pms)
+	w.collectExchangeAddHTTPProxyMetric(mx, pms)
 }
 
-func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectExchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series) {
 	pms = pms.FindByNames(
 		metricExchangeTransportQueuesActiveMailboxDelivery,
-		metricExchangeTransportQueuesExternanlActiveRemoteDelivery,
+		metricExchangeTransportQueuesExternalActiveRemoteDelivery,
 		metricExchangeTransportQueuesExternalLargestDelivery,
 		metricExchangeTransportQueuesInternalActiveRemoteDelivery,
 		metricExchangeTransportQueuesInternalLargestDelivery,
@@ -119,28 +119,32 @@ func exchangeAddTransportQueueMetric(mx map[string]int64, pms prometheus.Series)
 	for _, pm := range pms {
 		if name := pm.Labels.Get("name"); name != "" && name != "total_excluding_priority_none" {
 			metric := strings.TrimPrefix(pm.Name(), "windows_")
-			v := pm.Value
-			mx[metric+"_"+name] += int64(v)
+			mx[metric+"_"+name] += int64(pm.Value)
 		}
 	}
 }
 
-func exchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
-	pms = pms.FindByNames(
-		metricExchangeWorkloadActiveTasks,
-		metricExchangeWorkloadCompletedTasks,
-		metricExchangeWorkloadIsActive,
-		metricExchangeWorkloadQueuedTasks,
-		metricExchangeWorkloadYeldedTasks,
-	)
+func (w *Windows) collectExchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
-	for _, pm := range pms {
+	for _, pm := range pms.FindByNames(
+		metricExchangeWorkloadActiveTasks,
+		metricExchangeWorkloadCompletedTasks,
+		metricExchangeWorkloadQueuedTasks,
+		metricExchangeWorkloadYieldedTasks,
+	) {
 		if name := pm.Labels.Get("name"); name != "" {
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_workload_")
-			v := pm.Value
-			mx["exchange_workload_"+name+"_"+metric] += int64(v)
+			mx["exchange_workload_"+name+"_"+metric] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByName(metricExchangeWorkloadIsActive) {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			mx["exchange_workload_"+name+"_is_active"] += boolToInt(pm.Value == 1)
+			mx["exchange_workload_"+name+"_is_paused"] += boolToInt(pm.Value == 0)
 		}
 	}
 
@@ -158,25 +162,29 @@ func exchangeAddWorkloadMetric(mx map[string]int64, pms prometheus.Series, w *Wi
 	}
 }
 
-func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
-	pms = pms.FindByNames(
-		metricExchangeLDAPLongRunningOPSPerSec,
-		metricExchangeLDAPReadTimeSec,
-		metricExchangeLDAPSearchTmeSec,
-		metricExchangeLDAPTimeoutErrorsTotal,
-		metricExchangeLDAPTimeSec,
-	)
+func (w *Windows) collectExchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
-	for _, pm := range pms {
+	for _, pm := range pms.FindByNames(
+		metricExchangeLDAPLongRunningOPSPerSec,
+		metricExchangeLDAPTimeoutErrorsTotal,
+	) {
 		if name := pm.Labels.Get("name"); name != "" {
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_ldap_")
-			v := pm.Value
-			if strings.HasSuffix(pm.Name(), "_sec") || strings.HasSuffix(pm.Name(), "_per_sec") {
-				v *= precision
-			}
-			mx["exchange_ldap_"+name+"_"+metric] += int64(v)
+			mx["exchange_ldap_"+name+"_"+metric] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByNames(
+		metricExchangeLDAPReadTimeSec,
+		metricExchangeLDAPSearchTmeSec,
+		metricExchangeLDAPWriteTimeSec,
+	) {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_ldap_")
+			mx["exchange_ldap_"+name+"_"+metric] += int64(pm.Value * precision)
 		}
 	}
 
@@ -194,33 +202,37 @@ func exchangeAddLDAPMetric(mx map[string]int64, pms prometheus.Series, w *Window
 	}
 }
 
-func exchangeAddHTTPProxyMetric(mx map[string]int64, pms prometheus.Series, w *Windows) {
-	pms = pms.FindByNames(
-		metricExchangeHTTPProxyAvgAuthLatency,
-		metricExchangeHTTPProxyAvgCASProcessingLatencySec,
-		metricExchangeHTTPProxyMailboxProxyFailureRate,
-		metricExchangeHTTPProxyMailboxServerLocatorAvgLatencySec,
-		metricExchangeHTTPProxyOutstandingProxyRequests,
-		metricExchangeHTTPProxyRequestsTotal,
-	)
+func (w *Windows) collectExchangeAddHTTPProxyMetric(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 
-	for _, pm := range pms {
+	for _, pm := range pms.FindByNames(
+		metricExchangeHTTPProxyAvgAuthLatency,
+		metricExchangeHTTPProxyOutstandingProxyRequests,
+		metricExchangeHTTPProxyRequestsTotal,
+	) {
 		if name := pm.Labels.Get("name"); name != "" {
 			seen[name] = true
 			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_http_proxy_")
-			v := pm.Value
-			if strings.HasSuffix(pm.Name(), "_sec") || strings.HasSuffix(pm.Name(), "_rate") {
-				v *= precision
-			}
-			mx["exchange_http_proxy_"+name+"_"+metric] += int64(v)
+			mx["exchange_http_proxy_"+name+"_"+metric] += int64(pm.Value)
+		}
+	}
+
+	for _, pm := range pms.FindByNames(
+		metricExchangeHTTPProxyAvgCASProcessingLatencySec,
+		metricExchangeHTTPProxyMailboxProxyFailureRate,
+		metricExchangeHTTPProxyMailboxServerLocatorAvgLatencySec,
+	) {
+		if name := pm.Labels.Get("name"); name != "" {
+			seen[name] = true
+			metric := strings.TrimPrefix(pm.Name(), "windows_exchange_http_proxy_")
+			mx["exchange_http_proxy_"+name+"_"+metric] += int64(pm.Value * precision)
 		}
 	}
 
 	for name := range seen {
 		if !w.cache.exchangeHTTPProxy[name] {
 			w.cache.exchangeHTTPProxy[name] = true
-			w.addExchangeHTTPCharts(name)
+			w.addExchangeHTTPProxyCharts(name)
 		}
 	}
 	for name := range w.cache.exchangeHTTPProxy {

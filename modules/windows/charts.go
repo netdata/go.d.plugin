@@ -292,8 +292,8 @@ const (
 	prioExchangeLDAPLongRunningOPS
 	prioExchangeLDAPReadTime
 	prioExchangeLDAPSearchTime
-	prioExchangeLDAPTimeoutErrors
 	prioExchangeLDAPWriteTime
+	prioExchangeLDAPTimeoutErrors
 
 	//  OWA
 	prioExchangeOWACurrentUniqueUsers
@@ -309,15 +309,15 @@ const (
 	prioExchangeRPCAvgLatency
 	prioExchangeRPCConnectionCount
 	prioExchangeRPCOperationsTotal
-	prioExchangeRPCRequestsTotal
+	prioExchangeRPCRequests
 	prioExchangeRpcUserCount
 
 	// Workload
 	prioExchangeWorkloadActiveTasks
 	prioExchangeWorkloadCompleteTasks
 	prioExchangeWorkloadQueueTasks
-	prioExchangeWorkloadYeldedTasks
-	prioExchangeWorkloadIsActive
+	prioExchangeWorkloadYieldedTasks
+	prioExchangeWorkloadActivityStatus
 
 	// HTTP Proxy
 	prioExchangeHTTPProxyAVGAuthLatency
@@ -2283,8 +2283,9 @@ var (
 		exchangeWorkloadActiveTasks.Copy(),
 		exchangeWorkloadCompletedTasks.Copy(),
 		exchangeWorkloadQueuedTasks.Copy(),
-		exchangeWorkloadYeldedTasks.Copy(),
-		exchangeWorkloadIsActiveTasks.Copy(),
+		exchangeWorkloadYieldedTasks.Copy(),
+
+		exchangeWorkloadActivityStatus.Copy(),
 	}
 	exchangeLDAPChartsTmpl = module.Charts{
 		exchangeLDAPLongRunningOPS.Copy(),
@@ -2304,104 +2305,104 @@ var (
 
 	exchangeActiveSyncPingCMDsPendingChart = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_activesync_ping_cmds",
-		Title:      "Ping commands pending in queue.",
+		ID:         "exchange_activesync_ping_cmds_pending",
+		Title:      "Ping commands pending in queue",
 		Units:      "commands",
 		Fam:        "sync",
-		Ctx:        "exchange.activesync_ping_cmds",
+		Ctx:        "exchange.activesync_ping_cmds_pending",
 		Priority:   prioExchangeActiveSyncPingCMDsPending,
 		Dims: module.Dims{
-			{ID: "exchange_activesync_ping_cmds_pending", Name: "commands"},
+			{ID: "exchange_activesync_ping_cmds_pending", Name: "pending"},
 		},
 	}
 	exchangeActiveSyncRequestsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_activesync_requests",
-		Title:      "HTTP requests received from ASP.NET.",
+		Title:      "HTTP requests received from ASP.NET",
 		Units:      "requests/s",
 		Fam:        "sync",
 		Ctx:        "exchange.activesync_requests",
 		Priority:   prioExchangeActiveSyncRequests,
 		Dims: module.Dims{
-			{ID: "exchange_activesync_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_activesync_requests_total", Name: "received", Algo: module.Incremental},
 		},
 	}
 	exchangeActiveSyncCMDsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_activesync_sync_cmds",
-		Title:      "Sync commands processed per second.",
+		Title:      "Sync commands processed",
 		Units:      "commands/s",
 		Fam:        "sync",
 		Ctx:        "exchange.activesync_sync_cmds",
 		Priority:   prioExchangeActiveSyncSyncCMDs,
 		Dims: module.Dims{
-			{ID: "exchange_activesync_sync_cmds_total", Name: "commands", Algo: module.Incremental},
+			{ID: "exchange_activesync_sync_cmds_total", Name: "processed", Algo: module.Incremental},
 		},
 	}
 	exchangeAutoDiscoverRequestsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_autodiscover_requests",
-		Title:      "Number of autodiscover service requests proccessed.",
+		Title:      "Autodiscover service requests processed",
 		Units:      "requests/s",
 		Fam:        "requests",
 		Ctx:        "exchange.autodiscover_requests",
 		Priority:   prioExchangeAutoDiscoverRequests,
 		Dims: module.Dims{
-			{ID: "exchange_autodiscover_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_autodiscover_requests_total", Name: "processed", Algo: module.Incremental},
 		},
 	}
 	exchangeAvailableServiceRequestsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_avail_service_requests",
-		Title:      "Resquests serviced per second.",
+		Title:      "Requests serviced",
 		Units:      "requests/s",
 		Fam:        "requests",
 		Ctx:        "exchange.avail_service_requests",
 		Priority:   prioExchangeAvailServiceRequests,
 		Dims: module.Dims{
-			{ID: "exchange_avail_service_requests_per_sec", Name: "requests", Algo: module.Incremental, Div: precision},
+			{ID: "exchange_avail_service_requests_per_sec", Name: "serviced", Algo: module.Incremental},
 		},
 	}
 	exchangeOWACurrentUniqueUsersChart = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_owa_current_unique_users_counter",
-		Title:      "Number of Unique Users Currently logged on to Outlook Web App.",
-		Units:      "logins",
+		ID:         "exchange_owa_current_unique_users",
+		Title:      "Unique users currently logged on to Outlook Web App",
+		Units:      "users",
 		Fam:        "owa",
-		Ctx:        "exchange.owa_current_unique_users_counter",
+		Ctx:        "exchange.owa_current_unique_users",
 		Priority:   prioExchangeOWACurrentUniqueUsers,
 		Dims: module.Dims{
-			{ID: "exchange_owa_current_unique_users", Name: "logins"},
+			{ID: "exchange_owa_current_unique_users", Name: "logged-in"},
 		},
 	}
 	exchangeOWARequestsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_owa_requests_total",
-		Title:      "Number of requests handled by Outlook Web App.",
+		Title:      "Requests handled by Outlook Web App",
 		Units:      "requests/s",
 		Fam:        "owa",
 		Ctx:        "exchange.owa_requests_total",
 		Priority:   prioExchangeOWARequestsTotal,
 		Dims: module.Dims{
-			{ID: "exchange_owa_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_owa_requests_total", Name: "handled", Algo: module.Incremental},
 		},
 	}
 	exchangeRPCActiveUsersCountChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_active_user",
-		Title:      "Unique users showing activity in the last 2 minutes.",
+		Title:      "Active unique users in the last 2 minutes",
 		Units:      "users",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_active_user_count",
 		Priority:   prioExchangeRPCActiveUserCount,
 		Dims: module.Dims{
-			{ID: "exchange_rpc_active_user_count", Name: "users"},
+			{ID: "exchange_rpc_active_user_count", Name: "active"},
 		},
 	}
 	exchangeRPCAvgLatencyChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_avg_latency",
-		Title:      "Unique users showing activity in the last 2 minutes.",
+		Title:      "Average latency",
 		Units:      "seconds",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_avg_latency",
@@ -2413,10 +2414,10 @@ var (
 	exchangeRPCConnectionChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_connection",
-		Title:      "Client connections maintained.",
+		Title:      "Client connections",
 		Units:      "connections",
 		Fam:        "rpc",
-		Ctx:        "exchange.rpc_connection",
+		Ctx:        "exchange.rpc_connection_count",
 		Priority:   prioExchangeRPCConnectionCount,
 		Dims: module.Dims{
 			{ID: "exchange_rpc_connection_count", Name: "connections"},
@@ -2425,31 +2426,31 @@ var (
 	exchangeRPCOperationsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_operations",
-		Title:      "Client Requests being processed.",
-		Units:      "requests/s",
+		Title:      "RPC operations",
+		Units:      "operations/s",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_operations",
 		Priority:   prioExchangeRPCOperationsTotal,
 		Dims: module.Dims{
-			{ID: "exchange_rpc_operations_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_rpc_operations_total", Name: "operations", Algo: module.Incremental},
 		},
 	}
 	exchangeRPCRequestsChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_requests_total",
-		Title:      "Number of clients requests currently being processed.",
+		Title:      "Clients requests currently being processed",
 		Units:      "requests",
 		Fam:        "rpc",
-		Ctx:        "exchange.rpc_requests_total",
-		Priority:   prioExchangeRPCRequestsTotal,
+		Ctx:        "exchange.rpc_requests",
+		Priority:   prioExchangeRPCRequests,
 		Dims: module.Dims{
-			{ID: "exchange_rpc_requests", Name: "requests"},
+			{ID: "exchange_rpc_requests", Name: "processed"},
 		},
 	}
 	exchangeRPCUserChart = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_rpc_user",
-		Title:      "Number of users.",
+		Title:      "RPC users",
 		Units:      "users",
 		Fam:        "rpc",
 		Ctx:        "exchange.rpc_user_count",
@@ -2463,207 +2464,208 @@ var (
 	exchangeTransportQueuesActiveMailBoxDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_active_mailbox_delivery",
-		Title:      "Active Mailbox Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "Active Mailbox Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_active_mail_box_delivery",
 		Priority:   prioExchangeTransportQueuesActiveMailboxDelivery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_active_mailbox_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_active_mailbox_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_active_mailbox_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_active_mailbox_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_active_mailbox_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesExternalActiveRemoteDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_external_active_remote_delivery",
-		Title:      "External Active Remote Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "External Active Remote Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_external_active_remote_delivery",
 		Priority:   prioExchangeTransportQueuesExternalActiveRemoteDelivery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_external_active_remote_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_external_active_remote_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_external_active_remote_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_external_active_remote_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_external_active_remote_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesExternalLargestDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_external_largest_delivery",
-		Title:      "External Largest Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "External Largest Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_external_largest_delivery",
 		Priority:   prioExchangeTransportQueuesExternalLargestDelivery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_external_largest_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_external_largest_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_external_largest_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_external_largest_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_external_largest_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_external_largest_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_external_largest_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_external_largest_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesInternalActiveRemoteDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_internal_active_remote_delivery",
-		Title:      "Internal Active Remote Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "Internal Active Remote Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_internal_active_remote_delivery",
 		Priority:   prioExchangeTransportQueuesInternalActiveRemoteDeliery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_internal_active_remote_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_internal_active_remote_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_internal_active_remote_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_internal_active_remote_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_internal_active_remote_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesInternalLargestDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_internal_largest_delivery",
-		Title:      "Internal Largest Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "Internal Largest Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_internal_largest_delivery",
 		Priority:   prioExchangeTransportQueuesInternalLargestDelivery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_internal_largest_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_internal_largest_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_internal_largest_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_internal_largest_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_internal_largest_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesRetryMailboxDelivery = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_retry_mailbox_delivery",
-		Title:      "Internal Active Remote Delivery Queue Length.",
-		Units:      "messages/s",
+		Title:      "Internal Active Remote Delivery Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_retry_mailbox_delivery",
 		Priority:   prioExchangeTransportQueuesRetryMailboxDelivery,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_retry_mailbox_delivery_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_retry_mailbox_delivery_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_retry_mailbox_delivery_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_retry_mailbox_delivery_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_retry_mailbox_delivery_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesUnreachable = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_unreachable",
-		Title:      "Unreachable Queue Length.",
-		Units:      "messages/s",
+		Title:      "Unreachable Queue length",
+		Units:      "messages",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_unreachable",
 		Priority:   prioExchangeTransportQueuesUnreachable,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_unreachable_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_unreachable_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_unreachable_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_unreachable_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_unreachable_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_unreachable_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_unreachable_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_unreachable_normal_priority", Name: "normal"},
 		},
 	}
 	exchangeTransportQueuesPoison = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_transport_queues_poison",
-		Title:      "Poison Queue Length.",
+		Title:      "Poison Queue Length",
 		Units:      "messages/s",
 		Fam:        "queue",
 		Ctx:        "exchange.transport_queues_poison",
 		Priority:   prioExchangeTransportQueuesPoison,
 		Dims: module.Dims{
-			{ID: "exchange_transport_queues_poison_high_priority", Name: "Hight"},
-			{ID: "exchange_transport_queues_poison_low_priority", Name: "Low"},
-			{ID: "exchange_transport_queues_poison_none_priority", Name: "None"},
-			{ID: "exchange_transport_queues_poison_normal_priority", Name: "Normal"},
+			{ID: "exchange_transport_queues_poison_high_priority", Name: "high"},
+			{ID: "exchange_transport_queues_poison_low_priority", Name: "low"},
+			{ID: "exchange_transport_queues_poison_none_priority", Name: "none"},
+			{ID: "exchange_transport_queues_poison_normal_priority", Name: "normal"},
 		},
 	}
 
 	exchangeWorkloadActiveTasks = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_%s_active_tasks",
-		Title:      "Number of active tasks",
+		ID:         "exchange_workload_%s_tasks",
+		Title:      "Workload active tasks",
 		Units:      "tasks",
 		Fam:        "workload",
 		Ctx:        "exchange.workload_active_tasks",
 		Priority:   prioExchangeWorkloadActiveTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_active_tasks", Name: "task"},
+			{ID: "exchange_workload_%s_active_tasks", Name: "active"},
 		},
 	}
 	exchangeWorkloadCompletedTasks = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_workload_%s_completed_tasks",
-		Title:      "Number of completed tasks",
-		Units:      "tasks",
+		Title:      "Workload completed tasks",
+		Units:      "tasks/s",
 		Fam:        "workload",
 		Ctx:        "exchange.workload_completed_tasks",
 		Priority:   prioExchangeWorkloadCompleteTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_completed_tasks", Name: "task", Algo: module.Incremental},
+			{ID: "exchange_workload_%s_completed_tasks", Name: "completed", Algo: module.Incremental},
 		},
 	}
 	exchangeWorkloadQueuedTasks = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_workload_%s_queued_tasks",
-		Title:      "Number of queued tasks",
-		Units:      "tasks",
+		Title:      "Workload queued tasks",
+		Units:      "tasks/s",
 		Fam:        "workload",
 		Ctx:        "exchange.workload_queued_tasks",
 		Priority:   prioExchangeWorkloadQueueTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_queued_tasks", Name: "task", Algo: module.Incremental},
+			{ID: "exchange_workload_%s_queued_tasks", Name: "queued", Algo: module.Incremental},
 		},
 	}
-	exchangeWorkloadYeldedTasks = module.Chart{
+	exchangeWorkloadYieldedTasks = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_workload_%s_yielded_tasks",
-		Title:      "Number of yielded tasks",
-		Units:      "tasks",
+		Title:      "Workload yielded tasks",
+		Units:      "tasks/s",
 		Fam:        "workload",
-		Ctx:        "exchange.workload_yelded_tasks",
-		Priority:   prioExchangeWorkloadYeldedTasks,
+		Ctx:        "exchange.workload_yielded_tasks",
+		Priority:   prioExchangeWorkloadYieldedTasks,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_yielded_tasks", Name: "task", Algo: module.Incremental},
+			{ID: "exchange_workload_%s_yielded_tasks", Name: "yielded", Algo: module.Incremental},
 		},
 	}
-	exchangeWorkloadIsActiveTasks = module.Chart{
+	exchangeWorkloadActivityStatus = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_workload_%s_is_active_tasks",
-		Title:      "Is task active?",
-		Units:      "boolean",
+		ID:         "exchange_workload_%s_activity_status",
+		Title:      "Workload activity status",
+		Units:      "status",
 		Fam:        "workload",
-		Ctx:        "exchange.workload_isactive_tasks",
-		Priority:   prioExchangeWorkloadIsActive,
+		Ctx:        "exchange.workload_activity_status",
+		Priority:   prioExchangeWorkloadActivityStatus,
 		Dims: module.Dims{
-			{ID: "exchange_workload_%s_is_active", Name: "task"},
+			{ID: "exchange_workload_%s_is_active", Name: "active"},
+			{ID: "exchange_workload_%s_is_paused", Name: "paused"},
 		},
 	}
 
 	exchangeLDAPLongRunningOPS = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_long_running_ops",
-		Title:      "Long Running LDAP operations per second.",
-		Units:      "operations",
+		Title:      "Long Running LDAP operations",
+		Units:      "operations/s",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_long_running_ops_per_sec",
 		Priority:   prioExchangeLDAPLongRunningOPS,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_long_running_ops_per_sec", Name: "ldap", Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_long_running_ops_per_sec", Name: "long-running", Algo: module.Incremental},
 		},
 	}
 	exchangeLDAPReadTime = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_ldap_%s_read_time",
-		Title:      "Time to send an LDAP read request and receive a response.",
+		Title:      "Time to send an LDAP read request and receive a response",
 		Units:      "seconds",
 		Fam:        "ldap",
 		Ctx:        "exchange.ldap_read_time",
 		Priority:   prioExchangeLDAPReadTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_read_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_read_time_sec", Name: "read", Algo: module.Incremental, Div: precision},
 		},
 	}
 	exchangeLDAPSearchTime = module.Chart{
@@ -2675,19 +2677,7 @@ var (
 		Ctx:        "exchange.ldap_search_time",
 		Priority:   prioExchangeLDAPSearchTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_search_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
-		},
-	}
-	exchangeLDAPTimeoutErrors = module.Chart{
-		OverModule: "exchange",
-		ID:         "exchange_ldap_%s_timeout_errors",
-		Title:      "Time to send an LDAP search request and receive a response",
-		Units:      "errors",
-		Fam:        "ldap",
-		Ctx:        "exchange.ldap_timeout_errors",
-		Priority:   prioExchangeLDAPTimeoutErrors,
-		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "errors", Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_search_time_sec", Name: "search", Algo: module.Incremental, Div: precision},
 		},
 	}
 	exchangeLDAPWriteTime = module.Chart{
@@ -2699,42 +2689,54 @@ var (
 		Ctx:        "exchange.ldap_write_time",
 		Priority:   prioExchangeLDAPWriteTime,
 		Dims: module.Dims{
-			{ID: "exchange_ldap_%s_write_time_sec", Name: "period", Div: precision, Algo: module.Incremental},
+			{ID: "exchange_ldap_%s_write_time_sec", Name: "write", Algo: module.Incremental, Div: precision},
+		},
+	}
+	exchangeLDAPTimeoutErrors = module.Chart{
+		OverModule: "exchange",
+		ID:         "exchange_ldap_%s_timeout_errors",
+		Title:      "LDAP timeout errors",
+		Units:      "errors/s",
+		Fam:        "ldap",
+		Ctx:        "exchange.ldap_timeout_errors",
+		Priority:   prioExchangeLDAPTimeoutErrors,
+		Dims: module.Dims{
+			{ID: "exchange_ldap_%s_timeout_errors_total", Name: "timeout", Algo: module.Incremental},
 		},
 	}
 
 	exchangeProxyAvgAuthLatency = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_avg_auth_latency",
-		Title:      "Average time spent authenticating CAS.",
+		Title:      "Average time spent authenticating CAS",
 		Units:      "seconds",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_avg_auth_latency",
 		Priority:   prioExchangeHTTPProxyAVGAuthLatency,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_avg_auth_latency", Name: "period"},
+			{ID: "exchange_http_proxy_%s_avg_auth_latency", Name: "latency"},
 		},
 	}
 	exchangeProxyAvgCasProcessingLatencySec = module.Chart{
 		OverModule: "exchange",
-		ID:         "exchange_proxy_%s_avg_cas_proccessing_latency_sec",
+		ID:         "exchange_proxy_%s_avg_cas_processing_latency_sec",
 		Title:      "Average time spent authenticating CAS.",
 		Units:      "seconds",
 		Fam:        "proxy",
-		Ctx:        "exchange.http_proxy_avg_cas_proccessing_latency_sec",
+		Ctx:        "exchange.http_proxy_avg_cas_processing_latency_sec",
 		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_avg_cas_proccessing_latency_sec", Name: "average"},
+			{ID: "exchange_http_proxy_%s_avg_cas_proccessing_latency_sec", Name: "latency"},
 		},
 	}
 	exchangeProxyMailboxProxyFailureRace = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_mailbox_proxy_failure_rate",
-		Title:      "Percentage of failures between this CAS and MBX servers.",
+		Title:      "Percentage of failures between this CAS and MBX servers",
 		Units:      "percentage",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_mailbox_proxy_failure_rate",
-		Priority:   prioExchangeHTTPProxyAVGCASProcessingLatency,
+		Priority:   prioExchangeHTTPProxyMailboxProxyFailureRate,
 		Dims: module.Dims{
 			{ID: "exchange_http_proxy_%s_mailbox_proxy_failure_rate", Name: "failures", Div: precision},
 		},
@@ -2754,25 +2756,25 @@ var (
 	exchangeProxyOutstandingProxyRequests = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_outstanding_proxy_requests",
-		Title:      "Number of concurrent outstanding proxy requests.",
-		Units:      "seconds",
+		Title:      "Concurrent outstanding proxy requests",
+		Units:      "requests",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_outstanding_proxy_requests",
 		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_outstanding_proxy_requests", Name: "average"},
+			{ID: "exchange_http_proxy_%s_outstanding_proxy_requests", Name: "outstanding"},
 		},
 	}
 	exchangeProxyRequestsTotal = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_requests_total",
 		Title:      "Number of proxy requests processed each second",
-		Units:      "requests",
+		Units:      "requests/s",
 		Fam:        "proxy",
-		Ctx:        "exchange.http_proxy_requests_total",
-		Priority:   prioExchangeHTTPProxyOutstandingProxyRequests,
+		Ctx:        "exchange.http_proxy_requests",
+		Priority:   prioExchangeHTTPProxyRequestsTotal,
 		Dims: module.Dims{
-			{ID: "exchange_http_proxy_%s_requests_total", Name: "requests", Algo: module.Incremental},
+			{ID: "exchange_http_proxy_%s_requests_total", Name: "processed", Algo: module.Incremental},
 		},
 	}
 )
@@ -3739,16 +3741,16 @@ func (w *Windows) addExchangeCharts() {
 	}
 }
 
-func (w *Windows) addExchangeWorkloadCharts(loader string) {
+func (w *Windows) addExchangeWorkloadCharts(name string) {
 	charts := exchangeWorkloadChartsTmpl.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, loader)
+		chart.ID = fmt.Sprintf(chart.ID, name)
 		chart.Labels = []module.Label{
-			{Key: "exchange_workload", Value: loader},
+			{Key: "workload", Value: name},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, loader)
+			dim.ID = fmt.Sprintf(dim.ID, name)
 		}
 	}
 
@@ -3757,8 +3759,8 @@ func (w *Windows) addExchangeWorkloadCharts(loader string) {
 	}
 }
 
-func (w *Windows) removeExchangeWorkloadCharts(loader string) {
-	px := fmt.Sprintf("exchange_workload_%s", loader)
+func (w *Windows) removeExchangeWorkloadCharts(name string) {
+	px := fmt.Sprintf("exchange_workload_%s", name)
 	w.removeCharts(px)
 }
 
@@ -3768,7 +3770,7 @@ func (w *Windows) addExchangeLDAPCharts(name string) {
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, name)
 		chart.Labels = []module.Label{
-			{Key: "exchange_ldap", Value: name},
+			{Key: "ldap_process", Value: name},
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
@@ -3785,13 +3787,13 @@ func (w *Windows) removeExchangeLDAPCharts(name string) {
 	w.removeCharts(px)
 }
 
-func (w *Windows) addExchangeHTTPCharts(name string) {
+func (w *Windows) addExchangeHTTPProxyCharts(name string) {
 	charts := exchangeHTTPProxyChartsTmpl.Copy()
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, name)
 		chart.Labels = []module.Label{
-			{Key: "exchange_http_proxy", Value: name},
+			{Key: "http_proxy", Value: name},
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
