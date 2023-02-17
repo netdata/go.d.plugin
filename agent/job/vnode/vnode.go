@@ -49,7 +49,7 @@ func (r *Registry) readConfDir() {
 			return nil
 		}
 
-		if !d.Type().IsRegular() || !hasYAMLSuffix(path) {
+		if !d.Type().IsRegular() || !isConfigFile(path) {
 			return nil
 		}
 
@@ -76,9 +76,13 @@ func (r *Registry) readConfDir() {
 	})
 }
 
-func hasYAMLSuffix(path string) bool {
-	s := filepath.Ext(path)
-	return s == ".yaml" || s == ".yml"
+func isConfigFile(path string) bool {
+	switch filepath.Ext(path) {
+	case ".yaml", ".yml", ".conf":
+		return true
+	default:
+		return false
+	}
 }
 
 func loadYAML(conf interface{}, path string) error {
