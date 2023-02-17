@@ -33,6 +33,7 @@ const (
 	collectorNetFrameworkCLRMemory          = "netframework_clrmemory"
 	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
 	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
+	collectorExchange                       = "exchange"
 )
 
 func (w *Windows) collect() (map[string]int64, error) {
@@ -135,6 +136,8 @@ func (w *Windows) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectNetFrameworkCLRRemoting(mx, pms)
 		case collectorNetFrameworkCLRSecurity:
 			w.collectNetFrameworkCLRSecurity(mx, pms)
+		case collectorExchange:
+			w.collectExchange(mx, pms)
 		}
 	}
 }
@@ -147,4 +150,11 @@ func hasKey(mx map[string]int64, key string, keys ...string) bool {
 	default:
 		return ok && hasKey(mx, keys[0], keys[1:]...)
 	}
+}
+
+func boolToInt(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }

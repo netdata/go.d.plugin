@@ -50,6 +50,9 @@ func New() *Windows {
 			netFrameworkCLRSecurity:     make(map[string]bool),
 			mssqlInstances:              make(map[string]bool),
 			mssqlDBs:                    make(map[string]bool),
+			exchangeWorkload:            make(map[string]bool),
+			exchangeLDAP:                make(map[string]bool),
+			exchangeHTTPProxy:           make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -94,6 +97,9 @@ type (
 		netFrameworkCLRSecurity     map[string]bool
 		collectors                  map[string]bool
 		collection                  map[string]bool
+		exchangeWorkload            map[string]bool
+		exchangeLDAP                map[string]bool
+		exchangeHTTPProxy           map[string]bool
 	}
 )
 

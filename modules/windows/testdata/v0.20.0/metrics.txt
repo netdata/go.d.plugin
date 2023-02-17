@@ -455,6 +455,7 @@ windows_exporter_collector_duration_seconds{collector="ad"} 0.7690505
 windows_exporter_collector_duration_seconds{collector="adcs"} 0.0006833
 windows_exporter_collector_duration_seconds{collector="adfs"} 0.0031012
 windows_exporter_collector_duration_seconds{collector="cpu"} 0.00052
+windows_exporter_collector_duration_seconds{collector="exchange"} 0.0334467
 windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
 windows_exporter_collector_duration_seconds{collector="logon"} 0.1139134
@@ -480,6 +481,7 @@ windows_exporter_collector_success{collector="ad"} 1
 windows_exporter_collector_success{collector="adcs"} 1
 windows_exporter_collector_success{collector="adfs"} 1
 windows_exporter_collector_success{collector="cpu"} 1
+windows_exporter_collector_success{collector="exchange"} 1
 windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
 windows_exporter_collector_success{collector="logon"} 1
@@ -505,6 +507,7 @@ windows_exporter_collector_timeout{collector="ad"} 0
 windows_exporter_collector_timeout{collector="adcs"} 0
 windows_exporter_collector_timeout{collector="adfs"} 0
 windows_exporter_collector_timeout{collector="cpu"} 0
+windows_exporter_collector_timeout{collector="exchange"} 0
 windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0
 windows_exporter_collector_timeout{collector="logon"} 0
@@ -524,9 +527,167 @@ windows_exporter_collector_timeout{collector="process"} 0
 windows_exporter_collector_timeout{collector="service"} 0
 windows_exporter_collector_timeout{collector="system"} 0
 windows_exporter_collector_timeout{collector="tcp"} 0
+# HELP windows_exchange_http_proxy_avg_auth_latency Average time spent authenticating CAS requests over the last 200 samples
+# TYPE windows_exchange_http_proxy_avg_auth_latency gauge
+windows_exchange_http_proxy_avg_auth_latency{name="autodiscover"} 1
+windows_exchange_http_proxy_avg_auth_latency{name="eas"} 0
+# HELP windows_exchange_http_proxy_avg_cas_proccessing_latency_sec Average latency (sec) of CAS processing time over the last 200 reqs
+# TYPE windows_exchange_http_proxy_avg_cas_proccessing_latency_sec gauge
+windows_exchange_http_proxy_avg_cas_proccessing_latency_sec{name="autodiscover"} 0.003
+windows_exchange_http_proxy_avg_cas_proccessing_latency_sec{name="eas"} 0.003
+# HELP windows_exchange_http_proxy_mailbox_proxy_failure_rate % of failures between this CAS and MBX servers over the last 200 samples
+# TYPE windows_exchange_http_proxy_mailbox_proxy_failure_rate gauge
+windows_exchange_http_proxy_mailbox_proxy_failure_rate{name="autodiscover"} 0
+windows_exchange_http_proxy_mailbox_proxy_failure_rate{name="eas"} 0
+# HELP windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec Average latency (sec) of MailboxServerLocator web service calls
+# TYPE windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec gauge
+windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec{name="autodiscover"} 0.008
+windows_exchange_http_proxy_mailbox_server_locator_avg_latency_sec{name="eas"} 0.008
+# HELP windows_exchange_http_proxy_outstanding_proxy_requests Number of concurrent outstanding proxy requests
+# TYPE windows_exchange_http_proxy_outstanding_proxy_requests gauge
+windows_exchange_http_proxy_outstanding_proxy_requests{name="autodiscover"} 0
+windows_exchange_http_proxy_outstanding_proxy_requests{name="eas"} 0
+# HELP windows_exchange_http_proxy_requests_total Number of proxy requests processed each second
+# TYPE windows_exchange_http_proxy_requests_total counter
+windows_exchange_http_proxy_requests_total{name="autodiscover"} 27122
+windows_exchange_http_proxy_requests_total{name="eas"} 32519
+# HELP windows_exchange_ldap_long_running_ops_per_sec Long Running LDAP operations per second
+# TYPE windows_exchange_ldap_long_running_ops_per_sec counter
+windows_exchange_ldap_long_running_ops_per_sec{name="complianceauditservice"} 0
+windows_exchange_ldap_long_running_ops_per_sec{name="complianceauditservice_10"} 0
+# HELP windows_exchange_ldap_read_time_sec Time (sec) to send an LDAP read request and receive a response
+# TYPE windows_exchange_ldap_read_time_sec counter
+windows_exchange_ldap_read_time_sec{name="complianceauditservice"} 0.008
+windows_exchange_ldap_read_time_sec{name="complianceauditservice_10"} 0.018
+# HELP windows_exchange_ldap_search_time_sec Time (sec) to send an LDAP search request and receive a response
+# TYPE windows_exchange_ldap_search_time_sec counter
+windows_exchange_ldap_search_time_sec{name="complianceauditservice"} 0.046
+windows_exchange_ldap_search_time_sec{name="complianceauditservice_10"} 0.058
+# TYPE windows_exchange_ldap_timeout_errors_total counter
+windows_exchange_ldap_timeout_errors_total{name="complianceauditservice"} 0
+windows_exchange_ldap_timeout_errors_total{name="complianceauditservice_10"} 0
+# HELP windows_exchange_ldap_write_time_sec Time (sec) to send an LDAP Add/Modify/Delete request and receive a response
+# TYPE windows_exchange_ldap_write_time_sec counter
+windows_exchange_ldap_write_time_sec{name="complianceauditservice"} 0
+windows_exchange_ldap_write_time_sec{name="complianceauditservice_10"} 0
 # HELP windows_exporter_perflib_snapshot_duration_seconds Duration of perflib snapshot capture
 # TYPE windows_exporter_perflib_snapshot_duration_seconds gauge
 windows_exporter_perflib_snapshot_duration_seconds 0.0054258
+# HELP windows_exchange_activesync_ping_cmds_pending Number of ping commands currently pending in the queue
+# TYPE windows_exchange_activesync_ping_cmds_pending gauge
+windows_exchange_activesync_ping_cmds_pending 0
+# HELP windows_exchange_activesync_requests_total Num HTTP requests received from the client via ASP.NET per sec. Shows Current user load
+# TYPE windows_exchange_activesync_requests_total counter
+windows_exchange_activesync_requests_total 14
+# HELP windows_exchange_activesync_sync_cmds_total Number of sync commands processed per second. Clients use this command to synchronize items within a folder
+# TYPE windows_exchange_activesync_sync_cmds_total counter
+windows_exchange_activesync_sync_cmds_total 0
+# HELP windows_exchange_autodiscover_requests_total Number of autodiscover service requests processed each second
+# TYPE windows_exchange_autodiscover_requests_total counter
+windows_exchange_autodiscover_requests_total 1
+# HELP windows_exchange_avail_service_requests_per_sec Number of requests serviced per second
+# TYPE windows_exchange_avail_service_requests_per_sec counter
+windows_exchange_avail_service_requests_per_sec 0
+# HELP windows_exchange_owa_current_unique_users Number of unique users currently logged on to Outlook Web App
+# TYPE windows_exchange_owa_current_unique_users gauge
+windows_exchange_owa_current_unique_users 0
+# HELP windows_exchange_owa_requests_total Number of requests handled by Outlook Web App per second
+# TYPE windows_exchange_owa_requests_total counter
+windows_exchange_owa_requests_total 0
+# HELP windows_exchange_rpc_active_user_count Number of unique users that have shown some kind of activity in the last 2 minutes
+# TYPE windows_exchange_rpc_active_user_count gauge
+windows_exchange_rpc_active_user_count 0
+# HELP windows_exchange_rpc_avg_latency_sec The latency (sec), averaged for the past 1024 packets
+# TYPE windows_exchange_rpc_avg_latency_sec gauge
+windows_exchange_rpc_avg_latency_sec 0.001
+# HELP windows_exchange_rpc_connection_count Total number of client connections maintained
+# TYPE windows_exchange_rpc_connection_count gauge
+windows_exchange_rpc_connection_count 0
+# HELP windows_exchange_rpc_operations_total The rate at which RPC operations occur
+# TYPE windows_exchange_rpc_operations_total counter
+windows_exchange_rpc_operations_total 9
+# HELP windows_exchange_rpc_requests Number of client requests currently being processed by  the RPC Client Access service
+# TYPE windows_exchange_rpc_requests gauge
+windows_exchange_rpc_requests 0
+# HELP windows_exchange_rpc_user_count Number of users
+# TYPE windows_exchange_rpc_user_count gauge
+windows_exchange_rpc_user_count 0
+# HELP windows_exchange_transport_queues_active_mailbox_delivery Active Mailbox Delivery Queue length
+# TYPE windows_exchange_transport_queues_active_mailbox_delivery gauge
+windows_exchange_transport_queues_active_mailbox_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_active_mailbox_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_active_mailbox_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_active_mailbox_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_active_mailbox_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_external_active_remote_delivery External Active Remote Delivery Queue length
+# TYPE windows_exchange_transport_queues_external_active_remote_delivery gauge
+windows_exchange_transport_queues_external_active_remote_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_external_active_remote_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_external_active_remote_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_external_active_remote_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_external_active_remote_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_external_largest_delivery External Largest Delivery Queue length
+# TYPE windows_exchange_transport_queues_external_largest_delivery gauge
+windows_exchange_transport_queues_external_largest_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_external_largest_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_external_largest_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_external_largest_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_external_largest_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_internal_active_remote_delivery Internal Active Remote Delivery Queue length
+# TYPE windows_exchange_transport_queues_internal_active_remote_delivery gauge
+windows_exchange_transport_queues_internal_active_remote_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_internal_active_remote_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_internal_active_remote_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_internal_active_remote_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_internal_active_remote_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_internal_largest_delivery Internal Largest Delivery Queue length
+# TYPE windows_exchange_transport_queues_internal_largest_delivery gauge
+windows_exchange_transport_queues_internal_largest_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_internal_largest_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_internal_largest_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_internal_largest_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_internal_largest_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_poison Poison Queue length
+# TYPE windows_exchange_transport_queues_poison gauge
+windows_exchange_transport_queues_poison{name="high_priority"} 0
+windows_exchange_transport_queues_poison{name="low_priority"} 0
+windows_exchange_transport_queues_poison{name="none_priority"} 0
+windows_exchange_transport_queues_poison{name="normal_priority"} 0
+windows_exchange_transport_queues_poison{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_retry_mailbox_delivery Retry Mailbox Delivery Queue length
+# TYPE windows_exchange_transport_queues_retry_mailbox_delivery gauge
+windows_exchange_transport_queues_retry_mailbox_delivery{name="high_priority"} 0
+windows_exchange_transport_queues_retry_mailbox_delivery{name="low_priority"} 0
+windows_exchange_transport_queues_retry_mailbox_delivery{name="none_priority"} 0
+windows_exchange_transport_queues_retry_mailbox_delivery{name="normal_priority"} 0
+windows_exchange_transport_queues_retry_mailbox_delivery{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_transport_queues_unreachable Unreachable Queue length
+# TYPE windows_exchange_transport_queues_unreachable gauge
+windows_exchange_transport_queues_unreachable{name="high_priority"} 0
+windows_exchange_transport_queues_unreachable{name="low_priority"} 0
+windows_exchange_transport_queues_unreachable{name="none_priority"} 0
+windows_exchange_transport_queues_unreachable{name="normal_priority"} 0
+windows_exchange_transport_queues_unreachable{name="total_excluding_priority_none"} 0
+# HELP windows_exchange_workload_active_tasks Number of active tasks currently running in the background for workload management
+# TYPE windows_exchange_workload_active_tasks gauge
+windows_exchange_workload_active_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_active_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_completed_tasks Number of workload management tasks that have been completed
+# TYPE windows_exchange_workload_completed_tasks counter
+windows_exchange_workload_completed_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_completed_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_is_active Active indicates whether the workload is in an active (1) or paused (0) state
+# TYPE windows_exchange_workload_is_active gauge
+windows_exchange_workload_is_active{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 1
+windows_exchange_workload_is_active{name="microsoft_exchange_servicehost_darruntime"} 1
+# HELP windows_exchange_workload_queued_tasks Number of workload management tasks that are currently queued up waiting to be processed
+# TYPE windows_exchange_workload_queued_tasks counter
+windows_exchange_workload_queued_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_queued_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_exchange_workload_yielded_tasks The total number of tasks that have been yielded by a workload
+# TYPE windows_exchange_workload_yielded_tasks counter
+windows_exchange_workload_yielded_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
+windows_exchange_workload_yielded_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
 # HELP windows_iis_anonymous_users_total Total number of users who established an anonymous connection with the Web service (WebService.TotalAnonymousUsers)
 # TYPE windows_iis_anonymous_users_total counter
 windows_iis_anonymous_users_total{site="Default Web Site"} 3
