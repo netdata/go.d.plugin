@@ -63,7 +63,7 @@ func NewManager(cfg Config) (*Manager, error) {
 	return mgr, nil
 }
 
-func (m Manager) String() string {
+func (m *Manager) String() string {
 	return fmt.Sprintf("discovery manager: %v", m.discoverers)
 }
 

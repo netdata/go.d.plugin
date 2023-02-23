@@ -52,7 +52,7 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 	return &d, nil
 }
 
-func (d Discovery) String() string {
+func (d *Discovery) String() string {
 	return fmt.Sprintf("file discovery: %v", d.discoverers)
 }
 
@@ -84,6 +84,7 @@ func (d *Discovery) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 	}
 
 	wg.Wait()
+
 	<-ctx.Done()
 }
 

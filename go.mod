@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/Wing924/ltsv v0.3.1
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -16,6 +17,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.7.0
+	github.com/gobwas/glob v0.2.3
 	github.com/godbus/dbus/v5 v5.1.0
 	github.com/gofrs/flock v0.8.1
 	github.com/golang/mock v1.6.0
@@ -49,6 +51,8 @@ require (
 require (
 	cloud.google.com/go/compute v1.6.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
@@ -90,6 +94,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -113,6 +118,8 @@ require (
 	github.com/mdlayher/genetlink v1.2.0 // indirect
 	github.com/mdlayher/netlink v1.6.0 // indirect
 	github.com/mdlayher/socket v0.2.3 // indirect
+	github.com/mitchellh/copystructure v1.0.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
@@ -128,8 +135,10 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/soheilhy/cmux v0.1.5 // indirect
+	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.4.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802 // indirect
