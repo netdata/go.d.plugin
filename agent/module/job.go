@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/job/vnode"
 	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/logger"
 )
@@ -263,6 +264,10 @@ func (j *Job) Cleanup() {
 		return
 	}
 
+	if !vnode.Disabled {
+		_ = j.api.HOST(j.vnodeGUID)
+	}
+
 	if j.runChart.created {
 		j.runChart.MarkRemove()
 		j.createChart(j.runChart)
@@ -275,6 +280,7 @@ func (j *Job) Cleanup() {
 			}
 		}
 	}
+
 	if j.buf.Len() > 0 {
 		writeLock.Lock()
 		_, _ = io.Copy(j.out, j.buf)
@@ -353,12 +359,14 @@ func (j *Job) collect() (result map[string]int64) {
 }
 
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
-	if !j.vnodeCreated && j.vnodeGUID != "" {
-		_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
-		j.vnodeCreated = true
-	}
+	if !vnode.Disabled {
+		if !j.vnodeCreated && j.vnodeGUID != "" {
+			_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
+			j.vnodeCreated = true
+		}
 
-	_ = j.api.HOST(j.vnodeGUID)
+		_ = j.api.HOST(j.vnodeGUID)
+	}
 
 	if !ndInternalMonitoringDisabled && !j.runChart.created {
 		j.runChart.ID = fmt.Sprintf("execution_time_of_%s", j.FullName())

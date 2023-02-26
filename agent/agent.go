@@ -183,8 +183,12 @@ func (a *Agent) run(ctx context.Context) {
 	if len(a.VnodesConfDir) > 0 {
 		a.Infof("looking for 'vnodes/' in %v", a.VnodesConfDir)
 		if s, _ := a.VnodesConfDir.Find("vnodes/"); s != "" {
-			a.Infof("found '%s'", s)
-			builder.VNodeRegistry = vnode.NewRegistry(s)
+			reg := vnode.NewRegistry(s)
+			a.Infof("found '%s' (%d vhosts)", s, reg.Len())
+			if reg.Len() == 0 {
+				vnode.Disabled = true
+			}
+			builder.VNodeRegistry = reg
 		}
 	}
 

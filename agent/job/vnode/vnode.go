@@ -13,6 +13,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var Disabled = false // TODO: remove after Netdata v1.39.0. Fix for "from source" stable-channel installations.
+
 func NewRegistry(confDir string) *Registry {
 	r := &Registry{
 		confDir: confDir,
@@ -35,6 +37,10 @@ type Registry struct {
 	confDir string
 	nodes   map[string]*VirtualNode
 	*logger.Logger
+}
+
+func (r *Registry) Len() int {
+	return len(r.nodes)
 }
 
 func (r *Registry) Lookup(key string) (*VirtualNode, bool) {
