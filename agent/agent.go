@@ -180,16 +180,10 @@ func (a *Agent) run(ctx context.Context) {
 	builder.Out = a.Out
 	builder.Modules = enabled
 
-	if len(a.VnodesConfDir) > 0 {
-		a.Infof("looking for 'vnodes/' in %v", a.VnodesConfDir)
-		if s, _ := a.VnodesConfDir.Find("vnodes/"); s != "" {
-			reg := vnode.NewRegistry(s)
-			a.Infof("found '%s' (%d vhosts)", s, reg.Len())
-			if reg.Len() == 0 {
-				vnode.Disabled = true
-			}
-			builder.VNodeRegistry = reg
-		}
+	if reg := a.setupVnodeRegistry(); reg == nil || reg.Len() == 0 {
+		vnode.Disabled = true
+	} else {
+		builder.VNodeRegistry = reg
 	}
 
 	if a.LockDir != "" {
