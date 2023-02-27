@@ -174,6 +174,11 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 
 func (a *Agent) setupVnodeRegistry() *vnode.Registry {
 	a.Infof("looking for 'vnodes/' in %v", a.VnodesConfDir)
+
+	if len(a.VnodesConfDir) == 0 {
+		return nil
+	}
+
 	dirPath, err := a.VnodesConfDir.Find("vnodes/")
 	if err != nil || dirPath == "" {
 		return nil
