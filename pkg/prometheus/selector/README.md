@@ -6,7 +6,7 @@ learn_status: "Published"
 learn_rel_path: "Developers/External plugins/go.d.plugin/Helper Packages"
 -->
 
-# Time Series Selector
+# Time series selector
 
 Selectors allow selecting and filtering of a set of time series.
 
