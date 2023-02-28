@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# NGINX Plus monitoring
+# NGINX Plus monitoring with Netdata
 
 [NGINX Plus](https://www.nginx.com/products/nginx/) is a software load balancer, API gateway, and reverse proxy built on
 top of NGINX.
