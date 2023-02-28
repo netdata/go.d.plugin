@@ -7,7 +7,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# NGINX VTS monitoring with Netdata
+# NGINX VTS monitoring
 
 `nginxvts` can monitor statistics of NGINX which configured
 with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts).
