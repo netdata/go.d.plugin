@@ -48,10 +48,12 @@ func NewHTTPClient(cfg Client) (*http.Client, error) {
 		}
 	}
 
+	d := &net.Dialer{Timeout: cfg.Timeout.Duration}
+
 	transport := &http.Transport{
 		Proxy:               proxyFunc(cfg.ProxyURL),
 		TLSClientConfig:     tlsConfig,
-		DialContext:         (&net.Dialer{Timeout: cfg.Timeout.Duration}).DialContext,
+		DialContext:         d.DialContext,
 		TLSHandshakeTimeout: cfg.Timeout.Duration,
 	}
 
