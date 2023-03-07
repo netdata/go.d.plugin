@@ -47,13 +47,17 @@ func (d *DNSQuery) collect() (map[string]int64, error) {
 				if err != nil {
 					d.Debugf("error on querying %s after %s query for %s : %s", srv, rtypeName, domain, err)
 					mx[px+"query_status_network_error"] = 1
-				} else if resp != nil && resp.Rcode != dns.RcodeSuccess {
-					d.Debugf("invalid answer from %s after %s query for %s", srv, rtypeName, domain)
+					return
+				}
+
+				if resp != nil && resp.Rcode != dns.RcodeSuccess {
+					d.Debugf("invalid answer from %s after %s query for %s (rcode %d)", srv, rtypeName, domain, resp.Rcode)
 					mx[px+"query_status_dns_error"] = 1
 				} else {
 					mx[px+"query_status_success"] = 1
-					mx["server_"+srv+"_record_"+rtypeName+"_query_time"] = rtt.Nanoseconds()
 				}
+				mx["server_"+srv+"_record_"+rtypeName+"_query_time"] = rtt.Nanoseconds()
+
 			}(srv, rtypeName, rtype, &wg)
 		}
 	}
@@ -63,6 +67,7 @@ func (d *DNSQuery) collect() (map[string]int64, error) {
 }
 
 func randomDomain(domains []string) string {
-	rand.Seed(time.Now().UnixNano())
-	return domains[rand.Intn(len(domains))]
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	return domains[r.Intn(len(domains))]
 }
