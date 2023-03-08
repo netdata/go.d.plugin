@@ -153,13 +153,16 @@ test_counter_no_meta_metric_1_total{label1="value2"} 11
 				srv := httptest.NewServer(http.HandlerFunc(
 					func(w http.ResponseWriter, r *http.Request) {
 						_, _ = w.Write([]byte(`
-test_counter_no_meta_metric_1_total{label1="value1",label2="a_very_long_label_name",label3="anoterh_very_long_label_name",label4="yet_another_very_long_label_name"} 11
+traefik_router_responses_bytes_total{code="404",method="GET",protocol="http",router="entrypoint-namespace-app-name-url-from-rule@kubernetes",service="namespace-service-name-80@kubernetes"} 5140
+traefik_router_request_duration_seconds_count{code="200",method="GET",protocol="http",router="prometheus@internal",service="prometheus@internal"} 2.733664e+06
+test_counter_no_meta_metric_1_total{label1="value1",label2="a_very_long_label_name",label3="another_very_long_label_name",label4="yet_another_very_long_label_name"} 11
 test_counter_no_meta_metric_1_total{label1="value2"} 11
 `))
 					}))
 				prom = New()
 				prom.URL = srv.URL
-				prom.Replacements = []RegexReplace{{regex: "label(\\d)=(.+)_long_label_name", replace: "$1=$2"}, {regex: "_very_", replace: ""}}
+				prom.WordStrips = []string{"should", "not", "match", "anything"}
+				prom.Replacements = []RegexReplace{{Regex: "label(\\d)=(.+)_long_label_name", Replace: "$1=$2"}, {Regex: "_very_", Replace: ""}, {Regex: "(.+)-code=(.+)-method=(.+)-protocol=(.+)-router=(.+)-service=(.+)", Replace: "$1-c=$2-m=$3-p=$4-r=$5-s=$6"}}
 
 				return prom, srv.Close
 			},

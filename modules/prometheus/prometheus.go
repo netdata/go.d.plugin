@@ -37,8 +37,8 @@ func New() *Prometheus {
 }
 
 type RegexReplace struct {
-	regex   string `yaml:"regex"`
-	replace string `yaml:"replace"`
+	Regex   string `yaml:"regex"`
+	Replace string `yaml:"replace"`
 }
 
 type Config struct {

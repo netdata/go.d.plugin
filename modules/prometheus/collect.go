@@ -25,8 +25,12 @@ func (p *Prometheus) make_chart_id(name string) string {
 	}
 	for i := 0; i < len(p.Replacements); i++ {
 		e := p.Replacements[i]
-		r := regexp.MustCompile(e.regex)
-		name = r.ReplaceAllString(name, e.replace)
+		r, err := regexp.Compile(e.Regex)
+		if err != nil {
+			p.Warning(fmt.Sprintf("Can't parse regex %q error is %q\n", e.Regex, err))
+			continue
+		}
+		name = r.ReplaceAllString(name, e.Replace)
 	}
 	return name
 }
