@@ -69,7 +69,7 @@ var (
 	}
 	peerLatestHandShakeChartTmpl = module.Chart{
 		ID:       "peer_%s_latest_handshake_ago",
-		Title:    "Peer time elapsed sine the latest handshake",
+		Title:    "Peer time elapsed since the latest handshake",
 		Units:    "seconds",
 		Fam:      "peer latest handshake",
 		Ctx:      "wireguard.peer_latest_handshake_ago",
