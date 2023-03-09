@@ -5,25 +5,25 @@ package rabbitmq
 // https://www.rabbitmq.com/monitoring.html#cluster-wide-metrics
 type overviewStats struct {
 	ObjectTotals struct {
-		Consumers   int `json:"consumers" stm:"consumers"`
-		Queues      int `json:"queues" stm:"queues"`
-		Exchanges   int `json:"exchanges" stm:"exchanges"`
-		Connections int `json:"connections" stm:"connections"`
-		Channels    int `json:"channels" stm:"channels"`
+		Consumers   int64 `json:"consumers" stm:"consumers"`
+		Queues      int64 `json:"queues" stm:"queues"`
+		Exchanges   int64 `json:"exchanges" stm:"exchanges"`
+		Connections int64 `json:"connections" stm:"connections"`
+		Channels    int64 `json:"channels" stm:"channels"`
 	} `json:"object_totals" stm:"object_totals"`
 	ChurnRates struct {
-		ChannelClosed     int `json:"channel_closed" stm:"channel_closed"`
-		ChannelCreated    int `json:"channel_created" stm:"channel_created"`
-		ConnectionClosed  int `json:"connection_closed" stm:"connection_closed"`
-		ConnectionCreated int `json:"connection_created" stm:"connection_created"`
-		QueueCreated      int `json:"queue_created" stm:"queue_created"`
-		QueueDeclared     int `json:"queue_declared" stm:"queue_declared"`
-		QueueDeleted      int `json:"queue_deleted" stm:"queue_deleted"`
+		ChannelClosed     int64 `json:"channel_closed" stm:"channel_closed"`
+		ChannelCreated    int64 `json:"channel_created" stm:"channel_created"`
+		ConnectionClosed  int64 `json:"connection_closed" stm:"connection_closed"`
+		ConnectionCreated int64 `json:"connection_created" stm:"connection_created"`
+		QueueCreated      int64 `json:"queue_created" stm:"queue_created"`
+		QueueDeclared     int64 `json:"queue_declared" stm:"queue_declared"`
+		QueueDeleted      int64 `json:"queue_deleted" stm:"queue_deleted"`
 	} `json:"churn_rates" stm:"churn_rates"`
 	QueueTotals struct {
-		Messages               int `json:"messages" stm:"messages"`
-		MessagesReady          int `json:"messages_ready" stm:"messages_ready"`
-		MessagesUnacknowledged int `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+		Messages               int64 `json:"messages" stm:"messages"`
+		MessagesReady          int64 `json:"messages_ready" stm:"messages_ready"`
+		MessagesUnacknowledged int64 `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
 	} `json:"queue_totals" stm:"queue_totals"`
 	MessageStats messageStats `json:"message_stats" stm:"message_stats"`
 	Node         string
@@ -31,23 +31,23 @@ type overviewStats struct {
 
 // https://www.rabbitmq.com/monitoring.html#node-metrics
 type nodeStats struct {
-	FDTotal      int `json:"fd_total" stm:"fd_total"`
-	FDUsed       int `json:"fd_used" stm:"fd_used"`
-	MemLimit     int `json:"mem_limit" stm:"mem_limit"`
-	MemUsed      int `json:"mem_used" stm:"mem_used"`
-	SocketsTotal int `json:"sockets_total" stm:"sockets_total"`
-	SocketsUsed  int `json:"sockets_used" stm:"sockets_used"`
-	ProcTotal    int `json:"proc_total" stm:"proc_total"`
-	ProcUsed     int `json:"proc_used" stm:"proc_used"`
-	DiskFree     int `json:"disk_free" stm:"disk_free"`
-	RunQueue     int `json:"run_queue" stm:"run_queue"`
+	FDTotal      int64 `json:"fd_total" stm:"fd_total"`
+	FDUsed       int64 `json:"fd_used" stm:"fd_used"`
+	MemLimit     int64 `json:"mem_limit" stm:"mem_limit"`
+	MemUsed      int64 `json:"mem_used" stm:"mem_used"`
+	SocketsTotal int64 `json:"sockets_total" stm:"sockets_total"`
+	SocketsUsed  int64 `json:"sockets_used" stm:"sockets_used"`
+	ProcTotal    int64 `json:"proc_total" stm:"proc_total"`
+	ProcUsed     int64 `json:"proc_used" stm:"proc_used"`
+	DiskFree     int64 `json:"disk_free" stm:"disk_free"`
+	RunQueue     int64 `json:"run_queue" stm:"run_queue"`
 }
 
 type vhostStats struct {
 	Name                   string       `json:"name"`
-	Messages               int          `json:"messages" stm:"messages"`
-	MessagesReady          int          `json:"messages_ready" stm:"messages_ready"`
-	MessagesUnacknowledged int          `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+	Messages               int64        `json:"messages" stm:"messages"`
+	MessagesReady          int64        `json:"messages_ready" stm:"messages_ready"`
+	MessagesUnacknowledged int64        `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
 	MessageStats           messageStats `json:"message_stats" stm:"message_stats"`
 }
 
@@ -57,26 +57,26 @@ type queueStats struct {
 	Vhost                  string       `json:"vhost"`
 	State                  string       `json:"state"`
 	Type                   string       `json:"type"`
-	Messages               int          `json:"messages" stm:"messages"`
-	MessagesReady          int          `json:"messages_ready" stm:"messages_ready"`
-	MessagesUnacknowledged int          `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
-	MessagesPagedOut       int          `json:"messages_paged_out" stm:"messages_paged_out"`
-	MessagesPersistent     int          `json:"messages_persistent" stm:"messages_persistent"`
+	Messages               int64        `json:"messages" stm:"messages"`
+	MessagesReady          int64        `json:"messages_ready" stm:"messages_ready"`
+	MessagesUnacknowledged int64        `json:"messages_unacknowledged" stm:"messages_unacknowledged"`
+	MessagesPagedOut       int64        `json:"messages_paged_out" stm:"messages_paged_out"`
+	MessagesPersistent     int64        `json:"messages_persistent" stm:"messages_persistent"`
 	MessageStats           messageStats `json:"message_stats" stm:"message_stats"`
 }
 
 // https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.11.5/deps/rabbitmq_management/priv/www/api/index.html
 type messageStats struct {
-	Ack              int `json:"ack" stm:"ack"`
-	Publish          int `json:"publish" stm:"publish"`
-	PublishIn        int `json:"publish_in" stm:"publish_in"`
-	PublishOut       int `json:"publish_out" stm:"publish_out"`
-	Confirm          int `json:"confirm" stm:"confirm"`
-	Deliver          int `json:"deliver" stm:"deliver"`
-	DeliverNoAck     int `json:"deliver_no_ack" stm:"deliver_no_ack"`
-	Get              int `json:"get" stm:"get"`
-	GetNoAck         int `json:"get_no_ack" stm:"get_no_ack"`
-	DeliverGet       int `json:"deliver_get" stm:"deliver_get"`
-	Redeliver        int `json:"redeliver" stm:"redeliver"`
-	ReturnUnroutable int `json:"return_unroutable" stm:"return_unroutable"`
+	Ack              int64 `json:"ack" stm:"ack"`
+	Publish          int64 `json:"publish" stm:"publish"`
+	PublishIn        int64 `json:"publish_in" stm:"publish_in"`
+	PublishOut       int64 `json:"publish_out" stm:"publish_out"`
+	Confirm          int64 `json:"confirm" stm:"confirm"`
+	Deliver          int64 `json:"deliver" stm:"deliver"`
+	DeliverNoAck     int64 `json:"deliver_no_ack" stm:"deliver_no_ack"`
+	Get              int64 `json:"get" stm:"get"`
+	GetNoAck         int64 `json:"get_no_ack" stm:"get_no_ack"`
+	DeliverGet       int64 `json:"deliver_get" stm:"deliver_get"`
+	Redeliver        int64 `json:"redeliver" stm:"redeliver"`
+	ReturnUnroutable int64 `json:"return_unroutable" stm:"return_unroutable"`
 }
