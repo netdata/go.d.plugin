@@ -60,9 +60,8 @@ For production use, you need to install Netdata on one or more nodes running Lin
   nodes.
 - Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job
   for each host to  `windows.conf`, as shown in the [configuration section](#configuration).
-- [Optional] [Disable all plugins](https://learn.netdata.cloud/docs/configure/common-changes#disable-a-collector-or-plugin)
-  except for go.d in `netdata.conf`, so that you only see Windows metrics.
-- [Optional] Set up [replication](https://learn.netdata.cloud/docs/agent/streaming), for high availability.
+- (Optional) [Disable all plugins](https://github.com/netdata/netdata/blob/master/docs/configure/common-changes.md#disable-a-collector-or-plugin) except for go.d in `netdata.conf`, so that you only see Windows metrics.
+- (Optional) Set up [replication](https://github.com/netdata/netdata/blob/master/streaming/README.md), for high availability.
 
 Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
 Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
@@ -320,7 +319,7 @@ Labels per scope:
 ## Configuration
 
 Edit the `go.d/windows.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
