@@ -7,7 +7,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
-# NTP daemon monitoring with Netdata
+# NTP daemon collector
 
 Monitors the system variables of the local `ntpd` daemon (optional incl. variables of the polled peers) using the NTP
 Control Message Protocol via UDP socket, similar to `ntpq`,

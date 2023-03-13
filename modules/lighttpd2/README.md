@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Lighttpd2 monitoring with Netdata
+# Lighttpd2 collector
 
 [`Lighttpd2`](https://redmine.lighttpd.net/projects/lighttpd2) is a work in progress version of open-source web server.
 

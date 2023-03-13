@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# CockroachDB monitoring with Netdata
+# CockroachDB collector
 
 [`CockroachDB`](https://www.cockroachlabs.com/)  is the SQL database for building global, scalable cloud services that
 survive disasters.

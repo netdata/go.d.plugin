@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# DNSdist monitoring with Netdata
+# DNSdist collector
 
 [`DNSdist`](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer.
 

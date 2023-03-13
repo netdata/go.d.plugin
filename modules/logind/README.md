@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/System metrics"
 -->
 
-# systemd-logind monitoring with Netdata
+# systemd-logind collector
 
 [systemd-logind](https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html) is a system service that
 manages user logins.

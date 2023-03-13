@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/System metrics"
 -->
 
-# Windows machine monitoring with Netdata
+# Windows machine collector
 
 This module will monitor one or more Windows machines, using
 the [windows_exporter](https://github.com/prometheus-community/windows_exporter).

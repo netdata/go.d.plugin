@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Traefik monitoring with Netdata
+# Traefik collector
 
 [`Traefik`](https://traefik.io/traefik/) is a leading modern reverse proxy and load balancer that makes deploying
 microservices easy. .

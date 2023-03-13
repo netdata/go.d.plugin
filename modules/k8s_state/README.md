@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Container orchestrators/Kubernetes"
 -->
 
-# Kubernetes cluster state monitoring with Netdata
+# Kubernetes cluster state collector
 
 [Kubernetes](https://kubernetes.io/) is an open-source container orchestration system for automating software
 deployment, scaling, and management.

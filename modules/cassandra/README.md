@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# Cassandra monitoring with Netdata
+# Cassandra collector
 
 [Cassandra](https://cassandra.apache.org/_/index.html) is an open-source NoSQL database management system.
 

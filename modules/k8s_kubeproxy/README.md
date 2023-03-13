@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Container orchestrators/Kubernetes"
 -->
 
-# Kube-proxy monitoring with Netdata
+# Kube-proxy collector
 
 [`Kube-proxy`](https://kubernetes.io/docs/concepts/overview/components/#kube-proxy) is a network proxy that runs on each
 node in your cluster, implementing part of the Kubernetes Service.

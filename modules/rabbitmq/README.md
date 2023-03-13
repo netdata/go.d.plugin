@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Message brokers"
 -->
 
-# RabbitMQ monitoring with Netdata
+# RabbitMQ collector
 
 [RabbitMQ](https://www.rabbitmq.com/) is an open-source message broker.
 

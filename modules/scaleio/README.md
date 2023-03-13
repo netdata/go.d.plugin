@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Storage"
 -->
 
-# ScaleIO monitoring with Netdata
+# ScaleIO collector
 
 [`Dell EMC ScaleIO`](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a
 software-defined storage product from Dell EMC that creates a server-based storage area network from local application

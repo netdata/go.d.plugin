@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Devices"
 -->
 
-# NVMe devices monitoring with Netdata
+# NVMe devices collector
 
 Monitors health metrics (estimated endurance, space capacity, critical warnings, temperature, etc.) using
 the [nvme](https://github.com/linux-nvme/nvme-cli#nvme-cli) CLI tool.

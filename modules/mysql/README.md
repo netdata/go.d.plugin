@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# MySQL monitoring with Netdata
+# MySQL collector
 
 [MySQL](https://www.mysql.com/) is an open-source relational database management system.
 

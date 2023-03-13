@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Virtualized environments/Virtualize hosts"
 -->
 
-# vCenter Server monitoring with Netdata
+# vCenter Server collector
 
 [`VMware vCenter Server`](https://www.vmware.com/products/vcenter-server.html) is advanced server management software
 that provides a centralized platform for controlling your VMware vSphere environments.

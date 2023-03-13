@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Bind9 monitoring with Netdata
+# Bind9 collector
 
 [`Bind9`](https://www.isc.org/bind/) (or named) is a very flexible, full-featured DNS system.
 

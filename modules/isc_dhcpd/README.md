@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# ISC DHCPd monitoring with Netdata
+# ISC DHCPd collector
 
 [`ISC DHCP`](https://www.isc.org/dhcp/) is a DHCP server that supports both IPv4 and IPv6, and is suitable for use in
 high-volume and high-reliability applications.

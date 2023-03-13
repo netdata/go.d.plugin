@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Anything"
 -->
 
-# Prometheus endpoint monitoring with Netdata
+# Prometheus endpoint collector
 
 The generic Prometheus endpoint collector gathers metrics from [`Prometheus`](https://prometheus.io/) endpoints that use
 the [OpenMetrics exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/).

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apm"
 -->
 
-# Logstash monitoring with Netdata
+# Logstash collector
 
 [Logstash](https://www.elastic.co/products/logstash) is an open-source data processing pipeline that allows you to
 collect, process, and load data into Elasticsearch.

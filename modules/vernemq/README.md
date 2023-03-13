@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Message brokers"
 -->
 
-# VerneMQ monitoring with Netdata
+# VerneMQ collector
 
 [`VerneMQ`](https://vernemq.com/) is a scalable and open source MQTT broker that connects IoT, M2M, Mobile, and web
 applications.

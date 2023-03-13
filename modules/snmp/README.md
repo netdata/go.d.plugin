@@ -7,7 +7,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Remotes"
 -->
 
-# SNMP device monitoring with Netdata
+# SNMP device collector
 
 Collects data from any SNMP device and uses the [gosnmp](https://github.com/gosnmp/gosnmp) package.
 

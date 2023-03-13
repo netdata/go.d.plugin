@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# Apache ZooKeeper monitoring with Netdata
+# Apache ZooKeeper collector
 
 [ZooKeeper](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
 providing distributed synchronization, and providing group services.

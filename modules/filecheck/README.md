@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/System metrics"
 -->
 
-# Files and directories monitoring with Netdata
+# Files and directories collector
 
 This module monitors files and directories.
 

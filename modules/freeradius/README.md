@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# FreeRADIUS monitoring with Netdata
+# FreeRADIUS collector
 
 [`FreeRADIUS`](https://freeradius.org/) is a modular, high performance free RADIUS suite.
 

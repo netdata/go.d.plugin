@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# Couchbase monitoring with Netdata
+# Couchbase collector
 
 [Couchbase](https://www.couchbase.com/) is an open source, distributed, JSON document database. It exposes a scale-out,
 key-value store with managed cache for sub-millisecond data operations, purpose-built indexers for efficient queries and

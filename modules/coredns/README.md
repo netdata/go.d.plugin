@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# CoreDNS monitoring with Netdata
+# CoreDNS collector
 
 [`CoreDNS`](https://coredns.io/) is a fast and flexible DNS server.
 
