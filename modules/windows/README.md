@@ -346,7 +346,7 @@ To define your windows server a virtual node you need to:
 
   * Define virtual nodes in `/etc/netdata/vnodes/vnodes.conf`
 
-    ```
+    ```yaml
     - hostname: win_server1
       guid: <value>
     ```
