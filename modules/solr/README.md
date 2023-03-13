@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
-# Solr monitoring with Netdata
+# Solr collector
 
 [`Solr`](https://lucene.apache.org/solr/) is an open-source enterprise-search platform, written in Java, from the Apache
 Lucene project.

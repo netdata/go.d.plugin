@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Virtualized environments/Virtualize hosts"
 -->
 
-# Supervisord monitoring with Netdata
+# Supervisord collector
 
 [Supervisor](http://supervisord.org/) is a client/server system that allows its users to monitor and control a number of
 processes on UNIX-like operating systems.

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Docker Hub repository monitoring with Netdata
+# Docker Hub repository collector
 
 [`Docker Hub`](https://docs.docker.com/docker-hub/) is a service provided by Docker for finding and sharing container
 images with your team.

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
-# Elasticsearch monitoring with Netdata
+# Elasticsearch collector
 
 [`Elasticsearch`](https://www.elastic.co/elasticsearch/) is a search engine based on the Lucene library.
 

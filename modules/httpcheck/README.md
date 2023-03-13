@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Remotes"
 -->
 
-# HTTP endpoint monitoring with Netdata
+# HTTP endpoint collector
 
 This module monitors one or more http servers availability and response time.
 

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# MongoDB monitoring with Netdata
+# MongoDB collector
 
 [MongoDB](https://www.mongodb.com/) is a source-available cross-platform document-oriented database program.
 

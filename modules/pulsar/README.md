@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Message brokers"
 -->
 
-# Apache Pulsar monitoring with Netdata
+# Apache Pulsar collector
 
 [`Apache Pulsar`](http://pulsar.apache.org/) is an open-source distributed pub-sub messaging system.
 

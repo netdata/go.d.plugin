@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
-# Pi-hole monitoring with Netdata
+# Pi-hole collector
 
 [`Pi-hole`](https://pi-hole.net) is a Linux network-level advertisement and Internet tracker blocking application which
 acts as a DNS sinkhole, intended for use on a private network.

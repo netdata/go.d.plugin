@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# ProxySQL monitoring with Netdata
+# ProxySQL collector
 
 [ProxySQL](https://www.proxysql.com/) is an open-source proxy for mySQL.
 

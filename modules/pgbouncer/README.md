@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# PgBouncer monitoring with Netdata
+# PgBouncer collector
 
 [PgBouncer](https://www.pgbouncer.org/) is an open-source connection pooler
 for [PostgreSQL](https://www.postgresql.org/).

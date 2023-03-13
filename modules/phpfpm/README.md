@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# PHP-FPM monitoring with Netdata
+# PHP-FPM collector
 
 [`PHP-FPM`](https://php-fpm.org/) is an alternative PHP FastCGI implementation with some additional features useful for
 sites of any size, especially busier sites.

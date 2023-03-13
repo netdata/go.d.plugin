@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Remotes"
 -->
 
-# TCP endpoint monitoring with Netdata
+# TCP endpoint collector
 
 This module monitors one or more TCP services availability and response time.
 

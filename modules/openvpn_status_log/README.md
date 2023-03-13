@@ -7,7 +7,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# OpenVPN monitoring with Netdata
+# OpenVPN collector
 
 Parses server log files and provides summary (client, traffic) metrics. Please *note* that this collector is similar to
 another OpenVPN collector. However, this collector requires status logs from OpenVPN in contrast to another collector

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Virtualized environments/Containers"
 -->
 
-# Docker monitoring with Netdata
+# Docker collector
 
 [Docker Engine](https://docs.docker.com/engine/) is an open source containerization technology for building and
 containerizing your applications.

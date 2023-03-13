@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Remotes/Devices"
 -->
 
-# Energi Core Wallet monitoring with Netdata
+# Energi Core Wallet collector
 
 This module monitors one or more `Energi Core Wallet` instances, depending on your configuration.
 

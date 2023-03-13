@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Storage"
 -->
 
-# HDFS monitoring with Netdata
+# HDFS collector
 
 The [`Hadoop Distributed File System (HDFS)`](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) is a distributed
 file system designed to run on commodity hardware.

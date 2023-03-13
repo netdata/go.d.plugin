@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Devices"
 -->
 
-# PowerDNS Recursor monitoring with Netdata
+# PowerDNS Recursor collector
 
 [`PowerDNS Recursor`](https://doc.powerdns.com/recursor/) is a high-performance DNS recursor with built-in scripting
 capabilities.

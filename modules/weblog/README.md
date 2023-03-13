@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Quantify logs to metrics"
 -->
 
-# Web server log (Apache, NGINX, IIS) monitoring with Netdata
+# Web server log (Apache, NGINX, IIS) collector
 
 This module parses [`Apache`](https://httpd.apache.org/), [`NGINX`](https://nginx.org/en/) and [Microsoft IIS](https://www.iis.net/) web servers logs.
 

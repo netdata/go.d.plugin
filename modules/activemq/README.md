@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Message brokers"
 -->
 
-# ActiveMQ monitoring with Netdata
+# ActiveMQ collector
 
 [`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java
 Message Service client.

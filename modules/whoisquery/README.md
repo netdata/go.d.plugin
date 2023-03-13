@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Whois domain expiry monitoring with Netdata
+# Whois domain expiry collector
 
 This collector module checks the remaining time until a domain is expired.
 

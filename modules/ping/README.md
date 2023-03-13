@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/QoS"
 -->
 
-# Ping monitoring with Netdata
+# Ping collector
 
 This module measures round-tripe time and packet loss by sending ping messages to network hosts.
 

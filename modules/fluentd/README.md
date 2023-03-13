@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Logs"
 -->
 
-# Fluentd monitoring with Netdata
+# Fluentd collector
 
 [`Fluentd`](https://www.fluentd.org/) is an open source data collector for unified logging layer.
 

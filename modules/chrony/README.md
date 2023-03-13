@@ -7,7 +7,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Apps"
 -->
 
-# Chrony monitoring with Netdata
+# Chrony collector
 
 [chrony](https://chrony.tuxfamily.org/) is a versatile implementation of the Network Time Protocol (NTP).
 

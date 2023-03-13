@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# HAProxy monitoring with Netdata
+# HAProxy collector
 
 [`HAProxy`](http://www.haproxy.org/) is a free, very fast and reliable solution offering high availability, load
 balancing, and proxying for TCP and HTTP-based applications.

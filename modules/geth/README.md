@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Blockchain"
 -->
 
-# Geth monitoring with Netdata
+# Geth collector
 
 Go Ethereum, written in Google’s Go language, is one of the three original implementations of the Ethereum protocol,
 alongside C++ and Python.

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Consul monitoring with Netdata
+# Consul collector
 
 [Consul](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime
 platform and public or private cloud.

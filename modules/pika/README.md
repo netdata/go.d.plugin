@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Storage"
 -->
 
-# Pika monitoring with Netdata
+# Pika collector
 
 [`Pika`](https://github.com/Qihoo360/pika#introduction%E4%B8%AD%E6%96%87) is a persistent huge storage service,
 compatible with the vast majority of redis interfaces (details), including string, hash, list, zset, set and management

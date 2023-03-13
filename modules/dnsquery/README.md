@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Networking"
 -->
 
-# DNS query monitoring with Netdata
+# DNS query collector
 
 This module provides DNS query round-trip time (RTT).
 

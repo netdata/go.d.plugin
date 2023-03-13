@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Devices"
 -->
 
-# PowerDNS Authoritative Server monitoring with Netdata
+# PowerDNS Authoritative Server collector
 
 [`PowerDNS Authoritative Server`](https://doc.powerdns.com/authoritative/) is a versatile nameserver which supports a
 large number of backends.

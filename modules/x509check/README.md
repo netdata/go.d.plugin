@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# x509 certificate monitoring with Netdata
+# x509 certificate collector
 
 This module checks the time until a x509 certificate expiration and its revocation status.
 

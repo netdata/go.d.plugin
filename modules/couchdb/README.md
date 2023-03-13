@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# Apache CouchDB monitoring with Netdata
+# Apache CouchDB collector
 
 Monitors vital statistics of a local Apache CouchDB 2.x server.
 

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Quantify logs to metrics"
 -->
 
-# Squid log monitoring with Netdata
+# Squid log collector
 
 [`Squid`](http://www.squid-cache.org/) is a caching and forwarding HTTP web proxy.
 

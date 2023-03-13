@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Apache monitoring with Netdata
+# Apache collector
 
 [`Apache`](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and
 Windows.

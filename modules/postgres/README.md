@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Databases"
 -->
 
-# PostgreSQL monitoring with Netdata
+# PostgreSQL collector
 
 [PostgreSQL](https://www.postgresql.org/), also known as Postgres, is a free and open-source relational database
 management system emphasizing extensibility and SQL compliance.

@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Webapps"
 -->
 
-# Lighttpd monitoring with Netdata
+# Lighttpd collector
 
 [`Lighttpd`](https://www.lighttpd.net/) is an open-source web server optimized for speed-critical environments while
 remaining standards-compliant, secure and flexible

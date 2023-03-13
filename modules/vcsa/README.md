@@ -8,7 +8,7 @@ learn_topic_type: "References"
 learn_rel_path: "Integrations/Monitor/Virtualized environments/Virtualize hosts"
 -->
 
-# vCenter Server Appliance monitoring with Netdata
+# vCenter Server Appliance collector
 
 The [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
 using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management) is a preconfigured Linux
