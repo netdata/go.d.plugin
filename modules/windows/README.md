@@ -61,8 +61,6 @@ For production use, you need to install Netdata on one or more nodes running Lin
   nodes.
 - Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job
   for each host to  `windows.conf`, as shown in the [configuration section](#configuration).
-- (Optional) [Disable all plugins](https://github.com/netdata/netdata/blob/master/docs/configure/common-changes.md#disable-a-collector-or-plugin) except for go.d in `netdata.conf`, so that you only see Windows metrics.
-- (Optional) Set up [replication](https://github.com/netdata/netdata/blob/master/streaming/README.md), for high availability.
 
 Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
 Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
