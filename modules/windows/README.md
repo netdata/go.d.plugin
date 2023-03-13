@@ -338,6 +338,27 @@ and on the right side menu of the agent UI charts.
 For all available options please see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/windows.conf).
 
+### Virtual Nodes
+
+Netdata’s new virtual nodes functionality allows you to define nodes in configuration files and have them be treated as regular nodes in all of the UI, dashboards, tabs, filters etc. For example, you can create a virtual node each for all your Windows machines and monitor them as discrete entities. Virtual nodes can help you simplify your infrastructure monitoring and focus on the individual node that matters.
+
+To define your windows server a virtual node you need to:
+
+  * Define virtual nodes in `/etc/netdata/vnodes/vnodes.conf`
+
+    ```
+    - hostname: win_server1
+      guid: <value>
+    ```
+    Just remember to use a valid guid (On Linux you can use uuidgen command to generate one, On Windows just use the [guid]::NewGuid() command in PowerShell)
+    
+  * Add the vnode config to the windows monitoring job we created earlier, see higlighted line below:
+    ```
+      jobs:
+        - name: win_server1
+          vnode: win_server1
+          url: http://203.0.113.10:9182/metrics
+
 ## Troubleshooting
 
 To troubleshoot issues with the `windows` collector, run the `go.d.plugin` with the debug option enabled. The output
