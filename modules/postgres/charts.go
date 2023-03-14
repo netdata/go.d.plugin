@@ -108,8 +108,6 @@ var baseCharts = module.Charts{
 	bgWriterHaltsRateChart.Copy(),
 	buffersBackendFsyncRateChart.Copy(),
 	walIORateChart.Copy(),
-	walFilesCountChart.Copy(),
-	walArchivingFilesCountChart.Copy(),
 	autovacuumWorkersCountChart.Copy(),
 	txidExhaustionTowardsAutovacuumPercChart.Copy(),
 	txidExhaustionPercChart.Copy(),
@@ -119,6 +117,19 @@ var baseCharts = module.Charts{
 	catalogRelationsSizeChart.Copy(),
 	serverUptimeChart.Copy(),
 	databasesCountChart.Copy(),
+}
+
+var walFilesCharts = module.Charts{
+	walFilesCountChart.Copy(),
+	walArchivingFilesCountChart.Copy(),
+}
+
+func (p *Postgres) addWALFilesCharts() {
+	charts := walFilesCharts.Copy()
+
+	if err := p.Charts().Add(*charts...); err != nil {
+		p.Warning(err)
+	}
 }
 
 var (
