@@ -42,6 +42,7 @@ func New() *Postgres {
 		recheckSettingsEvery:              time.Minute * 30,
 		doSlowEvery:                       time.Minute * 5,
 		addXactQueryRunningTimeChartsOnce: &sync.Once{},
+		addWALFilesChartsOnce:             &sync.Once{},
 	}
 }
 
@@ -68,6 +69,7 @@ type (
 		pgVersion      int
 
 		addXactQueryRunningTimeChartsOnce *sync.Once
+		addWALFilesChartsOnce             *sync.Once
 
 		dbSr matcher.Matcher
 

@@ -81,6 +81,9 @@ func (p *Postgres) collect() (map[string]int64, error) {
 			p.addQueriesRunTimeHistogramChart()
 		})
 	}
+	if p.isSuperUser() {
+		p.addWALFilesChartsOnce.Do(p.addWALFilesCharts)
+	}
 
 	if err := p.doQueryGlobalMetrics(); err != nil {
 		return nil, err
