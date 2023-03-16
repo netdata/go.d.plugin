@@ -17,13 +17,14 @@ var cacheCharts = module.Charts{
 		},
 	},
 	{
-		ID:    "cache_size",
-		Title: "Cache size",
-		Units: "entries",
+		ID:    "cache_performance",
+		Title: "Cache performance",
+		Units: "events/s",
 		Fam:   "cache",
-		Ctx:   "dnsmasq.cache_size",
+		Ctx:   "dnsmasq.cache_performance",
 		Dims: module.Dims{
-			{ID: "cachesize", Name: "size"},
+			{ID: "hits", Algo: module.Incremental},
+			{ID: "misses", Algo: module.Incremental},
 		},
 	},
 	{
@@ -38,14 +39,13 @@ var cacheCharts = module.Charts{
 		},
 	},
 	{
-		ID:    "cache_performance",
-		Title: "Cache performance",
-		Units: "events/s",
+		ID:    "cache_size",
+		Title: "Cache size",
+		Units: "entries",
 		Fam:   "cache",
-		Ctx:   "dnsmasq.cache_performance",
+		Ctx:   "dnsmasq.cache_size",
 		Dims: module.Dims{
-			{ID: "hits", Algo: module.Incremental},
-			{ID: "misses", Algo: module.Incremental},
+			{ID: "cachesize", Name: "size"},
 		},
 	},
 }
