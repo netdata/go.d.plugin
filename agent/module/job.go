@@ -265,6 +265,10 @@ func (j *Job) Cleanup() {
 	}
 
 	if !vnode.Disabled {
+		if !j.vnodeCreated && j.vnodeGUID != "" {
+			_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
+			j.vnodeCreated = true
+		}
 		_ = j.api.HOST(j.vnodeGUID)
 	}
 
