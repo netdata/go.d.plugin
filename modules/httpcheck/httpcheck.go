@@ -37,27 +37,27 @@ func New() *HTTPCheck {
 
 type Config struct {
 	web.HTTP         `yaml:",inline"`
+	UpdateEvery      int    `yaml:"update_every"`
 	AcceptedStatuses []int  `yaml:"status_accepted"`
 	ResponseMatch    string `yaml:"response_match"`
+	CookieFile       string `yaml:"cookie_file"`
 }
 
-type (
-	HTTPCheck struct {
-		module.Base
-		Config      `yaml:",inline"`
-		UpdateEvery int `yaml:"update_every"`
+type HTTPCheck struct {
+	module.Base
+	Config `yaml:",inline"`
 
-		charts *module.Charts
+	httpClient *http.Client
 
-		acceptedStatuses map[int]bool
-		reResponse       *regexp.Regexp
-		client           client
-		metrics          metrics
-	}
-	client interface {
-		Do(*http.Request) (*http.Response, error)
-	}
-)
+	charts *module.Charts
+
+	acceptedStatuses map[int]bool
+	reResponse       *regexp.Regexp
+
+	cookieFileModTime time.Time
+
+	metrics metrics
+}
 
 func (hc *HTTPCheck) Init() bool {
 	if err := hc.validateConfig(); err != nil {
@@ -72,7 +72,7 @@ func (hc *HTTPCheck) Init() bool {
 		hc.Errorf("init HTTP client: %v", err)
 		return false
 	}
-	hc.client = httpClient
+	hc.httpClient = httpClient
 
 	re, err := hc.initResponseMatchRegexp()
 	if err != nil {
@@ -115,4 +115,8 @@ func (hc *HTTPCheck) Collect() map[string]int64 {
 	return mx
 }
 
-func (hc *HTTPCheck) Cleanup() {}
+func (hc *HTTPCheck) Cleanup() {
+	if hc.httpClient != nil {
+		hc.httpClient.CloseIdleConnections()
+	}
+}
