@@ -3,267 +3,340 @@
 package httpcheck
 
 import (
-	"bytes"
-	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/netdata/go.d.plugin/pkg/stm"
+	"github.com/netdata/go.d.plugin/pkg/web"
 
-	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	testURL = "http://127.0.0.1:38001"
-)
-
-func TestNew(t *testing.T) {
-	job := New()
-	assert.Implements(t, (*module.Module)(nil), job)
-}
-
-func TestHTTPCheck_Cleanup(t *testing.T) { New().Cleanup() }
-
 func TestHTTPCheck_Init(t *testing.T) {
-	job := New()
+	tests := map[string]struct {
+		wantFail bool
+		config   Config
+	}{
+		"success if url set": {
+			wantFail: false,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
+				},
+			},
+		},
+		"fail with default": {
+			wantFail: true,
+			config:   New().Config,
+		},
+		"fail when URL not set": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{URL: ""},
+				},
+			},
+		},
+		"fail if wrong response regex": {
+			wantFail: true,
+			config: Config{
+				HTTP: web.HTTP{
+					Request: web.Request{URL: "http://127.0.0.1:38001"},
+				},
+				ResponseMatch: "(?:qwe))",
+			},
+		},
+	}
 
-	job.URL = testURL
-	assert.True(t, job.Init())
-	assert.NotNil(t, job.client)
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			httpCheck := New()
+			httpCheck.Config = test.config
 
-func TestHTTPCheck_InitNG(t *testing.T) {
-	job := New()
-
-	assert.False(t, job.Init())
-	job.URL = testURL
-	job.ResponseMatch = "(?:qwe))"
-	assert.False(t, job.Init())
-}
-
-func TestHTTPCheck_Check(t *testing.T) {
-	job := New()
-	job.URL = testURL
-
-	require.True(t, job.Init())
-	assert.True(t, job.Check())
+			if test.wantFail {
+				assert.False(t, httpCheck.Init())
+			} else {
+				assert.True(t, httpCheck.Init())
+			}
+		})
+	}
 }
 
 func TestHTTPCheck_Charts(t *testing.T) {
-	job := New()
-	job.URL = testURL
-	require.True(t, job.Init())
-	assert.NotNil(t, job.Charts())
+	tests := map[string]struct {
+		prepare    func(t *testing.T) *HTTPCheck
+		wantCharts bool
+	}{
+		"no charts if not inited": {
+			wantCharts: false,
+			prepare: func(t *testing.T) *HTTPCheck {
+				return New()
+			},
+		},
+		"charts if inited": {
+			wantCharts: true,
+			prepare: func(t *testing.T) *HTTPCheck {
+				httpCheck := New()
+				httpCheck.URL = "http://127.0.0.1:38001"
+				require.True(t, httpCheck.Init())
+
+				return httpCheck
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			httpCheck := test.prepare(t)
+
+			if test.wantCharts {
+				assert.NotNil(t, httpCheck.Charts())
+			} else {
+				assert.Nil(t, httpCheck.Charts())
+			}
+		})
+	}
+}
+
+func TestHTTPCheck_Cleanup(t *testing.T) {
+	httpCheck := New()
+	assert.NotPanics(t, httpCheck.Cleanup)
+
+	httpCheck.URL = "http://127.0.0.1:38001"
+	require.True(t, httpCheck.Init())
+	assert.NotPanics(t, httpCheck.Cleanup)
+}
+
+func TestHTTPCheck_Check(t *testing.T) {
+	tests := map[string]struct {
+		prepare  func() (httpCheck *HTTPCheck, cleanup func())
+		wantFail bool
+	}{
+		"success case":       {wantFail: false, prepare: prepareSuccessCase},
+		"timeout case":       {wantFail: false, prepare: prepareTimeoutCase},
+		"bad status case":    {wantFail: false, prepare: prepareBadStatusCase},
+		"bad content case":   {wantFail: false, prepare: prepareBadContentCase},
+		"no connection case": {wantFail: false, prepare: prepareNoConnectionCase},
+		"cookie auth case":   {wantFail: false, prepare: prepareCookieAuthCase},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			httpCheck, cleanup := test.prepare()
+			defer cleanup()
+
+			require.True(t, httpCheck.Init())
+
+			if test.wantFail {
+				assert.False(t, httpCheck.Check())
+			} else {
+				assert.True(t, httpCheck.Check())
+			}
+		})
+	}
+
 }
 
 func TestHTTPCheck_Collect(t *testing.T) {
-	job := New()
-	body := "hello"
-
-	job.URL = testURL
-	job.ResponseMatch = body
-	job.UpdateEvery = 15
-	require.True(t, job.Init())
-
-	resp := &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString(body)},
+	tests := map[string]struct {
+		prepare     func() (httpCheck *HTTPCheck, cleanup func())
+		wantMetrics map[string]int64
+	}{
+		"success case": {
+			prepare: prepareSuccessCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"timeout case": {
+			prepare: prepareTimeoutCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 0,
+				"success":       0,
+				"time":          0,
+				"timeout":       1,
+			},
+		},
+		"bad status case": {
+			prepare: prepareBadStatusCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    1,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"bad content case": {
+			prepare: prepareBadContentCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   1,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        17,
+				"no_connection": 0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"no connection case": {
+			prepare: prepareNoConnectionCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 1,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"cookie auth case": {
+			prepare: prepareCookieAuthCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
 	}
-	job.client = newClientFunc(resp, nil)
 
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{
-			Status:         status{Success: true},
-			InState:        job.UpdateEvery,
-			ResponseLength: len(body),
-			ResponseTime:   0,
-		}),
-		job.Collect(),
-	)
-}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			httpCheck, cleanup := test.prepare()
+			defer cleanup()
 
-func TestHTTPCheck_Collect_TimeoutError(t *testing.T) {
-	job := New()
+			require.True(t, httpCheck.Init())
 
-	job.URL = testURL
-	require.True(t, job.Init())
+			var mx map[string]int64
 
-	job.client = newClientFunc(nil, timeoutError{})
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{Status: status{Timeout: true}}),
-		job.Collect(),
-	)
+			for i := 0; i < 2; i++ {
+				mx = httpCheck.Collect()
+				time.Sleep(time.Duration(httpCheck.UpdateEvery) * time.Second)
+			}
 
-}
+			copyResponseTime(test.wantMetrics, mx)
 
-//func TestHTTPCheck_Collect_DNSLookupError(t *testing.T) {
-//	job := New()
-//
-//	job.UserURL = testURL
-//	require.True(t, job.Init())
-//
-//	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.DNSError{}}})
-//	job.client = newClientFunc(nil, err)
-//	assert.Equal(
-//		t,
-//		stm.ToMap(metrics{Status: status{DNSLookupError: true}}),
-//		job.Collect(),
-//	)
-//}
-
-//func TestHTTPCheck_Collect_AddressParseError(t *testing.T) {
-//	job := New()
-//
-//	job.UserURL = testURL
-//	require.True(t, job.Init())
-//
-//	err := net.Error(&url.Error{Err: &net.OpError{Err: &net.ParseError{}}})
-//	job.client = newClientFunc(nil, err)
-//	assert.Equal(
-//		t,
-//		stm.ToMap(metrics{Status: status{ParseAddressError: true}}),
-//		job.Collect(),
-//	)
-//
-//}
-
-//func TestHTTPCheck_Collect_RedirectError(t *testing.T) {
-//	job := New()
-//
-//	job.UserURL = testURL
-//	require.True(t, job.Init())
-//
-//	err := net.Error(&url.Error{Err: web.ErrRedirectAttempted})
-//	job.client = newClientFunc(nil, err)
-//	assert.Equal(
-//		t,
-//		stm.ToMap(metrics{Status: status{RedirectError: true}}),
-//		job.Collect(),
-//	)
-//}
-
-func TestHTTPCheck_Collect_BadContentError(t *testing.T) {
-	job := New()
-	body := "hello"
-
-	job.URL = testURL
-	job.ResponseMatch = "not match"
-	require.True(t, job.Init())
-
-	resp := &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString(body)},
+			require.Equal(t, test.wantMetrics, mx)
+		})
 	}
-	job.client = newClientFunc(resp, nil)
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{
-			Status:         status{BadContent: true},
-			ResponseLength: len(body),
-		}),
-		job.Collect(),
-	)
 }
 
-func TestHTTPCheck_Collect_BadStatusError(t *testing.T) {
-	job := New()
+func prepareSuccessCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.ResponseMatch = "match"
 
-	job.URL = testURL
-	require.True(t, job.Init())
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("match"))
+		}))
 
-	resp := &http.Response{StatusCode: http.StatusBadGateway}
-	job.client = newClientFunc(resp, nil)
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{Status: status{BadStatusCode: true}}),
-		job.Collect(),
-	)
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
 }
 
-func TestHTTPCheck_Collect_InState(t *testing.T) {
-	job := New()
-	goodBody := "hello"
-	badBody := "goodbye"
+func prepareTimeoutCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.Timeout.Duration = time.Millisecond * 100
 
-	job.URL = testURL
-	job.ResponseMatch = goodBody
-	job.UpdateEvery = 15
-	require.True(t, job.Init())
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(httpCheck.Timeout.Duration + time.Millisecond*100)
+		}))
 
-	resp := &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString(goodBody)},
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func prepareBadStatusCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadGateway)
+		}))
+
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func prepareBadContentCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.ResponseMatch = "no match"
+
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("hello and goodbye"))
+		}))
+
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func prepareNoConnectionCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.URL = "http://127.0.0.1:38001"
+
+	return httpCheck, func() {}
+}
+
+func prepareCookieAuthCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.CookieFile = "testdata/cookie.txt"
+
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			if _, err := r.Cookie("JSESSIONID"); err != nil {
+				w.WriteHeader(http.StatusUnauthorized)
+			} else {
+				w.WriteHeader(http.StatusOK)
+			}
+		}))
+
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func copyResponseTime(dst, src map[string]int64) {
+	if v, ok := src["time"]; ok {
+		if _, ok := dst["time"]; ok {
+			dst["time"] = v
+		}
 	}
-	job.client = newClientFunc(resp, nil)
-
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{
-			Status:         status{Success: true},
-			InState:        job.UpdateEvery,
-			ResponseLength: len(goodBody),
-			ResponseTime:   0,
-		}),
-		job.Collect(),
-	)
-
-	resp = &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString(goodBody)},
-	}
-	job.client = newClientFunc(resp, nil)
-
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{
-			Status:         status{Success: true},
-			InState:        job.UpdateEvery * 2,
-			ResponseLength: len(goodBody),
-			ResponseTime:   0,
-		}),
-		job.Collect(),
-	)
-
-	resp = &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       nopCloser{bytes.NewBufferString(badBody)},
-	}
-	job.client = newClientFunc(resp, nil)
-
-	assert.Equal(
-		t,
-		stm.ToMap(metrics{
-			Status:         status{BadContent: true},
-			InState:        job.UpdateEvery,
-			ResponseLength: len(badBody),
-			ResponseTime:   0,
-		}),
-		job.Collect(),
-	)
 }
-
-type clientFunc func(r *http.Request) (*http.Response, error)
-
-func (f clientFunc) Do(r *http.Request) (*http.Response, error) { return f(r) }
-
-func newClientFunc(resp *http.Response, err error) clientFunc {
-	return func(r *http.Request) (*http.Response, error) { return resp, err }
-}
-
-type nopCloser struct {
-	io.Reader
-}
-
-func (nopCloser) Close() error { return nil }
-
-type timeoutError struct{}
-
-func (r timeoutError) Timeout() bool { return true }
-
-func (r timeoutError) Error() string { return "" }
-
-func (r timeoutError) Temporary() bool { return true }

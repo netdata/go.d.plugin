@@ -57,10 +57,6 @@ var responseStatusChart = module.Chart{
 		{ID: "timeout"},
 		{ID: "bad_content"},
 		{ID: "bad_status"},
-		//{ID: "dns_lookup_error", Name: "dns lookup error"},
-		//{ID: "address_parse_error", Name: "address parse error"},
-		//{ID: "redirect_error", Name: "redirect error"},
-		//{ID: "body_read_error", Name: "body read error"},
 	},
 }
 

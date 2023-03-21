@@ -79,5 +79,6 @@ func NewHTTPRequest(cfg Request) (*http.Request, error) {
 			req.Header.Set(k, v)
 		}
 	}
+
 	return req, nil
 }
