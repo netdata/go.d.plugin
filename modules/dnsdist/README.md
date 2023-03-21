@@ -46,7 +46,7 @@ All metrics have "dnsdist." prefix.
 ## Configuration
 
 Edit the `go.d/dnsdist.conf` configuration file using `edit-config` from the
-Agent's [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Agent's [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
