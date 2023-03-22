@@ -32,7 +32,7 @@ CREATE USER netdata;
 GRANT pg_monitor TO netdata;
 ```
 
-After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://learn.netdata.cloud/docs/configure/start-stop-restart) for your system
+After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your system
 
 ## Metrics
 
@@ -159,7 +159,7 @@ databases on a database server is disabled because each database requires an add
 
 Use the `collect_databases_matching` configuration option to select the databases from which you want to collect
 detailed metrics. The value
-supports [Netdata simple patterns](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern).
+supports [Netdata simple patterns](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md).
 
 ```yaml
 jobs:
