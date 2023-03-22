@@ -56,7 +56,7 @@ This module supports data collection in CSV and XML formats. The default is CSV.
 The format can be changed in the configuration file.
 
 Edit the `go.d/nvidia_smi.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
 
 ```yaml
 jobs:

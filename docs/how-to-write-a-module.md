@@ -13,7 +13,7 @@ sidebar_position: 20
 
 ## Prerequisites
 
-- Take a look at our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook).
+- Take a look at our [contributing guidelines](https://github.com/netdata/.github/blob/main/CONTRIBUTING.md).
 - [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your personal
   GitHub account.
 - [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository#:~:text=to%20GitHub%20Desktop-,On%20GitHub%2C%20navigate%20to%20the%20main%20page%20of%20the%20repository,Desktop%20to%20complete%20the%20clone.)
@@ -43,10 +43,10 @@ The steps are:
   developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
 - Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same
   output that is sent to the Netdata Agent and is transformed into charts. You can read more about this collector API in
-  our [documentation](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#external-plugins-api).
+  our [documentation](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#external-plugins-api).
 - If you want to test the collector with the actual Netdata Agent, you need to replace the `go.d.plugin` binary that
   exists in the Netdata Agent installation directory with the one you just compiled. Once
-  you [restart](https://learn.netdata.cloud/docs/configure/start-stop-restart) the Netdata Agent, it will detect and run
+  you [restart](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) the Netdata Agent, it will detect and run
   it, creating all the charts. It is advised not to remove the default `go.d.plugin` binary, but simply rename it
   to `go.d.plugin.old` so that the Agent doesn't run it, but you can easily rename it back once you are done.
 - Run `make clean` when you are done with testing.
@@ -116,13 +116,13 @@ func (e *Example) Check() bool {
 
 ### Charts method
 
-:exclamation: Netdata module produces [`charts`](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart), not
+:exclamation: Netdata module produces [`charts`](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#chart), not
 raw metrics.
 
 Use [`agent/module`](https://github.com/netdata/go.d.plugin/blob/master/agent/module/charts.go) package to create them,
 it contains charts and dimensions structs.
 
-- `Charts` returns the [charts](https://learn.netdata.cloud/docs/agent/collectors/plugins.d#chart1) (`*module.Charts`).
+- `Charts` returns the [charts](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#chart) (`*module.Charts`).
 - Called after `Check` and only if `Check` returned `true`.
 - If it returns `nil`, the job will be disabled
 - :warning: Make sure not to share returned value between module instances (jobs).

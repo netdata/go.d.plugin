@@ -118,7 +118,7 @@ Go.d.plugin is shipped with Netdata.
 ## Configuration
 
 Edit the `go.d.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://learn.netdata.cloud/docs/configure/nodes), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -153,7 +153,7 @@ Then [restart netdata](https://github.com/netdata/netdata/blob/master/docs/confi
 ## Contributing
 
 If you want to contribute to this project, we are humbled. Please take a look at
-our [contributing guidelines](https://learn.netdata.cloud/contribute/handbook) and don't hesitate to contact us in our
+our [contributing guidelines](https://github.com/netdata/.github/blob/main/CONTRIBUTING.md) and don't hesitate to contact us in our
 forums.
 
 ### How to develop a collector
@@ -197,4 +197,4 @@ modules.
 This repository follows the Netdata Code of Conduct and is part of the Netdata Community.
 
 - [Community Forums](https://community.netdata.cloud)
-- [Netdata Code of Conduct](https://learn.netdata.cloud/contribute/code-of-conduct)
+- [Netdata Code of Conduct](https://github.com/netdata/.github/blob/main/CODE_OF_CONDUCT.md)

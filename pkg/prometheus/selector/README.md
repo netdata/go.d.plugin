@@ -21,7 +21,7 @@ In the simplest form you need to specify only a metric name.
  <metric_name_pattern>  ::= simple pattern
 ```
 
-The metric name pattern syntax is [simple pattern](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern/).
+The metric name pattern syntax is [simple pattern](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md).
 
 ### Examples
 
@@ -58,7 +58,7 @@ It is possible to filter these time series further by appending a comma separate
  <label_value_pattern>  ::= a label value pattern, depends on <op>
 ```
 
-The metric name pattern syntax is [simple pattern](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern/).
+The metric name pattern syntax is [simple pattern](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md).
 
 Label matching operators:
 
@@ -66,8 +66,8 @@ Label matching operators:
 -   `!=`: Match labels that are not equal to the provided string.
 -   `=~`: Match labels that [regex-match](https://golang.org/pkg/regexp/syntax/) the provided string.
 -   `!~`: Match labels that do not [regex-match](https://golang.org/pkg/regexp/syntax/) the provided string.
--   `=*`: Match labels that [simple-pattern-match](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern/) the provided string.
--   `!*`: Match labels that do not [simple-pattern-match](https://learn.netdata.cloud/docs/agent/libnetdata/simple_pattern/) the provided string.
+-   `=*`: Match labels that [simple-pattern-match](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md) the provided string.
+-   `!*`: Match labels that do not [simple-pattern-match](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md) the provided string.
 
 ### Examples
 
