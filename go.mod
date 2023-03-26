@@ -25,7 +25,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/whois v1.14.6
 	github.com/likexian/whois-parser v1.24.7
-	github.com/mattn/go-isatty v0.0.17
+	github.com/mattn/go-isatty v0.0.18
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.52
 	github.com/mitchellh/go-homedir v1.1.0
@@ -36,6 +36,7 @@ require (
 	github.com/valyala/fastjson v1.6.4
 	github.com/vmware/govmomi v0.22.2
 	go.mongodb.org/mongo-driver v1.11.3
+	golang.org/x/net v0.8.0
 	golang.org/x/text v0.8.0
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20220504211119-3d4a969bb56b
 	gopkg.in/ini.v1 v1.67.0
@@ -154,7 +155,6 @@ require (
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
