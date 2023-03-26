@@ -18,6 +18,11 @@ func (d *Docker) collect() (map[string]int64, error) {
 		d.client = client
 	}
 
+	if !d.verNegotiated {
+		d.verNegotiated = true
+		d.negotiateAPIVersion()
+	}
+
 	defer func() { _ = d.client.Close() }()
 
 	mx := make(map[string]int64)
@@ -99,4 +104,11 @@ func (d *Docker) collectContainersHealth(mx map[string]int64) error {
 	mx["unhealthy_containers"] = int64(len(unhealthy))
 
 	return nil
+}
+
+func (d *Docker) negotiateAPIVersion() {
+	ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
+	defer cancel()
+
+	d.client.NegotiateAPIVersion(ctx)
 }
