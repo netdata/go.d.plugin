@@ -44,10 +44,12 @@ type (
 
 		charts *module.Charts
 
-		newClient func(Config) (dockerClient, error)
-		client    dockerClient
+		newClient     func(Config) (dockerClient, error)
+		client        dockerClient
+		verNegotiated bool
 	}
 	dockerClient interface {
+		NegotiateAPIVersion(context.Context)
 		Info(context.Context) (types.Info, error)
 		ImageList(context.Context, types.ImageListOptions) ([]types.ImageSummary, error)
 		ContainerList(context.Context, types.ContainerListOptions) ([]types.Container, error)

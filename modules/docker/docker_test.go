@@ -243,6 +243,8 @@ func (m *mockClient) ImageList(_ context.Context, _ types.ImageListOptions) ([]t
 	}, nil
 }
 
+func (m *mockClient) NegotiateAPIVersion(_ context.Context) {}
+
 func (m *mockClient) Close() error {
 	m.closeCalled = true
 	return nil
