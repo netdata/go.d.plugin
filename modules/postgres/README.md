@@ -141,13 +141,13 @@ See [Connection Strings](https://www.postgresql.org/docs/current/libpq-connect.h
 ```yaml
 jobs:
   - name: local
-    dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+    dsn: 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
 
   - name: local
     dsn: 'host=/var/run/postgresql dbname=postgres user=postgres'
 
   - name: remote
-    dsn: 'postgres://postgres:postgres@203.0.113.10:5432/postgres'
+    dsn: 'postgresql://postgres:postgres@203.0.113.10:5432/postgres'
 ```
 
 ### Database detailed metrics
@@ -164,7 +164,7 @@ supports [Netdata simple patterns](https://github.com/netdata/netdata/blob/maste
 ```yaml
 jobs:
   - name: local
-    dsn: 'postgres://postgres:postgres@127.0.0.1:5432/postgres'
+    dsn: 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
     collect_databases_matching: 'mydb1 mydb2 !mydb3 mydb4'
 ```
 
