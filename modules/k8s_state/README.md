@@ -73,7 +73,7 @@ Labels per scope:
 | pod_containers_state                      |    pod    |                  running, waiting, terminated                   | containers |
 | pod_init_containers_state                 |    pod    |                  running, waiting, terminated                   | containers |
 | pod_container_readiness_state             | container |                              ready                              |   state    |
-| pod_container_restarts                    | container |                            restarts                             | restarts/s |
+| pod_container_restarts                    | container |                            restarts                             |  restarts  |
 | pod_container_state                       | container |                  running, waiting, terminated                   |   state    |
 | pod_container_waiting_state_reason        | container |                    <i>added dynamically</i>                     |   state    |
 | pod_container_terminated_state_reason     | container |                    <i>added dynamically</i>                     |   state    |
