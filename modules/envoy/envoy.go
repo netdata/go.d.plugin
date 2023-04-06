@@ -21,9 +21,7 @@ func New() *Envoy {
 		Config: Config{
 			HTTP: web.HTTP{
 				Request: web.Request{
-					URL: "http://127.0.0.1:20200/stats/prometheus",
-					//URL: "http://10.10.10.20:20200/stats/prometheus",
-					//URL: "http://127.0.0.1:9091/stats/prometheus",
+					URL: "http://127.0.0.1:9091/stats/prometheus",
 				},
 				Client: web.Client{
 					Timeout: web.Duration{Duration: time.Second * 2},
