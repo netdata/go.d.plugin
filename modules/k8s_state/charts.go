@@ -662,12 +662,12 @@ var (
 		IDSep:    true,
 		ID:       "pod_%s_container_%s.restarts",
 		Title:    "Restarts",
-		Units:    "restarts/s",
+		Units:    "restarts",
 		Fam:      "container restarts",
 		Ctx:      "k8s_state.pod_container_restarts",
 		Priority: prioPodContainerRestarts,
 		Dims: module.Dims{
-			{ID: "pod_%s_container_%s_restarts", Name: "restarts", Algo: module.Incremental},
+			{ID: "pod_%s_container_%s_restarts", Name: "restarts"},
 		},
 	}
 	containersStateChartTmpl = module.Chart{
