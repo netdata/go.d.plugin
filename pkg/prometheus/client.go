@@ -20,6 +20,7 @@ type (
 		// ScrapeSeries and parse prometheus format metrics
 		ScrapeSeries() (Series, error)
 		Scrape() (MetricFamilies, error)
+		HTTPClient() *http.Client
 	}
 
 	prometheus struct {
@@ -59,6 +60,10 @@ func NewWithSelector(client *http.Client, request web.Request, sr selector.Selec
 		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
 		parser:  promTextParser{sr: sr},
 	}
+}
+
+func (p *prometheus) HTTPClient() *http.Client {
+	return p.client
 }
 
 // ScrapeSeries scrapes metrics, parses and sorts

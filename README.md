@@ -56,6 +56,7 @@ Go.d.plugin is shipped with Netdata.
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                   |          Docker Hub           |
 | [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)           |         Elasticsearch         |
 | [energid](https://github.com/netdata/go.d.plugin/tree/master/modules/energid)                       |          Energi Core          |
+| [envoy](https://github.com/netdata/go.d.plugin/tree/master/modules/envoy)                           |             Envoy             |
 | [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example)                       |               -               |
 | [filecheck](https://github.com/netdata/go.d.plugin/tree/master/modules/filecheck)                   |     Files and Directories     |
 | [fluentd](https://github.com/netdata/go.d.plugin/tree/master/modules/fluentd)                       |            Fluentd            |
