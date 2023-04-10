@@ -33,6 +33,18 @@ and questions.
 
 Go.d.plugin is shipped with Netdata.
 
+### Required Linux capabilities
+
+All capabilities are set automatically during Netdata installation using
+the [official installation method](https://github.com/netdata/netdata/blob/master/packaging/installer/README.md#install-on-linux-with-one-line-installer).
+No further action required. If you have used a different installation method and need to set the capabilities manually,
+see the appropriate collector readme.
+
+| Capability    |                                               Required by                                                |
+|:--------------|:--------------------------------------------------------------------------------------------------------:|
+| CAP_NET_RAW   |      [Ping](https://github.com/netdata/go.d.plugin/blob/master/modules/ping/README.md#requirements)      |
+| CAP_NET_ADMIN | [Wireguard](https://github.com/netdata/go.d.plugin/blob/master/modules/wireguard/README.md#requirements) |
+
 ## Available modules
 
 | Name                                                                                                |           Monitors            |
@@ -119,7 +131,8 @@ Go.d.plugin is shipped with Netdata.
 ## Configuration
 
 Edit the `go.d.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -133,7 +146,8 @@ Configurations are written in [YAML](http://yaml.org/).
 
 ### Enable a collector
 
-To enable a collector you should edit `go.d.conf` to uncomment the collector in question and change it from `no` to `yes`. 
+To enable a collector you should edit `go.d.conf` to uncomment the collector in question and change it from `no`
+to `yes`.
 
 For example, to enable the `example` plugin you would need to update `go.d.conf` from something like:
 
@@ -149,13 +163,14 @@ modules:
   example: yes
 ```
 
-Then [restart netdata](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for the change to take effect.
+Then [restart netdata](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for the
+change to take effect.
 
 ## Contributing
 
 If you want to contribute to this project, we are humbled. Please take a look at
-our [contributing guidelines](https://github.com/netdata/.github/blob/main/CONTRIBUTING.md) and don't hesitate to contact us in our
-forums.
+our [contributing guidelines](https://github.com/netdata/.github/blob/main/CONTRIBUTING.md) and don't hesitate to
+contact us in our forums.
 
 ### How to develop a collector
 
