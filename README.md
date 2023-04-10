@@ -36,14 +36,14 @@ Go.d.plugin is shipped with Netdata.
 ### Required Linux capabilities
 
 All capabilities are set automatically during Netdata installation using
-the [official installation method](https://learn.netdata.cloud/docs/getting-started/install-netdata#get-started). No
-further action required. If you have used a different installation method and need to set the capabilities manually, see
-the appropriate collector readme.
+the [official installation method](https://github.com/netdata/netdata/blob/master/packaging/installer/README.md#install-on-linux-with-one-line-installer).
+No further action required. If you have used a different installation method and need to set the capabilities manually,
+see the appropriate collector readme.
 
-| Capability    |                                          Required by                                           |
-|:--------------|:----------------------------------------------------------------------------------------------:|
-| CAP_NET_RAW   |      [Ping](https://github.com/netdata/go.d.plugin/tree/master/modules/ping#requirements)      |
-| CAP_NET_ADMIN | [Wireguard](https://github.com/netdata/go.d.plugin/tree/master/modules/wireguard#requirements) |
+| Capability    |                                               Required by                                                |
+|:--------------|:--------------------------------------------------------------------------------------------------------:|
+| CAP_NET_RAW   |      [Ping](https://github.com/netdata/go.d.plugin/blob/master/modules/ping/README.md#requirements)      |
+| CAP_NET_ADMIN | [Wireguard](https://github.com/netdata/go.d.plugin/blob/master/modules/wireguard/README.md#requirements) |
 
 ## Available modules
 
