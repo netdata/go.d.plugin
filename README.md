@@ -170,8 +170,7 @@ change to take effect.
 
 If you want to contribute to this project, we are humbled. Please take a look at
 our [contributing guidelines](https://github.com/netdata/.github/blob/main/CONTRIBUTING.md) and don't hesitate to
-contact us in our
-forums.
+contact us in our forums.
 
 ### How to develop a collector
 
