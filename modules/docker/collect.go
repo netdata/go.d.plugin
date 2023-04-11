@@ -4,6 +4,8 @@ package docker
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
@@ -30,10 +32,10 @@ func (d *Docker) collect() (map[string]int64, error) {
 	if err := d.collectInfo(mx); err != nil {
 		return nil, err
 	}
-	if err := d.collectContainersHealth(mx); err != nil {
+	if err := d.collectImages(mx); err != nil {
 		return nil, err
 	}
-	if err := d.collectImages(mx); err != nil {
+	if err := d.collectContainers(mx); err != nil {
 		return nil, err
 	}
 
@@ -49,9 +51,9 @@ func (d *Docker) collectInfo(mx map[string]int64) error {
 		return err
 	}
 
-	mx["running_containers"] = int64(info.ContainersRunning)
-	mx["paused_containers"] = int64(info.ContainersPaused)
-	mx["exited_containers"] = int64(info.ContainersStopped)
+	mx["containers_state_running"] = int64(info.ContainersRunning)
+	mx["containers_state_paused"] = int64(info.ContainersPaused)
+	mx["containers_state_exited"] = int64(info.ContainersStopped)
 
 	return nil
 }
@@ -81,27 +83,89 @@ func (d *Docker) collectImages(mx map[string]int64) error {
 	return nil
 }
 
-func (d *Docker) collectContainersHealth(mx map[string]int64) error {
-	ctx1, cancel1 := context.WithTimeout(context.Background(), d.Timeout.Duration)
-	defer cancel1()
+var (
+	containerHealthStatuses = []string{
+		types.Healthy,
+		types.Unhealthy,
+		types.Starting,
+		types.NoHealthcheck,
+	}
+	containerStates = []string{
+		"created",
+		"running",
+		"paused",
+		"restarting",
+		"removing",
+		"exited",
+		"dead",
+	}
+)
 
-	args := filters.NewArgs(filters.KeyValuePair{Key: "health", Value: "healthy"})
-	healthy, err := d.client.ContainerList(ctx1, types.ContainerListOptions{Filters: args})
-	if err != nil {
-		return err
+func (d *Docker) collectContainers(mx map[string]int64) error {
+	containerSet := make(map[string][]types.Container)
+
+	for _, status := range containerHealthStatuses {
+		if err := func() error {
+			ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
+			defer cancel()
+
+			v, err := d.client.ContainerList(ctx, types.ContainerListOptions{
+				All:     true,
+				Filters: filters.NewArgs(filters.KeyValuePair{Key: "health", Value: status}),
+				Size:    d.CollectContainerSize,
+			})
+			if err != nil {
+				return err
+			}
+			containerSet[status] = v
+			return nil
+
+		}(); err != nil {
+			return err
+		}
 	}
 
-	ctx2, cancel2 := context.WithTimeout(context.Background(), d.Timeout.Duration)
-	defer cancel2()
+	seen := make(map[string]bool)
 
-	args = filters.NewArgs(filters.KeyValuePair{Key: "health", Value: "unhealthy"})
-	unhealthy, err := d.client.ContainerList(ctx2, types.ContainerListOptions{Filters: args})
-	if err != nil {
-		return err
+	for status, containers := range containerSet {
+		mx["containers_health_status_"+status] = int64(len(containers))
+
+		for _, cntr := range containers {
+			if len(cntr.Names) == 0 {
+				continue
+			}
+
+			name := strings.TrimPrefix(cntr.Names[0], "/")
+
+			seen[name] = true
+
+			if !d.containers[name] {
+				d.containers[name] = true
+				d.addContainerCharts(name, cntr.Image)
+			}
+
+			px := fmt.Sprintf("container_%s_", name)
+
+			for _, s := range containerHealthStatuses {
+				mx[px+"health_status_"+s] = 0
+			}
+			for _, s := range containerStates {
+				mx[px+"state_"+s] = 0
+			}
+
+			mx[px+"health_status_"+status] = 1
+			mx[px+"state_"+cntr.State] = 1
+			mx[px+"size_rw"] = cntr.SizeRw
+			mx[px+"size_root_fs"] = cntr.SizeRootFs
+		}
 	}
 
-	mx["healthy_containers"] = int64(len(healthy))
-	mx["unhealthy_containers"] = int64(len(unhealthy))
+	for name := range d.containers {
+		if !seen[name] {
+			delete(d.containers, name)
+			d.removeContainerCharts(name)
+		}
+	}
 
 	return nil
 }
