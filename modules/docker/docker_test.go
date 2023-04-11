@@ -442,6 +442,7 @@ func TestDocker_Collect(t *testing.T) {
 
 func prepareCaseSuccess() *Docker {
 	d := New()
+	d.CollectContainerSize = true
 	d.newClient = prepareNewClientFunc(&mockClient{})
 	return d
 }

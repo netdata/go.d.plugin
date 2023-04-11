@@ -17,7 +17,9 @@ This module monitors one or more Docker Engine instances, depending on your conf
 
 ## Metrics
 
-All metrics have "docker." prefix.
+- All metrics have "docker." prefix.
+- container_writeable_layer_size needs `collect_container_size: yes`. Enabling this may result in high CPU usage
+  depending on the version of Docker Engine.
 
 Labels per scope:
 
@@ -27,11 +29,11 @@ Labels per scope:
 | Metric                         |   Scope   |                          Dimensions                          |   Units    |
 |--------------------------------|:---------:|:------------------------------------------------------------:|:----------:|
 | containers_state               |  global   |                   running, paused, stopped                   | containers |
-| containers_health_status       |  global   |              healthy, unhealthy, starting, no_healthcheck              | containers |
+| containers_health_status       |  global   |         healthy, unhealthy, starting, no_healthcheck         | containers |
 | images                         |  global   |                       active, dangling                       |   images   |
 | images_size                    |  global   |                             size                             |   bytes    |
 | container_state                | container | running, paused, exited, created, restarting, removing, dead |   state    |
-| container_health_status        | container |              healthy, unhealthy, starting, no_healthcheck              |   status   |
+| container_health_status        | container |         healthy, unhealthy, starting, no_healthcheck         |   status   |
 | container_writeable_layer_size | container |                       writeable_layer                        |    size    |
 
 ## Configuration
@@ -49,9 +51,11 @@ sudo ./edit-config go.d/docker.conf
 jobs:
   - name: local
     address: 'unix:///var/run/docker.sock'
+    collect_container_size: no
 
   - name: remote
     address: 'tcp://203.0.113.10:2375'
+    collect_container_size: no
 ```
 
 For all available options see

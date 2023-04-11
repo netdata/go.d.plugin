@@ -24,7 +24,7 @@ func New() *Docker {
 		Config: Config{
 			Address:              docker.DefaultDockerHost,
 			Timeout:              web.Duration{Duration: time.Second * 5},
-			CollectContainerSize: true,
+			CollectContainerSize: false,
 		},
 
 		charts: summaryCharts.Copy(),
