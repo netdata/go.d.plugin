@@ -109,19 +109,17 @@ func (d *Docker) collectContainers(mx map[string]int64) error {
 			ctx, cancel := context.WithTimeout(context.Background(), d.Timeout.Duration)
 			defer cancel()
 
-			filter := filters.NewArgs(filters.KeyValuePair{Key: "health", Value: status})
-			opts := types.ContainerListOptions{All: true, Filters: filter}
-			if d.CollectContainerSize {
-				opts.Size = true
-			}
-
-			v, err := d.client.ContainerList(ctx, opts)
+			v, err := d.client.ContainerList(ctx, types.ContainerListOptions{
+				All:     true,
+				Filters: filters.NewArgs(filters.KeyValuePair{Key: "health", Value: status}),
+				Size:    d.CollectContainerSize,
+			})
 			if err != nil {
 				return err
 			}
-
 			containerSet[status] = v
 			return nil
+
 		}(); err != nil {
 			return err
 		}
@@ -151,13 +149,12 @@ func (d *Docker) collectContainers(mx map[string]int64) error {
 			for _, s := range containerHealthStatuses {
 				mx[px+"health_status_"+s] = 0
 			}
-			mx[px+"health_status_"+status] = 1
-
 			for _, s := range containerStates {
 				mx[px+"state_"+s] = 0
 			}
-			mx[px+"state_"+cntr.State] = 1
 
+			mx[px+"health_status_"+status] = 1
+			mx[px+"state_"+cntr.State] = 1
 			mx[px+"size_rw"] = cntr.SizeRw
 			mx[px+"size_root_fs"] = cntr.SizeRootFs
 		}
