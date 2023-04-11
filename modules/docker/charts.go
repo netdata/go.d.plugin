@@ -2,20 +2,28 @@
 
 package docker
 
-import "github.com/netdata/go.d.plugin/agent/module"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/netdata/go.d.plugin/agent/module"
+)
 
 const (
 	prioContainersState = module.Priority + iota
 	prioContainersHealthy
-	prioContainersUnhealthy
+
 	prioImagesCount
 	prioImagesSize
+
+	prioContainerState
+	prioContainerHealthStatus
+	prioContainerWritableLayerSize
 )
 
 var charts = module.Charts{
 	containersStateChart.Copy(),
 	containersHealthyChart.Copy(),
-	containersUnhealthyChart.Copy(),
 
 	imagesCountChart.Copy(),
 	imagesSizeChart.Copy(),
@@ -31,9 +39,9 @@ var (
 		Priority: prioContainersState,
 		Type:     module.Stacked,
 		Dims: module.Dims{
-			{ID: "running_containers", Name: "running"},
-			{ID: "paused_containers", Name: "paused"},
-			{ID: "exited_containers", Name: "exited"},
+			{ID: "containers_state_running", Name: "running"},
+			{ID: "containers_state_paused", Name: "paused"},
+			{ID: "containers_state_exited", Name: "exited"},
 		},
 	}
 	containersHealthyChart = module.Chart{
@@ -41,21 +49,13 @@ var (
 		Title:    "Number of healthy containers",
 		Units:    "containers",
 		Fam:      "containers",
-		Ctx:      "docker.healthy_containers",
+		Ctx:      "docker.containers_health_status",
 		Priority: prioContainersHealthy,
 		Dims: module.Dims{
-			{ID: "healthy_containers", Name: "healthy"},
-		},
-	}
-	containersUnhealthyChart = module.Chart{
-		ID:       "unhealthy_containers",
-		Title:    "Number of unhealthy containers",
-		Units:    "containers",
-		Fam:      "containers",
-		Ctx:      "docker.unhealthy_containers",
-		Priority: prioContainersUnhealthy,
-		Dims: module.Dims{
-			{ID: "unhealthy_containers", Name: "unhealthy"},
+			{ID: "containers_health_status_healthy", Name: "healthy"},
+			{ID: "containers_health_status_unhealthy", Name: "unhealthy"},
+			{ID: "containers_health_status_starting", Name: "starting"},
+			{ID: "containers_health_status_none", Name: "none"},
 		},
 	}
 )
@@ -86,3 +86,87 @@ var (
 		},
 	}
 )
+
+var (
+	containerChartsTmpl = module.Charts{
+		containerStateChartTmpl.Copy(),
+		containerHealthStatusChartTmpl.Copy(),
+		containerWritableLayerSizeChartTmpl.Copy(),
+	}
+
+	containerStateChartTmpl = module.Chart{
+		ID:       "container_%s_state",
+		Title:    "Docker container state",
+		Units:    "state",
+		Fam:      "container state",
+		Ctx:      "docker.container_state",
+		Priority: prioContainerState,
+		Dims: module.Dims{
+			{ID: "container_%s_state_running", Name: "running"},
+			{ID: "container_%s_state_paused", Name: "paused"},
+			{ID: "container_%s_state_exited", Name: "exited"},
+			{ID: "container_%s_state_created", Name: "created"},
+			{ID: "container_%s_state_restarting", Name: "restarting"},
+			{ID: "container_%s_state_removing", Name: "removing"},
+			{ID: "container_%s_state_dead", Name: "dead"},
+		},
+	}
+	containerHealthStatusChartTmpl = module.Chart{
+		ID:       "container_%s_health_status",
+		Title:    "Docker container health status",
+		Units:    "status",
+		Fam:      "container health",
+		Ctx:      "docker.container_health_status",
+		Priority: prioContainerHealthStatus,
+		Dims: module.Dims{
+			{ID: "container_%s_health_status_healthy", Name: "healthy"},
+			{ID: "container_%s_health_status_unhealthy", Name: "unhealthy"},
+			{ID: "container_%s_health_status_starting", Name: "starting"},
+			{ID: "container_%s_health_status_none", Name: "none"},
+		},
+	}
+	containerWritableLayerSizeChartTmpl = module.Chart{
+		ID:       "container_%s_writable_layer_size",
+		Title:    "Docker container writable layer size",
+		Units:    "bytes",
+		Fam:      "container size",
+		Ctx:      "docker.container_writeable_layer_size",
+		Priority: prioContainerWritableLayerSize,
+		Dims: module.Dims{
+			{ID: "container_%s_size_rw", Name: "writable_layer"},
+		},
+	}
+)
+
+func (d *Docker) addContainerCharts(name, image string) {
+	charts := containerChartsTmpl.Copy()
+	if !d.CollectContainerSize {
+		_ = charts.Remove(containerWritableLayerSizeChartTmpl.ID)
+	}
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, name)
+		chart.Labels = []module.Label{
+			{Key: "container_name", Value: name},
+			{Key: "image", Value: image},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, name)
+		}
+	}
+
+	if err := d.Charts().Add(*charts...); err != nil {
+		d.Warning(err)
+	}
+}
+
+func (d *Docker) removeContainerCharts(name string) {
+	px := fmt.Sprintf("container_%s", name)
+
+	for _, chart := range *d.Charts() {
+		if strings.HasPrefix(chart.ID, px) {
+			chart.MarkRemove()
+			chart.MarkNotCreated()
+		}
+	}
+}
