@@ -13,12 +13,12 @@ const (
 	prioContainersState = module.Priority + iota
 	prioContainersHealthy
 
-	prioImagesCount
-	prioImagesSize
-
 	prioContainerState
 	prioContainerHealthStatus
 	prioContainerWritableLayerSize
+
+	prioImagesCount
+	prioImagesSize
 )
 
 var summaryCharts = module.Charts{
@@ -32,7 +32,7 @@ var summaryCharts = module.Charts{
 var (
 	containersStateChart = module.Chart{
 		ID:       "containers_state",
-		Title:    "Number of containers in different states",
+		Title:    "Total number of Docker containers in various states",
 		Units:    "containers",
 		Fam:      "containers",
 		Ctx:      "docker.containers_state",
@@ -46,7 +46,7 @@ var (
 	}
 	containersHealthyChart = module.Chart{
 		ID:       "healthy_containers",
-		Title:    "Number of healthy containers",
+		Title:    "Total number of Docker containers in various health states",
 		Units:    "containers",
 		Fam:      "containers",
 		Ctx:      "docker.containers_health_status",
@@ -63,7 +63,7 @@ var (
 var (
 	imagesCountChart = module.Chart{
 		ID:       "images_count",
-		Title:    "Number of images",
+		Title:    "Total number of Docker images in various states",
 		Units:    "images",
 		Fam:      "images",
 		Ctx:      "docker.images",
@@ -76,7 +76,7 @@ var (
 	}
 	imagesSizeChart = module.Chart{
 		ID:       "images_size",
-		Title:    "Images size",
+		Title:    "Total size of all Docker images",
 		Units:    "bytes",
 		Fam:      "images",
 		Ctx:      "docker.images_size",
@@ -98,7 +98,7 @@ var (
 		ID:       "container_%s_state",
 		Title:    "Docker container state",
 		Units:    "state",
-		Fam:      "container state",
+		Fam:      "containers",
 		Ctx:      "docker.container_state",
 		Priority: prioContainerState,
 		Dims: module.Dims{
@@ -115,7 +115,7 @@ var (
 		ID:       "container_%s_health_status",
 		Title:    "Docker container health status",
 		Units:    "status",
-		Fam:      "container health",
+		Fam:      "containers",
 		Ctx:      "docker.container_health_status",
 		Priority: prioContainerHealthStatus,
 		Dims: module.Dims{
@@ -129,7 +129,7 @@ var (
 		ID:       "container_%s_writable_layer_size",
 		Title:    "Docker container writable layer size",
 		Units:    "bytes",
-		Fam:      "container size",
+		Fam:      "containers",
 		Ctx:      "docker.container_writeable_layer_size",
 		Priority: prioContainerWritableLayerSize,
 		Dims: module.Dims{
