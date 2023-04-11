@@ -136,6 +136,9 @@ jobs:
             divisor: 1000
 ```
 
+Note that in this example, the algorithm chosen is `incremental`, because the collected values show the total number of bytes transferred,
+which we need to transform into kbps. To chart gauges (e.g. temperature), use `absolute` instead. 
+
 ### Example: Using SNMPv3
 
 To use SNMPv3:
