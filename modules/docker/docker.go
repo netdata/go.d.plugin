@@ -27,7 +27,7 @@ func New() *Docker {
 			CollectContainerSize: true,
 		},
 
-		charts: charts.Copy(),
+		charts: summaryCharts.Copy(),
 		newClient: func(cfg Config) (dockerClient, error) {
 			return docker.NewClientWithOpts(docker.WithHost(cfg.Address))
 		},

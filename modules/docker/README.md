@@ -19,18 +19,26 @@ This module monitors one or more Docker Engine instances, depending on your conf
 
 All metrics have "docker." prefix.
 
-| Metric               | Scope  |        Dimensions        |   Units    |
-|----------------------|:------:|:------------------------:|:----------:|
-| containers_state     | global | running, paused, stopped | containers |
-| healthy_containers   | global |         healthy          | containers |
-| unhealthy_containers | global |        unhealthy         | containers |
-| images               | global |     active, dangling     |   images   |
-| images_size          | global |           size           |     B      |
+Labels per scope:
+
+- global: no labels.
+- container: container_name, image.
+
+| Metric                         |   Scope   |                          Dimensions                          |   Units    |
+|--------------------------------|:---------:|:------------------------------------------------------------:|:----------:|
+| containers_state               |  global   |                   running, paused, stopped                   | containers |
+| containers_health_status       |  global   |              healthy, unhealthy, starting, none              | containers |
+| images                         |  global   |                       active, dangling                       |   images   |
+| images_size                    |  global   |                             size                             |   bytes    |
+| container_state                | container | running, paused, exited, created, restarting, removing, dead |   state    |
+| container_health_status        | container |              healthy, unhealthy, starting, none              |   status   |
+| container_writeable_layer_size | container |                       writeable_layer                        |    size    |
 
 ## Configuration
 
 Edit the `go.d/docker.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory

@@ -21,7 +21,7 @@ const (
 	prioContainerWritableLayerSize
 )
 
-var charts = module.Charts{
+var summaryCharts = module.Charts{
 	containersStateChart.Copy(),
 	containersHealthyChart.Copy(),
 
@@ -77,7 +77,7 @@ var (
 	imagesSizeChart = module.Chart{
 		ID:       "images_size",
 		Title:    "Images size",
-		Units:    "B",
+		Units:    "bytes",
 		Fam:      "images",
 		Ctx:      "docker.images_size",
 		Priority: prioImagesSize,
