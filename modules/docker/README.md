@@ -27,11 +27,11 @@ Labels per scope:
 | Metric                         |   Scope   |                          Dimensions                          |   Units    |
 |--------------------------------|:---------:|:------------------------------------------------------------:|:----------:|
 | containers_state               |  global   |                   running, paused, stopped                   | containers |
-| containers_health_status       |  global   |              healthy, unhealthy, starting, none              | containers |
+| containers_health_status       |  global   |              healthy, unhealthy, starting, no_healthcheck              | containers |
 | images                         |  global   |                       active, dangling                       |   images   |
 | images_size                    |  global   |                             size                             |   bytes    |
 | container_state                | container | running, paused, exited, created, restarting, removing, dead |   state    |
-| container_health_status        | container |              healthy, unhealthy, starting, none              |   status   |
+| container_health_status        | container |              healthy, unhealthy, starting, no_healthcheck              |   status   |
 | container_writeable_layer_size | container |                       writeable_layer                        |    size    |
 
 ## Configuration

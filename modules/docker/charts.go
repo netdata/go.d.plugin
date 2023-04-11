@@ -55,7 +55,7 @@ var (
 			{ID: "containers_health_status_healthy", Name: "healthy"},
 			{ID: "containers_health_status_unhealthy", Name: "unhealthy"},
 			{ID: "containers_health_status_starting", Name: "starting"},
-			{ID: "containers_health_status_none", Name: "none"},
+			{ID: "containers_health_status_none", Name: "no_healthcheck"},
 		},
 	}
 )
@@ -122,7 +122,7 @@ var (
 			{ID: "container_%s_health_status_healthy", Name: "healthy"},
 			{ID: "container_%s_health_status_unhealthy", Name: "unhealthy"},
 			{ID: "container_%s_health_status_starting", Name: "starting"},
-			{ID: "container_%s_health_status_none", Name: "none"},
+			{ID: "container_%s_health_status_none", Name: "no_healthcheck"},
 		},
 	}
 	containerWritableLayerSizeChartTmpl = module.Chart{
