@@ -3,6 +3,7 @@
 package filecheck
 
 import (
+	"regexp"
 	"runtime"
 	"strings"
 )
@@ -35,3 +36,5 @@ func removeDuplicates(s []string) []string {
 	}
 	return uniq
 }
+
+var reSpace = regexp.MustCompile(`\s`)

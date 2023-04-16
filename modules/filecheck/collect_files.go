@@ -106,7 +106,7 @@ func (fc *Filecheck) addFileToCharts(path string) {
 			continue
 		}
 
-		dim := &module.Dim{ID: id, Name: path}
+		dim := &module.Dim{ID: id, Name: reSpace.ReplaceAllString(path, "_")}
 
 		if err := chart.AddDim(dim); err != nil {
 			fc.Warning(err)
@@ -144,5 +144,5 @@ func (fc *Filecheck) removeFileFromCharts(path string) {
 }
 
 func fileDimID(path, metric string) string {
-	return fmt.Sprintf("file_%s_%s", path, metric)
+	return fmt.Sprintf("file_%s_%s", reSpace.ReplaceAllString(path, "_"), metric)
 }
