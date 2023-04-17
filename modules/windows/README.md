@@ -1,17 +1,36 @@
-<!--
-title: "Windows with Netdata"
-description: "Monitor the health and performance of Windows machines with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/windows/README.md"
-sidebar_label: "Windows machines"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/System metrics"
--->
-
 # Windows machine collector
 
 This module will monitor one or more Windows machines, using
 the [windows_exporter](https://github.com/prometheus-community/windows_exporter).
+
+## Requirements
+
+Netdata monitors Windows hosts by utilizing the
+[Prometheus exporter for Windows machines](https://github.com/prometheus-community/windows_exporter), a native Windows
+agent running on each host.
+
+To quickly test Netdata directly on a Windows machine, you can use
+the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions). The installer runs Netdata in a
+custom WSL deployment. WSL was not designed for production environments, so **we do not recommend using the MSI installer in
+production**.
+
+For production use, you need to install Netdata on one or more nodes running Linux:
+
+![windows](https://user-images.githubusercontent.com/43294513/232522572-1fe51228-953b-43d2-81c4-dcb0a8974db5.jpg)
+
+- Install the
+  latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
+  on every Windows host you want to monitor, enabling the collectors listed here:
+  ```msiexec /i "[PATH_TO_MSI]" ENABLED_COLLECTORS=process,ad,adcs,adfs,cpu,dns,memory,mssql,net,os,tcp,logical_disk```
+- Get the installation commands from [Netdata Cloud](https://app.netdata.cloud) and install Netdata on one or more Linux
+  nodes.
+- Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job
+  for each host to  `windows.conf`, as shown in the [configuration section](#configuration).
+
+Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
+Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
+
+## Metrics
 
 The module collects metrics from the following collectors:
 
@@ -40,34 +59,7 @@ The module collects metrics from the following collectors:
 - [netframework_clrremoting](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrremoting.md)
 - [exchange](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.exchange.md)
 
-## Requirements
-
-Netdata monitors Windows hosts by utilizing the
-[Prometheus exporter for Windows machines](https://github.com/prometheus-community/windows_exporter), a native Windows
-agent running on each host.
-
-To quickly test Netdata directly on a Windows machine, you can use
-the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions). The installer runs Netdata in a
-custom WSL deployment. WSL was not designed for production environments, so **we do not recommend using the MSI installer in
-production**.
-
-For production use, you need to install Netdata on one or more nodes running Linux:
-
-- Install the
-  latest [Prometheus exporter for Windows](https://github.com/prometheus-community/windows_exporter/releases)
-  on every Windows host you want to monitor, enabling the collectors listed here:
-  ```msiexec /i "[PATH_TO_MSI]" ENABLED_COLLECTORS=process,ad,adcs,adfs,cpu,dns,memory,mssql,net,os,tcp,logical_disk```
-- Get the installation commands from [Netdata Cloud](https://app.netdata.cloud) and install Netdata on one or more Linux
-  nodes.
-- Configure each Netdata instance to collect data remotely, from several Windows hosts. Just add one job
-  for each host to  `windows.conf`, as shown in the [configuration section](#configuration).
-
-Automated charts and alerts for your entire Windows infrastructure will be automatically generated.
-Each Windows host (data collection job) will be identifiable as an "instance" in the Netdata Cloud charts.
-
-## Metrics
-
-All metrics have prefix.
+All metrics have a prefix.
 
 Labels per scope:
 
