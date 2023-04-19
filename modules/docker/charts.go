@@ -54,6 +54,7 @@ var (
 		Dims: module.Dims{
 			{ID: "containers_health_status_healthy", Name: "healthy"},
 			{ID: "containers_health_status_unhealthy", Name: "unhealthy"},
+			{ID: "containers_health_status_not_running_unhealthy", Name: "not_running_unhealthy"},
 			{ID: "containers_health_status_starting", Name: "starting"},
 			{ID: "containers_health_status_none", Name: "no_healthcheck"},
 		},
@@ -121,6 +122,7 @@ var (
 		Dims: module.Dims{
 			{ID: "container_%s_health_status_healthy", Name: "healthy"},
 			{ID: "container_%s_health_status_unhealthy", Name: "unhealthy"},
+			{ID: "container_%s_health_status_not_running_unhealthy", Name: "not_running_unhealthy"},
 			{ID: "container_%s_health_status_starting", Name: "starting"},
 			{ID: "container_%s_health_status_none", Name: "no_healthcheck"},
 		},

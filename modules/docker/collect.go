@@ -127,10 +127,25 @@ func (d *Docker) collectContainers(mx map[string]int64) error {
 
 	seen := make(map[string]bool)
 
+	for _, s := range containerHealthStatuses {
+		mx["containers_health_status_"+s] = 0
+	}
+	mx["containers_health_status_not_running_unhealthy"] = 0
+
 	for status, containers := range containerSet {
-		mx["containers_health_status_"+status] = int64(len(containers))
+		if status != types.Unhealthy {
+			mx["containers_health_status_"+status] = int64(len(containers))
+		}
 
 		for _, cntr := range containers {
+			if status == types.Unhealthy {
+				if cntr.State == "running" {
+					mx["containers_health_status_"+status] += 1
+				} else {
+					mx["containers_health_status_not_running_unhealthy"] += 1
+				}
+			}
+
 			if len(cntr.Names) == 0 {
 				continue
 			}
@@ -149,11 +164,16 @@ func (d *Docker) collectContainers(mx map[string]int64) error {
 			for _, s := range containerHealthStatuses {
 				mx[px+"health_status_"+s] = 0
 			}
+			mx[px+"health_status_not_running_unhealthy"] = 0
 			for _, s := range containerStates {
 				mx[px+"state_"+s] = 0
 			}
 
-			mx[px+"health_status_"+status] = 1
+			if status == types.Unhealthy && cntr.State != "running" {
+				mx[px+"health_status_not_running_unhealthy"] += 1
+			} else {
+				mx[px+"health_status_"+status] = 1
+			}
 			mx[px+"state_"+cntr.State] = 1
 			mx[px+"size_rw"] = cntr.SizeRw
 			mx[px+"size_root_fs"] = cntr.SizeRootFs
