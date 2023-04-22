@@ -60,6 +60,13 @@ jobs:
       - 201
       - 202
     response_match: <title>My cool website!<\/title>
+
+  - name: cool_website3
+    url: http://cool.website3:8080/home
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+      body: 'j_username=user&j_password=pass'
+    cookie_file: '/tmp/cookie.txt'
 ```
 
 For all available options please see
