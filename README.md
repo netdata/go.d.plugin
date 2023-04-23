@@ -66,7 +66,7 @@ see the appropriate collector readme.
 | [docker](https://github.com/netdata/go.d.plugin/tree/master/modules/docker)                         |         Docker Engine         |
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)           |         Docker Engine         |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                   |          Docker Hub           |
-| [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)           |         Elasticsearch         |
+| [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)           |   Elasticsearch/OpenSearch    |
 | [energid](https://github.com/netdata/go.d.plugin/tree/master/modules/energid)                       |          Energi Core          |
 | [envoy](https://github.com/netdata/go.d.plugin/tree/master/modules/envoy)                           |             Envoy             |
 | [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example)                       |               -               |
