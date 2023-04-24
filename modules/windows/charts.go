@@ -4577,7 +4577,6 @@ func (w *Windows) addHypervCharts() {
 	}
 }
 
-
 func (w *Windows) removeCollectorCharts(name string) {
 	px := fmt.Sprintf("collector_%s", name)
 	w.removeCharts(px)
