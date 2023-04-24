@@ -100,6 +100,17 @@ jobs:
 For all available options, see the Elasticsearch
 collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/elasticsearch.conf).
 
+OpenSearch by default has plugin security enabled (controlled by `plugins.security.disabled` in `/etc/opensearch/opensearch.yml`).
+You can provide the required username and password in the OpenSearch-specific job, seen in `go.d/elasticsearch.conf`:
+```
+# opensearch
+  - name: local
+    url: https://127.0.0.1:9200
+    tls_skip_verify: yes
+    username: admin
+    password: admin
+```
+
 ## Troubleshooting
 
 To troubleshoot issues with the `elasticsearch` collector, run the `go.d.plugin` with the debug option enabled. The
