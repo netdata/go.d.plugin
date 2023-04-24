@@ -1,18 +1,9 @@
-<!--
-title: "Elasticsearch monitoring with Netdata"
-description: "Monitor the health and performance of Elasticsearch engines with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/elasticsearch/README.md"
-sidebar_label: "Elasticsearch"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Apps"
--->
+# Elasticsearch and OpenSearch collector
 
-# Elasticsearch collector
+This module monitors one or more Elasticsearch or OpenSearch instances, depending on your configuration.
 
-[`Elasticsearch`](https://www.elastic.co/elasticsearch/) is a search engine based on the Lucene library.
-
-This module monitors one or more `Elasticsearch` instances, depending on your configuration.
+[`Elasticsearch`](https://www.elastic.co/elasticsearch/) is a search engine based on the Lucene library. The original Elasticsearch project 
+was continued as an open-source project called [OpenSearch](https://opensearch.org/) by Amazon. 
 
 Used endpoints:
 
