@@ -3629,8 +3629,6 @@ var (
 		hypervRootPartitionIOTlbFlush.Copy(),
 		hypervRootPartitionIOTlbFlushCost.Copy(),
 		hypervRootPartitionVirtualTlbFlushEntries.Copy(),
-		hypervRootPartitionPhysicalPagesAllocated.Copy(),
-		hypervRootPartitionPreferredNumaNodeIndex.Copy(),
 		hypervRootPartitionRecommendedVirtualTlbSize.Copy(),
 		hypervRootPartitionVirtualTlbPages.Copy(),
 	}
