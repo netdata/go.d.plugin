@@ -21,20 +21,8 @@ This module will monitor one or more `Apache` servers, depending on your configu
 
 ## Metrics
 
-All metrics have "apache." prefix.
-
-| Metric      | Scope  |                                                 Dimensions                                                  |    Units    |
-|-------------|:------:|:-----------------------------------------------------------------------------------------------------------:|:-----------:|
-| connections | global |                                                 connections                                                 | connections |
-| conns_async | global |                                         keepalive, closing, writing                                         | connections |
-| workers     | global |                                                 idle, busy                                                  |   workers   |
-| scoreboard  | global | waiting, starting, reading, sending, keepalive, dns_lookup, closing, logging, finishing, idle_cleanup, open | connections |
-| requests    | global |                                                  requests                                                   | requests/s  |
-| net         | global |                                                    sent                                                     |  kilobit/s  |
-| reqpersec   | global |                                                  requests                                                   | requests/s  |
-| bytespersec | global |                                                   served                                                    |    KiB/s    |
-| bytesperreq | global |                                                    size                                                     |     KiB     |
-| uptime      | global |                                                   uptime                                                    |   seconds   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/apache/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 

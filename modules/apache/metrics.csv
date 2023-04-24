@@ -1,0 +1,11 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+connections,,connections,connections,"Connections",line,,go.d,apache
+conns_async,,"keepalive, closing, writing",connections,"Active Connections",line,,go.d,apache
+workers,,"idle, busy",workers,"Workers Threads",line,,go.d,apache
+scoreboard,,"waiting, starting, reading, sending, keepalive, dns_lookup, closing, logging, finishing, idle_cleanup, open",connections,"Scoreboard",line,,go.d,apache
+requests,,requests,requests/s,"Requests",line,,go.d,apache
+net,,sent,kilobit/s,"Bandwidth",line,,go.d,apache
+reqpersec,,requests,requests/s,"Lifetime Average Number Of Requests Per Second",line,,go.d,apache
+bytespersec,,served,KiB/s,"Lifetime Average Number Of Bytes Served Per Second",line,,go.d,apache
+bytesperreq,,size,KiB,"Lifetime Average Response Size",line,,go.d,apache
+uptime,,uptime,seconds,"Uptime",line,,go.d,apache
