@@ -14,7 +14,7 @@ type (
 var charts = Charts{
 	{
 		ID:    "%s_%s_messages",
-		Title: "%s Messages",
+		Title: "Messages",
 		Units: "messages/s",
 		Fam:   "",
 		Ctx:   "activemq.messages",
@@ -25,7 +25,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "%s_%s_unprocessed_messages",
-		Title: "%s Unprocessed Messages",
+		Title: "Unprocessed Messages",
 		Units: "messages",
 		Fam:   "",
 		Ctx:   "activemq.unprocessed_messages",
@@ -35,7 +35,7 @@ var charts = Charts{
 	},
 	{
 		ID:    "%s_%s_consumers",
-		Title: "%s Consumers",
+		Title: "Consumers",
 		Units: "consumers",
 		Fam:   "",
 		Ctx:   "activemq.consumers",

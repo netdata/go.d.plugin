@@ -17,13 +17,8 @@ This plugin collects queues and topics metrics using ActiveMQ Console API.
 
 ## Metrics
 
-All metrics have "activemq." prefix.
-
-| Metric               | Scope  |     Dimensions     |   Units    |
-|----------------------|:------:|:------------------:|:----------:|
-| messages             | global | enqueued, dequeued | messages/s |
-| unprocessed_messages | global |    unprocessed     |  messages  |
-| consumers            | global |     consumers      | consumers  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/activemq/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 

@@ -281,7 +281,6 @@ func (a *ActiveMQ) addQueueTopicCharts(name, typ string) {
 
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, typ, rname)
-		chart.Title = fmt.Sprintf(chart.Title, name)
 		chart.Fam = typ
 
 		for _, dim := range chart.Dims {
