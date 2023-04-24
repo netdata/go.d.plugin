@@ -331,6 +331,36 @@ const (
 	prioExchangeAutoDiscoverRequests
 	prioExchangeAvailServiceRequests
 
+	// Hyperv Health
+	prioHypervHealthCritical
+	prioHypervHealthOk
+
+	// Hyperv Processor
+	prioHypervHypervisorLogicalProcessors
+	prioHypervHypervisorVirtualProcessors
+
+	// Hyperv Partition
+	prioHypervRootPartition1GDevicePages
+	prioHypervRootPartition1GGPAPages
+	prioHypervRootPartition2MDevicePages
+	prioHypervRootPartition2MGPAPages
+	prioHypervRootPartition4KDevicePages
+	prioHypervRootPartition4KGPAPages
+	prioHypervRootPartitionAddressSpace
+	prioHypervRootPartitionAttachedDevices
+	prioHypervRootPartitionDepositedPages
+	prioHypervRootPartitionDeviceDMAErrors
+	prioHypervRootPartitionDeviceInterruptErrors
+	prioHypervRootPartitionDeviceInterruptThrottleEvents
+	prioHypervRootPartitionGPASpaceModifications
+	prioHypervRootPartitionIOTlbFlush
+	prioHypervRootPartitionIOTlbFlushCost
+	prioHypervRootPartitionVirtualTlbFlushEntires
+	prioHypervRootPartitionPhysicalPagesAllocated
+	prioHypervRootPartitionPreferredNumaNodeIndex
+	prioHypervRootPartitionRecommendedVirtualTlbSize
+	prioHypervRootPartitionVirtualTlbPages
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -3576,6 +3606,303 @@ var (
 	}
 )
 
+// HyperV
+var (
+	hypervChartsTmpl = module.Charts{
+		hypervHealthCritical.Copy(),
+		hypervHealthOK.Copy(),
+		hypervHypervisorLogicalProcessors.Copy(),
+		hypervHypervisorVirtualProcessors.Copy(),
+		hypervRootPartition1GDevicePage.Copy(),
+		hypervRootPartition1GGPAPage.Copy(),
+		hypervRootPartition2MDevicePage.Copy(),
+		hypervRootPartition2MGPAPage.Copy(),
+		hypervRootPartition4KDevicePage.Copy(),
+		hypervRootPartition4KGPAPage.Copy(),
+		hypervRootPartitionAddressSpace.Copy(),
+		hypervRootPartitionAttachedDevices.Copy(),
+		hypervRootPartitionDepositedPages.Copy(),
+		hypervRootPartitionDeviceDMAErrors.Copy(),
+		hypervRootPartitionDeviceInterruptErrors.Copy(),
+		hypervRootPartitionDeviceInterruptThrottled.Copy(),
+		hypervRootPartitionGPASpaceModifications.Copy(),
+		hypervRootPartitionIOTlbFlush.Copy(),
+		hypervRootPartitionIOTlbFlushCost.Copy(),
+		hypervRootPartitionVirtualTlbFlushEntries.Copy(),
+		hypervRootPartitionPhysicalPagesAllocated.Copy(),
+		hypervRootPartitionPreferredNumaNodeIndex.Copy(),
+		hypervRootPartitionRecommendedVirtualTlbSize.Copy(),
+		hypervRootPartitionVirtualTlbPages.Copy(),
+	}
+
+	hypervHealthCritical = module.Chart{
+		ID:       "hyperv_health_critical",
+		Title:    "VM with Critical Health",
+		Units:    "vm",
+		Fam:      "health",
+		Ctx:      "windows.hyperv_health_critical",
+		Priority: prioHypervHealthCritical,
+		Dims: module.Dims{
+			{ID: "hyperv_health_critical_total", Name: "critical"},
+		},
+	}
+	hypervHealthOK = module.Chart{
+		ID:       "hyperv_health_OK",
+		Title:    "VM with Health OK",
+		Units:    "vm",
+		Fam:      "health",
+		Ctx:      "windows.hyperv_health_critical",
+		Priority: prioHypervHealthOk,
+		Dims: module.Dims{
+			{ID: "hyperv_health_ok_total", Name: "ok"},
+		},
+	}
+
+	hypervHypervisorLogicalProcessors = module.Chart{
+		ID:       "hyperv_hypervisor_logical_processors",
+		Title:    "Logical processors in system",
+		Units:    "processor",
+		Fam:      "processor",
+		Ctx:      "windows.hyperv_hypervisor_logical_processors",
+		Priority: prioHypervHypervisorLogicalProcessors,
+		Dims: module.Dims{
+			{ID: "hyperv_hypervisor_logical_processors_total", Name: "processor"},
+		},
+	}
+	hypervHypervisorVirtualProcessors = module.Chart{
+		ID:       "hyperv_hypervisor_virtual_processors",
+		Title:    "Virtual processors in system",
+		Units:    "processor",
+		Fam:      "processor",
+		Ctx:      "windows.hyperv_hypervisor_virtual_processors",
+		Priority: prioHypervHypervisorLogicalProcessors,
+		Dims: module.Dims{
+			{ID: "hyperv_hypervisor_virtual_processors_total", Name: "processor"},
+		},
+	}
+
+	hypervRootPartition1GDevicePage = module.Chart{
+		ID:       "hyperv_root_partition_1g_device_page",
+		Title:    "Number of 1G pages present in device space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_1g_device_page",
+		Priority: prioHypervRootPartition1GDevicePages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_1g_device_page_total", Name: "pages"},
+		},
+	}
+	hypervRootPartition1GGPAPage = module.Chart{
+		ID:       "hyperv_root_partition_1g_gpa_page",
+		Title:    "Number of 1G pages present in GPA space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_1g_gpa_page",
+		Priority: prioHypervRootPartition1GGPAPages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_1g_gpa_pages_total", Name: "pages"},
+		},
+	}
+	hypervRootPartition2MDevicePage = module.Chart{
+		ID:       "hyperv_root_partition_2m_device_page",
+		Title:    "Number of 2M pages present in device space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_2m_device_page",
+		Priority: prioHypervRootPartition2MDevicePages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_2m_device_page_total", Name: "pages"},
+		},
+	}
+	hypervRootPartition2MGPAPage = module.Chart{
+		ID:       "hyperv_root_partition_2m_gpa_page",
+		Title:    "Number of 2M pages present in GPA space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_2m_gpa_page",
+		Priority: prioHypervRootPartition2MGPAPages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_2m_gpa_pages_total", Name: "pages"},
+		},
+	}
+	hypervRootPartition4KDevicePage = module.Chart{
+		ID:       "hyperv_root_partition_4k_device_page",
+		Title:    "Number of 4K pages present in device space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_4k_device_page",
+		Priority: prioHypervRootPartition4KDevicePages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_4k_device_page_total", Name: "pages"},
+		},
+	}
+	hypervRootPartition4KGPAPage = module.Chart{
+		ID:       "hyperv_root_partition_4k_gpa_page",
+		Title:    "Number of 4K pages present in GPA space",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_4k_gpa_page",
+		Priority: prioHypervRootPartition4KGPAPages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_4k_gpa_pages_total", Name: "pages"},
+		},
+	}
+	hypervRootPartitionAddressSpace = module.Chart{
+		ID:       "hyperv_root_partition_address_space",
+		Title:    "Number of address spaces in the virtual TLB partition",
+		Units:    "address",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_address_space",
+		Priority: prioHypervRootPartitionAddressSpace,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_address_spaces_total", Name: "address"},
+		},
+	}
+	hypervRootPartitionAttachedDevices = module.Chart{
+		ID:       "hyperv_root_partition_attached_devices",
+		Title:    "Number of devices attached to the partition.",
+		Units:    "address",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_attached_devices",
+		Priority: prioHypervRootPartitionAttachedDevices,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_attached_devices_total", Name: "pages"},
+		},
+	}
+	hypervRootPartitionDepositedPages = module.Chart{
+		ID:       "hyperv_root_partition_deposited_pages",
+		Title:    "Number of devices attached to the partition.",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_deposited_pages",
+		Priority: prioHypervRootPartitionDepositedPages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_deposited_pages_total", Name: "pages"},
+		},
+	}
+	hypervRootPartitionDeviceDMAErrors = module.Chart{
+		ID:       "hyperv_root_partition_device_dma_errors",
+		Title:    "Illegal DMA request",
+		Units:    "requests",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_deposited_pages",
+		Priority: prioHypervRootPartitionDeviceDMAErrors,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_deposited_pages_total", Name: "requests"},
+		},
+	}
+	hypervRootPartitionDeviceInterruptErrors = module.Chart{
+		ID:       "hyperv_root_partition_device_interrupt_errors",
+		Title:    "Illegal Interrupt request",
+		Units:    "requests",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_device_interrupt_errors",
+		Priority: prioHypervRootPartitionDeviceInterruptErrors,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_device_interrupt_errors_total", Name: "requests"},
+		},
+	}
+	hypervRootPartitionDeviceInterruptThrottled = module.Chart{
+		ID:       "hyperv_root_partition_device_interrupt_throttled",
+		Title:    "Partition temporary throttled",
+		Units:    "interrupts",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_device_interrupt_throttled",
+		Priority: prioHypervRootPartitionDeviceInterruptThrottleEvents,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_device_interrupt_throttled_total", Name: "interrupts"},
+		},
+	}
+	hypervRootPartitionGPASpaceModifications = module.Chart{
+		ID:       "hyperv_root_partition_gpa_space_modifications",
+		Title:    "Modifications to GPA space",
+		Units:    "modifications/s",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_gpa_space_modifications",
+		Priority: prioHypervRootPartitionGPASpaceModifications,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_device_gpa_space_modifications_total", Name: "GPA", Algo: module.Incremental},
+		},
+	}
+	hypervRootPartitionIOTlbFlush = module.Chart{
+		ID:       "hyperv_root_partition_io_tbl_flush",
+		Title:    "Flushes of I/O TLB",
+		Units:    "flushes/s",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_io_tlb_flush",
+		Priority: prioHypervRootPartitionIOTlbFlush,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_io_tlb_flush_total", Name: "flushes", Algo: module.Incremental},
+		},
+	}
+	hypervRootPartitionIOTlbFlushCost = module.Chart{
+		ID:       "hyperv_root_partition_io_tbl_flush_cost",
+		Title:    "Average time to process I/O TLB flush",
+		Units:    "nanoseconds",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_io_tlb_flush_cost",
+		Priority: prioHypervRootPartitionIOTlbFlushCost,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_io_tlb_flush_cost_total", Name: "period"},
+		},
+	}
+	hypervRootPartitionVirtualTlbFlushEntries = module.Chart{
+		ID:       "hyperv_root_partition_virtual_tbl_flush_entries",
+		Title:    "Flushes of I/O TLB",
+		Units:    "entries/s",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_virtual_tlb_flush_entries",
+		Priority: prioHypervRootPartitionVirtualTlbFlushEntires,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_virtual_tlb_flush_entries_total", Name: "flushes", Algo: module.Incremental},
+		},
+	}
+	hypervRootPartitionPhysicalPagesAllocated = module.Chart{
+		ID:       "hyperv_root_partition_physical_page_allocated",
+		Title:    "Number of timer interrupted skipped.",
+		Units:    "timer",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_physical_page_allocated",
+		Priority: prioHypervRootPartitionPhysicalPagesAllocated,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_physical_page_allocated_total", Name: "timer"},
+		},
+	}
+	hypervRootPartitionPreferredNumaNodeIndex = module.Chart{
+		ID:       "hyperv_root_partition_preferred_numa_node_index",
+		Title:    "Number of pages present in the GPA space.",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_parition_preferred_numa_node_index",
+		Priority: prioHypervRootPartitionPreferredNumaNodeIndex,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_preferred_numa_node_index_total", Name: "pages"},
+		},
+	}
+	hypervRootPartitionRecommendedVirtualTlbSize = module.Chart{
+		ID:       "hyperv_root_partition_recommended_virtual_tlb_size",
+		Title:    "Number of pages to be deposited for the Virtual TLB.",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_recommended_virtual_tlb_size",
+		Priority: prioHypervRootPartitionRecommendedVirtualTlbSize,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_recommended_virtual_tlb_size_total", Name: "pages"},
+		},
+	}
+	hypervRootPartitionVirtualTlbPages = module.Chart{
+		ID:       "hyperv_root_partition_virtual_tlb_pages",
+		Title:    "Pages used by the virtual TLB of the partition.",
+		Units:    "pages",
+		Fam:      "partition",
+		Ctx:      "windows.hyperv_root_partition_virtual_tlb_pages",
+		Priority: prioHypervRootPartitionVirtualTlbPages,
+		Dims: module.Dims{
+			{ID: "hyperv_root_partition_virtual_tlb_pages_total", Name: "pages"},
+		},
+	}
+)
+
 // Collectors
 var (
 	collectorChartsTmpl = module.Charts{
@@ -4243,6 +4570,15 @@ func (w *Windows) addCollectorCharts(name string) {
 		w.Warning(err)
 	}
 }
+
+func (w *Windows) addHypervCharts() {
+	charts := hypervChartsTmpl.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
 
 func (w *Windows) removeCollectorCharts(name string) {
 	px := fmt.Sprintf("collector_%s", name)
