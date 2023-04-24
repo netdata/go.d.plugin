@@ -30,10 +30,9 @@ const (
 	metricHypervRootPartitionGPASpaceModifications         = "windows_hyperv_root_partition_gpa_space_modifications"
 	metricHypervRootPartitionIOTLBFlush                    = "windows_hyperv_root_partition_io_tlb_flush"
 	metricHypervRootPartitionIOTLBFlushCost                = "windows_hyperv_root_partition_io_tlb_flush_cost"
-	metricHypervRootPartitionVirtualTLBFlushEntries        = "windows_hyperv_root_partition_virtual_tlb_flush_entires"
 	metricHypervRootPartitionVirtualTLBPages               = "windows_hyperv_root_partition_virtual_tlb_pages"
 	metricHypervRootPartitionVirtualTLBSize                = "windows_hyperv_root_partition_recommended_virtual_tlb_size"
-	metricHypervRootPartitionViirtualTLBFlushEntries       = "windows_hyperv_root_partition_virtual_tlb_flush_entires"
+	metricHypervRootPartitionViirtualTLBFlushEntires       = "windows_hyperv_root_partition_virtual_tlb_flush_entires"
 	metricHypervRootPartition                              = "windows_hyperv_root_partition_virtual_tlb_pages"
 )
 
@@ -57,10 +56,9 @@ var hypervMetrics = []string{
 	metricHypervRootPartitionGPASpaceModifications,
 	metricHypervRootPartitionIOTLBFlush,
 	metricHypervRootPartitionIOTLBFlushCost,
-	metricHypervRootPartitionVirtualTLBFlushEntries,
 	metricHypervRootPartitionVirtualTLBPages,
 	metricHypervRootPartitionVirtualTLBSize,
-	metricHypervRootPartitionViirtualTLBFlushEntries,
+	metricHypervRootPartitionViirtualTLBFlushEntires,
 	metricHypervRootPartition,
 }
 
@@ -73,6 +71,6 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
 		name := strings.TrimPrefix(pm.Name(), "windows_")
 		v := pm.Value
-		mx[name] = int64(v)
+		mx[strings.ToLower(name)+"_total"] = int64(v)
 	}
 }
