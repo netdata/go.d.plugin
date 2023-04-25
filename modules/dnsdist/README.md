@@ -26,27 +26,14 @@ For collecting metrics via HTTP, we need [enabled webserver](https://dnsdist.org
 
 ## Metrics
 
-All metrics have "dnsdist." prefix.
-
-| Metric             | Scope  |                     Dimensions                     |    Units     |
-|--------------------|:------:|:--------------------------------------------------:|:------------:|
-| queries            | global |               all, recursive, empty                |  queries/s   |
-| queries_dropped    | global | rule_drop, dynamic_blocked, no_policy, non_queries |  queries/s   |
-| packets_dropped    | global |                        acl                         |  packets/s   |
-| answers            | global |  self_answered, nxdomain, refused, trunc_failures  |  answers/s   |
-| backend_responses  | global |                     responses                      | responses/s  |
-| backend_commerrors | global |                    send_errors                     |   errors/s   |
-| backend_errors     | global |         timeouts, servfail, non_compliant          | responses/s  |
-| cache              | global |                    hits, misses                    |  answers/s   |
-| servercpu          | global |              system_state, user_state              |     ms/s     |
-| servermem          | global |                    memory_usage                    |     MiB      |
-| query_latency      | global |         1ms, 10ms, 50ms, 100ms, 1sec, slow         |  queries/s   |
-| query_latency_avg  | global |                100, 1k, 10k, 1000k                 | microseconds |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/dnsdist/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/dnsdist.conf` configuration file using `edit-config` from the
-Agent's [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Agent's [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
