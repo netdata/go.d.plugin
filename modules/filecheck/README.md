@@ -45,16 +45,8 @@ setfacl -m u:netdata:rx file ...
 ## Metrics
 
 All metrics have "filecheck." prefix.
-
-| Metric           | Scope  |            Dimensions            |  Units  |
-|------------------|:------:|:--------------------------------:|:-------:|
-| file_existence   | global |   <i>a dimension per file</i>    | boolean |
-| file_mtime_ago   | global |   <i>a dimension per file</i>    | seconds |
-| file_size        | global |   <i>a dimension per file</i>    |  bytes  |
-| dir_existence    | global | <i>a dimension per directory</i> | boolean |
-| dir_mtime_ago    | global | <i>a dimension per directory</i> | seconds |
-| dir_num_of_files | global | <i>a dimension per directory</i> |  files  |
-| dir_size         | global | <i>a dimension per directory</i> |  bytes  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/energid/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
