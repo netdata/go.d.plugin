@@ -15,42 +15,14 @@ the [standard NTP query program](http://doc.ntp.org/current-stable/ntpq.html).
 
 ## Metrics
 
-All metrics have "ntpd." prefix.
-
-Labels per scope:
-
-- global: no labels.
-- peer: peer_address.
-
-| Metric          | Scope  |    Dimensions    |    Units     |
-|-----------------|:------:|:----------------:|:------------:|
-| sys_offset      | global |      offset      | milliseconds |
-| sys_jitter      | global |  system, clock   | milliseconds |
-| sys_frequency   | global |    frequency     |     ppm      |
-| sys_wander      | global |      clock       |     ppm      |
-| sys_rootdelay   | global |      delay       | milliseconds |
-| sys_rootdisp    | global |    dispersion    | milliseconds |
-| sys_stratum     | global |     stratum      |   stratum    |
-| sys_tc          | global | current, minimum |     log2     |
-| sys_precision   | global |    precision     |     log2     |
-| peer_offset     |  peer  |      offset      | milliseconds |
-| peer_delay      |  peer  |      delay       | milliseconds |
-| peer_dispersion |  peer  |    dispersion    | milliseconds |
-| peer_jitter     |  peer  |      jitter      | milliseconds |
-| peer_xleave     |  peer  |      xleave      | milliseconds |
-| peer_rootdelay  |  peer  |    rootdelay     | milliseconds |
-| peer_rootdisp   |  peer  |    dispersion    | milliseconds |
-| peer_stratum    |  peer  |     stratum      |   stratum    |
-| peer_hmode      |  peer  |      hmode       |    hmode     |
-| peer_pmode      |  peer  |      pmode       |    pmode     |
-| peer_hpoll      |  peer  |      hpoll       |     log2     |
-| peer_ppoll      |  peer  |      ppoll       |     log2     |
-| peer_precision  |  peer  |    precision     |     log2     |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/ntpd/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/ntpd.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory, if different
