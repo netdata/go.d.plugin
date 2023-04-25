@@ -1,0 +1,40 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+proxysql.client_connections_count,,"connected, non_idle, hostgroup_locked",connections,"Client connections",line,,go.d.plugin,proxysql
+proxysql.client_connections_rate,,"created, aborted",connections/s,"Client connections rate",line,,go.d.plugin,proxysql
+proxysql.server_connections_count,,connected,connections,"Server connections",line,,go.d.plugin,proxysql
+proxysql.server_connections_rate,,"created, aborted, delayed",connections/s,"Server connections rate",line,,go.d.plugin,proxysql
+proxysql.backends_traffic,,"recv, sent",B/s,"Backends traffic",line,,go.d.plugin,proxysql
+proxysql.clients_traffic,,"recv, sent",B/s,"Clients traffic",line,,go.d.plugin,proxysql
+proxysql.active_transactions_count,,client,connections,"Client connections that are currently processing a transaction",line,,go.d.plugin,proxysql
+proxysql.questions_rate,,questions,questions/s,"Client requests / statements executed",line,,go.d.plugin,proxysql
+proxysql.slow_queries_rate,,slow,queries/s,"Slow queries",line,,go.d.plugin,proxysql
+proxysql.queries_rate,,"autocommit, autocommit_filtered, commit_filtered, rollback, rollback_filtered, backend_change_user, backend_init_db, backend_set_names, frontend_init_db, frontend_set_names, frontend_use_db",queries/s,"Queries rate",stacked,,go.d.plugin,proxysql
+proxysql.backend_statements_count,,"total, unique",statements,"Statements available across all backend connections",line,,go.d.plugin,proxysql
+proxysql.backend_statements_rate,,"prepare, execute, close",statements/s,"Statements executed against the backends",stacked,,go.d.plugin,proxysql
+proxysql.client_statements_count,,"total, unique",statements,"Statements that are in use by clients",line,,go.d.plugin,proxysql
+proxysql.client_statements_rate,,"prepare, execute, close",statements/s,"Statements executed by clients",stacked,,go.d.plugin,proxysql
+proxysql.cached_statements_count,,cached,statements,"Global prepared statements",line,,go.d.plugin,proxysql
+proxysql.query_cache_entries_count,,entries,entries,"Query Cache entries",line,,go.d.plugin,proxysql
+proxysql.query_cache_memory_used,,used,B,"Query Cache memory used",line,,go.d.plugin,proxysql
+proxysql.query_cache_io,,"in, out",B/s,"Query Cache I/O",line,,go.d.plugin,proxysql
+proxysql.query_cache_requests_rate,,"read, write, read_success",requests/s,"Query Cache requests",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_workers_count,,"workers, auxiliary",threads,"MySQL monitor workers",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_workers_rate,,started,workers/s,"MySQL monitor workers rate",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_connect_checks_rate,,"succeed, failed",checks/s,"MySQL monitor connect checks",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_ping_checks_rate,,"succeed, failed",checks/s,"MySQL monitor ping checks",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_read_only_checks_rate,,"succeed, failed",checks/s,"MySQL monitor read only checks",line,,go.d.plugin,proxysql
+proxysql.mysql_monitor_replication_lag_checks_rate,,"succeed, failed",checks/s,"MySQL monitor replication lag checks",line,,go.d.plugin,proxysql
+proxysql.jemalloc_memory_used,,"active, allocated, mapped, metadata, resident, retained",B,"Jemalloc used memory",stacked,,go.d.plugin,proxysql
+proxysql.memory_used,,"auth, sqlite3, query_digest, query_rules, firewall_users_table, firewall_users_config, firewall_rules_table, firewall_rules_config, mysql_threads, admin_threads, cluster_threads",B,"Memory used",stacked,,go.d.plugin,proxysql
+proxysql.uptime,,"uptime",seconds,"Uptime",line,,go.d.plugin,proxysql
+proxysql.mysql_command_execution_rate,command,uptime,seconds,"MySQL command execution",line,command,go.d.plugin,proxysql
+proxysql.mysql_command_execution_time,command,time,microseconds,"MySQL command execution time",line,command,go.d.plugin,proxysql
+proxysql.mysql_command_execution_duration,command,"100us, 500us, 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s, 10s, +Inf",microseconds,"MySQL command execution duration histogram",stacked,command,go.d.plugin,proxysql
+proxysql.mysql_user_connections_utilization,user,used,percentage,"MySQL user connections utilization",line,user,go.d.plugin,proxysql
+proxysql.mysql_user_connections_count,user,used,connections,"MySQL user connections used",line,user,go.d.plugin,proxysql
+proxysql.backend_status,backend,"online, shunned, offline_soft, offline_hard",status,"Backend status",line,"host, port",go.d.plugin,proxysql
+proxysql.backend_connections_usage,backend,"free, used",connections,"Backend connections usage",line,"host, port",go.d.plugin,proxysql
+proxysql.backend_connections_rate,backend,"succeed, failed",connections/s,"Backend connections established",line,"host, port",go.d.plugin,proxysql
+proxysql.backend_queries_rate,backend,queries,queries/s,"Backend queries",line,"host, port",go.d.plugin,proxysql
+proxysql.backend_traffic,backend,"recv, send",B/s,"Backend traffic",line,"host, port",go.d.plugin,proxysql
+proxysql.backend_latency,backend,latency,microseconds,"Backend latency",line,"host, port",go.d.plugin,proxysql

@@ -16,63 +16,16 @@ This module monitors one or more ProxySQL servers, depending on your configurati
 
 ## Metrics
 
-All metrics have "proxysql." prefix.
-
-Labels per scope:
-
-- global: no labels.
-- command: command.
-- user: user.
-- backend: host, port.
-
-| Metric                                    |  Scope  |                                                                                          Dimensions                                                                                           |     Units     |
-|-------------------------------------------|:-------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| client_connections_count                  | global  |                                                                             connected, non_idle, hostgroup_locked                                                                             |  connections  |
-| client_connections_rate                   | global  |                                                                                       created, aborted                                                                                        | connections/s |
-| server_connections_count                  | global  |                                                                                           connected                                                                                           |  connections  |
-| server_connections_rate                   | global  |                                                                                   created, aborted, delayed                                                                                   | connections/s |
-| backends_traffic                          | global  |                                                                                          recv, sent                                                                                           |      B/s      |
-| clients_traffic                           | global  |                                                                                          recv, sent                                                                                           |      B/s      |
-| active_transactions_count                 | global  |                                                                                            client                                                                                             |  connections  |
-| questions_rate                            | global  |                                                                                           questions                                                                                           |  questions/s  |
-| slow_queries_rate                         | global  |                                                                                             slow                                                                                              |   queries/s   |
-| queries_rate                              | global  | autocommit, autocommit_filtered, commit_filtered, rollback, rollback_filtered, backend_change_user, backend_init_db, backend_set_names, frontend_init_db, frontend_set_names, frontend_use_db |   queries/s   |
-| backend_statements_count                  | global  |                                                                                         total, unique                                                                                         |  statements   |
-| backend_statements_rate                   | global  |                                                                                    prepare, execute, close                                                                                    | statements/s  |
-| client_statements_count                   | global  |                                                                                         total, unique                                                                                         |  statements   |
-| client_statements_rate                    | global  |                                                                                    prepare, execute, close                                                                                    | statements/s  |
-| cached_statements_count                   | global  |                                                                                            cached                                                                                             |  statements   |
-| query_cache_entries_count                 | global  |                                                                                            entries                                                                                            |    entries    |
-| query_cache_memory_used                   | global  |                                                                                             used                                                                                              |       B       |
-| query_cache_io                            | global  |                                                                                            in, out                                                                                            |      B/s      |
-| query_cache_requests_rate                 | global  |                                                                                   read, write, read_success                                                                                   |  requests/s   |
-| mysql_monitor_workers_count               | global  |                                                                                      workers, auxiliary                                                                                       |    threads    |
-| mysql_monitor_workers_rate                | global  |                                                                                            started                                                                                            |   workers/s   |
-| mysql_monitor_connect_checks_rate         | global  |                                                                                        succeed, failed                                                                                        |   checks/s    |
-| mysql_monitor_ping_checks_rate            | global  |                                                                                        succeed, failed                                                                                        |   checks/s    |
-| mysql_monitor_read_only_checks_rate       | global  |                                                                                        succeed, failed                                                                                        |   checks/s    |
-| mysql_monitor_replication_lag_checks_rate | global  |                                                                                        succeed, failed                                                                                        |   checks/s    |
-| jemalloc_memory_used                      | global  |                                                                    active, allocated, mapped, metadata, resident, retained                                                                    |       B       |
-| memory_used                               | global  |       auth, sqlite3, query_digest, query_rules, firewall_users_table, firewall_users_config, firewall_rules_table, firewall_rules_config, mysql_threads, admin_threads, cluster_threads       |       B       |
-| uptime                                    | global  |                                                                                            in, out                                                                                            |      B/s      |
-| mysql_command_execution_rate              | command |                                                                                            uptime                                                                                             |    seconds    |
-| mysql_command_execution_time              | command |                                                                                             time                                                                                              | microseconds  |
-| mysql_command_execution_duration          | command |                                                              100us, 500us, 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s, 10s, +Inf                                                              | microseconds  |
-| mysql_user_connections_utilization        |  user   |                                                                                             used                                                                                              |  percentage   |
-| mysql_user_connections_count              |  user   |                                                                                             used                                                                                              |  connections  |
-| backend_status                            | backend |                                                                          online, shunned, offline_soft, offline_hard                                                                          |    status     |
-| backend_connections_usage                 | backend |                                                                                          free, used                                                                                           |  connections  |
-| backend_connections_rate                  | backend |                                                                                        succeed, failed                                                                                        | connections/s |
-| backend_queries_rate                      | backend |                                                                                            queries                                                                                            |   queries/s   |
-| backend_traffic                           | backend |                                                                                          recv, send                                                                                           |      B/s      |
-| backend_latency                           | backend |                                                                                            latency                                                                                            | microseconds  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/proxysql/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 > **Note**: this collector uses `stats` username and password which is enabled by default.
 
 Edit the `go.d/proxysql.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
