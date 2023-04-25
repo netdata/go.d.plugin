@@ -1,0 +1,25 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+vsphere.vm_cpu_usage_total,virtual machine,used,percentage,"Cpu Usage Total",area,,go.d.plugin,vsphere
+vsphere.vm_mem_usage_percentage,virtual machine,used,percentage,"Memory Usage Percentage",area,,go.d.plugin,vsphere
+vsphere.vm_mem_usage,virtual machine,"granted, consumed, active, shared",KiB,"Memory Usage",line,,go.d.plugin,vsphere
+vsphere.vm_mem_swap_rate,virtual machine,"in, out",KiB/s,"VMKernel Memory Swap Rate",area,,go.d.plugin,vsphere
+vsphere.vm_mem_swap,virtual machine,swapped,KiB,"VMKernel Memory Swap",area,,go.d.plugin,vsphere
+vsphere.vm_net_bandwidth_total,virtual machine,"rx, tx",KiB/s,"Network Bandwidth Total",area,,go.d.plugin,vsphere
+vsphere.vm_net_packets_total,virtual machine,"rx, tx",packets,"Network Packets Total",line,,go.d.plugin,vsphere
+vsphere.vm_net_drops_total,virtual machine,"rx, tx",packets,"Network Drops Total",line,,go.d.plugin,vsphere
+vsphere.vm_disk_usage_total,virtual machine,"read, write",KiB/s,"Disk Usage Total",area,,go.d.plugin,vsphere
+vsphere.vm_disk_max_latency,virtual machine,latency,ms,"Disk Max Latency",line,,go.d.plugin,vsphere
+vsphere.vm_overall_status,virtual machine,status,status,"Overall Alarm Status",line,,go.d.plugin,vsphere
+vsphere.vm_system_uptime,virtual machine,time,seconds,"System Uptime",line,,go.d.plugin,vsphere
+vsphere.host_cpu_usage_total,host,used,percentage,"Cpu Usage Total",area,,go.d.plugin,vsphere
+vsphere.host_mem_usage_percentage,host,used,percentage,"Memory Usage Percentage",area,,go.d.plugin,vsphere
+vsphere.host_mem_usage,host,"granted, consumed, active, shared, sharedcommon",KiB,"Memory Usage",line,,go.d.plugin,vsphere
+vsphere.host_mem_swap_rate,host,"in, out",KiB/s,"VMKernel Memory Swap Rate",area,,go.d.plugin,vsphere
+vsphere.host_net_bandwidth_total,host,"rx, tx",KiB/s,"Network Bandwidth Total",line,,go.d.plugin,vsphere
+vsphere.host_net_packets_total,host,"rx, tx",packets,"Network Packets Total",line,,go.d.plugin,vsphere
+vsphere.host_net_drops_total,host,"rx, tx",packets,"Network Drops Total",line,,go.d.plugin,vsphere
+vsphere.host_net_errors_total,host,"rx, tx",errors,"Network Errors Total",line,,go.d.plugin,vsphere
+vsphere.host_disk_usage_total,host,"read, write",KiB/s,"Disk Usage Total",area,,go.d.plugin,vsphere
+vsphere.host_disk_max_latency,host,latency,ms,"Disk Max Latency",line,,go.d.plugin,vsphere
+vsphere.host_overall_status,host,status,status,"Overall Alarm Status",line,,go.d.plugin,vsphere
+vsphere.host_system_uptime,host,time,seconds,"System Uptime",line,,go.d.plugin,vsphere

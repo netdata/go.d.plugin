@@ -1,0 +1,13 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+solr.search_requests,,search,requests/s,"Search Requests",line,,go.d.plugin,solr
+solr.search_errors,,errors,errors/s,"Search Errors",line,,go.d.plugin,solr
+solr.search_errors_by_type,,"client, server, timeouts",errors/s,"Search Errors By Type",line,,go.d.plugin,solr
+solr.search_requests_processing_time,,time,milliseconds,"Search Requests Processing Time",line,,go.d.plugin,solr
+solr.search_requests_timings,,"min, median, mean, max",milliseconds,"Search Requests Timings",line,,go.d.plugin,solr
+solr.search_requests_processing_time_percentile,,"p75, p95, p99, p999",milliseconds,"Search Requests Processing Time Percentile",line,,go.d.plugin,solr
+solr.update_requests,,search,requests/s,"Update Requests",line,,go.d.plugin,solr
+solr.update_errors,,errors,errors/s,"Update Errors",line,,go.d.plugin,solr
+solr.update_errors_by_type,,"client, server, timeouts",errors/s,"Update Errors By Type",line,,go.d.plugin,solr
+solr.update_requests_processing_time,,time,milliseconds,"Update Requests Processing Time",line,,go.d.plugin,solr
+solr.update_requests_timings,,"min, median, mean, max",milliseconds,"Update Requests Timings",line,,go.d.plugin,solr
+solr.update_requests_processing_time_percentile,,"p75, p95, p99, p999",milliseconds,"Update Requests Processing Time Percentile",line,,go.d.plugin,solr

@@ -1,0 +1,17 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+couchdb.activity,,"db_reads, db_writes, view_reads",requests/s,"Overall Activity",stacked,,go.d.plugin,couchdb
+couchdb.request_methods,,"copy, delete, get, head, options, post, put",requests/s,"HTTP request methods",stacked,,go.d.plugin,couchdb
+couchdb.response_codes,,"200, 201, 202, 204, 206, 301, 302, 304, 400, 401, 403, 404, 406, 409, 412, 413, 414, 415, 416, 417, 500, 501, 503",responses/s,"HTTP response status codes",stacked,,go.d.plugin,couchdb
+couchdb.response_code_classes,,"2xx, 3xx, 4xx, 5xx",responses/s,"HTTP response status code classes",stacked,,go.d.plugin,couchdb
+couchdb.active_tasks,,"indexer, db_compaction, replication, view_compaction",tasks,"Active task breakdown",stacked,,go.d.plugin,couchdb
+couchdb.replicator_jobs,,"running, pending, crashed, internal_replication_jobs",jobs,"Replicator job breakdown",stacked,,go.d.plugin,couchdb
+couchdb.open_files,,files,files,"Open files",line,,go.d.plugin,couchdb
+couchdb.erlang_vm_memory,,"atom, binaries, code, ets, procs, other",B,"Erlang VM memory usage",stacked,,go.d.plugin,couchdb
+couchdb.proccounts,,"os_procs, erl_procs",processes,"Process counts",line,,go.d.plugin,couchdb
+couchdb.peakmsgqueue,,peak_size,messages,"Peak message queue size",line,,go.d.plugin,couchdb
+couchdb.reductions,,reductions,reductions,"Erlang reductions",line,,go.d.plugin,couchdb
+couchdb.db_sizes_file,,a dimension per database,KiB,"Database sizes (file)",line,,go.d.plugin,couchdb
+couchdb.db_sizes_external,,a dimension per database,KiB,"Database sizes (external)",line,,go.d.plugin,couchdb
+couchdb.db_sizes_active,,a dimension per database,KiB,"Database sizes (active)",line,,go.d.plugin,couchdb
+couchdb.db_doc_count,,a dimension per database,docs,"Database # of docs",line,,go.d.plugin,couchdb
+couchdb.db_doc_del_count,,a dimension per database,docs,"Database # of deleted docs",line,,go.d.plugin,couchdb

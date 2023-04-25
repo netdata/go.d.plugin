@@ -1,0 +1,15 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+logstash.jvm_threads,,threads,count,"JVM Threads",line,,go.d.plugin,logstash
+logstash.jvm_mem_heap_used,,in_use,percentage,"JVM Heap Memory Percentage",line,,go.d.plugin,logstash
+logstash.jvm_mem_heap,,"committed, used",KiB,"JVM Heap Memory",area,,go.d.plugin,logstash
+logstash.jvm_mem_pools_eden,,"committed, used",KiB,"JVM Pool Eden Memory",area,,go.d.plugin,logstash
+logstash.jvm_mem_pools_survivor,,"committed, used",KiB,"JVM Pool Survivor Memory",area,,go.d.plugin,logstash
+logstash.jvm_mem_pools_old,,"committed, used",KiB,"JVM Pool Old Memory",area,,go.d.plugin,logstash
+logstash.jvm_gc_collector_count,,"eden, old",counts/s,"Garbage Collection Count",line,,go.d.plugin,logstash
+logstash.jvm_gc_collector_time,,"eden, old",ms,"Time Spent On Garbage Collection",line,,go.d.plugin,logstash
+logstash.open_file_descriptors,,open,fd,"Open File Descriptors",line,,go.d.plugin,logstash
+logstash.event,,"in, filtered, out",events/s,"Events Overview",line,,go.d.plugin,logstash
+logstash.event_duration,,"event, queue",seconds,"Events Duration",line,,go.d.plugin,logstash
+logstash.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,logstash
+logstash.pipeline_event,pipeline,"in, filtered, out",events/s,"Pipeline Events",line,pipeline,go.d.plugin,logstash
+logstash.pipeline_event,pipeline,"event, queue",seconds,"Pipeline Events Duration",line,pipeline,go.d.plugin,logstash

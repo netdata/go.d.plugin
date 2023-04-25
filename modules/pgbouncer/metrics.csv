@@ -1,0 +1,14 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+pgbouncer.client_connections_utilization,,used,percentage,"Client connections utilization",line,,go.d.plugin,pgbouncer
+pgbouncer.db_client_connections,database,"active, waiting, cancel_req",connections,"Database client connections",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_server_connections,database,"active, idle, used, tested, login",connections,"Database server connections",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_server_connections_utilization,database,used,percentage,"Database server connections utilization",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_clients_wait_time,database,time,seconds,"Database clients wait time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_client_max_wait_time,database,time,seconds,"Database client max wait time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_transactions,database,transactions,transactions/s,"Database pooled SQL transactions",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_transactions_time,database,time,seconds,"Database transactions time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_transaction_avg_time,database,time,seconds,"Database transaction average time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_queries,database,queries,queries/s,"Database pooled SQL queries",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_queries_time,database,time,seconds,"Database queries time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_query_avg_time,database,time,seconds,"Database query average time",line,"database, postgres_database",go.d.plugin,pgbouncer
+pgbouncer.db_network_io,database,"received, sent",B/s,"Database traffic",area,"database, postgres_database",go.d.plugin,pgbouncer

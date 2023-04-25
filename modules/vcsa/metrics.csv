@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+vcsa.system_health,,system,status,"Overall System Health",line,,go.d.plugin,vcsa
+vcsa.components_health,,"applmgmt, database_storage, mem, storage, swap",status,"Components Health",line,,go.d.plugin,vcsa
+vcsa.software_updates_health,,software_packages,status,"Software Updates Health",line,,go.d.plugin,vcsa

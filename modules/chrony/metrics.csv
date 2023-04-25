@@ -1,0 +1,14 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+chrony.stratum,,stratum,level,"Distance to the reference clock",line,,go.d,chrony
+chrony.current_correction,,current_correction,seconds,"Current correction",line,,go.d,chrony
+chrony.root_delay,,root_delay,seconds,"Network path delay to stratum-1",line,,go.d,chrony
+chrony.root_dispersion,,root_delay,seconds,"Dispersion accumulated back to stratum-1",line,,go.d,chrony
+chrony.last_offset,,offset,seconds,"Offset on the last clock update",line,,go.d,chrony
+chrony.rms_offset,,offset,seconds,"Long-term average of the offset value",line,,go.d,chrony
+chrony.frequency,,frequency,ppm,"Frequency",line,,go.d,chrony
+chrony.residual_frequency,,residual_frequency,ppm,"Residual frequency",line,,go.d,chrony
+chrony.skew,,skew,frequency,"Skew",line,,go.d,chrony
+chrony.update_interval,,update_interval,seconds,"Interval between the last two clock updates",line,,go.d,chrony
+chrony.ref_measurement_time,,ref_measurement_time,seconds,"Time since the last measurement",line,,go.d,chrony
+chrony.leap_status,,"normal, insert_second, delete_second, unsynchronised",status,"Leap status",line,,go.d,chrony
+chrony.activity,,"online, offline, burst_online, burst_offline, unresolved",sources,"Peers activity",stacked,,go.d,chrony

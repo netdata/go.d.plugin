@@ -1,0 +1,26 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+redis.connections,,"accepted, rejected",connections/s,"Accepted and rejected (maxclients limit) connections",line,,go.d.plugin,redis
+redis.clients,,"connected, blocked, tracking, in_timeout_table",clients,"Clients",line,,go.d.plugin,redis
+redis.ping_latency,,"min, max, avg",seconds,"Ping latency",area,,go.d.plugin,redis
+redis.commands,,processes,commands/s,"Processed commands",line,,go.d.plugin,redis
+redis.keyspace_lookup_hit_rate,,lookup_hit_rate,percentage,"Keys lookup hit rate",line,,go.d.plugin,redis
+redis.memory,,"max, used, rss, peak, dataset, lua, scripts",bytes,"Memory usage",area,,go.d.plugin,redis
+redis.mem_fragmentation_ratio,,mem_fragmentation,ratio,"Ratio between used_memory_rss and used_memory",line,,go.d.plugin,redis
+redis.key_eviction_events,,evicted,keys/s,"Evicted keys due to maxmemory limit",line,,go.d.plugin,redis
+redis.net,,"received, sent",kilobits/s,"Bandwidth",area,,go.d.plugin,redis
+redis.rdb_changes,,changes,operations,"TI,TLE",line,,go.d.plugin,redis
+redis.bgsave_now,,current_bgsave_time,seconds,"Duration of the on-going RDB save operation if any",line,,go.d.plugin,redis
+redis.bgsave_health,,last_bgsave,status,"Status of the last RDB save operation (0: ok, 1: err)",line,,go.d.plugin,redis
+redis.bgsave_last_rdb_save_since_time,,last_bgsave_time,seconds,"Time elapsed since the last successful RDB save",line,,go.d.plugin,redis
+redis.aof_file_size,,"current, base",bytes,"AOF file size",line,,go.d.plugin,redis
+redis.commands_calls,,a dimension per command,calls,"Calls per command",stacked,,go.d.plugin,redis
+redis.commands_usec,,a dimension per command,microseconds,"Total CPU time consumed by the commands",stacked,,go.d.plugin,redis
+redis.commands_usec_per_sec,,a dimension per command,microseconds/s,"Average CPU consumed per command execution",line,,go.d.plugin,redis
+redis.key_expiration_events,,expired,keys/s,"Expired keys",line,,go.d.plugin,redis
+redis.database_keys,,a dimension per database,keys,"Keys per database",stacked,,go.d.plugin,redis
+redis.database_expires_keys,,a dimension per database,keys,"Keys with an expiration per database",stacked,,go.d.plugin,redis
+redis.connected_replicas,,connected,replicas,"Connected replicas",line,,go.d.plugin,redis
+redis.master_link_status,,"up, down",status,"Master link status",line,,go.d.plugin,redis
+redis.master_last_io_since_time,,time,seconds,"Time elapsed since the last interaction with master",line,,go.d.plugin,redis
+redis.master_link_down_since_time,,time,seconds,"Time elapsed since the link between master and slave is down",line,,go.d.plugin,redis
+redis.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,redis

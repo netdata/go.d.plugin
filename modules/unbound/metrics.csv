@@ -1,0 +1,39 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+unbound.queries,,queries,queries,"Received Queries",line,,go.d.plugin,unbound
+unbound.queries_ip_ratelimited,,ratelimited,queries,"Rate Limited Queries",line,,go.d.plugin,unbound
+unbound.dnscrypt_queries,,"crypted, cert, cleartext, malformed",queries,"DNSCrypt Queries",line,,go.d.plugin,unbound
+unbound.cache,,"hits, miss",events,"Cache Statistics",stacked,,go.d.plugin,unbound
+unbound.cache_percentage,,"hits, miss",percentage,"Cache Statistics Percentage",stacked,,go.d.plugin,unbound
+unbound.prefetch,,prefetches,prefetches,"Cache Prefetches",line,,go.d.plugin,unbound
+unbound.expired,,expired,replies,"Replies Served From Expired Cache",line,,go.d.plugin,unbound
+unbound.zero_ttl_replies,,zero_ttl,replies,"Replies Served From Expired Cache",line,,go.d.plugin,unbound
+unbound.recursive_replies,,recursive,replies,"Replies That Needed Recursive Processing",line,,go.d.plugin,unbound
+unbound.recursion_time,,"avg, median",milliseconds,"Time Spent On Recursive Processing",line,,go.d.plugin,unbound
+unbound.request_list_usage,,"avg, max",queries,"Request List Usage",line,,go.d.plugin,unbound
+unbound.current_request_list_usage,,"all, users",queries,"Current Request List Usage",area,,go.d.plugin,unbound
+unbound.request_list_jostle_list,,"overwritten, dropped",queries,"Request List Jostle List Events",line,,go.d.plugin,unbound
+unbound.tcpusage,,usage,buffers,"TCP Handler Buffers",line,,go.d.plugin,unbound
+unbound.uptime,,time,seconds,"Uptime",line,,go.d.plugin,unbound
+unbound.cache_memory,,"message, rrset, dnscrypt_nonce, dnscrypt_shared_secret",KB,"Cache Memory",stacked,,go.d.plugin,unbound
+unbound.mod_memory,,"iterator, respip, validator, subnet, ipsec",KB,"Module Memory",stacked,,go.d.plugin,unbound
+unbound.mem_streamwait,,streamwait,KB,"TCP and TLS Stream Waif Buffer Memory",line,,go.d.plugin,unbound
+unbound.cache_count,,"infra, key, msg, rrset, dnscrypt_nonce, shared_secret",items,"Cache Items Count",stacked,,go.d.plugin,unbound
+unbound.type_queries,,a dimension per query type,queries,"Queries By Type",stacked,,go.d.plugin,unbound
+unbound.class_queries,,a dimension per query class,queries,"Queries By Class",stacked,,go.d.plugin,unbound
+unbound.opcode_queries,,a dimension per query opcode,queries,"Queries By OpCode",stacked,,go.d.plugin,unbound
+unbound.flag_queries,,"qr, aa, tc, rd, ra, z, ad, cd",queries,"Queries By Flag",stacked,,go.d.plugin,unbound
+unbound.rcode_answers,,a dimension per reply rcode,replies,"Replies By RCode",stacked,,go.d.plugin,unbound
+unbound.thread_queries,thread,queries,queries,"Thread Received Queries",line,,go.d.plugin,unbound
+unbound.thread_queries_ip_ratelimited,thread,ratelimited,queries,"Thread Rate Limited Queries",line,,go.d.plugin,unbound
+unbound.thread_dnscrypt_queries,thread,"crypted, cert, cleartext, malformed",queries,"Thread DNSCrypt Queries",line,,go.d.plugin,unbound
+unbound.thread_cache,thread,"hits, miss",events,"Cache Statistics",line,,go.d.plugin,unbound
+unbound.thread_cache_percentage,thread,"hits, miss",percentage,"Cache Statistics Percentage",line,,go.d.plugin,unbound
+unbound.thread_prefetch,thread,prefetches,prefetches,"Cache Prefetches",line,,go.d.plugin,unbound
+unbound.thread_expired,thread,expired,replies,"Replies Served From Expired Cache",line,,go.d.plugin,unbound
+unbound.thread_zero_ttl_replies,thread,zero_ttl,replies,"Replies Served From Expired Cache",line,,go.d.plugin,unbound
+unbound.thread_recursive_replies,thread,recursive,replies,"Replies That Needed Recursive Processing",line,,go.d.plugin,unbound
+unbound.thread_recursion_time,thread,"avg, median",milliseconds,"Time Spent On Recursive Processing",line,,go.d.plugin,unbound
+unbound.thread_request_list_usage,thread,"avg, max",queries,"Time Spent On Recursive Processing",line,,go.d.plugin,unbound
+unbound.thread_current_request_list_usage,thread,"all, users",queries,"Current Request List Usage",line,,go.d.plugin,unbound
+unbound.thread_request_list_jostle_list,thread,"overwritten, dropped",queries,"Request List Jostle List Events",line,,go.d.plugin,unbound
+unbound.thread_tcpusage,thread,usage,buffers,"TCP Handler Buffers",line,,go.d.plugin,unbound

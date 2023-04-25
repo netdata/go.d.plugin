@@ -1,0 +1,48 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+nginxplus.client_connections_rate,,"accepted, dropped",connections/s,"Client connections rate",line,,go.d.plugin,nginxplus
+nginxplus.client_connections_count,,"active, idle",connections,"Client connections",line,,go.d.plugin,nginxplus
+nginxplus.ssl_handshakes_rate,,"successful, failed",handshakes/s,"SSL handshakes rate",line,,go.d.plugin,nginxplus
+nginxplus.ssl_handshakes_failures_rate,,"no_common_protocol, no_common_cipher, timeout, peer_rejected_cert",failures/s,"SSL handshakes failures rate",stacked,,go.d.plugin,nginxplus
+nginxplus.ssl_verification_errors_rate,,"no_cert, expired_cert, revoked_cert, hostname_mismatch, other",errors/s,"SSL verification errors rate",stacked,,go.d.plugin,nginxplus
+nginxplus.ssl_session_reuses_rate,,ssl_session,reuses/s,"Session reuses during SSL handshak",line,,go.d.plugin,nginxplus
+nginxplus.http_requests_rate,,requests,requests/s,"HTTP requests rate",line,,go.d.plugin,nginxplus
+nginxplus.http_requests_count,,requests,requests,"HTTP requests",line,,go.d.plugin,nginxplus
+nginxplus.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,nginxplus
+nginxplus.http_server_zone_requests_rate,http server zone,requests,requests/s,"HTTP Server Zone requests rate",line,http_server_zone,go.d.plugin,nginxplus
+nginxplus.http_server_zone_responses_per_code_class_rate,http server zone,"1xx, 2xx, 3xx, 4xx, 5xx",responses/s,"HTTP Server Zone responses rate",stacked,http_server_zone,go.d.plugin,nginxplus
+nginxplus.http_server_zone_traffic_rate,http server zone,"received, sent",bytes/s,"HTTP Server Zone traffic",area,http_server_zone,go.d.plugin,nginxplus
+nginxplus.http_server_zone_requests_processing_count,http server zone,processing,requests,"HTTP Server Zone currently processed requests",line,http_server_zone,go.d.plugin,nginxplus
+nginxplus.http_server_zone_requests_discarded_rate,http server zone,discarded,requests/s,"HTTP Server Zone requests discarded rate",line,http_server_zone,go.d.plugin,nginxplus
+nginxplus.http_location_zone_requests_rate,http location zone,requests,requests/s,"HTTP Location Zone requests rate",line,http_location_zone,go.d.plugin,nginxplus
+nginxplus.http_location_zone_responses_per_code_class_rate,http location zone,"1xx, 2xx, 3xx, 4xx, 5xx",responses/s,"HTTP Location Zone responses rate",stacked,http_location_zone,go.d.plugin,nginxplus
+nginxplus.http_location_zone_traffic_rate,http location zone,"received, sent",bytes/s,"HTTP Location Zone traffic rate",area,http_location_zone,go.d.plugin,nginxplus
+nginxplus.http_location_zone_requests_discarded_rate,http location zone,discarded,requests/s,"HTTP Location Zone requests discarded rate",line,http_location_zone,go.d.plugin,nginxplus
+nginxplus.http_upstream_peers_count,http upstream,peers,peers,"HTTP Upstream peers",line,"http_upstream_name, http_upstream_zone",go.d.plugin,nginxplus
+nginxplus.http_upstream_zombies_count,http upstream,zombie,servers,"HTTP Upstream zombies",line,"http_upstream_name, http_upstream_zone",go.d.plugin,nginxplus
+nginxplus.http_upstream_keepalive_count,http upstream,keepalive,connections,"HTTP Upstream keepalive",line,"http_upstream_name, http_upstream_zone",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_requests_rate,http upstream server,requests,requests/s,"HTTP Upstream Server requests",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_responses_per_code_class_rate,http upstream server,"1xx, 2xx, 3xx, 4xx, 5xx",responses/s,"HTTP Upstream Server responses",stacked,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_response_time,http upstream server,response,milliseconds,"HTTP Upstream Server average response time",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_response_header_time,http upstream server,header,milliseconds,"HTTP Upstream Server average response header time",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_traffic_rate,http upstream server,"received, sent",bytes/s,"HTTP Upstream Server traffic rate",area,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_state,http upstream server,"up, down, draining, unavail, checking, unhealthy",state,"HTTP Upstream Server state",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_connections_count,http upstream server,active,connections,"HTTP Upstream Server connections",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_upstream_server_downtime,http upstream server,downtime,seconds,"HTTP Upstream Server downtime",line,"http_upstream_name, http_upstream_zone, http_upstream_server_address, http_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.http_cache_state,http cache,"warm, cold",state,"HTTP Cache state",line,http_cache,go.d.plugin,nginxplus
+nginxplus.http_cache_iops,http cache,"served, written, bypass",responses/s,"HTTP Cache size",line,http_cache,go.d.plugin,nginxplus
+nginxplus.http_cache_io,http cache,"served, written, bypass",bytes/s,"HTTP Cache IOPS",line,http_cache,go.d.plugin,nginxplus
+nginxplus.http_cache_size,http cache,size,bytes,"HTTP Cache IO",line,http_cache,go.d.plugin,nginxplus
+nginxplus.stream_server_zone_connections_rate,stream server zone,accepted,connections/s,"Stream Server Zone connections rate",line,stream_server_zone,go.d.plugin,nginxplus
+nginxplus.stream_server_zone_sessions_per_code_class_rate,stream server zone,"2xx, 4xx, 5xx",sessions/s,"Stream Server Zone sessions rate",stacked,stream_server_zone,go.d.plugin,nginxplus
+nginxplus.stream_server_zone_traffic_rate,stream server zone,"received, sent",bytes/s,"Stream Server Zone traffic rate",area,stream_server_zone,go.d.plugin,nginxplus
+nginxplus.stream_server_zone_connections_processing_count,stream server zone,processing,connections,"Stream Server Zone connections processed",line,stream_server_zone,go.d.plugin,nginxplus
+nginxplus.stream_server_zone_connections_discarded_rate,stream server zone,discarded,connections/s,"Stream Server Zone connections discarded",line,stream_server_zone,go.d.plugin,nginxplus
+nginxplus.stream_upstream_peers_count,stream upstream,peers,peers,"Stream Upstream peers",line,"stream_upstream_name, stream_upstream_zone",go.d.plugin,nginxplus
+nginxplus.stream_upstream_zombies_count,stream upstream,zombie,servers,"Stream Upstream zombies",line,"stream_upstream_name, stream_upstream_zone",go.d.plugin,nginxplus
+nginxplus.stream_upstream_server_connections_rate,stream upstream server,forwarded,connections/s,"Stream Upstream Server connections",line,"stream_upstream_name, stream_upstream_zone, stream_upstream_server_address, stream_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.stream_upstream_server_traffic_rate,stream upstream server,"received, sent",bytes/s,"Stream Upstream Server traffic rate",area,"stream_upstream_name, stream_upstream_zone, stream_upstream_server_address, stream_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.stream_upstream_server_state,stream upstream server,"up, down, unavail, checking, unhealthy",state,"Stream Upstream Server state",line,"stream_upstream_name, stream_upstream_zone, stream_upstream_server_address, stream_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.stream_upstream_server_downtime,stream upstream server,downtime,seconds,"Stream Upstream Server downtime",line,"stream_upstream_name, stream_upstream_zone, stream_upstream_server_address, stream_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.stream_upstream_server_connections_count,stream upstream server,active,connections,"Stream Upstream Server connections",line,"stream_upstream_name, stream_upstream_zone, stream_upstream_server_address, stream_upstream_server_name",go.d.plugin,nginxplus
+nginxplus.resolver_zone_requests_rate,resolver zone,"name, srv, addr",requests/s,"Resolver requests rate",stacked,resolver_zone,go.d.plugin,nginxplus
+nginxplus.resolver_zone_responses_rate,resolver zone,"noerror, formerr, servfail, nxdomain, notimp, refused, timedout, unknown",responses/s,"Resolver responses rate",stacked,resolver_zone,go.d.plugin,nginxplus

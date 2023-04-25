@@ -1,0 +1,64 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+vernemq.sockets,,open,sockets,"Open Sockets",line,,go.d.plugin,vernemq
+vernemq.socket_operations,,"open, close",sockets/s,"Socket Open and Close Events",line,,go.d.plugin,vernemq
+vernemq.client_keepalive_expired,,closed,sockets/s,"Closed Sockets due to Keepalive Time Expired",line,,go.d.plugin,vernemq
+vernemq.socket_close_timeout,,closed,sockets/s,"Closed Sockets due to no CONNECT Frame On Time",line,,go.d.plugin,vernemq
+vernemq.socket_errors,,errors,errors/s,"Socket Errors",line,,go.d.plugin,vernemq
+vernemq.queue_processes,,queue_processes,queue processes,"Living Queues in an Online or an Offline State",line,,go.d.plugin,vernemq
+vernemq.queue_processes_operations,,"setup, teardown",events/s,"Queue Processes Setup and Teardown Events",line,,go.d.plugin,vernemq
+vernemq.queue_process_init_from_storage,,queue_processes,queue processes/s,"Queue Processes Initialized from Offline Storage",line,,go.d.plugin,vernemq
+vernemq.queue_messages,,"received, sent",messages/s,"Received and Sent PUBLISH Messages",area,,go.d.plugin,vernemq
+vernemq.queue_undelivered_messages,,"dropped, expired, unhandled",messages/s,"Undelivered PUBLISH Messages",stacked,,go.d.plugin,vernemq
+vernemq.router_subscriptions,,subscriptions,subscriptions,"Subscriptions in the Routing Table",line,,go.d.plugin,vernemq
+vernemq.router_matched_subscriptions,,"local, remote",subscriptions/s,"Matched Subscriptions",line,,go.d.plugin,vernemq
+vernemq.router_memory,,used,KiB,"Routing Table Memory Usage",area,,go.d.plugin,vernemq
+vernemq.average_scheduler_utilization,,utilization,percentage,"Average Scheduler Utilization",area,,go.d.plugin,vernemq
+vernemq.system_utilization_scheduler,,a dimension per scheduler,percentage,"Scheduler Utilization",stacked,,go.d.plugin,vernemq
+vernemq.system_processes,,processes,processes,"Erlang Processes",line,,go.d.plugin,vernemq
+vernemq.system_reductions,,reductions,ops/s,"Reductions",line,,go.d.plugin,vernemq
+vernemq.system_context_switches,,context_switches,ops/s,"Context Switches",line,,go.d.plugin,vernemq
+vernemq.system_io,,"received, sent",kilobits/s,"Received and Sent Traffic through Ports",area,,go.d.plugin,vernemq
+vernemq.system_run_queue,,ready,processes,"Processes that are Ready to Run on All Run-Queues",line,,go.d.plugin,vernemq
+vernemq.system_gc_count,,gc,ops/s,"GC Count",line,,go.d.plugin,vernemq
+vernemq.system_gc_words_reclaimed,,words_reclaimed,ops/s,"GC Words Reclaimed",line,,go.d.plugin,vernemq
+vernemq.system_allocated_memory,,"processes, system",KiB,"Memory Allocated by the Erlang Processes and by the Emulator",stacked,,go.d.plugin,vernemq
+vernemq.bandwidth,,"received, sent",kilobits/s,"Bandwidth",area,,go.d.plugin,vernemq
+vernemq.retain_messages,,messages,messages,"Stored Retained Messages",line,,go.d.plugin,vernemq
+vernemq.retain_memory,,used,KiB,"Stored Retained Messages Memory Usage",area,,go.d.plugin,vernemq
+vernemq.cluster_bandwidth,,"received, sent",kilobits/s,"Communication with Other Cluster Nodes",area,,go.d.plugin,vernemq
+vernemq.cluster_dropped,,dropped,kilobits/s,"Traffic Dropped During Communication with Other Cluster Nodes",area,,go.d.plugin,vernemq
+vernemq.netsplit_unresolved,,unresolved,netsplits,"Unresolved Netsplits",line,,go.d.plugin,vernemq
+vernemq.netsplits,,"resolved, detected",netsplits/s,"Netsplits",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_auth,,"received, sent",packets/s,"v5 AUTH",line,,go.d.plugin,vernemq
+vernemq.mqtt_auth_received_reason,,a dimensions per reason,packets/s,"v5 AUTH Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_auth_sent_reason,,a dimensions per reason,packets/s,"v5 AUTH Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_connect,,"connect, connack",packets/s,"v3/v5 CONNECT and CONNACK",line,,go.d.plugin,vernemq
+vernemq.mqtt_connack_sent_reason,,a dimensions per reason,packets/s,"v3/v5 CONNACK Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_disconnect,,"received, sent",packets/s,"v3/v5 DISCONNECT",line,,go.d.plugin,vernemq
+vernemq.mqtt_disconnect_received_reason,,a dimensions per reason,packets/s,"v5 DISCONNECT Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_disconnect_sent_reason,,a dimensions per reason,packets/s,"v5 DISCONNECT Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_subscribe,,"subscribe, suback",packets/s,"v3/v5 SUBSCRIBE and SUBACK",line,,go.d.plugin,vernemq
+vernemq.mqtt_subscribe_error,,failed,ops/s,"v3/v5 Failed SUBSCRIBE Operations due to a Netsplit",line,,go.d.plugin,vernemq
+vernemq.mqtt_subscribe_auth_error,,unauth,attempts/s,"v3/v5 Unauthorized SUBSCRIBE Attempts",line,,go.d.plugin,vernemq
+vernemq.mqtt_unsubscribe,,"unsubscribe, unsuback",packets/s,"v3/v5 UNSUBSCRIBE and UNSUBACK",line,,go.d.plugin,vernemq
+vernemq.mqtt_unsubscribe,,mqtt_unsubscribe_error,ops/s,"v3/v5 Failed UNSUBSCRIBE Operations due to a Netsplit",line,,go.d.plugin,vernemq
+vernemq.mqtt_publish,,"received, sent",packets/s,"v3/v5 QoS 0,1,2 PUBLISH",line,,go.d.plugin,vernemq
+vernemq.mqtt_publish_errors,,failed,ops/s,"v3/v5 Failed PUBLISH Operations due to a Netsplit",line,,go.d.plugin,vernemq
+vernemq.mqtt_publish_auth_errors,,unauth,attempts/s,"v3/v5 Unauthorized PUBLISH Attempts",area,,go.d.plugin,vernemq
+vernemq.mqtt_puback,,"received, sent",packets/s,"v3/v5 QoS 1 PUBACK",line,,go.d.plugin,vernemq
+vernemq.mqtt_puback_received_reason,,a dimensions per reason,packets/s,"v5 PUBACK QoS 1 Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_puback_sent_reason,,a dimensions per reason,packets/s,"v5 PUBACK QoS 1 Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_puback_invalid_error,,unexpected,messages/s,"v3/v5 PUBACK QoS 1 Received Unexpected Messages",line,,go.d.plugin,vernemq
+vernemq.mqtt_pubrec,,"received, sent",packets/s,"v3/v5 PUBREC QoS 2",line,,go.d.plugin,vernemq
+vernemq.mqtt_pubrec_received_reason,,a dimensions per reason,packets/s,"v5 PUBREC QoS 2 Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubrec_sent_reason,,a dimensions per reason,packets/s,"v5 PUBREC QoS 2 Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubrec_invalid_error,,unexpected,messages/s,"v3 PUBREC QoS 2 Received Unexpected Messages",line,,go.d.plugin,vernemq
+vernemq.mqtt_pubrel,,"received, sent",packets/s,"v3/v5 PUBREL QoS 2",line,,go.d.plugin,vernemq
+vernemq.mqtt_pubrel_received_reason,,a dimensions per reason,packets/s,"v5 PUBREL QoS 2 Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubrel_sent_reason,,a dimensions per reason,packets/s,"v5 PUBREL QoS 2 Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubcom,,"received, sent",packets/s,"v3/v5 PUBCOMP QoS 2",line,,go.d.plugin,vernemq
+vernemq.mqtt_pubcomp_received_reason,,a dimensions per reason,packets/s,"v5 PUBCOMP QoS 2 Received by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubcomp_sent_reason,,a dimensions per reason,packets/s,"v5 PUBCOMP QoS 2 Sent by Reason",stacked,,go.d.plugin,vernemq
+vernemq.mqtt_pubcomp_invalid_error,,unexpected,messages/s,"v3/v5 PUBCOMP QoS 2 Received Unexpected Messages",line,,go.d.plugin,vernemq
+vernemq.mqtt_ping,,"pingreq, pingresp",packets/s,"v3/v5 PING",line,,go.d.plugin,vernemq
+vernemq.node_uptime,,"time",seconds,"Node Uptime",line,,go.d.plugin,vernemq

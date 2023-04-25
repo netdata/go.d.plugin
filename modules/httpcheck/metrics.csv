@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+httpcheck.response_time,,time,ms,"HTTP Response Time",line,url,go.d.plugin,httpcheck
+httpcheck.response_length,,length,characters,"HTTP Response Body Length",line,url,go.d.plugin,httpcheck
+httpcheck.status,,"success, no_connection, timeout, bad_content, bad_status",boolean,"HTTP Check Status",line,url,go.d.plugin,httpcheck
+httpcheck.in_state,,"time",boolean,"HTTP Current State Duration",line,url,go.d.plugin,httpcheck

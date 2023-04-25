@@ -1,0 +1,9 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+couchbase.bucket_quota_percent_used,,a dimension per bucket,percentage,"Quota Percent Used Per Bucket",line,,go.d.plugin,couchbase
+couchbase.bucket_ops_per_sec,,a dimension per bucket,ops/s,"Operations Per Second Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_disk_fetches,,a dimension per bucket,fetches,"Disk Fetches Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_item_count,,a dimension per bucket,items,"Item Count Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_disk_used_stats,,a dimension per bucket,bytes,"Disk Used Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_data_used,,a dimension per bucket,bytes,"Data Used Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_mem_used,,a dimension per bucket,bytes,"Memory Used Per Bucket",stacked,,go.d.plugin,couchbase
+couchbase.bucket_vb_active_num_non_resident,,a dimension per bucket,items,"Number Of Non-Resident Items Per Bucket",stacked,,go.d.plugin,couchbase

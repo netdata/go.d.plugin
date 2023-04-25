@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+isc_dhcpd.active_leases_total,,active,leases,"Active Leases Total",line,,go.d.plugin,isc_dhcpd
+isc_dhcpd.pool_active_leases,,a dimension per DHCP pool,leases,"Pool Active Leases",line,,go.d.plugin,isc_dhcpd
+isc_dhcpd.pool_utilization,,a dimension per DHCP pool,percentage,"Pool Utilization",line,,go.d.plugin,isc_dhcpd

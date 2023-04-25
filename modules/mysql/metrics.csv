@@ -1,0 +1,73 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+mysql.net,,"in, out",kilobits/s,"Bandwidth",area,,go.d.plugin,mysql
+mysql.queries,,"queries, questions, slow_queries",queries/s,"Queries",line,,go.d.plugin,mysql
+mysql.queries_type,,"select, delete, update, insert, replace",queries/s,"Queries By Type",stacked,,go.d.plugin,mysql
+mysql.handlers,,"commit, delete, prepare, read_first, read_key, read_next, read_prev, read_rnd, read_rnd_next, rollback, savepoint, savepointrollback, update, write",handlers/s,"Handlers",line,,go.d.plugin,mysql
+mysql.table_open_cache_overflows,,open_cache,overflows/s,"Table open cache overflows",line,,go.d.plugin,mysql
+mysql.table_locks,,"immediate, waited",locks/s,"Table Locks",line,,go.d.plugin,mysql
+mysql.join_issues,,"full_join, full_range_join, range, range_check, scan",joins/s,"Table Select Join Issues",line,,go.d.plugin,mysql
+mysql.sort_issues,,"merge_passes, range, scan",issues/s,"Table Sort Issues",line,,go.d.plugin,mysql
+mysql.tmp,,"disk_tables, files, tables",events/s,"Tmp Operations",line,,go.d.plugin,mysql
+mysql.connections,,"all, aborted",connections/s,"Connections",line,,go.d.plugin,mysql
+mysql.connections_active,,"active, limit, max_active",connections,"Active Connections",line,,go.d.plugin,mysql
+mysql.threads,,"connected, cached, running",threads,"Threads",line,,go.d.plugin,mysql
+mysql.threads_created,,created,threads/s,"Threads Creation Rate",line,,go.d.plugin,mysql
+mysql.thread_cache_misses,,misses,misses,"Threads Cache Misses",line,,go.d.plugin,mysql
+mysql.innodb_io,,"read, write",KiB/s,"InnoDB I/O Bandwidth",line,,go.d.plugin,mysql
+mysql.innodb_io_ops,,"reads, writes, fsyncs",operations/s,"InnoDB I/O Operations",line,,go.d.plugin,mysql
+mysql.innodb_io_pending_ops,,"reads, writes, fsyncs",operations,"InnoDB Pending I/O Operations",line,,go.d.plugin,mysql
+mysql.innodb_log,,"waits, write_requests, writes",operations/s,"InnoDB Log Operations",line,,go.d.plugin,mysql
+mysql.innodb_cur_row_lock,,current waits,operations,"InnoDB Current Row Locks",line,,go.d.plugin,mysql
+mysql.innodb_rows,,"inserted, read, updated, deleted",operations/s,"InnoDB Row Operations",area,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_pages,,"data, dirty, free, misc, total",pages,"InnoDB Buffer Pool Pages",line,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_pages_flushed,,flush_pages,requests/s,"InnoDB Buffer Pool Flush Pages Requests",line,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_bytes,,"data, dirty",MiB,"InnoDB Buffer Pool Bytes",line,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_read_ahead,,"all, evicted",pages/s,"InnoDB Buffer Pool Read Pages",line,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_read_ahead_rnd,,read-ahead,operations/s,"InnoDB Buffer Pool Random Read-Aheads",line,,go.d.plugin,mysql
+mysql.innodb_buffer_pool_ops,,"disk_reads, wait_free",operations/s,"InnoDB Buffer Pool Operations",area,,go.d.plugin,mysql
+mysql.innodb_os_log,,"fsyncs, writes",operations,"InnoDB OS Log Pending Operations",line,,go.d.plugin,mysql
+mysql.innodb_os_log_fsync_writes,,fsyncs,operations/s,"InnoDB OS Log Operations",line,,go.d.plugin,mysql
+mysql.innodb_os_log_io,,write,KiB/s,"InnoDB OS Log Bandwidth",area,,go.d.plugin,mysql
+mysql.innodb_deadlocks,,deadlocks,operations/s,"InnoDB Deadlocks",area,,go.d.plugin,mysql
+mysql.files,,files,files,"Open Files",line,,go.d.plugin,mysql
+mysql.files_rate,,files,files/s,"Opened Files Rate",line,,go.d.plugin,mysql
+mysql.connection_errors,,"accept, internal, max, peer_addr, select, tcpwrap",errors/s,"Connection Errors",line,,go.d.plugin,mysql
+mysql.opened_tables,,tables,tables/s,"Opened Tables",line,,go.d.plugin,mysql
+mysql.open_tables,,"cache, tables",tables,"Open Tables",area,,go.d.plugin,mysql
+mysql.process_list_fetch_query_duration,,duration,milliseconds,"Process List Fetch Duration",line,,go.d.plugin,mysql
+mysql.process_list_queries_count,,"system, user",queries,"Queries Count",stacked,,go.d.plugin,mysql
+mysql.process_list_longest_query_duration,,duration,seconds,"Longest Query Duration",line,,go.d.plugin,mysql
+mysql.qcache_ops,,"hits, lowmem_prunes, inserts, not_cached",queries/s,"QCache Operations",line,,go.d.plugin,mysql
+mysql.qcache,,queries,queries,"QCache Queries in Cache",line,,go.d.plugin,mysql
+mysql.qcache_freemem,,free,MiB,"QCache Free Memory",area,,go.d.plugin,mysql
+mysql.qcache_memblocks,,"free, total",blocks,"QCache Memory Blocks",line,,go.d.plugin,mysql
+mysql.galera_writesets,,"rx, tx",writesets/s,"Replicated Writesets",line,,go.d.plugin,mysql
+mysql.galera_bytes,,"rx, tx",KiB/s,"Replicated Bytes",area,,go.d.plugin,mysql
+mysql.galera_queue,,"rx, tx",writesets,"Galera Queue",line,,go.d.plugin,mysql
+mysql.galera_conflicts,,"bf_aborts, cert_fails",transactions,"Replication Conflicts",area,,go.d.plugin,mysql
+mysql.galera_flow_control,,paused,ms,"Flow Control",area,,go.d.plugin,mysql
+mysql.galera_cluster_status,,"primary, non_primary, disconnected",status,"Cluster Component Status",line,,go.d.plugin,mysql
+mysql.galera_cluster_state,,"undefined, joining, donor, joined, synced, error",state,"Cluster Component State",line,,go.d.plugin,mysql
+mysql.galera_cluster_size,,nodes,nodes,"Number of Nodes in the Cluster",line,,go.d.plugin,mysql
+mysql.galera_cluster_weight,,weight,weight,"The Total Weight of the Current Members in the Cluster",line,,go.d.plugin,mysql
+mysql.galera_connected,,connected,boolean,"Cluster Connection Status",line,,go.d.plugin,mysql
+mysql.galera_ready,,ready,boolean,"Accept Queries Readiness Status",line,,go.d.plugin,mysql
+mysql.galera_open_transactions,,open,transactions,"Open Transactions",line,,go.d.plugin,mysql
+mysql.galera_thread_count,,threads,threads,"Total Number of WSRep (applier/rollbacker) Threads",line,,go.d.plugin,mysql
+mysql.key_blocks,,"unused, used, not_flushed",blocks,"MyISAM Key Cache Blocks",line,,go.d.plugin,mysql
+mysql.key_requests,,"reads, writes",requests/s,"MyISAM Key Cache Requests",area,,go.d.plugin,mysql
+mysql.key_disk_ops,,"reads, writes",operations/s,"MyISAM Key Cache Disk Operations",area,,go.d.plugin,mysql
+mysql.binlog_cache,,"disk, all",transactions/s,"Binlog Cache",line,,go.d.plugin,mysql
+mysql.binlog_stmt_cache,,"disk, all",statements/s,"Binlog Statement Cache",line,,go.d.plugin,mysql
+mysql.slave_behind,connection,seconds,seconds,"Slave Behind Seconds",line,,go.d.plugin,mysql
+mysql.slave_status,connection,"sql_running, io_running",boolean,"I/O / SQL Thread Running State",line,,go.d.plugin,mysql
+mysql.userstats_cpu,user,used,percentage,"User CPU Time",line,user,go.d.plugin,mysql
+mysql.userstats_rows,user,"read, sent, updated, inserted, deleted",operations/s,"User Rows Operations",stacked,user,go.d.plugin,mysql
+mysql.userstats_commands,user,"select, update, other",commands/s,"User Commands",stacked,user,go.d.plugin,mysql
+mysql.userstats_denied_commands,user,denied,commands/s,"User Denied Commands",stacked,user,go.d.plugin,mysql
+mysql.userstats_created_transactions,user,"commit, rollback",transactions/s,"User Transactions",area,user,go.d.plugin,mysql
+mysql.userstats_binlog_written,user,written,B/s,"User Binlog Written",line,user,go.d.plugin,mysql
+mysql.userstats_empty_queries,user,empty,queries/s,"User Empty Queries",line,user,go.d.plugin,mysql
+mysql.userstats_connections,user,created,connections/s,"User Created Connections",line,user,go.d.plugin,mysql
+mysql.userstats_lost_connections,user,lost,connections/s,"User Lost Connections",line,user,go.d.plugin,mysql
+mysql.userstats_denied_connections,user,denied,connections/s,"User Denied Connections",line,user,go.d.plugin,mysql

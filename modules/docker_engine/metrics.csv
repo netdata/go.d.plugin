@@ -1,0 +1,9 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+docker_engine.engine_daemon_container_actions,,"changes, commit, create, delete, start",actions/s,"Container Actions",stacked,,go.d.plugin,docker_engine
+docker_engine.engine_daemon_container_states_containers,,"running, paused, stopped",containers,"Containers In Various States",stacked,,go.d.plugin,docker_engine
+docker_engine.builder_builds_failed_total,,"build_canceled, build_target_not_reachable_error, command_not_supported_error, dockerfile_empty_error, dockerfile_syntax_error, error_processing_commands_error, missing_onbuild_arguments_error, unknown_instruction_error",fails/s,"Builder Builds Fails By Reason",stacked,,go.d.plugin,docker_engine
+docker_engine.engine_daemon_health_checks_failed_total,,fails,events/s,"Health Checks",line,,go.d.plugin,docker_engine
+docker_engine.swarm_manager_leader,,is_leader,bool,"Swarm Manager Leader",line,,go.d.plugin,docker_engine
+docker_engine.swarm_manager_object_store,,"nodes, services, tasks, networks, secrets, configs",objects,"Swarm Manager Object Store",stacked,,go.d.plugin,docker_engine
+docker_engine.swarm_manager_nodes_per_state,,"ready, down, unknown, disconnected",nodes,"Swarm Manager Nodes Per State",stacked,,go.d.plugin,docker_engine
+docker_engine.swarm_manager_tasks_per_state,,"running, failed, ready, rejected, starting, shutdown, new, orphaned, preparing, pending, complete, remove, accepted, assigned",tasks,"Swarm Manager Tasks Per State",stacked,,go.d.plugin,docker_engine

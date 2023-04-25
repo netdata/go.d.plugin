@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+logind.sessions,,"remote, local",sessions,"Logind Sessions",stacked,,go.d.plugin,logind
+logind.sessions_type,,"console, graphical, other",sessions,"Logind Sessions By Type",stacked,,go.d.plugin,logind
+logind.sessions_state,,"online, closing, active",sessions,"Logind Sessions By State",stacked,,go.d.plugin,logind
+logind.users_state,,"offline, closing, online, lingering, active",users,"Logind Users By State",stacked,,go.d.plugin,logind

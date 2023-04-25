@@ -1,0 +1,6 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+powerdns.questions_in,,"udp, tcp",questions/s,"Incoming questions",line,,go.d.plugin,powerdns
+powerdns.questions_out,,"udp, tcp",questions/s,"Outgoing questions",line,,go.d.plugin,powerdns
+powerdns.cache_usage,,"query-cache-hit, query-cache-miss, packetcache-hit, packetcache-miss",events/s,"Cache Usage",line,,go.d.plugin,powerdns
+powerdns.cache_size,,"query-cache, packet-cache, key-cache, meta-cache",entries,"Cache Size",line,,go.d.plugin,powerdns
+powerdns.latency,,latency,microseconds,"Answer latency",line,,go.d.plugin,powerdns

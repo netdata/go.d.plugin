@@ -1,0 +1,19 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+squidlog.requests,,requests,requests/s,"Total Requests",line,,go.d.plugin,squidlog
+squidlog.excluded_requests,,unmatched,requests/s,"Excluded Requests",line,,go.d.plugin,squidlog
+squidlog.type_requests,,"success, bad, redirect, error",requests/s,"Requests By Type",stacked,,go.d.plugin,squidlog
+squidlog.http_status_code_class_responses,,"1xx, 2xx, 3xx, 4xx, 5xx",responses/s,"Responses By HTTP Status Code Class",stacked,,go.d.plugin,squidlog
+squidlog.http_status_code_responses,,a dimension per HTTP response code,responses/s,"Responses By HTTP Status Code",stacked,,go.d.plugin,squidlog
+squidlog.bandwidth,,sent,kilobits/s,"Bandwidth",line,,go.d.plugin,squidlog
+squidlog.response_time,,"min, max, avg",milliseconds,"Response Time",line,,go.d.plugin,squidlog
+squidlog.uniq_clients,,clients,clients,"Unique Clients",line,,go.d.plugin,squidlog
+squidlog.cache_result_code_requests,,a dimension per cache result code,requests/s,"Requests By Cache Result Code",stacked,,go.d.plugin,squidlog
+squidlog.cache_result_code_transport_tag_requests,,a dimension per cache result delivery transport tag,requests/s,"Requests By Cache Result Delivery Transport Tag",stacked,,go.d.plugin,squidlog
+squidlog.cache_result_code_handling_tag_requests,,a dimension per cache result handling tag,requests/s,"Requests By Cache Result Handling Tag",stacked,,go.d.plugin,squidlog
+squidlog.cache_code_object_tag_requests,,a dimension per cache result produced object tag,requests/s,"Requests By Cache Result Produced Object Tag",stacked,,go.d.plugin,squidlog
+squidlog.cache_code_load_source_tag_requests,,a dimension per cache result load source tag,requests/s,"Requests By Cache Result Load Source Tag",stacked,,go.d.plugin,squidlog
+squidlog.cache_code_error_tag_requests,,a dimension per cache result error tag,requests/s,"Requests By Cache Result Errors Tag",stacked,,go.d.plugin,squidlog
+squidlog.http_method_requests,,a dimension per HTTP method,requests/s,"Requests By HTTP Method",stacked,,go.d.plugin,squidlog
+squidlog.mime_type_requests,,a dimension per MIME type,requests/s,"Requests By MIME Type",stacked,,go.d.plugin,squidlog
+squidlog.hier_code_requests,,a dimension per hierarchy code,requests/s,"Requests By Hierarchy Code",stacked,,go.d.plugin,squidlog
+squidlog.server_address_forwarded_requests,,a dimension per server address,requests/s,"Forwarded Requests By Server Address",stacked,,go.d.plugin,squidlog

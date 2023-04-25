@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+ping.host_rtt,host,"min, max, avg",milliseconds,"Ping round-trip time",line,host,go.d.plugin,ping
+ping.host_std_dev_rtt,host,std_dev,milliseconds,"Ping round-trip time standard deviation",line,host,go.d.plugin,ping
+ping.host_packet_loss,host,loss,percentage,"Ping packet loss",line,host,go.d.plugin,ping
+ping.host_packets,host,"received, sent",packets,"Ping packets transferred",line,host,go.d.plugin,ping

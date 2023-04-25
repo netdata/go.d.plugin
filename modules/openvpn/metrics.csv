@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+openvpn.active_clients,,clients,clients,"Total Number Of Active Clients",line,,go.d.plugin,openvpn
+openvpn.total_traffic,,"in, out",kilobits/s,"Total Traffic",area,,go.d.plugin,openvpn
+openvpn.user_traffic,user,"in, out",kilobits/s,"User Traffic",area,username,go.d.plugin,openvpn
+openvpn.user_connection_time,user,time,seconds,"User Connection Time",line,username,go.d.plugin,openvpn
