@@ -17,34 +17,14 @@ This module will monitor one or more `kubelet` instances, depending on your conf
 
 ## Metrics
 
-All metrics have "k8s_kubelet." prefix.
-
-| Metric                                                  |     Scope      |                                                       Dimensions                                                        |       Units        |
-|---------------------------------------------------------|:--------------:|:-----------------------------------------------------------------------------------------------------------------------:|:------------------:|
-| apiserver_audit_requests_rejected                       |     global     |                                                        rejected                                                         |     requests/s     |
-| apiserver_storage_data_key_generation_failures          |     global     |                                                        failures                                                         |      events/s      |
-| apiserver_storage_data_key_generation_latencies         |     global     | 5_µs, 10_µs, 20_µs, 40_µs, 80_µs, 160_µs, 320_µs, 640_µs, 1280_µs, 2560_µs, 5120_µs, 10240_µs, 20480_µs, 40960_µs, +Inf |     observes/s     |
-| apiserver_storage_data_key_generation_latencies_percent |     global     | 5_µs, 10_µs, 20_µs, 40_µs, 80_µs, 160_µs, 320_µs, 640_µs, 1280_µs, 2560_µs, 5120_µs, 10240_µs, 20480_µs, 40960_µs, +Inf |     percentage     |
-| apiserver_storage_envelope_transformation_cache_misses  |     global     |                                                      cache misses                                                       |      events/s      |
-| kubelet_containers_running                              |     global     |                                                          total                                                          | running_containers |
-| kubelet_pods_running                                    |     global     |                                                          total                                                          |    running_pods    |
-| kubelet_pods_log_filesystem_used_bytes                  |     global     |                                        <i>a dimension per namespace and pod</i>                                         |         B          |
-| kubelet_runtime_operations                              |     global     |                                          <i>a dimension per operation type</i>                                          |    operations/s    |
-| kubelet_runtime_operations_errors                       |     global     |                                          <i>a dimension per operation type</i>                                          |      errors/s      |
-| kubelet_docker_operations                               |     global     |                                          <i>a dimension per operation type</i>                                          |    operations/s    |
-| kubelet_docker_operations_errors                        |     global     |                                          <i>a dimension per operation type</i>                                          |      errors/s      |
-| kubelet_node_config_error                               |     global     |                                                   experiencing_error                                                    |        bool        |
-| kubelet_pleg_relist_interval_microseconds               |     global     |                                                     0.5, 0.9, 0.99                                                      |    microseconds    |
-| kubelet_pleg_relist_latency_microseconds                |     global     |                                                     0.5, 0.9, 0.99                                                      |    microseconds    |
-| kubelet_token_requests                                  |     global     |                                                      total, failed                                                      |  token_requests/s  |
-| rest_client_requests_by_code                            |     global     |                                         <i>a dimension per HTTP status code</i>                                         |     requests/s     |
-| rest_client_requests_by_method                          |     global     |                                           <i>a dimension per HTTP method</i>                                            |     requests/s     |
-| volume_manager_total_volumes                            | volume manager |                                                     actual, desired                                                     |       state        |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/k8s_kubelet/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/k8s_kubelet.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory

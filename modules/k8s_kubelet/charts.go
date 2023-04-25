@@ -224,7 +224,7 @@ var charts = Charts{
 func newVolumeManagerChart(name string) *Chart {
 	return &Chart{
 		ID:    "volume_manager_total_volumes_" + name,
-		Title: "Volume Manager State Of The World, Plugin " + name,
+		Title: "Volume Manager State Of The World",
 		Units: "state",
 		Fam:   "volume manager",
 		Ctx:   "k8s_kubelet.volume_manager_total_volumes",
