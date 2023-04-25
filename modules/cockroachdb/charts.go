@@ -96,7 +96,6 @@ var (
 		Units: "percentage",
 		Fam:   "process",
 		Ctx:   "cockroachdb.process_cpu_time_combined_percentage",
-		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricSysCPUCombinedPercentNormalized, Name: "used", Div: precision},
 		},
@@ -160,7 +159,6 @@ var (
 	}
 )
 
-// Host
 // Host
 var (
 	chartHostDiskBandwidth = Chart{
