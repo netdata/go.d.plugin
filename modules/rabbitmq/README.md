@@ -28,37 +28,14 @@ RabbitMQ with [enabled](https://www.rabbitmq.com/management.html#getting-started
 
 ## Metrics
 
-All metrics have "rabbitmq." prefix.
-
-Labels per scope:
-
-- global: no labels.
-- vhost: vhost.
-- queue: vhost, queue.
-
-| Metric                           | Scope  |                                                             Dimensions                                                              |    Units     |
-|----------------------------------|:------:|:-----------------------------------------------------------------------------------------------------------------------------------:|:------------:|
-| messages_count                   | global |                                                        ready, unacknowledged                                                        |   messages   |
-| messages_rate                    | global | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
-| objects_count                    | global |                                         channels, consumers, connections, queues, exchanges                                         |   messages   |
-| connection_churn_rate            | global |                                                           created, closed                                                           | operations/s |
-| channel_churn_rate               | global |                                                           created, closed                                                           | operations/s |
-| queue_churn_rate                 | global |                                                     created, deleted, declared                                                      | operations/s |
-| file_descriptors_count           | global |                                                           available, used                                                           |      fd      |
-| sockets_count                    | global |                                                           available, used                                                           |   sockets    |
-| erlang_processes_count           | global |                                                           available, used                                                           |  processes   |
-| erlang_run_queue_processes_count | global |                                                               length                                                                |  processes   |
-| memory_usage                     | global |                                                                used                                                                 |    bytes     |
-| disk_space_free_size             | global |                                                                free                                                                 |    bytes     |
-| vhost_messages_count             | vhost  |                                                        ready, unacknowledged                                                        |   messages   |
-| vhost_messages_rate              | vhost  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
-| queue_messages_count             | queue  |                                            ready, unacknowledged, paged_out, persistent                                             |   messages   |
-| queue_messages_rate              | queue  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/rabbitmq/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/rabbitmq.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
