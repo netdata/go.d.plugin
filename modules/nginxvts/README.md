@@ -14,10 +14,10 @@ with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts).
 
 ## Metrics
 
+> Refer [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts#json) for more information.
+
 See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/nginxvts/metrics.csv) for a list of
 metrics.
-
-Refer [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts#json) for more information.
 
 ## Configuration
 
