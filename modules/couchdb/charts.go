@@ -180,7 +180,6 @@ var erlangStatisticsCharts = Charts{
 		Units: "reductions",
 		Fam:   "erlang",
 		Ctx:   "couchdb.reductions",
-		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: "reductions", Name: "reductions", Algo: module.Incremental},
 		},
