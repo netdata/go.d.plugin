@@ -3645,7 +3645,7 @@ var (
 		},
 	}
 	hypervHealthOK = module.Chart{
-		ID:       "hyperv_health_OK",
+		ID:       "hyperv_health_ok",
 		Title:    "VM with Health OK",
 		Units:    "vm",
 		Fam:      "health",
@@ -3759,12 +3759,12 @@ var (
 	hypervRootPartitionAttachedDevices = module.Chart{
 		ID:       "hyperv_root_partition_attached_devices",
 		Title:    "Number of devices attached to the partition.",
-		Units:    "address",
+		Units:    "devices",
 		Fam:      "partition",
 		Ctx:      "windows.hyperv_root_partition_attached_devices",
 		Priority: prioHypervRootPartitionAttachedDevices,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_attached_devices_total", Name: "pages"},
+			{ID: "hyperv_root_partition_attached_devices_total", Name: "devices"},
 		},
 	}
 	hypervRootPartitionDepositedPages = module.Chart{
@@ -3847,7 +3847,7 @@ var (
 	hypervRootPartitionVirtualTlbFlushEntires = module.Chart{
 		ID:       "hyperv_root_partition_virtual_tbl_flush_entires",
 		Title:    "Flushes of I/O TLB",
-		Units:    "entries/s",
+		Units:    "flushes",
 		Fam:      "partition",
 		Ctx:      "windows.hyperv_root_partition_virtual_tlb_flush_entires",
 		Priority: prioHypervRootPartitionVirtualTlbFlushEntires,
