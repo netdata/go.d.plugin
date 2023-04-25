@@ -1,0 +1,17 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+nvme.device_estimated_endurance_perc,device,used,%,"Estimated endurance",line,device,go.d.plugin,nvme
+nvme.device_available_spare_perc,device,spare,%,"Remaining spare capacity",line,device,go.d.plugin,nvme
+nvme.device_composite_temperature,device,temperature,celsius,"Composite temperature",line,device,go.d.plugin,nvme
+nvme.device_io_transferred_count,device,"read, written",bytes,"Amount of data transferred to and from device",area,device,go.d.plugin,nvme
+nvme.device_power_cycles_count,device,power,cycles,"Power cycles",line,device,go.d.plugin,nvme
+nvme.device_power_on_time,device,power-on,seconds,"Power-on time",line,device,go.d.plugin,nvme
+nvme.device_critical_warnings_state,device,"available_spare, temp_threshold, nvm_subsystem_reliability, read_only, volatile_mem_backup_failed, persistent_memory_read_only",state,"Critical warnings state",line,device,go.d.plugin,nvme
+nvme.device_unsafe_shutdowns_count,device,unsafe,shutdowns,"Unsafe shutdowns",line,device,go.d.plugin,nvme
+nvme.device_media_errors_rate,device,media,errors/s,"Media and data integrity errors",line,device,go.d.plugin,nvme
+nvme.device_error_log_entries_rate,device,error_log,entries/s,"Error log entries",line,device,go.d.plugin,nvme
+nvme.device_warning_composite_temperature_time,device,wctemp,seconds,"Warning composite temperature time",line,device,go.d.plugin,nvme
+nvme.device_critical_composite_temperature_time,device,cctemp,seconds,"Critical composite temperature time",line,device,go.d.plugin,nvme
+nvme.device_thermal_mgmt_temp1_transitions_rate,device,temp1,transitions/s,"Thermal management temp1 transitions",line,device,go.d.plugin,nvme
+nvme.device_thermal_mgmt_temp2_transitions_rate,device,temp2,transitions/s,"Thermal management temp2 transitions",line,device,go.d.plugin,nvme
+nvme.device_thermal_mgmt_temp1_time,device,temp1,seconds,"Thermal management temp1 time",line,device,go.d.plugin,nvme
+nvme.device_thermal_mgmt_temp2_time,device,temp2,seconds,"Thermal management temp2 time",line,device,go.d.plugin,nvme
