@@ -14,22 +14,14 @@ This module monitors one or more TCP services availability and response time.
 
 ## Metrics
 
-All metrics have "portcheck." prefix.
-
-Labels per scope:
-
-- global: host, port.
-
-| Metric         | Scope  |        Dimensions        |  Units  |
-|----------------|:------:|:------------------------:|:-------:|
-| status         | global | success, failed, timeout | boolean |
-| state_duration | global |           time           | seconds |
-| latency        | global |           time           |   ms    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/portcheck/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/portcheck.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
