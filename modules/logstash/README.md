@@ -17,34 +17,14 @@ This module will monitor one or more Logstash instances, depending on your confi
 
 ## Metrics
 
-All metrics have "logstash." prefix.
-
-Labels per scope:
-
-- global: no labels.
-- pipeline: pipeline.
-
-| Metric                 |  Scope   |    Dimensions     |   Units    |
-|------------------------|:--------:|:-----------------:|:----------:|
-| jvm_threads            |  global  |      threads      |   count    |
-| jvm_mem_heap_used      |  global  |      in_use       | percentage |
-| jvm_mem_heap           |  global  |  committed, used  |    KiB     |
-| jvm_mem_pools_eden     |  global  |  committed, used  |    KiB     |
-| jvm_mem_pools_survivor |  global  |  committed, used  |    KiB     |
-| jvm_mem_pools_old      |  global  |  committed, used  |    KiB     |
-| jvm_gc_collector_count |  global  |     eden, old     |  counts/s  |
-| jvm_gc_collector_time  |  global  |     eden, old     |     ms     |
-| open_file_descriptors  |  global  |       open        |     fd     |
-| event                  |  global  | in, filtered, out |  events/s  |
-| event_duration         |  global  |   event, queue    |  seconds   |
-| uptime                 |  global  |      uptime       |  seconds   |
-| pipeline_event         | pipeline | in, filtered, out |  events/s  |
-| pipeline_event         | pipeline |   event, queue    |  seconds   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/logstash/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/logstash.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
