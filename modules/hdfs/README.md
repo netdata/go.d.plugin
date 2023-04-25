@@ -23,39 +23,14 @@ Netdata accesses HDFS metrics over `Java Management Extensions` (JMX) through th
 
 ## Metrics
 
-All metrics have "hdfs." prefix.
-
-| Metric                  | Scope  |                         Dimensions                         |    Units    |
-|-------------------------|:------:|:----------------------------------------------------------:|:-----------:|
-| heap_memory             | global |                      committed, used                       |     MiB     |
-| gc_count_total          | global |                             gc                             |  events/s   |
-| gc_time_total           | global |                             ms                             |     ms      |
-| gc_threshold            | global |                         info, warn                         |  events/s   |
-| threads                 | global | new, runnable, blocked, waiting, timed_waiting, terminated |     num     |
-| logs_total              | global |                  info, error, warn, fatal                  |   logs/s    |
-| rpc_bandwidth           | global |                       received, sent                       | kilobits/s  |
-| rpc_calls               | global |                           calls                            |   calls/s   |
-| open_connections        | global |                            open                            | connections |
-| call_queue_length       | global |                           length                           |     num     |
-| avg_queue_time          | global |                            time                            |     ms      |
-| avg_processing_time     | global |                            time                            |     ms      |
-| capacity                | global |                      remaining, used                       |     KiB     |
-| used_capacity           | global |                        dfs, non_dfs                        |     KiB     |
-| load                    | global |                            load                            |    load     |
-| volume_failures_total   | global |                          failures                          |  events/s   |
-| files_total             | global |                           files                            |     num     |
-| blocks_total            | global |                           blocks                           |     num     |
-| blocks                  | global |             corrupt, missing, under_replicated             |     num     |
-| data_nodes              | global |                     live, dead, stale                      |     num     |
-| datanode_capacity       | global |                      remaining, used                       |     KiB     |
-| datanode_used_capacity  | global |                        dfs, non_dfs                        |     KiB     |
-| datanode_failed_volumes | global |                       failed volumes                       |     num     |
-| datanode_bandwidth      | global |                       reads, writes                        |    KiB/s    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/hdfs/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/hdfs.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory

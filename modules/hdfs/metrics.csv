@@ -1,0 +1,25 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+hdfs.heap_memory,,"committed, used",MiB,"Heap Memory",area,,go.d.plugin,hdfs
+hdfs.gc_count_total,,gc,events/s,"GC Events",line,,go.d.plugin,hdfs
+hdfs.gc_time_total,,ms,ms,"GC Time",line,,go.d.plugin,hdfs
+hdfs.gc_threshold,,"info, warn",events/s,"Number of Times That the GC Threshold is Exceeded",line,,go.d.plugin,hdfs
+hdfs.threads,,"new, runnable, blocked, waiting, timed_waiting, terminated",num,"Number of Threads",stacked,,go.d.plugin,hdfs
+hdfs.logs_total,,"info, error, warn, fatal",logs/s,"Number of Logs",stacked,,go.d.plugin,hdfs
+hdfs.rpc_bandwidth,,"received, sent",kilobits/s,"RPC Bandwidth",area,,go.d.plugin,hdfs
+hdfs.rpc_calls,,calls,calls/s,"RPC Calls",line,,go.d.plugin,hdfs
+hdfs.open_connections,,open,connections,"RPC Open Connections",line,,go.d.plugin,hdfs
+hdfs.call_queue_length,,length,num,"RPC Call Queue Length",line,,go.d.plugin,hdfs
+hdfs.avg_queue_time,,time,ms,"RPC Avg Queue Time",line,,go.d.plugin,hdfs
+hdfs.avg_processing_time,,time,ms,"RPC Avg Processing Time",line,,go.d.plugin,hdfs
+hdfs.capacity,,"remaining, used",KiB,"Capacity Across All Datanodes",stacked,,go.d.plugin,hdfs
+hdfs.used_capacity,,"dfs, non_dfs",KiB,"Used Capacity Across All Datanodes",stacked,,go.d.plugin,hdfs
+hdfs.load,,load,load,"Number of Concurrent File Accesses (read/write) Across All DataNodes",line,,go.d.plugin,hdfs
+hdfs.volume_failures_total,,failures,events/s,"Number of Volume Failures Across All Datanodes",line,,go.d.plugin,hdfs
+hdfs.files_total,,files,num,"Number of Tracked Files",line,,go.d.plugin,hdfs
+hdfs.blocks_total,,blocks,num,"Number of Allocated Blocks in the System",line,,go.d.plugin,hdfs
+hdfs.blocks,,"corrupt, missing, under_replicated",num,"Number of Problem Blocks (can point to an unhealthy cluster)",line,,go.d.plugin,hdfs
+hdfs.data_nodes,,"live, dead, stale",num,"Number of Data Nodes By Status",stacked,,go.d.plugin,hdfs
+hdfs.datanode_capacity,,"remaining, used",KiB,"Capacity",stacked,,go.d.plugin,hdfs
+hdfs.datanode_used_capacity,,"dfs, non_dfs",KiB,"Used Capacity",stacked,,go.d.plugin,hdfs
+hdfs.datanode_failed_volumes,,failed volumes,num,"Number of Failed Volumes",line,,go.d.plugin,hdfs
+hdfs.datanode_bandwidth,,"reads, writes",KiB/s,"Bandwidth",area,,go.d.plugin,hdfs
