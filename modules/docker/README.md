@@ -17,24 +17,8 @@ This module monitors one or more Docker Engine instances, depending on your conf
 
 ## Metrics
 
-- All metrics have "docker." prefix.
-- container_writeable_layer_size needs `collect_container_size: yes`. Enabling this may result in high CPU usage
-  depending on the version of Docker Engine.
-
-Labels per scope:
-
-- global: no labels.
-- container: container_name, image.
-
-| Metric                         |   Scope   |                             Dimensions                              |   Units    |
-|--------------------------------|:---------:|:-------------------------------------------------------------------:|:----------:|
-| containers_state               |  global   |                      running, paused, stopped                       | containers |
-| containers_health_status       |  global   | healthy, unhealthy, not_running_unhealthy, starting, no_healthcheck | containers |
-| images                         |  global   |                          active, dangling                           |   images   |
-| images_size                    |  global   |                                size                                 |   bytes    |
-| container_state                | container |    running, paused, exited, created, restarting, removing, dead     |   state    |
-| container_health_status        | container | healthy, unhealthy, not_running_unhealthy, starting, no_healthcheck |   status   |
-| container_writeable_layer_size | container |                           writeable_layer                           |    size    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/docker/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
@@ -57,6 +41,8 @@ jobs:
     address: 'tcp://203.0.113.10:2375'
     collect_container_size: no
 ```
+
+> container_writeable_layer_size needs `collect_container_size: yes`. Enabling this may result in high CPU usage.
 
 For all available options see
 module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/docker.conf).
