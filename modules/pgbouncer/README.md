@@ -54,33 +54,14 @@ To create the `netdata` user:
 
 ## Metrics
 
-All metrics have "pgbouncer." prefix.
-
-Labels per scope:
-
-- global: no labels.
-- database: database, postgres_database.
-
-| Metric                            |  Scope   |            Dimensions             |     Units      |
-|-----------------------------------|:--------:|:---------------------------------:|:--------------:|
-| client_connections_utilization    |  global  |               used                |   percentage   |
-| db_client_connections             | database |    active, waiting, cancel_req    |  connections   |
-| db_server_connections             | database | active, idle, used, tested, login |  connections   |
-| db_server_connections_utilization | database |               used                |   percentage   |
-| db_clients_wait_time              | database |               time                |    seconds     |
-| db_client_max_wait_time           | database |               time                |    seconds     |
-| db_transactions                   | database |           transactions            | transactions/s |
-| db_transactions_time              | database |               time                |    seconds     |
-| db_transaction_avg_time           | database |               time                |    seconds     |
-| db_queries                        | database |              queries              |   queries/s    |
-| db_queries_time                   | database |               time                |    seconds     |
-| db_query_avg_time                 | database |               time                |    seconds     |
-| db_network_io                     | database |          received, sent           |      B/s       |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/pgbouncer/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/pgbouncer.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
