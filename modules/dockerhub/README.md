@@ -17,21 +17,14 @@ This module will collect `Docker Hub` repositories statistics.
 
 ## Metrics
 
-All metrics have "docker_engine." prefix.
-
-| Metric       | Scope  |            Dimensions             |  Units  |
-|--------------|:------:|:---------------------------------:|:-------:|
-| pulls_sum    | global |                sum                |  pulls  |
-| pulls        | global | <i>a dimension per repository</i> |  pulls  |
-| pulls_rate   | global | <i>a dimension per repository</i> | pulls/s |
-| stars        | global | <i>a dimension per repository</i> |  stars  |
-| status       | global | <i>a dimension per repository</i> | status  |
-| last_updated | global | <i>a dimension per repository</i> | seconds |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/dockerhub/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/dockerhub.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
