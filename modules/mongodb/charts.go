@@ -593,7 +593,7 @@ var (
 
 	chartGlobalLockAcquisitionsRate = module.Chart{
 		ID:       "global_lock_acquisitions_rate",
-		Title:    "Global lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -608,7 +608,7 @@ var (
 	}
 	chartDatabaseLockAcquisitionsRate = module.Chart{
 		ID:       "database_lock_acquisitions_rate",
-		Title:    "Database lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -623,7 +623,7 @@ var (
 	}
 	chartCollectionLockAcquisitionsRate = module.Chart{
 		ID:       "collection_lock_acquisitions_rate",
-		Title:    "Collection lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -638,7 +638,7 @@ var (
 	}
 	chartMutexLockAcquisitionsRate = module.Chart{
 		ID:       "mutex_lock_acquisitions_rate",
-		Title:    "Mutex lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -653,7 +653,7 @@ var (
 	}
 	chartMetadataLockAcquisitionsRate = module.Chart{
 		ID:       "metadata_lock_acquisitions_rate",
-		Title:    "Metadata lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -668,7 +668,7 @@ var (
 	}
 	chartOpLogLockAcquisitionsRate = module.Chart{
 		ID:       "oplog_lock_acquisitions_rate",
-		Title:    "Operations log lock acquisitions",
+		Title:    "Lock acquisitions",
 		Units:    "acquisitions/s",
 		Fam:      "locks",
 		Ctx:      "mongodb.lock_acquisitions_rate",
@@ -778,7 +778,6 @@ var (
 		Fam:      "wiredtiger",
 		Ctx:      "mongodb.wiredtiger_cache_usage",
 		Priority: prioWiredTigerCacheUsage,
-		Type:     module.Stacked,
 		Dims: module.Dims{
 			{ID: "wiredtiger_cache_currently_in_cache_bytes", Name: "used"},
 		},
