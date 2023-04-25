@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+dnsmasq.servers_queries,,"success, failed",queries/s,"Queries forwarded to the upstream servers",line,,go.d.plugin,dnsmasq
+dnsmasq.cache_performance,,"hist, misses",events/s,"Cache performance",line,,go.d.plugin,dnsmasq
+dnsmasq.cache_operations,,"insertions, evictions",operations/s,"Cache operations",line,,go.d.plugin,dnsmasq
+dnsmasq.cache_size,,size,entries,"Cache size",line,,go.d.plugin,dnsmasq

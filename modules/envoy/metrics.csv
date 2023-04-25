@@ -1,0 +1,55 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+envoy.server_state,,"live, draining, pre_initializing, initializing",state,"Server current state",line,,go.d.plugin,envoy
+envoy.server_connections_count,,connections,connections,"Server current connections",line,,go.d.plugin,envoy
+envoy.server_parent_connections_count,,connections,connections,"Server current parent connections",line,,go.d.plugin,envoy
+envoy.server_memory_allocated_size,,allocated,bytes,"Server memory allocated size",line,,go.d.plugin,envoy
+envoy.server_memory_heap_size,,heap,bytes,"Server memory heap size",line,,go.d.plugin,envoy
+envoy.server_memory_physical_size,,physical,bytes,"Server memory physical size",line,,go.d.plugin,envoy
+envoy.server_uptime,,uptime,seconds,"Server uptime",line,,go.d.plugin,envoy
+envoy.cluster_manager_cluster_count,,"active, not_active",clusters,"Cluster manager current clusters",line,,go.d.plugin,envoy
+envoy.cluster_manager_cluster_changes_rate,,"added, modified, removed",clusters/s,"Cluster manager cluster changes",line,,go.d.plugin,envoy
+envoy.cluster_manager_cluster_updates_rate,,cluster,updates/s,"Cluster manager updates",line,,go.d.plugin,envoy
+envoy.cluster_manager_cluster_updated_via_merge_rate,,via_merge,updates/s,"Cluster manager updates applied as merged updates",line,,go.d.plugin,envoy
+envoy.cluster_manager_update_merge_cancelled_rate,,merge_cancelled,updates/s,"Cluster manager cancelled merged updates",line,,go.d.plugin,envoy
+envoy.cluster_manager_update_out_of_merge_window_rate,,out_of_merge_window,updates/s,"Cluster manager out of a merge window updates",line,,go.d.plugin,envoy
+envoy.cluster_membership_endpoints_count,,"healthy, degraded, excluded",endpoints,"Cluster membership current endpoints",line,,go.d.plugin,envoy
+envoy.cluster_membership_changes_rate,,membership,changes/s,"Cluster membership changes",line,,go.d.plugin,envoy
+envoy.cluster_membership_updates_rate,,"success, failure, empty, no_rebuild",updates/s,"Cluster membership updates",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_active_count,,active,connections,"Cluster upstream current active connections",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_rate,,created,connections/s,"Cluster upstream connections",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_http_rate,,"http1, http2, http3",connections/s,"Cluster upstream connections by HTTP version",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_destroy_rate,,"local, remote",connections/s,"Cluster upstream destroyed connections",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_connect_fail_rate,,failed,connections/s,"Cluster upstream failed connections",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_connect_timeout_rate,,timeout,connections/s,"Cluster upstream timed out connections",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_bytes_rate,,"received, sent",bytes/s,"Cluster upstream connection traffic",line,,go.d.plugin,envoy
+envoy.cluster_upstream_cx_bytes_buffered_size,,"received, send",bytes,"Cluster upstream current connection buffered size",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_active_count,,active,requests,"Cluster upstream current active requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_rate,,requests,requests/s,"Cluster upstream requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_failed_rate,,"cancelled, maintenance_mode, timeout, max_duration_reached, per_try_timeout, reset_local, reset_remote",requests/s,"Cluster upstream failed requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_pending_active_count,,active_pending,requests,"Cluster upstream current active pending requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_pending_rate,,pending,requests/s,"Cluster upstream pending requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_pending_failed_rate,,"overflow, failure_eject",requests/s,"Cluster upstream failed pending requests",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_retry_rate,,request,retries/s,"Cluster upstream request retries",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_retry_success_rate,,success,retries/s,"Cluster upstream request successful retries",line,,go.d.plugin,envoy
+envoy.cluster_upstream_rq_retry_backoff_rate,,"exponential, ratelimited",retries/s,"Cluster upstream request backoff retries",line,,go.d.plugin,envoy
+envoy.listener_manager_listeners_count,,"active, warming, draining",listeners,"Listener manager current listeners",line,,go.d.plugin,envoy
+envoy.listener_manager_listener_changes_rate,,"added, modified, removed, stopped",listeners/s,"Listener manager listener changes",line,,go.d.plugin,envoy
+envoy.listener_manager_listener_object_events_rate,,"create_success, create_failure, in_place_updated",objects/s,"Listener manager listener object events",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_cx_active_count,,active,connections,"Listener admin downstream current active connections",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_cx_rate,,created,connections/s,"Listener admin downstream connections",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_cx_destroy_rate,,destroyed,connections/s,"Listener admin downstream destroyed connections",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_cx_transport_socket_connect_timeout_rate,,timeout,connections/s,"Listener admin downstream timed out connections",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_cx_rejected_rate,,"overflow, overload, global_overflow",connections/s,"Listener admin downstream rejected connections",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_listener_filter_remote_close_rate,,closed,connections/s,"Listener admin downstream connections closed by remote when peek data for listener filters",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_listener_filter_error_rate,,read,errors/s,"Listener admin downstream read errors when peeking data for listener filters",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_pre_cx_active_count,,active,sockets,"Listener admin downstream current active sockets",line,,go.d.plugin,envoy
+envoy.listener_admin_downstream_pre_cx_timeout_rate,,timeout,sockets/s,"Listener admin downstream timed out sockets",line,,go.d.plugin,envoy
+envoy.listener_downstream_cx_active_count,,active,connections,"Listener downstream current active connections",line,,go.d.plugin,envoy
+envoy.listener_downstream_cx_rate,,created,connections/s,"Listener downstream connections",line,,go.d.plugin,envoy
+envoy.listener_downstream_cx_destroy_rate,,destroyed,connections/s,"Listener downstream destroyed connections",line,,go.d.plugin,envoy
+envoy.listener_downstream_cx_transport_socket_connect_timeout_rate,,timeout,connections/s,"Listener downstream timed out connections",line,,go.d.plugin,envoy
+envoy.listener_downstream_cx_rejected_rate,,"overflow, overload, global_overflow",connections/s,"Listener downstream rejected connections",line,,go.d.plugin,envoy
+envoy.listener_downstream_listener_filter_remote_close_rate,,closed,connections/s,"Listener downstream connections closed by remote when peek data for listener filters",line,,go.d.plugin,envoy
+envoy.listener_downstream_listener_filter_error_rate,,read,errors/s,"Listener downstream read errors when peeking data for listener filters",line,,go.d.plugin,envoy
+envoy.listener_downstream_pre_cx_active_count,,active,sockets,"Listener downstream current active sockets",line,,go.d.plugin,envoy
+envoy.listener_downstream_pre_cx_timeout_rate,,timeout,sockets/s,"Listener downstream timed out sockets",line,,go.d.plugin,envoy

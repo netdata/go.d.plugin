@@ -1,0 +1,10 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+zookeeper.requests,,outstanding,requests,"Outstanding Requests",line,,go.d.plugin,zookeeper
+zookeeper.requests_latency,,"min, avg, max",ms,"Requests Latency",line,,go.d.plugin,zookeeper
+zookeeper.connections,,alive,connections,"Alive Connections",line,,go.d.plugin,zookeeper
+zookeeper.packets,,"received, sent",pps,"Packets",line,,go.d.plugin,zookeeper
+zookeeper.file_descriptor,,open,file descriptors,"Open File Descriptors",line,,go.d.plugin,zookeeper
+zookeeper.nodes,,"znode, ephemerals",nodes,"Number of Nodes",line,,go.d.plugin,zookeeper
+zookeeper.watches,,watches,watches,"Number of Watches",line,,go.d.plugin,zookeeper
+zookeeper.approximate_data_size,,size,KiB,"Approximate Data Tree Size",line,,go.d.plugin,zookeeper
+zookeeper.server_state,,state,state,"Server State",line,,go.d.plugin,zookeeper

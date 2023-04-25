@@ -1,0 +1,11 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+nginxvts.requests_total,,requests,requests/s,"Total requests",line,,go.d.plugin,nginxvts
+nginxvts.active_connections,,active,connections,"Active connections",line,,go.d.plugin,nginxvts
+nginxvts.connections_total,,"reading, writing, waiting, accepted, handled",connections/s,"Total connections",line,,go.d.plugin,nginxvts
+nginxvts.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,nginxvts
+nginxvts.shm_usage,,"max, used",bytes,"Shared memory size",line,,go.d.plugin,nginxvts
+nginxvts.shm_used_node,,used,nodes,"Number of node using shared memory",line,,go.d.plugin,nginxvts
+nginxvts.server_requests_total,,requests,requests/s,"Total number of client requests",line,,go.d.plugin,nginxvts
+nginxvts.server_responses_total,,"1xx, 2xx, 3xx, 4xx, 5xx",responses/s,"Total number of responses by code class",line,,go.d.plugin,nginxvts
+nginxvts.server_traffic_total,,"in, out",bytes/s,"Total amount of data transferred to and from the server",line,,go.d.plugin,nginxvts
+nginxvts.server_cache_total,,"miss, bypass, expired, stale, updating, revalidated, hit, scarce",events/s,"Total server cache",line,,go.d.plugin,nginxvts

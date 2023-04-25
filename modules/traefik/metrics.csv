@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+traefik.entrypoint_requests,"entrypoint, protocol","1xx, 2xx, 3xx, 4xx, 5xx",requests/s,"Processed HTTP requests",stacked,,go.d.plugin,traefik
+traefik.entrypoint_request_duration_average,"entrypoint, protocol","1xx, 2xx, 3xx, 4xx, 5xx",milliseconds,"Average HTTP request processing time",stacked,,go.d.plugin,traefik
+traefik.entrypoint_open_connections,"entrypoint, protocol",a dimension per HTTP method,connections,"Open connections",stacked,,go.d.plugin,traefik

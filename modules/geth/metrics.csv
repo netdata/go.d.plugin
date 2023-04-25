@@ -1,0 +1,17 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+geth.eth_db_chaindata_ancient_io_rate,,"reads, writes",bytes/s,"Ancient Chaindata rate",line,,go.d.plugin,geth
+geth.eth_db_chaindata_ancient_io,,"reads, writes",bytes,"Session ancient Chaindata",line,,go.d.plugin,geth
+geth.eth_db_chaindata_disk_io,,"reads, writes",bytes,"Session chaindata on disk",line,,go.d.plugin,geth
+geth.goroutines,,goroutines,goroutines,"Number of goroutines",line,,go.d.plugin,geth
+geth.eth_db_chaindata_disk_io_rate,,"reads, writes",bytes/s,"On disk Chaindata rate",line,,go.d.plugin,geth
+geth.chaindata_db_size,,"level_db, ancient_db",bytes,"Chaindata Size",line,,go.d.plugin,geth
+geth.chainhead,,"block, receipt, header",block,"Chainhead",line,,go.d.plugin,geth
+geth.tx_pool_pending,,"invalid, pending, local, discard, no_funds, ratelimit, replace",transactions,"Pending Transaction Pool",line,,go.d.plugin,geth
+geth.tx_pool_current,,"invalid, pending, local, pool",transactions,"Transaction Pool",line,,go.d.plugin,geth
+geth.tx_pool_queued,,"discard, eviction, no_funds, ratelimit",transactions,"Queued Transaction Pool",line,,go.d.plugin,geth
+geth.p2p_bandwidth,,"ingress, egress",bytes/s,"P2P bandwidth",line,,go.d.plugin,geth
+geth.reorgs,,executed,reorgs,"Executed Reorgs",line,,go.d.plugin,geth
+geth.reorgs_blocks,,"added, dropped",blocks,"Blocks Added/Removed from Reorg",line,,go.d.plugin,geth
+geth.p2p_peers,,peers,peers,"Number of Peers",line,,go.d.plugin,geth
+geth.p2p_peers_calls,,"dials, serves",calls/s,"P2P Serves and Dials",line,,go.d.plugin,geth
+geth.rpc_calls,,"failed, successful",calls/s,"rpc calls",line,,go.d.plugin,geth

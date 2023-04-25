@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+haproxy.backend_current_sessions,,a dimension per proxy,sessions,"Current number of active sessions",line,,go.d.plugin,haproxy
+haproxy.backend_sessions,,a dimension per proxy,sessions/s,"Sessions rate",line,,go.d.plugin,haproxy
+haproxy.backend_response_time_average,,a dimension per proxy,milliseconds,"Average response time for last 1024 successful connections",line,,go.d.plugin,haproxy
+haproxy.backend_queue_time_average,,a dimension per proxy,milliseconds,"Average queue time for last 1024 successful connections",line,,go.d.plugin,haproxy
+haproxy.backend_current_queue,,a dimension per proxy,requests,"Current number of queued requests",line,,go.d.plugin,haproxy
+haproxy.backend_http_responses,proxy,"1xx, 2xx, 3xx, 4xx, 5xx, other",responses/s,"HTTP responses by code class",stacked,,go.d.plugin,haproxy
+haproxy.backend_network_io,proxy,"in, out",bytes/s,"Network traffic",area,,go.d.plugin,haproxy

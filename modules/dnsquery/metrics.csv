@@ -1,0 +1,3 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+dns_query.query_status,server,"success, network_error, dns_error",status,"DNS Query Status",line,"server, network, record_type",go.d.plugin,dns_query
+dns_query.query_time,server,query_time,seconds,"DNS Query Time",line,"server, network, record_type",go.d.plugin,dns_query

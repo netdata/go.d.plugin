@@ -1,0 +1,7 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+dockerhub.pulls_sum,,sum,pulls,"Pulls Summary",line,,go.d.plugin,dockerhub
+dockerhub.pulls,,a dimension per repository,pulls,"Pulls",stacked,,go.d.plugin,dockerhub
+dockerhub.pulls_rate,,a dimension per repository,pulls/s,"Pulls Rate",stacked,,go.d.plugin,dockerhub
+dockerhub.stars,,a dimension per repository,stars,"Stars",stacked,,go.d.plugin,dockerhub
+dockerhub.status,,a dimension per repository,status,"Current Status",line,,go.d.plugin,dockerhub
+dockerhub.last_updated,,a dimension per repository,seconds,"Time Since Last Updated",line,,go.d.plugin,dockerhub

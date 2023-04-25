@@ -1,0 +1,6 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+lighttpd.requests,,requests,requests/s,"Requests",line,,go.d.plugin,lighttpd
+lighttpd.net,,sent,kilobits/s,"Bandwidth",area,,go.d.plugin,lighttpd
+lighttpd.workers,,"idle, busy",servers,"Servers",stacked,,go.d.plugin,lighttpd
+lighttpd.scoreboard,,"waiting, open, close, hard_error, keepalive, read, read_post, write, handle_request, request_start, request_end,",connections,"ScoreBoard",line,,go.d.plugin,lighttpd
+lighttpd.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,lighttpd

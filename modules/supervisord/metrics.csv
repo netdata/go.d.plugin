@@ -1,0 +1,7 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+supervisord.summary_processes,,"running, non-running",processes,"Processes",stacked,,go.d.plugin,supervisord
+supervisord.processes,process group,"running, non-running",processes,"Processes",stacked,,go.d.plugin,supervisord
+supervisord.process_state_code,process group,a dimension per process,code,"State code",line,,go.d.plugin,supervisord
+supervisord.process_exit_status,process group,a dimension per process,exit status,"Exit status",line,,go.d.plugin,supervisord
+supervisord.process_uptime,process group,a dimension per process,seconds,"Uptime",line,,go.d.plugin,supervisord
+supervisord.process_downtime,process group,a dimension per process,seconds,"Downtime",line,,go.d.plugin,supervisord

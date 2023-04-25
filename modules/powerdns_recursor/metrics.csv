@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+powerdns_recursor.questions_in,,"total, tcp, ipv6",questions/s,"Incoming questions",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.questions_out,,"udp, tcp, ipv6, throttled",questions/s,"Outgoing questions",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.answer_time,,"0-1ms, 1-10ms, 10-100ms, 100-1000ms, slow",queries/s,"Queries answered within a time range",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.timeouts,,"total, ipv4, ipv6",timeouts/s,"Timeouts on outgoing UDP queries",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.drops,,"over-capacity-drops, query-pipe-full-drops, too-old-drops, truncated-drops, empty-queries",drops/s,"Drops",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.cache_usage,,"cache-hits, cache-misses, packet-cache-hits, packet-cache-misses",events/s,"Cache Usage",line,,go.d.plugin,powerdns_recursor
+powerdns_recursor.cache_size,,"cache, packet-cache, negative-cache",entries,"Cache Size",line,,go.d.plugin,powerdns_recursor

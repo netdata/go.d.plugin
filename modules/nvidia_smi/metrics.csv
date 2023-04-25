@@ -1,0 +1,19 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module,xml_format,csv_format
+nvidia_smi.gpu_pcie_bandwidth_usage,gpu,"rx, tx",B/s,"PCI Express Bandwidth Usage",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_pcie_bandwidth_utilization,gpu,"rx, tx",%,"PCI Express Bandwidth Utilization",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_fan_speed_perc,gpu,fan_speed,%,"Fan speed",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_utilization,gpu,gpu,%,"GPU utilization",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_memory_utilization,gpu,memory,%,"Memory utilization",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_decoder_utilization,gpu,decoder,%,"Decoder utilization",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_encoder_utilization,gpu,encoder,%,"Encoder utilization",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_frame_buffer_memory_usage,gpu,"free, used, reserved",B,"Frame buffer memory usage",stacked,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_bar1_memory_usage,gpu,"free, used",B,"BAR1 memory usage",stacked,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_temperature,gpu,temperature,Celsius,"Temperature",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_voltage,gpu,voltage,V,"Voltage",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_clock_freq,gpu,"graphics, video, sm, mem",MHz,"Clock current frequency",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_power_draw,gpu,power_draw,Watts,"Power draw",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_performance_state,gpu,P0-P15,state,"Performance state",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,yes
+nvidia_smi.gpu_mig_mode_current_status,gpu,"enabled, disabled",status,"MIG current mode",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_mig_devices_count,gpu,mig,devices,"MIG devices",line,"uuid, product_name",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_mig_frame_buffer_memory_usage,mig,"free, used, reserved",B,"Frame buffer memory usage",stacked,"gpu_uuid, gpu_product_name, gpu_instance_id",go.d.plugin,nvidia_smi,yes,no
+nvidia_smi.gpu_mig_bar1_memory_usage,mig,"free, used",B,"BAR1 memory usage",stacked,"gpu_uuid, gpu_product_name, gpu_instance_id",go.d.plugin,nvidia_smi,yes,no

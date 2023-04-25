@@ -1,0 +1,31 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+scaleio.system_capacity_total,,total,KiB,"Total Capacity",line,,go.d.plugin,scaleio
+scaleio.system_capacity_in_use,,in_use,KiB,"Capacity In Use",line,,go.d.plugin,scaleio
+scaleio.system_capacity_usage,,"thick, decreased, thin, snapshot, spare, unused",KiB,"Capacity Usage",stacked,,go.d.plugin,scaleio
+scaleio.system_capacity_available_volume_allocation,,available,KiB,"Available For Volume Allocation",line,,go.d.plugin,scaleio
+scaleio.system_capacity_health_state,,"protected, degraded, in_maintenance, failed, unavailable",KiB,"Capacity Health State",stacked,,go.d.plugin,scaleio
+scaleio.system_workload_primary_bandwidth_total,,total,KiB/s,"Primary Backend Bandwidth Total (Read and Write)",line,,go.d.plugin,scaleio
+scaleio.system_workload_primary_bandwidth,,"read, write",KiB/s,"Primary Backend Bandwidth",area,,go.d.plugin,scaleio
+scaleio.system_workload_primary_iops_total,,total,iops/s,"Primary Backend IOPS Total (Read and Write)",line,,go.d.plugin,scaleio
+scaleio.system_workload_primary_iops,,"read, write",iops/s,"Primary Backend IOPS",area,,go.d.plugin,scaleio
+scaleio.system_workload_primary_io_size_total,,io_size,KiB,"Primary Backend I/O Size Total (Read and Write)",line,,go.d.plugin,scaleio
+scaleio.system_rebalance,,"read, write",KiB/s,"Rebalance",area,,go.d.plugin,scaleio
+scaleio.system_rebalance_left,,left,KiB,"Rebalance Pending Capacity",line,,go.d.plugin,scaleio
+scaleio.system_rebalance_time_until_finish,,time,seconds,"Rebalance Approximate Time Until Finish",line,,go.d.plugin,scaleio
+scaleio.system_rebuild,,"read, write",KiB/s,"Rebuild Bandwidth Total (Forward, Backward and Normal)",area,,go.d.plugin,scaleio
+scaleio.system_rebuild_left,,left,KiB,"Rebuild Pending Capacity Total (Forward, Backward and Normal)",line,,go.d.plugin,scaleio
+scaleio.system_defined_components,,"devices, fault_sets, protection_domains, rfcache_devices, sdc, sds, snapshots, storage_pools, volumes, vtrees",components,"Components",line,,go.d.plugin,scaleio
+scaleio.system_components_volumes_by_type,,"thick, thin",volumes,"Volumes By Type",stacked,,go.d.plugin,scaleio
+scaleio.system_components_volumes_by_mapping,,"mapped, unmapped",volumes,"Volumes By Mapping",stacked,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_total,storage pool,total,KiB,"Total Capacity",line,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_in_use,storage pool,in_use,KiB,"Capacity In Use",line,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_usage,storage pool,"thick, decreased, thin, snapshot, spare, unused",KiB,"Capacity Usage",stacked,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_utilization,storage pool,used,percentage,"Capacity Utilization",line,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_available_volume_allocation,storage pool,available,KiB,"Available For Volume Allocation",line,,go.d.plugin,scaleio
+scaleio.storage_pool_capacity_health_state,storage pool,"protected, degraded, in_maintenance, failed, unavailable",KiB,"Capacity Health State",stacked,,go.d.plugin,scaleio
+scaleio.storage_pool_components,storage pool,"devices, snapshots, volumes, vtrees",components,"Components",line,,go.d.plugin,scaleio
+scaleio.sdc_mdm_connection_state,sdc,connected,boolean,"MDM Connection State",line,,go.d.plugin,scaleio
+scaleio.sdc_bandwidth,sdc,"read, write",KiB/s,"Bandwidth",area,,go.d.plugin,scaleio
+scaleio.sdc_iops,sdc,"read, write",iops/s,"IOPS",area,,go.d.plugin,scaleio
+scaleio.sdc_io_size,sdc,"read, write",KiB,"IOPS Size",area,,go.d.plugin,scaleio
+scaleio.sdc_num_of_mapped_volumed,sdc,mapped,volumes,"Mapped Volumes",line,,go.d.plugin,scaleio

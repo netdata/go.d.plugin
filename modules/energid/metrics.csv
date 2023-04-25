@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+energid.blockindex,,"blocks, headers",count,"Blockchain index",area,,go.d.plugin,energid
+energid.difficulty,,difficulty,difficulty,"Blockchain difficulty",line,,go.d.plugin,energid
+energid.mempool,,"max, usage, tx_size",bytes,"Memory pool",area,,go.d.plugin,energid
+energid.secmem,,"total, used, free, locked",bytes,"Secure memory",area,,go.d.plugin,energid
+energid.network,,connections,connections,"Network",line,,go.d.plugin,energid
+energid.timeoffset,,timeoffset,seconds,"Network time offset",line,,go.d.plugin,energid
+energid.utxo_transactions,,"transactions, output_transactions",transactions,"Transactions",line,,go.d.plugin,energid

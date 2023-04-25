@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+filecheck.file_existence,,a dimension per file,boolean,"File Existence (0: not exists, 1: exists)",line,,go.d.plugin,filecheck
+filecheck.file_mtime_ago,,a dimension per file,seconds,"File Time Since the Last Modification",line,,go.d.plugin,filecheck
+filecheck.file_size,,a dimension per file,bytes,"File Size",line,,go.d.plugin,filecheck
+filecheck.dir_existence,,a dimension per directory,boolean,"Dir Existence (0: not exists, 1: exists)",line,,go.d.plugin,filecheck
+filecheck.dir_mtime_ago,,a dimension per directory,seconds,"Dir Time Since the Last Modification",line,,go.d.plugin,filecheck
+filecheck.dir_num_of_files,,a dimension per directory,files,"Dir Number of Files",line,,go.d.plugin,filecheck
+filecheck.dir_size,,a dimension per directory,bytes,"Dir Size",line,,go.d.plugin,filecheck

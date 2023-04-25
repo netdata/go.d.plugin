@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+wireguard.device_network_io,device,"receive, transmit",B/s,"Device traffic",area,device,go.d.plugin,wireguard
+wireguard.device_peers,device,peers,peers,"Device peers",line,device,go.d.plugin,wireguard
+wireguard.peer_network_io,peer,"receive, transmit",B/s,"Peer traffic",area,"device, public_key",go.d.plugin,wireguard
+wireguard.peer_latest_handshake_ago,peer,time,seconds,"Peer time elapsed since the latest handshake",line,"device, public_key",go.d.plugin,wireguard

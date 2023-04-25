@@ -1,0 +1,23 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+ntpd.sys_offset,,offset,milliseconds,"Combined offset of server relative to this host",area,,go.d.plugin,ntpd
+ntpd.sys_jitter,,"system, clock",milliseconds,"Combined system jitter and clock jitter",line,,go.d.plugin,ntpd
+ntpd.sys_frequency,,frequency,ppm,"Frequency offset relative to hardware clock",area,,go.d.plugin,ntpd
+ntpd.sys_wander,,clock,ppm,"Clock frequency wander",area,,go.d.plugin,ntpd
+ntpd.sys_rootdelay,,delay,milliseconds,"Total roundtrip delay to the primary reference clock",area,,go.d.plugin,ntpd
+ntpd.sys_rootdisp,,dispersion,milliseconds,"Total root dispersion to the primary reference clock",area,,go.d.plugin,ntpd
+ntpd.sys_stratum,,stratum,stratum,"Stratum",line,,go.d.plugin,ntpd
+ntpd.sys_tc,,"current, minimum",log2,"Time constant and poll exponent",line,,go.d.plugin,ntpd
+ntpd.sys_precision,,precision,log2,"Precision",line,,go.d.plugin,ntpd
+ntpd.peer_offset,peer,offset,milliseconds,"Peer offset",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_delay,peer,delay,milliseconds,"Peer delay",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_dispersion,peer,dispersion,milliseconds,"Peer dispersion",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_jitter,peer,jitter,milliseconds,"Peer jitter",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_xleave,peer,xleave,milliseconds,"Peer interleave delay",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_rootdelay,peer,rootdelay,milliseconds,"Peer roundtrip delay to the primary reference clock",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_rootdisp,peer,dispersion,milliseconds,"Peer root dispersion to the primary reference clock",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_stratum,peer,stratum,stratum,"Peer stratum",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_hmode,peer,hmode,hmode,"Peer host mode",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_pmode,peer,pmode,pmode,"Peer mode",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_hpoll,peer,hpoll,log2,"Peer host poll exponent",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_ppoll,peer,ppoll,log2,"Peer poll exponent",line,peer_address,go.d.plugin,ntpd
+ntpd.peer_precision,peer,precision,log2,"Peer precision",line,peer_address,go.d.plugin,ntpd

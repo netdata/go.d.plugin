@@ -1,0 +1,36 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+consul.node_health_check_status,node check,"passing, maintenance, warning, critical",status,"Node health check status",line,"datacenter, node_name, check_name",go.d.plugin,consul
+consul.service_health_check_status,service check,"passing, maintenance, warning, critical",status,"Service health check status",line,"datacenter, node_name, check_name, service_name",go.d.plugin,consul
+consul.client_rpc_requests_rate,,rpc,requests/s,"Client RPC requests",line,,go.d.plugin,consul
+consul.client_rpc_requests_exceeded_rate,,exceeded,requests/s,"Client rate-limited RPC requests",line,,go.d.plugin,consul
+consul.client_rpc_requests_failed_rate,,failed,requests/s,"Client failed RPC requests",line,,go.d.plugin,consul
+consul.memory_allocated,,allocated,bytes,"Memory allocated by the Consul process",line,,go.d.plugin,consul
+consul.memory_sys,,sys,bytes,"Memory obtained from the OS",line,,go.d.plugin,consul
+consul.gc_pause_time,,gc_pause,seconds,"Garbage collection stop-the-world pause time",line,,go.d.plugin,consul
+consul.kvs_apply_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"KVS apply time",line,,go.d.plugin,consul
+consul.kvs_apply_operations_rate,,kvs_apply,ops/s,"KVS apply operations",line,,go.d.plugin,consul
+consul.txn_apply_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"Transaction apply time",line,,go.d.plugin,consul
+consul.txn_apply_operations_rate,,txn_apply,ops/s,"Transaction apply operations",line,,go.d.plugin,consul
+consul.autopilot_health_status,,"healthy, unhealthy",status,"Autopilot cluster health status",line,,go.d.plugin,consul
+consul.autopilot_failure_tolerance,,failure_tolerance,servers,"Autopilot cluster failure tolerance",line,,go.d.plugin,consul
+consul.autopilot_server_health_status,,"healthy, unhealthy",status,"Autopilot server health status",line,,go.d.plugin,consul
+consul.autopilot_server_stable_time,,stable,seconds,"Autopilot server stable time",line,,go.d.plugin,consul
+consul.autopilot_server_serf_status,,"active, failed, left, none",status,"Autopilot server Serf status",line,,go.d.plugin,consul
+consul.autopilot_server_voter_status,,"voter, not_voter",status,"Autopilot server Raft voting membership",line,,go.d.plugin,consul
+consul.network_lan_rtt,,"min, max, avg",ms,"Network lan RTT",line,,go.d.plugin,consul
+consul.raft_commit_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"Raft commit time",line,,go.d.plugin,consul
+consul.raft_commits_rate,,commits,commits/s,"Raft commits rate",line,,go.d.plugin,consul
+consul.raft_leader_last_contact_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"Raft leader last contact time",line,,go.d.plugin,consul
+consul.raft_leader_oldest_log_age,,oldest_log_age,seconds,"Raft leader oldest log age",line,,go.d.plugin,consul
+consul.raft_follower_last_contact_leader_time,,leader_last_contact,ms,"Raft follower last contact with the leader time",line,,go.d.plugin,consul
+consul.raft_rpc_install_snapshot_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"Raft RPC install snapshot time",line,,go.d.plugin,consul
+consul.raft_leader_elections_rate,,leader,elections/s,"Raft leader elections rate",line,,go.d.plugin,consul
+consul.raft_leadership_transitions_rate,,leadership,transitions/s,"Raft leadership transitions rate",line,,go.d.plugin,consul
+consul.server_leadership_status,,"leader, not_leader",status,"Server leadership status",line,,go.d.plugin,consul
+consul.raft_thread_main_saturation_perc,,"quantile_0.5, quantile_0.9, quantile_0.99",percentage,"Raft main thread saturation",line,,go.d.plugin,consul
+consul.raft_thread_fsm_saturation_perc,,"quantile_0.5, quantile_0.9, quantile_0.99",percentage,"Raft FSM thread saturation",line,,go.d.plugin,consul
+consul.raft_fsm_last_restore_duration,,last_restore_duration,ms,"Raft last restore duration",line,,go.d.plugin,consul
+consul.raft_boltdb_freelist_bytes,,freelist,bytes,"Raft BoltDB freelist",line,,go.d.plugin,consul
+consul.raft_boltdb_logs_per_batch_rate,,written,logs/s,"Raft BoltDB logs written per batch",line,,go.d.plugin,consul
+consul.raft_boltdb_store_logs_time,,"quantile_0.5, quantile_0.9, quantile_0.99",ms,"Raft BoltDB store logs time",line,,go.d.plugin,consul
+consul.license_expiration_time,,license_expiration,seconds,"License expiration time",line,,go.d.plugin,consul

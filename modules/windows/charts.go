@@ -1170,7 +1170,7 @@ var (
 	mssqlDeadLocksChart = module.Chart{
 		OverModule: "mssql",
 		ID:         "mssql_instance_%s_locks_deadlocks",
-		Title:      "Lock requests that resulted in deadlock.",
+		Title:      "Lock requests that resulted in deadlock",
 		Units:      "locks/s",
 		Fam:        "locks",
 		Ctx:        "mssql.instance_locks_deadlocks",
@@ -1405,7 +1405,7 @@ var (
 		Title:      "Write transactions",
 		Units:      "transactions/s",
 		Fam:        "transactions",
-		Ctx:        "mssql.instance_write_transactions",
+		Ctx:        "mssql.database_write_transactions",
 		Priority:   prioMSSQLDatabaseWriteTransactions,
 		Dims: module.Dims{
 			{ID: "mssql_db_%s_instance_%s_write_transactions", Name: "write", Algo: module.Incremental},
@@ -2057,7 +2057,6 @@ var (
 		Units:      "authentications/s",
 		Fam:        "oauth",
 		Ctx:        "adfs.oauth_client_secret_basic_authentications",
-		Type:       module.Line,
 		Priority:   prioADFSOauthClientSecretBasicAuthentications,
 		Dims: module.Dims{
 			{ID: "adfs_oauth_client_secret_basic_authentications_success_total", Name: "success", Algo: module.Incremental},
@@ -2231,7 +2230,7 @@ var (
 	adfsWindowsIntegratedAuthenticationsChart = module.Chart{
 		OverModule: "adfs",
 		ID:         "adfs_windows_integrated_authentications",
-		Title:      "f Windows integrated authentications using Kerberos or NTLM",
+		Title:      "Windows integrated authentications using Kerberos or NTLM",
 		Units:      "authentications/s",
 		Fam:        "auth",
 		Ctx:        "adfs.windows_integrated_authentications",
@@ -2720,7 +2719,7 @@ var (
 	exchangeProxyAvgCasProcessingLatencySec = module.Chart{
 		OverModule: "exchange",
 		ID:         "exchange_proxy_%s_avg_cas_processing_latency_sec",
-		Title:      "Average time spent authenticating CAS.",
+		Title:      "Average time spent authenticating CAS",
 		Units:      "seconds",
 		Fam:        "proxy",
 		Ctx:        "exchange.http_proxy_avg_cas_processing_latency_sec",
@@ -3456,7 +3455,7 @@ var (
 	netFrameworkCLRRemotingContexts = module.Chart{
 		OverModule: "netframework",
 		ID:         "netframework_%s_clrremoting_contexts",
-		Title:      "Total of remoting contexts.",
+		Title:      "Total of remoting contexts",
 		Units:      "contexts",
 		Fam:        "remoting",
 		Ctx:        "netframework.clrremoting_contexts",

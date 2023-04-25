@@ -1,0 +1,12 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+systemd.service_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Service Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.socket_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Socket Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.target_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Target Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.path_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Path Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.device_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Device Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.mount_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Mount Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.automount_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Automount Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.swap_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Swap Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.timer_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Timer Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.scope_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Scope Unit State",line,unit_name,go.d.plugin,systemdunits
+systemd.slice_unit_state,unit,"active, inactive, activating, deactivating, failed",state,"Slice Unit State",line,unit_name,go.d.plugin,systemdunits

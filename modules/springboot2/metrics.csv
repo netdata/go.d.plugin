@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+springboot2.response_codes,,"1xx, 2xx, 3xx, 4xx, 5xx",requests/s,"Response Codes",stacked,,go.d.plugin,springboot2
+springboot2.thread,,"daemon, total",threads,"Threads",area,,go.d.plugin,springboot2
+springboot2.heap,,"free, eden, survivor, old",B,"Overview",stacked,,go.d.plugin,springboot2
+springboot2.heap_eden,,"used, commited",B,"Eden Space",area,,go.d.plugin,springboot2
+springboot2.heap_survivor,,"used, commited",B,"Survivor Space",area,,go.d.plugin,springboot2
+springboot2.heap_old,,"used, commited",B,"Old Space",area,,go.d.plugin,springboot2
+springboot2.uptime,,uptime,seconds,"TThe uptime of the Java virtual machine",line,,go.d.plugin,springboot2

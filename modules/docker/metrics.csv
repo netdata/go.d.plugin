@@ -1,0 +1,8 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+docker.containers_state,,"running, paused, stopped",containers,"Total number of Docker containers in various states",stacked,,go.d.plugin,docker
+docker.containers_health_status,,"healthy, unhealthy, not_running_unhealthy, starting, no_healthcheck",containers,"Total number of Docker containers in various health states",line,,go.d.plugin,docker
+docker.images,,"active, dangling",images,"Total number of Docker images in various states",stacked,,go.d.plugin,docker
+docker.images_size,,size,bytes,"Total size of all Docker images",line,,go.d.plugin,docker
+docker.container_state,container,"running, paused, exited, created, restarting, removing, dead",state,"Docker container state",line,"container_name, image",go.d.plugin,docker
+docker.container_health_status,container,"healthy, unhealthy, not_running_unhealthy, starting, no_healthcheck",status,"Docker container health status",line,"container_name, image",go.d.plugin,docker
+docker.container_writeable_layer_size,container,writeable_layer,size,"Docker container writable layer size",line,"container_name, image",go.d.plugin,docker

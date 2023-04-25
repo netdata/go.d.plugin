@@ -1,0 +1,54 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+mongodb.operations_rate,,"reads, writes, commands",operations/s,"Operations rate",line,,go.d.plugin,mongodb
+mongodb.operations_latency_time,,"reads, writes, commands",milliseconds,"Operations Latency",line,,go.d.plugin,mongodb
+mongodb.operations_by_type_rate,,"insert, query, update, delete, getmore, command",operations/s,"Operations by type",line,,go.d.plugin,mongodb
+mongodb.document_operations_rate,,"inserted, deleted, returned, updated",operations/s,"Document operations",stacked,,go.d.plugin,mongodb
+mongodb.scanned_indexes_rate,,scanned,indexes/s,"Scanned indexes",line,,go.d.plugin,mongodb
+mongodb.scanned_documents_rate,,scanned,documents/s,"Scanned documents",line,,go.d.plugin,mongodb
+mongodb.active_clients_count,,"readers, writers",clients,"Connected clients",line,,go.d.plugin,mongodb
+mongodb.queued_operations_count,,"reads, writes",operations,"Queued operations because of a lock",line,,go.d.plugin,mongodb
+mongodb.lock_acquisitions_rate,lock type,"shared, exclusive, intent_shared, intent_exclusive",acquisitions/s,"Lock acquisitions",line,lock_type,go.d.plugin,mongodb
+mongodb.cursors_open_count,,open,cursors,"Open cursors",line,,go.d.plugin,mongodb
+mongodb.cursors_open_no_timeout_count,,open_no_timeout,cursors,"Open cursors with disabled timeout",line,,go.d.plugin,mongodb
+mongodb.cursors_opened_rate,,opened,cursors/s,"Opened cursors rate",line,,go.d.plugin,mongodb
+mongodb.cursors_timed_out_rate,,timed_out,cursors/s,"Timed-out cursors",line,,go.d.plugin,mongodb
+mongodb.cursors_by_lifespan_count,,"le_1s, 1s_5s, 5s_15s, 15s_30s, 30s_1m, 1m_10m, ge_10m",cursors,"Cursors lifespan",stacked,,go.d.plugin,mongodb
+mongodb.transactions_count,,"active, inactive, open, prepared",transactions,"Current transactions",line,,go.d.plugin,mongodb
+mongodb.transactions_rate,,"started, aborted, committed, prepared",transactions/s,"Transactions rate",line,,go.d.plugin,mongodb
+mongodb.transactions_commits_rate,commit type,"success, fail",commits/s,"Transactions commits",line,commit_type,go.d.plugin,mongodb
+mongodb.transactions_commits_duration_time,commit type,commits,milliseconds,"Transactions successful commits duration",line,commit_type,go.d.plugin,mongodb
+mongodb.connections_usage,,"available, used",connections,"Connections usage",stacked,,go.d.plugin,mongodb
+mongodb.connections_by_state_count,,"active, threaded, exhaust_is_master, exhaust_hello, awaiting_topology_changes",connections,"Connections By State",line,,go.d.plugin,mongodb
+mongodb.connections_rate,,created,connections/s,"Connections Rate",line,,go.d.plugin,mongodb
+mongodb.asserts_rate,,"regular, warning, msg, user, tripwire, rollovers",asserts/s,"Raised assertions",stacked,,go.d.plugin,mongodb
+mongodb.network_traffic_rate,,"in, out",bytes/s,"Network traffic",stacked,,go.d.plugin,mongodb
+mongodb.network_requests_rate,,requests,requests/s,"Network Requests",line,,go.d.plugin,mongodb
+mongodb.network_slow_dns_resolutions_rate,,slow_dns,resolutions/s,"Slow DNS resolution operations",line,,go.d.plugin,mongodb
+mongodb.network_slow_ssl_handshakes_rate,,slow_ssl,handshakes/s,"Slow SSL handshake operations",line,,go.d.plugin,mongodb
+mongodb.memory_resident_size,,used,bytes,"Used resident memory",line,,go.d.plugin,mongodb
+mongodb.memory_virtual_size,,used,bytes,"Used virtual memory",line,,go.d.plugin,mongodb
+mongodb.memory_page_faults_rate,,pgfaults,pgfaults/s,"Memory page faults",line,,go.d.plugin,mongodb
+mongodb.memory_tcmalloc_stats,,"allocated, central_cache_freelist, transfer_cache_freelist, thread_cache_freelists, pageheap_freelist, pageheap_unmapped",bytes,"TCMalloc statistics",line,,go.d.plugin,mongodb
+mongodb.wiredtiger_concurrent_read_transactions_usage,,"available, used",transactions,"Wired Tiger concurrent read transactions usage",stacked,,go.d.plugin,mongodb
+mongodb.wiredtiger_concurrent_write_transactions_usage,,"available, used",transactions,"Wired Tiger concurrent write transactions usage",stacked,,go.d.plugin,mongodb
+mongodb.wiredtiger_cache_usage,,used,bytes,"Wired Tiger cache usage",line,,go.d.plugin,mongodb
+mongodb.wiredtiger_cache_dirty_space_size,,dirty,bytes,"Wired Tiger cache dirty space size",line,,go.d.plugin,mongodb
+mongodb.wiredtiger_cache_io_rate,,"read, written",pages/s,"Wired Tiger IO activity",line,,go.d.plugin,mongodb
+mongodb.wiredtiger_cache_evictions_rate,,"unmodified, modified",pages/s,"Wired Tiger cache evictions",stacked,,go.d.plugin,mongodb
+mongodb.database_collection_count,database,collections,collections,"Database collections",line,database,go.d.plugin,mongodb
+mongodb.database_indexes_count,database,indexes,indexes,"Database indexes",line,database,go.d.plugin,mongodb
+mongodb.database_views_count,database,views,views,"Database views",line,database,go.d.plugin,mongodb
+mongodb.database_documents_count,database,documents,documents,"Database documents",line,database,go.d.plugin,mongodb
+mongodb.database_data_size,database,data_size,bytes,"Database data size",line,database,go.d.plugin,mongodb
+mongodb.database_storage_size,database,storage_size,bytes,"Database storage size",line,database,go.d.plugin,mongodb
+mongodb.database_index_size,database,index_size,bytes,"Database index size",line,database,go.d.plugin,mongodb
+mongodb.repl_set_member_state,replica set member,"primary, startup, secondary, recovering, startup2, unknown, arbiter, down, rollback, removed",state,"Replica Set member state",line,repl_set_member,go.d.plugin,mongodb
+mongodb.repl_set_member_health_status,replica set member,"up, down",status,"Replica Set member health status",line,repl_set_member,go.d.plugin,mongodb
+mongodb.repl_set_member_replication_lag_time,replica set member,replication_lag,milliseconds,"Replica Set member replication lag",line,repl_set_member,go.d.plugin,mongodb
+mongodb.repl_set_member_heartbeat_latency_time,replica set member,heartbeat_latency,milliseconds,"Replica Set member heartbeat latency",line,repl_set_member,go.d.plugin,mongodb
+mongodb.repl_set_member_ping_rtt_time,replica set member,ping_rtt,milliseconds,"Replica Set member ping RTT",line,repl_set_member,go.d.plugin,mongodb
+mongodb.repl_set_member_uptime,replica set member,uptime,seconds,"Replica Set member uptime",line,repl_set_member,go.d.plugin,mongodb
+mongodb.sharding_nodes_count,,"shard_aware, shard_unaware",nodes,"Sharding Nodes",stacked,,go.d.plugin,mongodb
+mongodb.sharding_sharded_databases_count,,"partitioned, unpartitioned",databases,"Sharded databases",stacked,,go.d.plugin,mongodb
+mongodb.sharding_sharded_collections_count,,"partitioned, unpartitioned",collections,"Sharded collections",stacked,,go.d.plugin,mongodb
+mongodb.sharding_shard_chunks_count,shard,chunks,chunks,"Shard chunks",line,shard_id,go.d.plugin,mongodb

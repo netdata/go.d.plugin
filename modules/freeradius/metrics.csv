@@ -1,0 +1,11 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+freeradius.authentication,,"requests, responses",packets/s,"Authentication",line,,go.d.plugin,freeradius
+freeradius.authentication_access_responses,,"accepts, rejects, challenges",packets/s,"Authentication Responses",line,,go.d.plugin,freeradius
+freeradius.bad_authentication,,"dropped, duplicate, invalid, malformed, unknown-types",packets/s,"Bad Authentication Requests",line,,go.d.plugin,freeradius
+freeradius.proxy_authentication,,"requests, responses",packets/s,"Authentication",line,,go.d.plugin,freeradius
+freeradius.proxy_authentication_access_responses,,"accepts, rejects, challenges",packets/s,"Authentication Responses",line,,go.d.plugin,freeradius
+freeradius.proxy_bad_authentication,,"dropped, duplicate, invalid, malformed, unknown-types",packets/s,"Bad Authentication Requests",line,,go.d.plugin,freeradius
+freeradius.accounting,,"requests, responses",packets/s,"Accounting",line,,go.d.plugin,freeradius
+freeradius.bad_accounting,,"dropped, duplicate, invalid, malformed, unknown-types",packets/s,"Bad Accounting Requests",line,,go.d.plugin,freeradius
+freeradius.proxy_accounting,,"requests, responses",packets/s,"Accounting",line,,go.d.plugin,freeradius
+freeradius.proxy_bad_accounting,,"dropped, duplicate, invalid, malformed, unknown-types",packets/s,"Bad Accounting Requests",line,,go.d.plugin,freeradius

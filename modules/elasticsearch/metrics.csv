@@ -1,0 +1,47 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+elasticsearch.node_indices_indexing,,index,operations/s,"Indexing Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_indexing_current,,index,operations,"Indexing Operations Current",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_indexing_time,,index,milliseconds,"Time Spent On Indexing Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_search,,"queries, fetches",operations/s,"Search Operations",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_search_current,,"queries, fetches",operations,"Search Operations Current",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_search_time,,"queries, fetches",milliseconds,"node_indices_search_time",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_refresh,,refresh,operations/s,"Refresh Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_refresh_time,,refresh,milliseconds,"Time Spent On Refresh Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_flush,,flush,operations/s,"Flush Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_flush_time,,flush,milliseconds,"Time Spent On Flush Operations",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_fielddata_memory_usage,,used,bytes,"Fielddata Cache Memory Usage",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_fielddata_evictions,,evictions,operations/s,"Fielddata Evictions",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_segments_count,,segments,segments,"Segments Count",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_segments_memory_usage_total,,used,bytes,"Segments Memory Usage Total",line,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_segments_memory_usage,,"terms, stored_fields, term_vectors, norms, points, doc_values, index_writer, version_map, fixed_bit_set",bytes,"Segments Memory Usage",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_translog_operations,,"total, uncommitted",operations,"Translog Operations",area,,go.d.plugin,elasticsearch
+elasticsearch.node_indices_translog_size,,"total, uncommitted",bytes,"Translog Size",area,,go.d.plugin,elasticsearch
+elasticsearch.node_file_descriptors,,open,fd,"Process File Descriptors",line,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_heap,,inuse,percentage,"JVM Heap Percentage Currently in Use",area,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_heap_bytes,,"committed, used",bytes,"JVM Heap Commit And Usage",area,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_buffer_pools_count,,"direct, mapped",pools,"JVM Buffer Pools Count",line,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_buffer_pool_direct_memory,,"total, used",bytes,"JVM Buffer Pool Direct Memory",area,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_buffer_pool_mapped_memory,,"total, used",bytes,"JVM Buffer Pool Mapped Memory",area,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_gc_count,,"young, old",gc/s,"JVM Garbage Collections",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_jvm_gc_time,,"young, old",milliseconds,"JVM Time Spent On Garbage Collections",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_thread_pool_queued,,"generic, search, search_throttled, get, analyze, write, snapshot, warmer, refresh, listener, fetch_shard_started, fetch_shard_store, flush, force_merge, management",threads,"Thread Pool Queued Threads Count",stacked,,go.d.plugin,elasticsearch
+elasticsearch.node_thread_pool_rejected,,"generic, search, search_throttled, get, analyze, write, snapshot, warmer, refresh, listener, fetch_shard_started, fetch_shard_store, flush, force_merge, management",threads,"Thread Pool Rejected Threads Count",stacked,,go.d.plugin,elasticsearch
+elasticsearch.cluster_communication_packets,,"received, sent",pps,"Cluster Communication",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_communication,,"received, sent",bytes/s,"Cluster Communication Bandwidth",line,,go.d.plugin,elasticsearch
+elasticsearch.http_connections,,open,connections,"HTTP Connections",line,,go.d.plugin,elasticsearch
+elasticsearch.breakers_trips,,"requests, fielddata, in_flight_requests, model_inference, accounting, parent",trips/s,"Circuit Breaker Trips Count",stacked,,go.d.plugin,elasticsearch
+elasticsearch.cluster_health_status,,"green, yellow, red",status,"Cluster Status",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_number_of_nodes,,"nodes, data_nodes",nodes,"Cluster Nodes Count",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_shards_count,,"active_primary, active, relocating, initializing, unassigned, delayed_unaasigned",shards,"Cluster Shards Count",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_pending_tasks,,pending,tasks,"Cluster Pending Tasks",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_number_of_in_flight_fetch,,in_flight_fetch,fetches,"Cluster Unfinished Fetches",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_indices_count,,indices,indices,"Cluster Indices Count",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_indices_shards_count,,"total, primaries, replication",shards,"Cluster Indices Shards Count",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_indices_docs_count,,docs,docs,"Cluster Indices Docs Count",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_indices_store_size,,size,bytes,"Cluster Indices Store Size",line,,go.d.plugin,elasticsearch
+elasticsearch.cluster_indices_query_cache,,"hit, miss",events/s,"Cluster Indices Query Cache",stacked,,go.d.plugin,elasticsearch
+elasticsearch.cluster_nodes_by_role_count,,"coordinating_only, data, ingest, master, ml, remote_cluster_client, voting_only",nodes,"Cluster Nodes By Role Count",line,,go.d.plugin,elasticsearch
+elasticsearch.node_index_health,index,"green, yellow, red",status,"Index Health",line,index,go.d.plugin,elasticsearch
+elasticsearch.node_index_shards_count,index,shards,shards,"Index Shards Count",line,index,go.d.plugin,elasticsearch
+elasticsearch.node_index_docs_count,index,docs,docs,"Index Docs Count",line,index,go.d.plugin,elasticsearch
+elasticsearch.node_index_store_size,index,store_size,bytes,"Index Store Size",line,index,go.d.plugin,elasticsearch

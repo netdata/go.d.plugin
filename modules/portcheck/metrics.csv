@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+portcheck.status,,"success, failed, timeout",boolean,"TCP Check Status",line,"host, port",go.d.plugin,portcheck
+portcheck.state_duration,,time,seconds,"Current State Duration",line,"host, port",go.d.plugin,portcheck
+portcheck.latency,,time,ms,"TCP Connection Latency",line,"host, port",go.d.plugin,portcheck

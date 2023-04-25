@@ -1,0 +1,23 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+pika.connections,,accepted,connections,"Connections",line,,go.d.plugin,pika
+pika.clients,,connected,clients,"Clients",line,,go.d.plugin,pika
+pika.memory,,used,bytes,"Memory usage",area,,go.d.plugin,pika
+pika.connected_replicas,,connected,replicas,"Connected replicas",line,,go.d.plugin,pika
+pika.commands,,processed,commands/s,"Processed commands",line,,go.d.plugin,pika
+pika.commands_calls,,a dimension per command,calls/s,"Calls per command",stacked,,go.d.plugin,pika
+pika.database_strings_keys,,a dimension per database,keys,"Strings type keys per database",stacked,,go.d.plugin,pika
+pika.database_strings_expires_keys,,a dimension per database,keys,"Strings type expires keys per database",stacked,,go.d.plugin,pika
+pika.database_strings_invalid_keys,,a dimension per database,keys,"Strings type invalid keys per database",stacked,,go.d.plugin,pika
+pika.database_hashes_keys,,a dimension per database,keys,"Hashes type keys per database",stacked,,go.d.plugin,pika
+pika.database_hashes_expires_keys,,a dimension per database,keys,"Hashes type expires keys per database",stacked,,go.d.plugin,pika
+pika.database_hashes_invalid_keys,,a dimension per database,keys,"Hashes type invalid keys per database",stacked,,go.d.plugin,pika
+pika.database_lists_keys,,a dimension per database,keys,"Lists type keys per database",stacked,,go.d.plugin,pika
+pika.database_lists_expires_keys,,a dimension per database,keys,"Lists type expires keys per database",stacked,,go.d.plugin,pika
+pika.database_lists_invalid_keys,,a dimension per database,keys,"Lists type invalid keys per database",stacked,,go.d.plugin,pika
+pika.database_zsets_keys,,a dimension per database,keys,"Zsets type keys per database",stacked,,go.d.plugin,pika
+pika.database_zsets_expires_keys,,a dimension per database,keys,"Zsets type expires keys per database",stacked,,go.d.plugin,pika
+pika.database_zsets_invalid_keys,,a dimension per database,keys,"Zsets type invalid keys per database",stacked,,go.d.plugin,pika
+pika.database_sets_keys,,a dimension per database,keys,"Sets type keys per database",stacked,,go.d.plugin,pika
+pika.database_sets_expires_keys,,a dimension per database,keys,"Sets type expires keys per database",stacked,,go.d.plugin,pika
+pika.database_sets_invalid_keys,,a dimension per database,keys,"Sets invalid keys per database",stacked,,go.d.plugin,pika
+pika.uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,pika

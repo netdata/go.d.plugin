@@ -1,0 +1,61 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+cockroachdb.process_cpu_time_combined_percentage,,used,percentage,"Combined CPU Time Percentage, Normalized 0-1 by Number of Cores",line,,go.d.plugin,cockroachdb
+cockroachdb.process_cpu_time_percentage,,"user, sys",percentage,"CPU Time Percentage",stacked,,go.d.plugin,cockroachdb
+cockroachdb.process_cpu_time,,"user, sys",ms,"CPU Time",stacked,,go.d.plugin,cockroachdb
+cockroachdb.process_memory,,rss,KiB,"Memory Usage",line,,go.d.plugin,cockroachdb
+cockroachdb.process_file_descriptors,,open,fd,"File Descriptors",line,,go.d.plugin,cockroachdb
+cockroachdb.process_uptime,,uptime,seconds,"Uptime",line,,go.d.plugin,cockroachdb
+cockroachdb.host_disk_bandwidth,,"read, write",KiB,"Host Disk Cumulative Bandwidth",area,,go.d.plugin,cockroachdb
+cockroachdb.host_disk_operations,,"reads, writes",operations,"Host Disk Cumulative Operations",line,,go.d.plugin,cockroachdb
+cockroachdb.host_disk_iops_in_progress,,in_progress,iops,"Host Disk Cumulative IOPS In Progress",line,,go.d.plugin,cockroachdb
+cockroachdb.host_network_bandwidth,,"received, sent",kilobits,"Host Network Cumulative Bandwidth",area,,go.d.plugin,cockroachdb
+cockroachdb.host_network_packets,,"received, sent",packets,"Host Network Cumulative Packets",line,,go.d.plugin,cockroachdb
+cockroachdb.live_nodes,,live_nodes,nodes,"Live Nodes in the Cluster",line,,go.d.plugin,cockroachdb
+cockroachdb.node_liveness_heartbeats,,"successful, failed",heartbeats,"Node Liveness Heartbeats",stacked,,go.d.plugin,cockroachdb
+cockroachdb.total_storage_capacity,,total,KiB,"Total Storage Capacity",line,,go.d.plugin,cockroachdb
+cockroachdb.storage_capacity_usability,,"usable, unusable",KiB,"Storage Capacity Usability",stacked,,go.d.plugin,cockroachdb
+cockroachdb.storage_usable_capacity,,"available, used",KiB,"Storage Usable Capacity",stacked,,go.d.plugin,cockroachdb
+cockroachdb.storage_used_capacity_percentage,,"total, usable",percentage,"Storage Used Capacity Utilization",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_connections,,active,connections,"Active SQL Connections",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_bandwidth,,"received, sent",KiB,"SQL Bandwidth",area,,go.d.plugin,cockroachdb
+cockroachdb.sql_statements_total,,"started, executed",statements,"SQL Statements Total",area,,go.d.plugin,cockroachdb
+cockroachdb.sql_errors,,"statement, transaction",errors,"SQL Statements and Transaction Errors",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_started_ddl_statements,,ddl,statements,"SQL Started DDL Statements",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_executed_ddl_statements,,ddl,statements,"SQL Executed DDL Statements",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_started_dml_statements,,"select, update, delete, insert",statements,"SQL Started DML Statements",stacked,,go.d.plugin,cockroachdb
+cockroachdb.sql_executed_dml_statements,,"select, update, delete, insert",statements,"SQL Executed DML Statements",stacked,,go.d.plugin,cockroachdb
+cockroachdb.sql_started_tcl_statements,,"begin, commit, rollback, savepoint, savepoint_cockroach_restart, release_savepoint_cockroach_restart, rollback_to_savepoint_cockroach_restart",statements,"SQL Started TCL Statements",stacked,,go.d.plugin,cockroachdb
+cockroachdb.sql_executed_tcl_statements,,"begin, commit, rollback, savepoint, savepoint_cockroach_restart, release_savepoint_cockroach_restart, rollback_to_savepoint_cockroach_restart",statements,"SQL Executed TCL Statements",stacked,,go.d.plugin,cockroachdb
+cockroachdb.sql_active_distributed_queries,,active,queries,"Active Distributed SQL Queries",line,,go.d.plugin,cockroachdb
+cockroachdb.sql_distributed_flows,,"active, queued",flows,"Distributed SQL Flows",stacked,,go.d.plugin,cockroachdb
+cockroachdb.live_bytes,,"applications, system",KiB,"Used Live Data",line,,go.d.plugin,cockroachdb
+cockroachdb.logical_data,,"keys, values",KiB,"Logical Data",stacked,,go.d.plugin,cockroachdb
+cockroachdb.logical_data_count,,"keys, values",num,"Logical Data Count",stacked,,go.d.plugin,cockroachdb
+cockroachdb.kv_transactions,,"committed, fast-path_committed, aborted",transactions,"KV Transactions",area,,go.d.plugin,cockroachdb
+cockroachdb.kv_transaction_restarts,,"write_too_old, write_too_old_multiple, forwarded_timestamp, possible_reply, async_consensus_failure, read_within_uncertainty_interval, aborted, push_failure, unknown",restarts,"KV Transaction Restarts",stacked,,go.d.plugin,cockroachdb
+cockroachdb.ranges,,ranges,ranges,"Ranges",line,,go.d.plugin,cockroachdb
+cockroachdb.ranges_replication_problem,,"unavailable, under_replicated, over_replicated",ranges,"Ranges Replication Problems",stacked,,go.d.plugin,cockroachdb
+cockroachdb.range_events,,"split, add, remove, merge",events,"Range Events",stacked,,go.d.plugin,cockroachdb
+cockroachdb.range_snapshot_events,,"generated, applied_raft_initiated, applied_learner, applied_preemptive",events,"Range Snapshot Events",stacked,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_read_amplification,,reads,reads/query,"RocksDB Read Amplification",line,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_table_operations,,"compactions, flushes",operations,"RocksDB Table Operations",line,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_cache_usage,,used,KiB,"RocksDB Block Cache Usage",area,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_cache_operations,,"hits, misses",operations,"RocksDB Block Cache Operations",stacked,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_cache_hit_rate,,hit_rate,percentage,"RocksDB Block Cache Hit Rate",area,,go.d.plugin,cockroachdb
+cockroachdb.rocksdb_sstables,,sstables,sstables,"RocksDB SSTables",line,,go.d.plugin,cockroachdb
+cockroachdb.replicas,,replicas,replicas,"Number of Replicas",line,,go.d.plugin,cockroachdb
+cockroachdb.replicas_quiescence,,"quiescent, active",replicas,"Replicas Quiescence",stacked,,go.d.plugin,cockroachdb
+cockroachdb.replicas_leaders,,"leaders, not_leaseholders",replicas,"Number of Raft Leaders",area,,go.d.plugin,cockroachdb
+cockroachdb.replicas_leaseholders,,leaseholders,leaseholders,"Number of Leaseholders",line,,go.d.plugin,cockroachdb
+cockroachdb.queue_processing_failures,,"gc, replica_gc, replication, split, consistency, raft_log, raft_snapshot, time_series_maintenance",failures,"Queues Processing Failures",stacked,,go.d.plugin,cockroachdb
+cockroachdb.rebalancing_queries,,avg,queries/s,"Rebalancing Average Queries",line,,go.d.plugin,cockroachdb
+cockroachdb.rebalancing_writes,,avg,writes/s,"Rebalancing Average Writes",line,,go.d.plugin,cockroachdb
+cockroachdb.timeseries_samples,,written,samples,"Time Series Written Samples",line,,go.d.plugin,cockroachdb
+cockroachdb.timeseries_write_errors,,write,errors,"Time Series Write Errors",line,,go.d.plugin,cockroachdb
+cockroachdb.timeseries_write_bytes,,written,KiB,"Time Series Bytes Written",line,,go.d.plugin,cockroachdb
+cockroachdb.slow_requests,,"acquiring_latches, acquiring_lease, in_raft",requests,"Slow Requests",stacked,,go.d.plugin,cockroachdb
+cockroachdb.code_heap_memory_usage,,"go, cgo",KiB,"Heap Memory Usage",stacked,,go.d.plugin,cockroachdb
+cockroachdb.goroutines,,goroutines,goroutines,"Number of Goroutines",line,,go.d.plugin,cockroachdb
+cockroachdb.gc_count,,gc,invokes,"GC Runs",line,,go.d.plugin,cockroachdb
+cockroachdb.gc_pause,,pause,us,"GC Pause Time",line,,go.d.plugin,cockroachdb
+cockroachdb.cgo_calls,,cgo,calls,"Cgo Calls",line,,go.d.plugin,cockroachdb

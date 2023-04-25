@@ -1,0 +1,17 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+rabbitmq.messages_count,,"ready, unacknowledged",messages,"Messages",stacked,,go.d.plugin,rabbitmq
+rabbitmq.messages_rate,,"ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable",messages/s,"Messages",line,,go.d.plugin,rabbitmq
+rabbitmq.objects_count,,"channels, consumers, connections, queues, exchanges",messages,"Objects",line,,go.d.plugin,rabbitmq
+rabbitmq.connection_churn_rate,,"created, closed",operations/s,"Connection churn",line,,go.d.plugin,rabbitmq
+rabbitmq.channel_churn_rate,,"created, closed",operations/s,"Channel churn",line,,go.d.plugin,rabbitmq
+rabbitmq.queue_churn_rate,,"created, deleted, declared",operations/s,"Queue churn",line,,go.d.plugin,rabbitmq
+rabbitmq.file_descriptors_count,,"available, used",fd,"File descriptors",stacked,,go.d.plugin,rabbitmq
+rabbitmq.sockets_count,,"available, used",sockets,"Used sockets",stacked,,go.d.plugin,rabbitmq
+rabbitmq.erlang_processes_count,,"available, used",processes,"Erlang processes",stacked,,go.d.plugin,rabbitmq
+rabbitmq.erlang_run_queue_processes_count,,length,processes,"Erlang run queue",line,,go.d.plugin,rabbitmq
+rabbitmq.memory_usage,,used,bytes,"Memory",line,,go.d.plugin,rabbitmq
+rabbitmq.disk_space_free_size,,free,bytes,"Free disk space",line,,go.d.plugin,rabbitmq
+rabbitmq.vhost_messages_count,vhost,"ready, unacknowledged",messages,"Vhost messages",line,vhost,go.d.plugin,rabbitmq
+rabbitmq.vhost_messages_rate,vhost,"ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable",messages/s,"Vhost messages rate",line,vhost,go.d.plugin,rabbitmq
+rabbitmq.queue_messages_count,queue,"ready, unacknowledged, paged_out, persistent",messages,"Queue messages",line,"vhost, queue",go.d.plugin,rabbitmq
+rabbitmq.queue_messages_rate,queue,"ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable",messages/s,"Queue messages rate",line,"vhost, queue",go.d.plugin,rabbitmq

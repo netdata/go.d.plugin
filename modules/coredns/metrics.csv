@@ -1,0 +1,23 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+coredns.dns_request_count_total,,requests,requests/s,"Number Of DNS Requests",line,,go.d.plugin,coredns
+coredns.dns_responses_count_total,,responses,responses/s,"Number Of DNS Responses",line,,go.d.plugin,coredns
+coredns.dns_request_count_total_per_status,,"processed, dropped",requests/s,"Number Of Processed And Dropped DNS Requests",stacked,,go.d.plugin,coredns
+coredns.dns_no_matching_zone_dropped_total,,dropped,requests/s,"Number Of Dropped DNS Requests Because Of No Matching Zone",line,,go.d.plugin,coredns
+coredns.dns_panic_count_total,,panics,panics/s,"Number Of Panics",line,,go.d.plugin,coredns
+coredns.dns_requests_count_total_per_proto,,"udp, tcp",requests/s,"Number Of DNS Requests Per Transport Protocol",stacked,,go.d.plugin,coredns
+coredns.dns_requests_count_total_per_ip_family,,"v4, v6",requests/s,"Number Of DNS Requests Per IP Family",stacked,,go.d.plugin,coredns
+coredns.dns_requests_count_total_per_per_type,,"a, aaaa, mx, soa, cname, ptr, txt, ns, ds, dnskey, rrsig, nsec, nsec3, ixfr, any, other",requests/s,"Number Of DNS Requests Per Type",stacked,,go.d.plugin,coredns
+coredns.dns_responses_count_total_per_rcode,,"noerror, formerr, servfail, nxdomain, notimp, refused, yxdomain, yxrrset, nxrrset, notauth, notzone, badsig, badkey, badtime, badmode, badname, badalg, badtrunc, badcookie, other",responses/s,"Number Of DNS Responses Per Rcode",stacked,,go.d.plugin,coredns
+coredns.server_dns_request_count_total,server,requests,requests/s,"Number Of DNS Requests",line,server_name,go.d.plugin,coredns
+coredns.server_dns_responses_count_total,server,responses,responses/s,"Number Of DNS Responses",line,server_name,go.d.plugin,coredns
+coredns.server_request_count_total_per_status,server,"processed, dropped",requests/s,"Number Of Processed And Dropped DNS Requests",stacked,server_name,go.d.plugin,coredns
+coredns.server_requests_count_total_per_proto,server,"udp, tcp",requests/s,"Number Of DNS Requests Per Transport Protocol",stacked,server_name,go.d.plugin,coredns
+coredns.server_requests_count_total_per_ip_family,server,"v4, v6",requests/s,"Number Of DNS Requests Per IP Family",stacked,server_name,go.d.plugin,coredns
+coredns.server_requests_count_total_per_per_type,server,"a, aaaa, mx, soa, cname, ptr, txt, ns, ds, dnskey, rrsig, nsec, nsec3, ixfr, any, other",requests/s,"Number Of DNS Requests Per Type",stacked,server_name,go.d.plugin,coredns
+coredns.server_responses_count_total_per_rcode,server,"noerror, formerr, servfail, nxdomain, notimp, refused, yxdomain, yxrrset, nxrrset, notauth, notzone, badsig, badkey, badtime, badmode, badname, badalg, badtrunc, badcookie, other",responses/s,"Number Of DNS Responses Per Rcode",stacked,server_name,go.d.plugin,coredns
+coredns.zone_dns_request_count_total,zone,requests,requests/s,"Number Of DNS Requests",line,zone_name,go.d.plugin,coredns
+coredns.zone_dns_responses_count_total,zone,responses,responses/s,"Number Of DNS Responses",line,zone_name,go.d.plugin,coredns
+coredns.zone_requests_count_total_per_proto,zone,"udp, tcp",requests/s,"Number Of DNS Requests Per Transport Protocol",stacked,zone_name,go.d.plugin,coredns
+coredns.zone_requests_count_total_per_ip_family,zone,"v4, v6",requests/s,"Number Of DNS Requests Per IP Family",stacked,zone_name,go.d.plugin,coredns
+coredns.zone_requests_count_total_per_per_type,zone,"a, aaaa, mx, soa, cname, ptr, txt, ns, ds, dnskey, rrsig, nsec, nsec3, ixfr, any, other",requests/s,"Number Of DNS Requests Per Type",stacked,zone_name,go.d.plugin,coredns
+coredns.zone_responses_count_total_per_rcode,zone,"noerror, formerr, servfail, nxdomain, notimp, refused, yxdomain, yxrrset, nxrrset, notauth, notzone, badsig, badkey, badtime, badmode, badname, badalg, badtrunc, badcookie, other",responses/s,"Number Of DNS Responses Per Rcode",stacked,zone_name,go.d.plugin,coredns

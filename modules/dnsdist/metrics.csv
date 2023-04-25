@@ -1,0 +1,13 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+dnsdist.queries,,"all, recursive, empty",queries/s,"Client queries received",line,,go.d.plugin,dnsdist
+dnsdist.queries_dropped,,"rule_drop, dynamic_blocked, no_policy, non_queries",queries/s,"Client queries dropped",line,,go.d.plugin,dnsdist
+dnsdist.packets_dropped,,acl,packets/s,"Packets dropped",line,,go.d.plugin,dnsdist
+dnsdist.answers,,"self_answered, nxdomain, refused, trunc_failures",answers/s,"Answers statistics",line,,go.d.plugin,dnsdist
+dnsdist.backend_responses,,responses,responses/s,"Backend responses",line,,go.d.plugin,dnsdist
+dnsdist.backend_commerrors,,send_errors,errors/s,"Backend communication errors",line,,go.d.plugin,dnsdist
+dnsdist.backend_errors,,"timeouts, servfail, non_compliant",responses/s,"Backend error responses",line,,go.d.plugin,dnsdist
+dnsdist.cache,,"hits, misses",answers/s,"Cache performance",line,,go.d.plugin,dnsdist
+dnsdist.servercpu,,"system_state, user_state",ms/s,"DNSdist server CPU utilization",stacked,,go.d.plugin,dnsdist
+dnsdist.servermem,,memory_usage,MiB,"DNSdist server memory utilization",area,,go.d.plugin,dnsdist
+dnsdist.query_latency,,"1ms, 10ms, 50ms, 100ms, 1sec, slow",queries/s,"Query latency",stacked,,go.d.plugin,dnsdist
+dnsdist.query_latency_avg,,"100, 1k, 10k, 1000k",microseconds,"Average latency for the last N queries",line,,go.d.plugin,dnsdist

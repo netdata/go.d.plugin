@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+activemq.messages,,"enqueued, dequeued",messages/s,"Messaged",line,,go.d,activemq
+activemq.unprocessed_messages,,"unprocessed",messages,"Unprocessed Messages",line,,go.d,activemq
+activemq.consumers,,consumers,consumers,"Consumers",line,,go.d,activemq

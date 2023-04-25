@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+dnsmasq_dhcp.dhcp_ranges,,"ipv4, ipv6",ranges,"Number of DHCP Ranges",stacked,,go.d.plugin,dnsmasq_dhcp
+dnsmasq_dhcp.dhcp_hosts,,"ipv4, ipv6",hosts,"Number of DHCP Hosts",stacked,,go.d.plugin,dnsmasq_dhcp
+dnsmasq_dhcp.dhcp_range_utilization,dhcp range,used,percentage,"DHCP Range utilization",line,dhcp_range,go.d.plugin,dnsmasq_dhcp
+dnsmasq_dhcp.dhcp_range_allocated_leases,dhcp range,allocated,leases,"DHCP Range Allocated Leases",line,dhcp_range,go.d.plugin,dnsmasq_dhcp

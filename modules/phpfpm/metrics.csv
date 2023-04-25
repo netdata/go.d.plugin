@@ -1,0 +1,7 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+phpfpm.connections,,"active, max_active, idle",connections,"Active Connections",line,,go.d.plugin,phpfpm
+phpfpm.requests,,requests,requests/s,"Requests",line,,go.d.plugin,phpfpm
+phpfpm.performance,,"max_children_reached, slow_requests",status,"Performance",line,,go.d.plugin,phpfpm
+phpfpm.request_duration,,"min, max, avg",milliseconds,"Requests Duration Among All Idle Processes",line,,go.d.plugin,phpfpm
+phpfpm.request_cpu,,"min, max, avg",percentage,"Last Request CPU Usage Among All Idle Processes",line,,go.d.plugin,phpfpm
+phpfpm.request_mem,,"min, max, avg",KB,"Last Request Memory Usage Among All Idle Processes",line,,go.d.plugin,phpfpm
