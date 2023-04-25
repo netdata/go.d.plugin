@@ -41,7 +41,7 @@ var userCharts = Charts{
 		ID:    "%s_user_traffic",
 		Title: "User Traffic",
 		Units: "kilobits/s",
-		Fam:   "user %s",
+		Fam:   "user traffic",
 		Ctx:   "openvpn.user_traffic",
 		Type:  module.Area,
 		Dims: Dims{
@@ -53,7 +53,7 @@ var userCharts = Charts{
 		ID:    "%s_user_connection_time",
 		Title: "User Connection Time",
 		Units: "seconds",
-		Fam:   "user %s",
+		Fam:   "user conn time",
 		Ctx:   "openvpn.user_connection_time",
 		Dims: Dims{
 			{ID: "%s_connection_time", Name: "time"},

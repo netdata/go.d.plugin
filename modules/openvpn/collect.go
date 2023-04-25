@@ -80,11 +80,9 @@ func (o *OpenVPN) addUserCharts(userName string) error {
 
 	for _, chart := range *cs {
 		chart.ID = fmt.Sprintf(chart.ID, userName)
-		chart.Fam = fmt.Sprintf(chart.Fam, userName)
 		chart.Labels = []module.Label{
 			{Key: "username", Value: userName},
 		}
-
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, userName)
 		}
