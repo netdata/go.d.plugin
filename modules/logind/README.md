@@ -21,14 +21,8 @@ Monitors number of sessions and users as reported by the `org.freedesktop.login1
 
 ## Metrics
 
-All metrics have "logind." prefix.
-
-| Metric         | Scope  |                 Dimensions                  |  Units   |
-|----------------|:------:|:-------------------------------------------:|:--------:|
-| sessions       | global |                remote, local                | sessions |
-| sessions_type  | global |          console, graphical, other          | sessions |
-| sessions_state | global |           online, closing, active           | sessions |
-| users_state    | global | offline, closing, online, lingering, active |  users   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/logind/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
