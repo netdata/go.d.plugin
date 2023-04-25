@@ -29,45 +29,14 @@ It collects metrics for following `ScaleIO` components:
 
 ## Metrics
 
-All metrics have "scaleio." prefix.
-
-| Metric                                            |    Scope     |                                                  Dimensions                                                   |   Units    |
-|---------------------------------------------------|:------------:|:-------------------------------------------------------------------------------------------------------------:|:----------:|
-| system_capacity_total                             |    global    |                                                     total                                                     |    KiB     |
-| system_capacity_in_use                            |    global    |                                                    in_use                                                     |    KiB     |
-| system_capacity_usage                             |    global    |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
-| system_capacity_available_volume_allocation       |    global    |                                                   available                                                   |    KiB     |
-| system_capacity_health_state                      |    global    |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
-| system_workload_primary_bandwidth_total           |    global    |                                                     total                                                     |   KiB/s    |
-| system_workload_primary_bandwidth                 |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_workload_primary_iops_total                |    global    |                                                     total                                                     |   iops/s   |
-| system_workload_primary_iops                      |    global    |                                                  read, write                                                  |   iops/s   |
-| system_workload_primary_io_size_total             |    global    |                                                    io_size                                                    |    KiB     |
-| system_rebalance                                  |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_rebalance_left                             |    global    |                                                     left                                                      |    KiB     |
-| system_rebalance_time_until_finish                |    global    |                                                     time                                                      |  seconds   |
-| system_rebuild                                    |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_rebuild_left                               |    global    |                                                     left                                                      |    KiB     |
-| system_defined_components                         |    global    | devices, fault_sets, protection_domains, rfcache_devices, sdc, sds, snapshots, storage_pools, volumes, vtrees | components |
-| system_components_volumes_by_type                 |    global    |                                                  thick, thin                                                  |  volumes   |
-| system_components_volumes_by_mapping              |    global    |                                               mapped, unmapped                                                |  volumes   |
-| storage_pool_capacity_total                       | storage pool |                                                     total                                                     |    KiB     |
-| storage_pool_capacity_in_use                      | storage pool |                                                    in_use                                                     |    KiB     |
-| storage_pool_capacity_usage                       | storage pool |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
-| storage_pool_capacity_utilization                 | storage pool |                                                     used                                                      | percentage |
-| storage_pool_capacity_available_volume_allocation | storage pool |                                                   available                                                   |    KiB     |
-| storage_pool_capacity_health_state                | storage pool |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
-| storage_pool_components                           | storage pool |                                      devices, snapshots, volumes, vtrees                                      | components |
-| sdc_mdm_connection_state                          |     sdc      |                                                   connected                                                   |  boolean   |
-| sdc_bandwidth                                     |     sdc      |                                                  read, write                                                  |   KiB/s    |
-| sdc_iops                                          |     sdc      |                                                  read, write                                                  |   iops/s   |
-| sdc_io_size                                       |     sdc      |                                                  read, write                                                  |    KiB     |
-| sdc_num_of_mapped_volumed                         |     sdc      |                                                    mapped                                                     |  volumes   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/scaleio/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/scaleio.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
