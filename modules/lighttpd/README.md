@@ -21,20 +21,14 @@ This module will monitor one or more `Lighttpd` servers, depending on your confi
 
 ## Metrics
 
-All metrics have "lighttpd." prefix.
-
-| Metric     | Scope  |                                                    Dimensions                                                    |    Units    |
-|------------|:------:|:----------------------------------------------------------------------------------------------------------------:|:-----------:|
-| requests   | global |                                                     requests                                                     | requests/s  |
-| net        | global |                                                       sent                                                       | kilobits/s  |
-| workers    | global |                                                    idle, busy                                                    |   servers   |
-| scoreboard | global | waiting, open, close, hard_error, keepalive, read, read_post, write, handle_request, request_start, request_end, | connections |
-| uptime     | global |                                                      uptime                                                      |   seconds   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/lighttpd/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/lighttpd.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
