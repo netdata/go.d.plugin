@@ -18,22 +18,14 @@ Works only with [Generation 2 wallets](https://docs.energi.software/en/downloads
 
 ## Metrics
 
-All metrics have "energid." prefix.
-
-| Metric            | Scope  |            Dimensions             |    Units     |
-|-------------------|:------:|:---------------------------------:|:------------:|
-| blockindex        | global |          blocks, headers          |    count     |
-| difficulty        | global |            difficulty             |  difficulty  |
-| mempool           | global |        max, usage, tx_size        |    bytes     |
-| secmem            | global |     total, used, free, locked     |    bytes     |
-| network           | global |            connections            | connections  |
-| timeoffset        | global |            timeoffset             |   seconds    |
-| utxo_transactions | global | transactions, output_transactions | transactions |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/energid/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/energid.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
