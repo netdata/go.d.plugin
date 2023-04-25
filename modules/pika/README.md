@@ -24,37 +24,14 @@ It collects information and statistics about the server executing the following 
 
 ## Metrics
 
-All metrics have "pika." prefix.
-
-| Metric                        | Scope  |           Dimensions            |    Units    |
-|-------------------------------|:------:|:-------------------------------:|:-----------:|
-| connections                   | global |            accepted             | connections |
-| clients                       | global |            connected            |   clients   |
-| memory                        | global |              used               |    bytes    |
-| connected_replicas            | global |            connected            |  replicas   |
-| commands                      | global |            processed            | commands/s  |
-| commands_calls                | global | <i>a dimension per command</i>  |   calls/s   |
-| database_strings_keys         | global | <i>a dimension per database</i> |    keys     |
-| database_strings_expires_keys | global | <i>a dimension per database</i> |    keys     |
-| database_strings_invalid_keys | global | <i>a dimension per database</i> |    keys     |
-| database_hashes_keys          | global | <i>a dimension per database</i> |    keys     |
-| database_hashes_expires_keys  | global | <i>a dimension per database</i> |    keys     |
-| database_hashes_invalid_keys  | global | <i>a dimension per database</i> |    keys     |
-| database_lists_keys           | global | <i>a dimension per database</i> |    keys     |
-| database_lists_expires_keys   | global | <i>a dimension per database</i> |    keys     |
-| database_lists_invalid_keys   | global | <i>a dimension per database</i> |    keys     |
-| database_zsets_keys           | global | <i>a dimension per database</i> |    keys     |
-| database_zsets_expires_keys   | global | <i>a dimension per database</i> |    keys     |
-| database_zsets_invalid_keys   | global | <i>a dimension per database</i> |    keys     |
-| database_sets_keys            | global | <i>a dimension per database</i> |    keys     |
-| database_sets_expires_keys    | global | <i>a dimension per database</i> |    keys     |
-| database_sets_invalid_keys    | global | <i>a dimension per database</i> |    keys     |
-| uptime                        | global |             uptime              |   seconds   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/pika/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/pika.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
