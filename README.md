@@ -81,7 +81,6 @@ see the appropriate collector readme.
 | [k8s_kubeproxy](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_kubeproxy)           |          Kube-proxy           |
 | [k8s_state](https://github.com/netdata/go.d.plugin/tree/master/modules/k8s_state)                   |   Kubernetes cluster state    |
 | [lighttpd](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd)                     |           Lighttpd            |
-| [lighttpd2](https://github.com/netdata/go.d.plugin/tree/master/modules/lighttpd2)                   |           Lighttpd2           |
 | [logind](https://github.com/netdata/go.d.plugin/tree/master/modules/logind)                         |        systemd-logind         |
 | [logstash](https://github.com/netdata/go.d.plugin/tree/master/modules/logstash)                     |           Logstash            |
 | [mongoDB](https://github.com/netdata/go.d.plugin/tree/master/modules/mongodb)                       |            MongoDB            |
