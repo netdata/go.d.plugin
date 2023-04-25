@@ -23,40 +23,14 @@ It collects information and statistics about the server executing the following 
 
 ## Metrics
 
-All metrics have "redis." prefix.
-
-| Metric                          | Scope  |                   Dimensions                   |     Units      |
-|---------------------------------|:------:|:----------------------------------------------:|:--------------:|
-| connections                     | global |               accepted, rejected               | connections/s  |
-| clients                         | global | connected, blocked, tracking, in_timeout_table |    clients     |
-| ping_latency                    | global |                 min, max, avg                  |    seconds     |
-| commands                        | global |                   processes                    |   commands/s   |
-| keyspace_lookup_hit_rate        | global |                lookup_hit_rate                 |   percentage   |
-| memory                          | global |  max, used, rss, peak, dataset, lua, scripts   |     bytes      |
-| mem_fragmentation_ratio         | global |               mem_fragmentation                |     ratio      |
-| key_eviction_events             | global |                    evicted                     |     keys/s     |
-| net                             | global |                 received, sent                 |   kilobits/s   |
-| rdb_changes                     | global |                    changes                     |   operations   |
-| bgsave_now                      | global |              current_bgsave_time               |    seconds     |
-| bgsave_health                   | global |                  last_bgsave                   |     status     |
-| bgsave_last_rdb_save_since_time | global |                last_bgsave_time                |    seconds     |
-| aof_file_size                   | global |                 current, base                  |     bytes      |
-| commands_calls                  | global |         <i>a dimension per command</i>         |     calls      |
-| commands_usec                   | global |         <i>a dimension per command</i>         |  microseconds  |
-| commands_usec_per_sec           | global |         <i>a dimension per command</i>         | microseconds/s |
-| key_expiration_events           | global |                    expired                     |     keys/s     |
-| database_keys                   | global |        <i>a dimension per database</i>         |      keys      |
-| database_expires_keys           | global |        <i>a dimension per database</i>         |      keys      |
-| connected_replicas              | global |                   connected                    |    replicas    |
-| master_link_status              | global |                    up, down                    |     status     |
-| master_last_io_since_time       | global |                      time                      |    seconds     |
-| master_link_down_since_time     | global |                      time                      |    seconds     |
-| uptime                          | global |                     uptime                     |    seconds     |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/redis/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/redis.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
