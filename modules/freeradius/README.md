@@ -29,25 +29,14 @@ To enable status feature do the following:
 
 ## Metrics
 
-All metrics have "freeradius." prefix.
-
-| Metric                                | Scope  |                      Dimensions                       |   Units   |
-|---------------------------------------|:------:|:-----------------------------------------------------:|:---------:|
-| authentication                        | global |                  requests, responses                  | packets/s |
-| authentication_access_responses       | global |             accepts, rejects, challenges              | packets/s |
-| bad_authentication                    | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
-| proxy_authentication                  | global |                  requests, responses                  | packets/s |
-| proxy_authentication_access_responses | global |             accepts, rejects, challenges              | packets/s |
-| proxy_bad_authentication              | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
-| accounting                            | global |                  requests, responses                  | packets/s |
-| bad_accounting                        | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
-| proxy_accounting                      | global |                  requests, responses                  | packets/s |
-| proxy_bad_accounting                  | global | dropped, duplicate, invalid, malformed, unknown-types | packets/s |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/freeradius/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/freeradius.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
