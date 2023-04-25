@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+phpdaemon.workers,,"alive, shutdown",workers,"Workers",line,,go.d.plugin,phpdaemon
+phpdaemon.alive_workers,,"idle, busy, reloading",workers,"Alive Workers State",line,,go.d.plugin,phpdaemon
+phpdaemon.idle_workers,,"preinit, init, initialized",workers,"Idle Workers State",line,,go.d.plugin,phpdaemon
+phpdaemon.uptime,,time,seconds,"Uptime",line,,go.d.plugin,phpdaemon
