@@ -31,21 +31,14 @@ For collecting metrics via HTTP, we need:
 
 ## Metrics
 
-All metrics have "powerdns_recursor." prefix.
-
-| Metric        | Scope  |                                        Dimensions                                         |    Units    |
-|---------------|:------:|:-----------------------------------------------------------------------------------------:|:-----------:|
-| questions_in  | global |                                     total, tcp, ipv6                                      | questions/s |
-| questions_out | global |                                 udp, tcp, ipv6, throttled                                 | questions/s |
-| answer_time   | global |                         0-1ms, 1-10ms, 10-100ms, 100-1000ms, slow                         |  queries/s  |
-| timeouts      | global |                                     total, ipv4, ipv6                                     | timeouts/s  |
-| drops         | global | over-capacity-drops, query-pipe-full-drops, too-old-drops, truncated-drops, empty-queries |   drops/s   |
-| cache_size    | global |                            cache, packet-cache, negative-cache                            |   entries   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/powerdns_recursor/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/powerdns_recursor.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
