@@ -21,23 +21,14 @@ This module will monitor one or more `Docker Engines` applications, depending on
 
 ## Metrics
 
-All metrics have "docker_engine." prefix.
-
-| Metric                                    | Scope  |                                                                                                         Dimensions                                                                                                          |   Units    |
-|-------------------------------------------|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------:|
-| engine_daemon_container_actions           | global |                                                                                           changes, commit, create, delete, start                                                                                            | actions/s  |
-| engine_daemon_container_states_containers | global |                                                                                                  running, paused, stopped                                                                                                   | containers |
-| builder_builds_failed_total               | global | build_canceled, build_target_not_reachable_error, command_not_supported_error, dockerfile_empty_error, dockerfile_syntax_error, error_processing_commands_error, missing_onbuild_arguments_error, unknown_instruction_error |  fails/s   |
-| engine_daemon_health_checks_failed_total  | global |                                                                                                            fails                                                                                                            |  events/s  |
-| swarm_manager_leader                      | global |                                                                                                          is_leader                                                                                                          |    bool    |
-| swarm_manager_object_store                | global |                                                                                     nodes, services, tasks, networks, secrets, configs                                                                                      |  objects   |
-| swarm_manager_nodes_per_state             | global |                                                                                             ready, down, unknown, disconnected                                                                                              |   nodes    |
-| swarm_manager_tasks_per_state             | global |                                                running, failed, ready, rejected, starting, shutdown, new, orphaned, preparing, pending, complete, remove, accepted, assigned                                                |   tasks    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/docker_engine/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/docker_engine.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
