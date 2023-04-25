@@ -17,18 +17,8 @@ This module monitors `Dnsmasq DHCP` leases database.
 
 ## Metrics
 
-All metrics have "dnsmasq_dhcp." prefix.
-
-Labels per scope:
-
-- dhcp range: dhcp_range.
-
-| Metric                      |   Scope    | Dimensions |   Units    |
-|-----------------------------|:----------:|:----------:|:----------:|
-| dhcp_ranges                 |   global   | ipv4, ipv6 |   ranges   |
-| dhcp_hosts                  |   global   | ipv4, ipv6 |   hosts    |
-| dhcp_range_utilization      | dhcp range |    used    | percentage |
-| dhcp_range_allocated_leases | dhcp range | allocated  |   leases   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/dnsmasq_dhcp/metrics.csv) for a list of
+metrics.
 
 ## Auto-detection
 
@@ -43,7 +33,8 @@ By default it uses:
 ## Configuration
 
 Edit the `go.d/dnsmasq_dhcp.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
