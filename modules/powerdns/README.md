@@ -30,20 +30,14 @@ For collecting metrics via HTTP, we need:
 
 ## Metrics
 
-All metrics have "powerdns." prefix.
-
-| Metric        | Scope  |                              Dimensions                              |    Units     |
-|---------------|:------:|:--------------------------------------------------------------------:|:------------:|
-| questions_in  | global |                               udp, tcp                               | questions/s  |
-| questions_out | global |                               udp, tcp                               | questions/s  |
-| cache_usage   | global | query-cache-hit, query-cache-miss, packetcache-hit, packetcache-miss |   events/s   |
-| cache_size    | global |           query-cache, packet-cache, key-cache, meta-cache           |   entries    |
-| latency       | global |                               latency                                | microseconds |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/powerdns/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/powerdns.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
