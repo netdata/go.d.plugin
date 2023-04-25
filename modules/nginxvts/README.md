@@ -14,27 +14,16 @@ with [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts).
 
 ## Metrics
 
-All metrics have "nginxvts." prefix.
-
-| Metric                 | Scope  |                            Dimensions                            |     Units     |
-|------------------------|:------:|:----------------------------------------------------------------:|:-------------:|
-| requests_total         | global |                             requests                             |  requests/s   |
-| active_connections     | global |                              active                              |  connections  |
-| connections_total      | global |           reading, writing, waiting, accepted, handled           | connections/s |
-| uptime                 | global |                              uptime                              |    seconds    |
-| shm_usage              | global |                            max, used                             |     bytes     |
-| shm_used_node          | global |                               used                               |     nodes     |
-| server_requests_total  | global |                             requests                             |  requests/s   |
-| server_responses_total | global |                     1xx, 2xx, 3xx, 4xx, 5xx                      |  responses/s  |
-| server_traffic_total   | global |                             in, out                              |    bytes/s    |
-| server_cache_total     | global | miss, bypass, expired, stale, updating, revalidated, hit, scarce |   events/s    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/nginxvts/metrics.csv) for a list of
+metrics.
 
 Refer [`nginx-module-vts`](https://github.com/vozlt/nginx-module-vts#json) for more information.
 
 ## Configuration
 
 Edit the `go.d/nginxvts.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
