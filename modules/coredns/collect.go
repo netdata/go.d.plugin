@@ -5,6 +5,7 @@ package coredns
 import (
 	"errors"
 	"fmt"
+	"github.com/netdata/go.d.plugin/agent/module"
 	"strings"
 
 	"github.com/blang/semver/v4"
@@ -404,42 +405,6 @@ func (cd *CoreDNS) collectPerZoneRequests(mx *metrics, raw prometheus.Series) {
 	}
 }
 
-//func (cd *CoreDNS) collectPerZoneRequestsDuration(mx *metrics, raw prometheus.Series) {
-//	for _, metric := range raw.FindByName(metricRequestDurationSecondsBucket) {
-//		var (
-//			zone  = metric.Labels.Get("zone")
-//			le    = metric.Labels.Get("le")
-//			value = metric.Value
-//		)
-//
-//		if zone == empty || le == empty {
-//			continue
-//		}
-//
-//		if !cd.perZoneMatcher.MatchString(zone) {
-//			continue
-//		}
-//
-//		if zone == "." {
-//			zone = rootZoneReplaceName
-//		}
-//
-//		if !cd.collectedZones[zone] {
-//			cd.addNewZoneCharts(zone)
-//			cd.collectedZones[zone] = true
-//		}
-//
-//		if _, ok := mx.PerZone[zone]; !ok {
-//			mx.PerZone[zone] = &requestResponse{}
-//		}
-//
-//		setRequestDuration(&mx.PerZone[zone].Request, value, le)
-//	}
-//	for _, s := range mx.PerZone {
-//		processRequestDuration(&s.Request)
-//	}
-//}
-
 func (cd *CoreDNS) collectPerZoneRequestsPerType(mx *metrics, raw prometheus.Series) {
 	for _, metric := range raw.FindByName(cd.metricNames.requestTypeCountTotal) {
 		var (
@@ -623,73 +588,13 @@ func setResponsePerRcode(mx *response, value float64, rcode string) {
 	}
 }
 
-//func setRequestDuration(mx *request, value float64, le string) {
-//	switch le {
-//	case "0.00025":
-//		mx.Duration.LE000025.Add(value)
-//	case "0.0005":
-//		mx.Duration.LE00005.Add(value)
-//	case "0.001":
-//		mx.Duration.LE0001.Add(value)
-//	case "0.002":
-//		mx.Duration.LE0002.Add(value)
-//	case "0.004":
-//		mx.Duration.LE0004.Add(value)
-//	case "0.008":
-//		mx.Duration.LE0008.Add(value)
-//	case "0.016":
-//		mx.Duration.LE0016.Add(value)
-//	case "0.032":
-//		mx.Duration.LE0032.Add(value)
-//	case "0.064":
-//		mx.Duration.LE0064.Add(value)
-//	case "0.128":
-//		mx.Duration.LE0128.Add(value)
-//	case "0.256":
-//		mx.Duration.LE0256.Add(value)
-//	case "0.512":
-//		mx.Duration.LE0512.Add(value)
-//	case "1.024":
-//		mx.Duration.LE1024.Add(value)
-//	case "2.048":
-//		mx.Duration.LE2048.Add(value)
-//	case "4.096":
-//		mx.Duration.LE4096.Add(value)
-//	case "8.192":
-//		mx.Duration.LE8192.Add(value)
-//	case "+Inf":
-//		mx.Duration.LEInf.Add(value)
-//	}
-//}
-
-//func processRequestDuration(mx *request) {
-//	mx.Duration.LEInf.Sub(mx.Duration.LE8192.Value())
-//	mx.Duration.LE8192.Sub(mx.Duration.LE4096.Value())
-//	mx.Duration.LE4096.Sub(mx.Duration.LE2048.Value())
-//	mx.Duration.LE2048.Sub(mx.Duration.LE1024.Value())
-//	mx.Duration.LE1024.Sub(mx.Duration.LE0512.Value())
-//	mx.Duration.LE0512.Sub(mx.Duration.LE0256.Value())
-//	mx.Duration.LE0256.Sub(mx.Duration.LE0128.Value())
-//	mx.Duration.LE0128.Sub(mx.Duration.LE0064.Value())
-//	mx.Duration.LE0064.Sub(mx.Duration.LE0032.Value())
-//	mx.Duration.LE0032.Sub(mx.Duration.LE0016.Value())
-//	mx.Duration.LE0016.Sub(mx.Duration.LE0008.Value())
-//	mx.Duration.LE0008.Sub(mx.Duration.LE0004.Value())
-//	mx.Duration.LE0004.Sub(mx.Duration.LE0002.Value())
-//	mx.Duration.LE0002.Sub(mx.Duration.LE0001.Value())
-//	mx.Duration.LE0001.Sub(mx.Duration.LE00005.Value())
-//	mx.Duration.LE00005.Sub(mx.Duration.LE000025.Value())
-//}
-
-// ---
-
 func (cd *CoreDNS) addNewServerCharts(name string) {
 	charts := serverCharts.Copy()
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, "server", name)
-		chart.Title = fmt.Sprintf(chart.Title, "Server", name)
-		chart.Fam = fmt.Sprintf(chart.Fam, "server", name)
-
+		chart.Labels = []module.Label{
+			{Key: "server_name", Value: name},
+		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
 		}
@@ -701,10 +606,10 @@ func (cd *CoreDNS) addNewZoneCharts(name string) {
 	charts := zoneCharts.Copy()
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, "zone", name)
-		chart.Title = fmt.Sprintf(chart.Title, "Zone", name)
-		chart.Fam = fmt.Sprintf(chart.Fam, "zone", name)
 		chart.Ctx = strings.Replace(chart.Ctx, "coredns.server_", "coredns.zone_", 1)
-
+		chart.Labels = []module.Label{
+			{Key: "zone_name", Value: name},
+		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, name)
 		}
