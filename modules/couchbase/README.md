@@ -19,23 +19,6 @@ a powerful query engine for executing SQL-like queries.
 See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/couchbase/metrics.csv) for a list of
 metrics.
 
-## Charts
-
-In this module 8 charts are supported because we collect basic stats from couchbase.
-
-### Buckets Basic Stats
-
-Collected from `/pools/default/buckets ` endpoint.
-
-- Quota Percent Used Per Bucket in `%`
-- Operations Per Second Per Bucket in `ops/s`
-- Disk Fetches Per Bucket in `fetches`
-- Item Count Per Bucket in `items`
-- Disk Used Per Bucket in `bytes`
-- Data Used Per Bucket in `bytes`
-- Memory Used Per Bucket in `bytes`
-- Number Of Non-Resident Items Per Bucket in `items`
-
 ## Configuration
 
 Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the
