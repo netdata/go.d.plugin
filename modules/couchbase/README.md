@@ -16,18 +16,8 @@ a powerful query engine for executing SQL-like queries.
 
 ## Metrics
 
-All metrics have "couchbase." prefix.
-
-| Metric                            | Scope  |          Dimensions           |   Units    |
-|-----------------------------------|:------:|:-----------------------------:|:----------:|
-| bucket_quota_percent_used         | global | <i>a dimension per bucket</i> | percentage |
-| bucket_ops_per_sec                | global | <i>a dimension per bucket</i> |   ops/s    |
-| bucket_disk_fetches               | global | <i>a dimension per bucket</i> |  fetches   |
-| bucket_item_count                 | global | <i>a dimension per bucket</i> |   items    |
-| bucket_disk_used_stats            | global | <i>a dimension per bucket</i> |   bytes    |
-| bucket_data_used                  | global | <i>a dimension per bucket</i> |   bytes    |
-| bucket_mem_used                   | global | <i>a dimension per bucket</i> |   bytes    |
-| bucket_vb_active_num_non_resident | global | <i>a dimension per bucket</i> |   items    |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/couchbase/metrics.csv) for a list of
+metrics.
 
 ## Charts
 
@@ -49,7 +39,8 @@ Collected from `/pools/default/buckets ` endpoint.
 ## Configuration
 
 Edit the `go.d/couchbase.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
