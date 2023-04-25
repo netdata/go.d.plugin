@@ -22,16 +22,10 @@ This module will monitor one or more `OpenVPN` instances via Management Interfac
 
 ## Metrics
 
-All metrics have "openvpn." prefix.
-
 > user_* stats are disabled by default, see `per_user_stats` in the module config file.
 
-| Metric               | Scope  | Dimensions |   Units    |
-|----------------------|:------:|:----------:|:----------:|
-| active_clients       | global |  clients   |  clients   |
-| total_traffic        | global |  in, out   | kilobits/s |
-| user_traffic         |  user  |  in, out   | kilobits/s |
-| user_connection_time |  user  |    time    |  seconds   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/openvpn/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
@@ -44,7 +38,8 @@ Reason:
 We disabled it to not break other tools which uses `Management Interface`.
 
 Edit the `go.d/openvpn.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
