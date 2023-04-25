@@ -22,18 +22,14 @@ database (`dhcpd.leases`).
 
 ## Metrics
 
-All metrics have "isc_dhcps." prefix.
-
-| Metric              | Scope  |            Dimensions            |   Units    |
-|---------------------|:------:|:--------------------------------:|:----------:|
-| active_leases_total | global |              active              |   leases   |
-| pool_active_leases  | global | <i>a dimension per DHCP pool</i> |   leases   |
-| pool_utilization    | global | <i>a dimension per DHCP pool</i> | percentage |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/isc_dhcpd/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/isc_dhcpd.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
