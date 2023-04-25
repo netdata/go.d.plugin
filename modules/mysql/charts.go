@@ -968,12 +968,10 @@ var (
 )
 
 func newSlaveReplConnCharts(conn string) *module.Charts {
-	orig := conn
 	conn = strings.ToLower(conn)
 	cs := chartsSlaveReplication.Copy()
 	for _, chart := range *cs {
 		chart.ID += "_" + conn
-		chart.Title += " Connection " + orig
 		for _, dim := range chart.Dims {
 			dim.ID += "_" + conn
 		}
