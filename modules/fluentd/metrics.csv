@@ -1,0 +1,4 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+fluentd.retry_count,,a dimension per plugin,count,"Plugin Retry Count",line,,go.d.plugin,fluentd
+fluentd.buffer_queue_length,,a dimension per plugin,queue_length,"Plugin Buffer Queue Length",line,,go.d.plugin,fluentd
+fluentd.buffer_total_queued_size,,a dimension per plugin,queued_size,"Plugin Buffer Total Size",line,,go.d.plugin,fluentd

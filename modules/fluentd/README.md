@@ -21,18 +21,14 @@ endpoint provided by [in_monitor plugin](https://docs.fluentd.org/v1.0/articles/
 
 ## Metrics
 
-All metrics have "fluentd." prefix.
-
-| Metric                   | Scope  |          Dimensions           |    Units     |
-|--------------------------|:------:|:-----------------------------:|:------------:|
-| retry_count              | global | <i>a dimension per plugin</i> |    count     |
-| buffer_queue_length      | global | <i>a dimension per plugin</i> | queue_length |
-| buffer_total_queued_size | global | <i>a dimension per plugin</i> | queued_size  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/fluentd/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/fluentd.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
