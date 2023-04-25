@@ -1,0 +1,10 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+pihole.dns_queries_total,,queries,queries,"DNS Queries Total (Cached, Blocked and Forwarded)",line,,go.d.plugin,pihole
+pihole.dns_queries,,"cached, blocked, forwarded",queries,"DNS Queries",stacked,,go.d.plugin,pihole
+pihole.dns_queries_percentage,,"cached, blocked, forwarded",percentage,"DNS Queries Percentage",stacked,,go.d.plugin,pihole
+pihole.unique_clients,,unique,clients,"Unique Clients",line,,go.d.plugin,pihole
+pihole.domains_on_blocklist,,blocklist,domains,"Domains On Blocklist",line,,go.d.plugin,pihole
+pihole.blocklist_last_update,,ago,seconds,"Blocklist Last Update",line,,go.d.plugin,pihole
+pihole.unwanted_domains_blocking_status,,"enabled, disabled",status,"Unwanted Domains Blocking Status",line,,go.d.plugin,pihole
+pihole.dns_queries_types,,"a, aaaa, any, ptr, soa, srv, txt",percentage,"DNS Queries Per Type",stacked,,go.d.plugin,pihole
+pihole.dns_queries_forwarded_destination,,"cached, blocked, other",percentage,"DNS Queries Per Destination",stacked,,go.d.plugin,pihole

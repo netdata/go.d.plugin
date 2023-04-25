@@ -20,24 +20,14 @@ module collection interval.
 
 ## Metrics
 
-All metrics have "pihole." prefix.
-
-| Metric                            | Scope  |            Dimensions            |   Units    |
-|-----------------------------------|:------:|:--------------------------------:|:----------:|
-| dns_queries_total                 | global |             queries              |  queries   |
-| dns_queries                       | global |    cached, blocked, forwarded    |  queries   |
-| dns_queries_percentage            | global |    cached, blocked, forwarded    | percentage |
-| unique_clients                    | global |              unique              |  clients   |
-| domains_on_blocklist              | global |            blocklist             |  domains   |
-| blocklist_last_update             | global |               ago                |  seconds   |
-| unwanted_domains_blocking_status  | global |        enabled, disabled         |   status   |
-| dns_queries_types                 | global | a, aaaa, any, ptr, soa, srv, txt | percentage |
-| dns_queries_forwarded_destination | global |      cached, blocked, other      | percentage |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/pihole/metrics.csv) for a list
+of metrics.
 
 ## Configuration
 
 Edit the `go.d/pihole.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
