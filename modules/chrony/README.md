@@ -15,28 +15,14 @@ This module monitors the system's clock performance and peers activity status us
 
 ## Metrics
 
-All metrics have "chrony." prefix.
-
-| Metric               | Scope  |                        Dimensions                        |   Units   |
-|----------------------|:------:|:--------------------------------------------------------:|:---------:|
-| stratum              | global |                         stratum                          |   level   |
-| current_correction   | global |                    current_correction                    |  seconds  |
-| root_delay           | global |                        root_delay                        |  seconds  |
-| root_dispersion      | global |                     root_dispersion                      |  seconds  |
-| last_offset          | global |                          offset                          |  seconds  |
-| rms_offset           | global |                          offset                          |  seconds  |
-| frequency            | global |                        frequency                         |    ppm    |
-| residual_frequency   | global |                    residual_frequency                    |    ppm    |
-| skew                 | global |                           skew                           | frequency |
-| update_interval      | global |                     update_interval                      |  seconds  |
-| ref_measurement_time | global |                   ref_measurement_time                   |  seconds  |
-| leap_status          | global |   normal, insert_second, delete_second, unsynchronised   |  status   |
-| activity             | global | online, offline, burst_online, burst_offline, unresolved |  sources  |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/chrony/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/chrony.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata   # Replace this path with your Netdata config directory, if different
