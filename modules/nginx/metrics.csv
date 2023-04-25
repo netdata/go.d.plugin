@@ -1,0 +1,5 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+nginx.connections,,active,connections,"Active Client Connections Including Waiting Connections",line,,go.d.plugin,nginx
+nginx.connections_status,,"reading, writing, idle",connections,"Active Connections Per Status",line,,go.d.plugin,nginx
+nginx.connections_accepted_handled,,"accepted, handled",connections/s,"Accepted And Handled Connections",line,,go.d.plugin,nginx
+nginx.requests,,requests,requests/s,"Client Requests",line,,go.d.plugin,nginx
