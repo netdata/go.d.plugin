@@ -17,21 +17,14 @@ This module will monitor one or more `kube-proxy` instances, depending on your c
 
 ## Metrics
 
-All metrics have "k8s_kubeproxy." prefix.
-
-| Metric                                         | Scope  |                                                   Dimensions                                                   |    Units     |
-|------------------------------------------------|:------:|:--------------------------------------------------------------------------------------------------------------:|:------------:|
-| kubeproxy_sync_proxy_rules                     | global |                                                sync_proxy_rules                                                |   events/s   |
-| kubeproxy_sync_proxy_rules_latency_microsecond | global | 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096, 8.192, 16.384, +Inf |  observes/s  |
-| kubeproxy_sync_proxy_rules_latency             | global | 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096, 8.192, 16.384, +Inf |  percentage  |
-| rest_client_requests_by_code                   | global |                                    <i>a dimension per HTTP status code</i>                                     |  requests/s  |
-| rest_client_requests_by_method                 | global |                                       <i>a dimension per HTTP method</i>                                       |  requests/s  |
-| http_request_duration                          | global |                                                 0.5, 0.9, 0.99                                                 | microseconds |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/k8s_kubeproxy/metrics.csv) for a list of
+metrics.
 
 ## Configuration
 
 Edit the `go.d/k8s_kubeproxy.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
