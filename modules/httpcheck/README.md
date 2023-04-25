@@ -14,17 +14,8 @@ This module monitors one or more http servers availability and response time.
 
 ## Metrics
 
-All metrics have "httpcheck." prefix.
-
-Labels per scope:
-
-- global: url.
-
-| Metric          | Scope  |                        Dimensions                        |   Units    |
-|-----------------|:------:|:--------------------------------------------------------:|:----------:|
-| response_time   | global |                           time                           |     ms     |
-| response_length | global |                          length                          | characters |
-| status          | global | success, no_connection, timeout, bad_content, bad_status |  boolean   |
+See [metrics.csv](https://github.com/netdata/go.d.plugin/blob/master/modules/httpcheck/metrics.csv) for a list of
+metrics.
 
 ## Check statuses
 
@@ -39,7 +30,8 @@ Labels per scope:
 ## Configuration
 
 Edit the `go.d/httpcheck.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
