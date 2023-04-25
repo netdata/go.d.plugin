@@ -47,7 +47,7 @@ All metrics have "pulsar." prefix.
 | replication_rate                                   |  global   |                                  in, out                                  |      messages/s       |
 | replication_throughput_rate                        |  global   |                                  in, out                                  |         KiB/s         |
 | replication_backlog                                |  global   |                                  backlog                                  |       messages        |
-| namespace_broker_components                        |  global   |                topics, subscriptions, producers, consumers                |      components       |
+| namespace_broker_components                        | namespace |                topics, subscriptions, producers, consumers                |      components       |
 | namespace_messages_rate                            | namespace |                             publish, dispatch                             |      messages/s       |
 | namespace_throughput_rate                          | namespace |                             publish, dispatch                             |         KiB/s         |
 | namespace_storage_size                             | namespace |                                   used                                    |          KiB          |
@@ -80,12 +80,12 @@ All metrics have "pulsar." prefix.
 | topic_replication_throughput_rate_in               | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
 | topic_replication_throughput_rate_out              | namespace |                       <i>a dimension per topic</i>                        |      messages/s       |
 | topic_replication_backlog                          | namespace |                       <i>a dimension per topic</i>                        |       messages        |
-| topic_replication_backlog                          | namespace |                       <i>a dimension per topic</i>                        |       messages        |
 
 ## Configuration
 
 Edit the `go.d/pulsar.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory

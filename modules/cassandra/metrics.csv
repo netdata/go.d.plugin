@@ -1,0 +1,29 @@
+metric,scope,dimensions,unit,description,chart_type,labels,plugin,module
+cassandra.client_requests_rate,,"read, write",requests/s,"Client requests rate",line,,go.d.plugin,cassandra
+cassandra.client_request_read_latency_histogram,,"p50, p75, p95, p98, p99, p999",seconds,"Client request read latency histogram",line,,go.d.plugin,cassandra
+cassandra.client_request_write_latency_histogram,,"p50, p75, p95, p98, p99, p999",seconds,"Client request write latency histogram",line,,go.d.plugin,cassandra
+cassandra.client_requests_latency,,"read, write",seconds,"Client requests total latency",line,,go.d.plugin,cassandra
+cassandra.row_cache_hit_ratio,,hit_ratio,percentage,"Key cache hit ratio",line,,go.d.plugin,cassandra
+cassandra.row_cache_hit_rate,,"hits, misses",events/s,"Key cache hit rate",stacked,,go.d.plugin,cassandra
+cassandra.row_cache_utilization,,used,percentage,"Key cache utilization",line,,go.d.plugin,cassandra
+cassandra.row_cache_size,,size,bytes,"Key cache size",line,,go.d.plugin,cassandra
+cassandra.key_cache_hit_ratio,,hit_ratio,percentage,"Row cache hit ratio",line,,go.d.plugin,cassandra
+cassandra.key_cache_hit_rate,,"hits, misses",events/s,"Row cache hit rate",stacked,,go.d.plugin,cassandra
+cassandra.key_cache_utilization,,used,percentage,"Row cache utilization",line,,go.d.plugin,cassandra
+cassandra.key_cache_size,,size,bytes,"Row cache size",line,,go.d.plugin,cassandra
+cassandra.storage_live_disk_space_used,,used,bytes,"Disk space used by live data",line,,go.d.plugin,cassandra
+cassandra.compaction_completed_tasks_rate,,completed,tasks/s,"Completed compactions rate",line,,go.d.plugin,cassandra
+cassandra.compaction_pending_tasks_count,,pending,tasks,"Pending compactions",line,,go.d.plugin,cassandra
+cassandra.compaction_compacted_rate,,compacted,bytes/s,"Compaction data rate",line,,go.d.plugin,cassandra
+cassandra.thread_pool_active_tasks_count,thread pool,active,tasks,"Active tasks",line,thread_pool,go.d.plugin,cassandra
+cassandra.thread_pool_pending_tasks_count,thread pool,pending,tasks,"Pending tasks",line,thread_pool,go.d.plugin,cassandra
+cassandra.thread_pool_blocked_tasks_count,thread pool,blocked,tasks,"Blocked tasks",line,thread_pool,go.d.plugin,cassandra
+cassandra.thread_pool_blocked_tasks_rate,thread pool,blocked,tasks/s,"Blocked tasks rate",line,thread_pool,go.d.plugin,cassandra
+cassandra.jvm_memory_used,,"heap, nonheap",bytes,"Memory used",stacked,,go.d.plugin,cassandra
+cassandra.jvm_gc_rate,,"parnew, cms",gc/s,"Garbage collections rate",line,,go.d.plugin,cassandra
+cassandra.jvm_gc_time,,"parnew, cms",seconds,"Garbage collection time",line,,go.d.plugin,cassandra
+cassandra.dropped_messages_rate,,dropped,messages/s,"Dropped messages rate",line,,go.d.plugin,cassandra
+cassandra.client_requests_timeouts_rate,,"read, write",timeout/s,"Client requests timeouts rate",line,,go.d.plugin,cassandra
+cassandra.client_requests_unavailables_rate,,"read, write",exceptions/s,"Client requests unavailable exceptions rate",line,,go.d.plugin,cassandra
+cassandra.client_requests_failures_rate,,"read, write",failures/s,"Client requests failures rate",line,,go.d.plugin,cassandra
+cassandra.storage_exceptions_rate,,storage,exceptions/s,"Storage exceptions rate",line,,go.d.plugin,cassandra

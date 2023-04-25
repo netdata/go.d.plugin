@@ -42,36 +42,36 @@ Labels per scope:
 - global: no labels.
 - thread pool: thread_pool.
 
-| Metric                                 |    Scope    |  Dimensions   |    Units     |
-|----------------------------------------|:-----------:|:-------------:|:------------:|
-| client_requests_rate                   |   global    |  read, write  |  requests/s  |
-| client_request_read_latency_histogram  |   global    |  read, write  |   seconds    |
-| client_request_write_latency_histogram |   global    |  read, write  |   seconds    |
-| client_requests_latency                |   global    |  read, write  |   seconds    |
-| row_cache_hit_ratio                    |   global    |   hit_ratio   |  percentage  |
-| row_cache_hit_rate                     |   global    | hits, misses  |   events/s   |
-| row_cache_utilization                  |   global    |     used      |  percentage  |
-| row_cache_size                         |   global    |     size      |    bytes     |
-| key_cache_hit_ratio                    |   global    |   hit_ratio   |  percentage  |
-| key_cache_hit_rate                     |   global    | hits, misses  |   events/s   |
-| key_cache_utilization                  |   global    |     used      |  percentage  |
-| key_cache_size                         |   global    |     size      |    bytes     |
-| storage_live_disk_space_used           |   global    |     used      |    bytes     |
-| compaction_completed_tasks_rate        |   global    |   completed   |   tasks/s    |
-| compaction_pending_tasks_count         |   global    |    pending    |    tasks     |
-| compaction_compacted_rate              |   global    |   compacted   |   bytes/s    |
-| thread_pool_active_tasks_count         | thread pool |    active     |    tasks     |
-| thread_pool_pending_tasks_count        | thread pool |    pending    |    tasks     |
-| thread_pool_blocked_tasks_count        | thread pool |    blocked    |    tasks     |
-| thread_pool_blocked_tasks_rate         | thread pool |    blocked    |   tasks/s    |
-| jvm_memory_used                        |   global    | heap, nonheap |    bytes     |
-| jvm_gc_rate                            |   global    |  parnew, cms  |     gc/s     |
-| jvm_gc_time                            |   global    |  parnew, cms  |   seconds    |
-| dropped_messages_rate                  |   global    |    dropped    |  messages/s  |
-| client_requests_timeouts_rate          |   global    |  read, write  |  timeout/s   |
-| client_requests_unavailables_rate      |   global    |  read, write  | exceptions/s |
-| client_requests_failures_rate          |   global    |  read, write  |  failures/s  |
-| storage_exceptions_rate                |   global    |    storage    | exceptions/s |
+| Metric                                 |    Scope    |          Dimensions           |    Units     |
+|----------------------------------------|:-----------:|:-----------------------------:|:------------:|
+| client_requests_rate                   |   global    |          read, write          |  requests/s  |
+| client_request_read_latency_histogram  |   global    | p50, p75, p95, p98, p99, p999 |   seconds    |
+| client_request_write_latency_histogram |   global    | p50, p75, p95, p98, p99, p999 |   seconds    |
+| client_requests_latency                |   global    |          read, write          |   seconds    |
+| row_cache_hit_ratio                    |   global    |           hit_ratio           |  percentage  |
+| row_cache_hit_rate                     |   global    |         hits, misses          |   events/s   |
+| row_cache_utilization                  |   global    |             used              |  percentage  |
+| row_cache_size                         |   global    |             size              |    bytes     |
+| key_cache_hit_ratio                    |   global    |           hit_ratio           |  percentage  |
+| key_cache_hit_rate                     |   global    |         hits, misses          |   events/s   |
+| key_cache_utilization                  |   global    |             used              |  percentage  |
+| key_cache_size                         |   global    |             size              |    bytes     |
+| storage_live_disk_space_used           |   global    |             used              |    bytes     |
+| compaction_completed_tasks_rate        |   global    |           completed           |   tasks/s    |
+| compaction_pending_tasks_count         |   global    |            pending            |    tasks     |
+| compaction_compacted_rate              |   global    |           compacted           |   bytes/s    |
+| thread_pool_active_tasks_count         | thread pool |            active             |    tasks     |
+| thread_pool_pending_tasks_count        | thread pool |            pending            |    tasks     |
+| thread_pool_blocked_tasks_count        | thread pool |            blocked            |    tasks     |
+| thread_pool_blocked_tasks_rate         | thread pool |            blocked            |   tasks/s    |
+| jvm_memory_used                        |   global    |         heap, nonheap         |    bytes     |
+| jvm_gc_rate                            |   global    |          parnew, cms          |     gc/s     |
+| jvm_gc_time                            |   global    |          parnew, cms          |   seconds    |
+| dropped_messages_rate                  |   global    |            dropped            |  messages/s  |
+| client_requests_timeouts_rate          |   global    |          read, write          |  timeout/s   |
+| client_requests_unavailables_rate      |   global    |          read, write          | exceptions/s |
+| client_requests_failures_rate          |   global    |          read, write          |  failures/s  |
+| storage_exceptions_rate                |   global    |            storage            | exceptions/s |
 
 ## Configuration
 
