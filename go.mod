@@ -23,8 +23,8 @@ require (
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/likexian/whois v1.14.6
-	github.com/likexian/whois-parser v1.24.7
+	github.com/likexian/whois v1.15.0
+	github.com/likexian/whois-parser v1.24.8
 	github.com/mattn/go-isatty v0.0.18
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.53
@@ -106,7 +106,7 @@ require (
 	github.com/josharian/native v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/likexian/gokit v0.25.11 // indirect
+	github.com/likexian/gokit v0.25.13 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
