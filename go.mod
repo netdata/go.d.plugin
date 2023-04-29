@@ -27,7 +27,7 @@ require (
 	github.com/likexian/whois-parser v1.24.8
 	github.com/mattn/go-isatty v0.0.18
 	github.com/mattn/go-xmlrpc v0.0.3
-	github.com/miekg/dns v1.1.53
+	github.com/miekg/dns v1.1.54
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/prometheus/prometheus v0.36.2
