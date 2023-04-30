@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package example
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+package cgminer
 
 import (
 	"testing"
@@ -12,96 +14,56 @@ import (
 func TestNew(t *testing.T) {
 	// We want to ensure that module is a reference type, nothing more.
 
-	assert.IsType(t, (*Example)(nil), New())
+	assert.IsType(t, (*Cgminer)(nil), New("http://localhost:4028"))
 }
 
-func TestExample_Init(t *testing.T) {
-	// 'Init() bool' initializes the module with an appropriate config, so to test it we need:
-	// - provide the config.
-	// - set module.Config field with the config.
-	// - call Init() and compare its return value with the expected value.
+func TestCgminer_GetPoolInfo(t *testing.T) {
+	cgminer := New("http://localhost:4028")
 
-	// 'test' map contains different test cases.
-	tests := map[string]struct {
-		config   Config
-		wantFail bool
-	}{
-		"success on default config": {
-			config: New().Config,
-		},
-		"success when only 'charts' set": {
-			config: Config{
-				Charts: ConfigCharts{
-					Num:  1,
-					Dims: 2,
-				},
-			},
-		},
-		"success when only 'hidden_charts' set": {
-			config: Config{
-				HiddenCharts: ConfigCharts{
-					Num:  1,
-					Dims: 2,
-				},
-			},
-		},
-		"success when 'charts' and 'hidden_charts' set": {
-			config: Config{
-				Charts: ConfigCharts{
-					Num:  1,
-					Dims: 2,
-				},
-				HiddenCharts: ConfigCharts{
-					Num:  1,
-					Dims: 2,
-				},
-			},
-		},
-		"fails when 'charts' and 'hidden_charts' set, but 'num' == 0": {
-			wantFail: true,
-			config: Config{
-				Charts: ConfigCharts{
-					Num:  0,
-					Dims: 2,
-				},
-				HiddenCharts: ConfigCharts{
-					Num:  0,
-					Dims: 2,
-				},
-			},
-		},
-		"fails when only 'charts' set, 'num' > 0, but 'dimensions' == 0": {
-			wantFail: true,
-			config: Config{
-				Charts: ConfigCharts{
-					Num:  1,
-					Dims: 0,
-				},
-			},
-		},
-		"fails when only '
-		"fails when only 'hidden_charts' set, 'num' > 0, but 'dimensions' == 0": {
-			wantFail: true,
-			config: Config{
-				HiddenCharts: ConfigCharts{
-					Num:  1,
-					Dims: 0,
-				},
-			},
-		},
+	poolInfo, err := cgminer.GetPoolInfo()
+	if err != nil {
+		t.Errorf("Error getting pool info: %s", err)
 	}
 
-	for name, tt := range tests {
-		t.Run(name, func(t *testing.T) {
-			module := New()
-			module.Config = tt.config
+	if len(poolInfo) == 0 {
+		t.Errorf("No pool info returned")
+	}
 
-			got := module.Init()
-			if tt.wantFail {
-				require.False(t, got)
-			} else {
-				require.True(t, got)
-			}
-		})
+	for _, info := range poolInfo {
+		if info.URL == "" {
+			t.Errorf("Pool URL is empty")
+		}
+	}
+}
+
+func TestCgminer_GetDeviceInfo(t *testing.T) {
+	cgminer := New("http://localhost:4028")
+
+	deviceInfo, err := cgminer.GetDeviceInfo()
+	if err != nil {
+		t.Errorf("Error getting device info: %s", err)
+	}
+
+	if len(deviceInfo) == 0 {
+		t.Errorf("No device info returned")
+	}
+
+	for _, info := range deviceInfo {
+		if info.Name == "" {
+			t.Errorf("Device name is empty")
+		}
+	}
+}
+
+func TestCgminer_GetMinerConfig(t *testing.T) {
+	cgminer := New("http://localhost:4028")
+
+	config, err := cgminer.GetMinerConfig()
+	if err != nil {
+		t.Errorf("Error getting miner config: %s", err)
+	}
+
+	if len(config) == 0 {
+		t.Errorf("No config returned")
 	}
 }
