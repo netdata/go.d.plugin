@@ -369,6 +369,14 @@ const (
 	prioHypervVMDeviceErrorCount
 	prioHypervVMDeviceQueueLength
 
+	// Hyperv Interface
+	prioHypervVMInterfaceBytesReceived
+	prioHypervVMInterfaceBytesSent
+	prioHypervVMInterfacePacketsIncomingDropped
+	prioHypervVMInterfacePacketsOutgoingDropped
+	prioHypervVMInterfacePacketsReceived
+	prioHypervVMInterfacePacketsSent
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -3648,6 +3656,14 @@ var (
 		hypervVMDeviceErrorCount.Copy(),
 		hypervVMDeviceQueueLength.Copy(),
 	}
+	hypervInterfacesChartsTemplate = module.Charts{
+		hypervVMInterfaceBytesReceived.Copy(),
+		hypervVMInterfaceBytesSent.Copy(),
+		hypervVMInterfacePacketsIncomingDropped.Copy(),
+		hypervVMInterfacePacketsOutgoingDropped.Copy(),
+		hypervVMInterfacePacketsReceived.Copy(),
+		hypervVMInterfacePacketsSent.Copy(),
+	}
 
 	hypervHealthCritical = module.Chart{
 		ID:       "hyperv_health_critical",
@@ -3981,6 +3997,74 @@ var (
 		Priority: prioHypervVMDeviceQueueLength,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_queue_length_total", Name: "queue", Algo: module.Incremental},
+		},
+	}
+
+	// Interfaces VM
+	hypervVMInterfaceBytesReceived = module.Chart{
+		ID:       "hyperv_vm_interface_%s_bytes_received",
+		Title:    "Number of bytes received per second.",
+		Units:    "bytes/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_bytes_received",
+		Priority: prioHypervVMInterfaceBytesReceived,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_bytes_received_total", Name: "received", Algo: module.Incremental},
+		},
+	}
+	hypervVMInterfaceBytesSent = module.Chart{
+		ID:       "hyperv_vm_interface_%s_bytes_sent",
+		Title:    "Number of bytes sent per second.",
+		Units:    "bytes/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_bytes_sent",
+		Priority: prioHypervVMInterfaceBytesSent,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_bytes_sent_total", Name: "sent", Algo: module.Incremental},
+		},
+	}
+	hypervVMInterfacePacketsIncomingDropped = module.Chart{
+		ID:       "hyperv_vm_interface_%s_packets_incoming_dropped",
+		Title:    "Number of incoming packets dropped per second.",
+		Units:    "dropped packets/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_packets_incoming_dropped",
+		Priority: prioHypervVMInterfacePacketsIncomingDropped,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_packets_incoming_dropped_total", Name: "packets", Algo: module.Incremental},
+		},
+	}
+	hypervVMInterfacePacketsOutgoingDropped = module.Chart{
+		ID:       "hyperv_vm_interface_%s_packets_outgoing_dropped",
+		Title:    "Number of outgoing packets dropped per second.",
+		Units:    "dropped packets/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_packets_outgoing_dropped",
+		Priority: prioHypervVMInterfacePacketsOutgoingDropped,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_packets_outgoing_dropped_total", Name: "packets", Algo: module.Incremental},
+		},
+	}
+	hypervVMInterfacePacketsReceived = module.Chart{
+		ID:       "hyperv_vm_interface_%s_packets_received",
+		Title:    "Number of packets received per second.",
+		Units:    "packets/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_packets_received",
+		Priority: prioHypervVMInterfacePacketsReceived,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_packets_received_total", Name: "packets", Algo: module.Incremental},
+		},
+	}
+	hypervVMInterfacePacketsSent = module.Chart{
+		ID:       "hyperv_vm_interface_%s_packets_sent",
+		Title:    "Number of pacakets sent per second.",
+		Units:    "packets/s",
+		Fam:      "interface",
+		Ctx:      "hyperv.vm_interface_packets_sent",
+		Priority: prioHypervVMInterfacePacketsReceived,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_interface_%s_packets_sent_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 )
@@ -4668,6 +4752,24 @@ func (w *Windows) addHypervDeviceCharts(device string) {
 		chart.ID = fmt.Sprintf(chart.ID, device)
 		chart.Labels = []module.Label{
 			{Key: "vm_device", Value: device},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, device)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) addHypervInterfaceCharts(device string) {
+	charts := hypervInterfacesChartsTemplate.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.Labels = []module.Label{
+			{Key: "vm_interface", Value: device},
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, device)
