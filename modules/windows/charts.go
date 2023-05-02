@@ -3940,7 +3940,7 @@ var (
 		},
 	}
 	hypervVMDeviceBytesWritten = module.Chart{
-		ID:       "hyperv_vm_device_%s_bytes_read",
+		ID:       "hyperv_vm_device_%s_bytes_written",
 		Title:    "Total of bytes written on virtual device",
 		Units:    "bytes/s",
 		Fam:      "device",
@@ -3980,7 +3980,7 @@ var (
 		Ctx:      "hyperv.vm_device_queue_length",
 		Priority: prioHypervVMDeviceQueueLength,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_operation_queue_length_total", Name: "queue", Algo: module.Incremental},
+			{ID: "hyperv_vm_device_%s_queue_length_total", Name: "queue", Algo: module.Incremental},
 		},
 	}
 )

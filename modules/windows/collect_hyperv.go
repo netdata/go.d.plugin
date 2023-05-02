@@ -76,7 +76,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	}
 
 	devices := make(map[string]bool)
-	px := "hyperv_vm_devices_"
+	px := "hyperv_vm_device_"
 
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
 		name := strings.TrimPrefix(pm.Name(), "windows_")
@@ -123,7 +123,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
 			parsed_name := hypervParsenames(name)
 			devices[parsed_name] = true
-			mx[px+parsed_name+"_queue_length"] = int64(pm.Value)
+			mx[px+parsed_name+"_queue_length_total"] = int64(pm.Value)
 		}
 	}
 
@@ -137,5 +137,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 
 func hypervParsenames(name string) string {
 	name = strings.ReplaceAll(name, " ", "_")
+	name = strings.ReplaceAll(name, "?", "_")
+	name = strings.ReplaceAll(name, ":", "_")
 	return strings.ToLower(name)
 }
