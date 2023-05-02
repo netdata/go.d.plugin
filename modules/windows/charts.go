@@ -3938,7 +3938,7 @@ var (
 		Title:    "Total of bytes read on virtual device",
 		Units:    "bytes/s",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_bytes_read",
+		Ctx:      "windows.hyperv_vm_device_bytes_read",
 		Priority: prioHypervVMDeviceBytesRead,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_bytes_read_counter", Name: "read", Algo: module.Incremental},
@@ -3947,9 +3947,9 @@ var (
 	hypervVMDeviceBytesOperationRead = module.Chart{
 		ID:       "hyperv_vm_device_%s_operation_read",
 		Title:    "Total of operations read on virtual device",
-		Units:    "bytes/s",
+		Units:    "reads/s",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_operation_read",
+		Ctx:      "windows.hyperv_vm_device_operation_read",
 		Priority: prioHypervVMDeviceBytesOperationsRead,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_operation_read_counter", Name: "read", Algo: module.Incremental},
@@ -3960,7 +3960,7 @@ var (
 		Title:    "Total of bytes written on virtual device",
 		Units:    "bytes/s",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_bytes_written",
+		Ctx:      "windows.hyperv_vm_device_bytes_written",
 		Priority: prioHypervVMDeviceBytesWritten,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_bytes_written_counter", Name: "write", Algo: module.Incremental},
@@ -3969,9 +3969,9 @@ var (
 	hypervVMDeviceBytesOperationWritten = module.Chart{
 		ID:       "hyperv_vm_device_%s_operation_written",
 		Title:    "Total of operations written on virtual device",
-		Units:    "bytes/s",
+		Units:    "writes/s",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_operation_written",
+		Ctx:      "windows.hyperv_vm_device_operation_written",
 		Priority: prioHypervVMDeviceBytesOperationsWritten,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_operation_written_counter", Name: "write", Algo: module.Incremental},
@@ -3982,7 +3982,7 @@ var (
 		Title:    "Number of errors on virtual device",
 		Units:    "errors",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_error_count",
+		Ctx:      "windows.hyperv_vm_device_error_count",
 		Priority: prioHypervVMDeviceErrorCount,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_error_counter", Name: "error", Algo: module.Incremental},
@@ -3993,7 +3993,7 @@ var (
 		Title:    "Current Queue length on virtual device",
 		Units:    "error",
 		Fam:      "device",
-		Ctx:      "hyperv.vm_device_queue_length",
+		Ctx:      "windows.hyperv_vm_device_queue_length",
 		Priority: prioHypervVMDeviceQueueLength,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_device_%s_queue_length_total", Name: "queue", Algo: module.Incremental},
