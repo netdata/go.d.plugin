@@ -54,6 +54,7 @@ func New() *Windows {
 			exchangeLDAP:                make(map[string]bool),
 			exchangeHTTPProxy:           make(map[string]bool),
 			hypervDevices:               make(map[string]bool),
+			hypervInterfaces:            make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -102,6 +103,7 @@ type (
 		exchangeLDAP                map[string]bool
 		exchangeHTTPProxy           map[string]bool
 		hypervDevices               map[string]bool
+		hypervInterfaces            map[string]bool
 	}
 )
 

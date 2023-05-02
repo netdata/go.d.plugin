@@ -41,6 +41,13 @@ const (
 	metricHypervVMDevicesOperationsWritten = "windows_hyperv_vm_device_queue_length"
 	metricHypervVMDevicesErrorCount        = "windows_hyperv_vm_device_error_count"
 	metricHypervVMDevicesQueueLength       = "windows_hyperv_vm_device_operations_written"
+
+	metricHypervVMInterfacesBytesReceived          = "windows_hyperv_vm_interface_bytes_received"
+	metricHypervVMInterfacesBytesSent              = "windows_hyperv_vm_interface_bytes_sent"
+	metricHypervVMInterfacesPacketsIncomingDropped = "windows_hyperv_vm_interface_packets_incoming_dropped"
+	metricHypervVMInterfacesPacketsOutgoingDropped = "windows_hyperv_vm_interface_packets_outgoing_dropped"
+	metricHypervVMInterfacesPacketsReceived        = "windows_hyperv_vm_interface_packets_received"
+	metricHypervVMInterfacesPacketsSent            = "windows_hyperv_vm_interface_packets_sent"
 )
 
 var hypervMetrics = []string{
@@ -76,6 +83,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	}
 
 	devices := make(map[string]bool)
+	interfaces := make(map[string]bool)
 	px := "hyperv_vm_device_"
 
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
@@ -127,10 +135,60 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
+	px = "hyperv_vm_interface_"
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesBytesReceived) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_bytes_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesBytesSent) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_bytes_sent_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsIncomingDropped) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_packets_incoming_dropped_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsOutgoingDropped) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_packets_outgoing_dropped_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsReceived) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_packets_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsSent) {
+		if name := pm.Labels.Get("vm_interface"); name != "" {
+			parsed_name := hypervParsenames(name)
+			interfaces[parsed_name] = true
+			mx[px+parsed_name+"_packets_sent_total"] = int64(pm.Value)
+		}
+	}
+
 	for v := range devices {
 		if !w.cache.hypervDevices[v] {
 			w.cache.hypervDevices[v] = true
 			w.addHypervDeviceCharts(v)
+		}
+	}
+	for v := range interfaces {
+		if !w.cache.hypervInterfaces[v] {
+			w.cache.hypervInterfaces[v] = true
+			w.addHypervInterfaceCharts(v)
 		}
 	}
 }
