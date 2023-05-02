@@ -1,6 +1,6 @@
 # cgminer collector
 
-A data collection module for cgminer.
+A data collection module for [cgminer](https://github.com/ckolivas/cgminer).
 
 ## Charts
 
@@ -23,13 +23,6 @@ modules:
   cgminer: yes
 ```
 
-Disabled by default. Should be explicitly enabled in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
-
-```yaml
-# go.d.conf
-modules:
-  cgminer: yes
-```
 For all available options, see the cgminer collector's configuration file.
 
 ## Troubleshooting
