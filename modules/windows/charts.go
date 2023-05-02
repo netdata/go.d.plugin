@@ -361,6 +361,14 @@ const (
 	prioHypervRootPartitionRecommendedVirtualTlbSize
 	prioHypervRootPartitionVirtualTlbPages
 
+	// Hyperv Device
+	prioHypervVMDeviceBytesRead
+	prioHypervVMDeviceBytesOperationsRead
+	prioHypervVMDeviceBytesWritten
+	prioHypervVMDeviceBytesOperationsWritten
+	prioHypervVMDeviceErrorCount
+	prioHypervVMDeviceQueueLength
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -3632,6 +3640,14 @@ var (
 		hypervRootPartitionRecommendedVirtualTlbSize.Copy(),
 		hypervRootPartitionVirtualTlbPages.Copy(),
 	}
+	hypervDeviceChartsTemplate = module.Charts{
+		hypervVMDeviceBytesRead.Copy(),
+		hypervVMDeviceBytesOperationRead.Copy(),
+		hypervVMDeviceBytesWritten.Copy(),
+		hypervVMDeviceBytesOperationWritten.Copy(),
+		hypervVMDeviceErrorCount.Copy(),
+		hypervVMDeviceQueueLength.Copy(),
+	}
 
 	hypervHealthCritical = module.Chart{
 		ID:       "hyperv_health_critical",
@@ -3897,6 +3913,74 @@ var (
 		Priority: prioHypervRootPartitionVirtualTlbPages,
 		Dims: module.Dims{
 			{ID: "hyperv_root_partition_virtual_tlb_pages_total", Name: "pages"},
+		},
+	}
+
+	// Devices VM
+	hypervVMDeviceBytesRead = module.Chart{
+		ID:       "hyperv_vm_device_%s_bytes_read",
+		Title:    "Total of bytes read on virtual device",
+		Units:    "bytes/s",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_bytes_read",
+		Priority: prioHypervVMDeviceBytesRead,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_bytes_read_counter", Name: "read", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceBytesOperationRead = module.Chart{
+		ID:       "hyperv_vm_device_%s_operation_read",
+		Title:    "Total of operations read on virtual device",
+		Units:    "bytes/s",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_operation_read",
+		Priority: prioHypervVMDeviceBytesOperationsRead,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_operation_read_counter", Name: "read", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceBytesWritten = module.Chart{
+		ID:       "hyperv_vm_device_%s_bytes_read",
+		Title:    "Total of bytes written on virtual device",
+		Units:    "bytes/s",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_bytes_written",
+		Priority: prioHypervVMDeviceBytesWritten,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_bytes_written_counter", Name: "write", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceBytesOperationWritten = module.Chart{
+		ID:       "hyperv_vm_device_%s_operation_written",
+		Title:    "Total of operations written on virtual device",
+		Units:    "bytes/s",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_operation_written",
+		Priority: prioHypervVMDeviceBytesOperationsWritten,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_operation_written_counter", Name: "write", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceErrorCount = module.Chart{
+		ID:       "hyperv_vm_device_%s_error_count",
+		Title:    "Number of errors on virtual device",
+		Units:    "errors",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_error_count",
+		Priority: prioHypervVMDeviceErrorCount,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_operation_written_counter", Name: "error", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceQueueLength = module.Chart{
+		ID:       "hyperv_vm_device_%s_queue_length",
+		Title:    "Current Queue length on virtual device",
+		Units:    "error",
+		Fam:      "device",
+		Ctx:      "hyperv.vm_device_queue_length",
+		Priority: prioHypervVMDeviceQueueLength,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_operation_queue_length_total", Name: "queue", Algo: module.Incremental},
 		},
 	}
 )
@@ -4571,6 +4655,24 @@ func (w *Windows) addCollectorCharts(name string) {
 
 func (w *Windows) addHypervCharts() {
 	charts := hypervChartsTmpl.Copy()
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) addHypervDeviceCharts(device string) {
+	charts := hypervDeviceChartsTemplate.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.Labels = []module.Label{
+			{Key: "vm_device", Value: device},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, device)
+		}
+	}
 
 	if err := w.Charts().Add(*charts...); err != nil {
 		w.Warning(err)
