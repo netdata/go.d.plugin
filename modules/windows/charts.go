@@ -3969,7 +3969,7 @@ var (
 		Ctx:      "hyperv.vm_device_error_count",
 		Priority: prioHypervVMDeviceErrorCount,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_operation_written_counter", Name: "error", Algo: module.Incremental},
+			{ID: "hyperv_vm_device_%s_error_counter", Name: "error", Algo: module.Incremental},
 		},
 	}
 	hypervVMDeviceQueueLength = module.Chart{

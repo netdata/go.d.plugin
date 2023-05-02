@@ -34,6 +34,13 @@ const (
 	metricHypervRootPartitionVirtualTLBSize                = "windows_hyperv_root_partition_recommended_virtual_tlb_size"
 	metricHypervRootPartitionViirtualTLBFlushEntires       = "windows_hyperv_root_partition_virtual_tlb_flush_entires"
 	metricHypervRootPartition                              = "windows_hyperv_root_partition_virtual_tlb_pages"
+
+	metricHypervVMDevicesBytesRead         = "windows_hyperv_vm_device_bytes_read"
+	metricHypervVMDevicesOperationsRead    = "windows_hyperv_vm_device_operations_read"
+	metricHypervVMDevicesBytesWritten      = "windows_hyperv_vm_device_bytes_written"
+	metricHypervVMDevicesOperationsWritten = "windows_hyperv_vm_device_queue_length"
+	metricHypervVMDevicesErrorCount        = "windows_hyperv_vm_device_error_count"
+	metricHypervVMDevicesQueueLength       = "windows_hyperv_vm_device_operations_written"
 )
 
 var hypervMetrics = []string{
@@ -68,9 +75,67 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		w.addHypervCharts()
 	}
 
+	devices := make(map[string]bool)
+	px := "hyperv_vm_devices_"
+
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
 		name := strings.TrimPrefix(pm.Name(), "windows_")
 		v := pm.Value
 		mx[strings.ToLower(name)+"_total"] = int64(v)
 	}
+
+	for _, pm := range pms.FindByName(metricHypervVMDevicesBytesRead) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_bytes_read_counter"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMDevicesOperationsRead) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_operation_read_counter"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMDevicesBytesWritten) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_bytes_written_counter"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMDevicesOperationsWritten) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_operation_written_counter"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMDevicesErrorCount) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_error_counter"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMDevicesQueueLength) {
+		if name := pm.Labels.Get("vm_device"); name != "" {
+			parsed_name := hypervParsenames(name)
+			devices[parsed_name] = true
+			mx[px+parsed_name+"_queue_length"] = int64(pm.Value)
+		}
+	}
+
+	for v := range devices {
+		if !w.cache.hypervDevices[v] {
+			w.cache.hypervDevices[v] = true
+			w.addHypervDeviceCharts(v)
+		}
+	}
+}
+
+func hypervParsenames(name string) string {
+	name = strings.ReplaceAll(name, " ", "_")
+	return strings.ToLower(name)
 }
