@@ -125,42 +125,42 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 
 	for _, pm := range pms.FindByName(metricHypervVMDevicesBytesRead) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_bytes_read_counter"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMDevicesOperationsRead) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_operation_read_counter"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMDevicesBytesWritten) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_bytes_written_counter"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMDevicesOperationsWritten) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_operation_written_counter"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMDevicesErrorCount) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_error_counter"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMDevicesQueueLength) {
 		if name := pm.Labels.Get("vm_device"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			devices[parsed_name] = true
 			mx[px+parsed_name+"_queue_length_total"] = int64(pm.Value)
 		}
@@ -169,42 +169,42 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	px = "hyperv_vm_interface_"
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesBytesReceived) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_bytes_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesBytesSent) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_bytes_sent_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsIncomingDropped) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_packets_incoming_dropped_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsOutgoingDropped) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_packets_outgoing_dropped_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsReceived) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_packets_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVMInterfacesPacketsSent) {
 		if name := pm.Labels.Get("vm_interface"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			interfaces[parsed_name] = true
 			mx[px+parsed_name+"_packets_sent_total"] = int64(pm.Value)
 		}
@@ -213,28 +213,28 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	px = "hyperv_host_cpu_"
 	for _, pm := range pms.FindByName(metricHypervHostCPUGuestRunTime) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_guest_run_time_period"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervHostCPUHypervisorRunTime) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_hypervisor_run_time_period"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervHostCPURemoteRunTime) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_remote_run_time_period"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervHostCPUTotalRunTime) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_total_run_time_period"] = int64(pm.Value)
 		}
@@ -243,21 +243,21 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	px = "hyperv_host_lp_"
 	for _, pm := range pms.FindByName(metricHypervHostLPGuestRunTimePercent) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_guest_run_time_period"] = int64(pm.Value) * 100
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervHostLPHypervisorRunTimePercent) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_hypervisor_run_time_period"] = int64(pm.Value) * 100
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervHostLPTotalRunTimePercent) {
 		if name := pm.Labels.Get("core"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			cores[parsed_name] = true
 			mx[px+parsed_name+"_total_run_time_period"] = int64(pm.Value) * 100
 		}
@@ -266,140 +266,140 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	px = "hyperv_vswitch_"
 	for _, pm := range pms.FindByName(metricHypervVSwitchBroadcastPacketsReceivedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_broadcast_packets_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchBroadcastPacketsSentTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_broadcast_packets_sent_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchBytesReceivedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_bytes_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchBytesSentTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_bytes_sent_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchBytesTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_bytes_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchDirectedPacketsReceivedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_directed_packets_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchDirectedPacketsSendTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_directed_packets_send_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchDroppedPacketsIncomingTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_dropped_packets_incoming_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchDroppedPacketsOutcomingTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_dropped_packets_outcoming_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchExtensionDroppedAttacksIncomingTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_extensions_dropped_packets_incoming_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchExtensionDroppedPacketsOutcomingTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_extensions_dropped_packets_outcoming_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchLearnedMACAddressTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_learned_mac_addresses_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchMulticastPacketsReceivedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_multicast_packets_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchMulticastPacketsSentTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_multicast_packets_sent_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchNumberOfSendChannelMovesTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_number_of_send_channel_moves_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchNumberOfVMQMovesTottal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_number_of_vmq_moves_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsFloodedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_packets_flooded_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsReceivedTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_packets_received_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsTotal) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_packets_total"] = int64(pm.Value)
 		}
 	}
 	for _, pm := range pms.FindByName(metricHypervVSwitchPurgedMACAddresses) {
 		if name := pm.Labels.Get("vswitch"); name != "" {
-			parsed_name := hypervParsenames(name)
+			parsed_name := hypervParseNames(name)
 			vswitches[parsed_name] = true
 			mx[px+parsed_name+"_purged_mac_addresses"] = int64(pm.Value)
 		}
@@ -431,7 +431,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	}
 }
 
-func hypervParsenames(name string) string {
+func hypervParseNames(name string) string {
 	name = strings.ReplaceAll(name, " ", "_")
 	name = strings.ReplaceAll(name, "?", "_")
 	name = strings.ReplaceAll(name, ":", "_")

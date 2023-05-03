@@ -5124,16 +5124,16 @@ func (w *Windows) addHypervDeviceCharts(device string) {
 	}
 }
 
-func (w *Windows) addHypervInterfaceCharts(device string) {
+func (w *Windows) addHypervInterfaceCharts(iface string) {
 	charts := hypervInterfacesChartsTemplate.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.ID = fmt.Sprintf(chart.ID, iface)
 		chart.Labels = []module.Label{
-			{Key: "vm_interface", Value: device},
+			{Key: "vm_interface", Value: iface},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, device)
+			dim.ID = fmt.Sprintf(dim.ID, iface)
 		}
 	}
 
@@ -5142,16 +5142,16 @@ func (w *Windows) addHypervInterfaceCharts(device string) {
 	}
 }
 
-func (w *Windows) addHypervCoreCharts(device string) {
+func (w *Windows) addHypervCoreCharts(core string) {
 	charts := hypervCoreChartsTemplate.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.ID = fmt.Sprintf(chart.ID, core)
 		chart.Labels = []module.Label{
-			{Key: "vm_core", Value: device},
+			{Key: "vm_core", Value: core},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, device)
+			dim.ID = fmt.Sprintf(dim.ID, core)
 		}
 	}
 
