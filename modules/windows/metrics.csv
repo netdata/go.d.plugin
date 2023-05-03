@@ -70,18 +70,18 @@ windows.hyperv_root_partition_physical_page_allocated,,timer,Number of timer int
 windows.hyperv_root_parition_preferred_numa_node_index,,pages,Number of pages present in the GPA space.,,go.plugin,windows
 windows.hyperv_root_partition_recommended_virtual_tlb_size,,pages,The recommended number of pages to be deposited for the Virtual TLB.,,go.plugin,windows
 windows.hyperv_root_partition_virtual_tlb_pages,,pages,Pages used by the virtual TLB of the partition.,,go.plugin,windows
-windows.hyperv_vm_device_bytes_read,devices,read,Total of bytes read on virtual device,,go.plugin,windows
-windows.hyperv_vm_device_operation_read,devices,read,Total of operations read on virtual device,,go.plugin,windows
-windows.hyperv_vm_device_bytes_written,devices,write,Total of bytes written on virtual device,,go.plugin,windows
-windows.hyperv_vm_device_operation_written,devices,write,Total of operations written on virtual device,,go.plugin,windows
-windows.hyperv_vm_device_error_count,devices,error,Number of errors on virtual device,,go.plugin,windows
-windows.hyperv_vm_device_queue_length,devices,queue,Current Queue length on virtual device,,go.plugin,windows
-windows.hyperv_vm_interface_bytes_received,interfaces,received,Number of bytes received per second.,,go.plugin,windows
-windows.hyperv_vm_interface_bytes_sent,interfaces,sent,Number of bytes sent per second.,,go.plugin,windows
-windows.hyperv_vm_interface_packets_incoming_dropped,interfaces,packets,Number of incoming packets dropped per second.,,go.plugin,windows
-windows.hyperv_vm_interface_packets_outgoing_dropped,interfaces,packets,Number of outgoing packets dropped per second.,,go.plugin,windows
-windows.hyperv_vm_interface_packets_received,interfaces,packets,Number of packets received per second.,,go.plugin,windows
-windows.hyperv_vm_interface_packets_sent,interfaces,packets,Number of pacakets sent per second.,,go.plugin,windows
+windows.hyperv_vm_device_bytes_read,devices,read,Total of bytes read on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_device_operation_read,devices,read,Total of operations read on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_device_bytes_written,devices,write,Total of bytes written on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_device_operation_written,devices,write,Total of operations written on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_device_error_count,devices,error,Number of errors on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_device_queue_length,devices,queue,Current Queue length on virtual device,vm_device,go.plugin,windows
+windows.hyperv_vm_interface_bytes_received,interfaces,received,Number of bytes received per second.,vm_interface,go.plugin,windows
+windows.hyperv_vm_interface_bytes_sent,interfaces,sent,Number of bytes sent per second.,vm_interface,go.plugin,windows
+windows.hyperv_vm_interface_packets_incoming_dropped,interfaces,packets,Number of incoming packets dropped per second.,vm_interface,go.plugin,windows
+windows.hyperv_vm_interface_packets_outgoing_dropped,interfaces,packets,Number of outgoing packets dropped per second.,vm_interface,go.plugin,windows
+windows.hyperv_vm_interface_packets_received,interfaces,packets,Number of packets received per second.,vm_interface,go.plugin,windows
+windows.hyperv_vm_interface_packets_sent,interfaces,packets,Number of pacakets sent per second.,vm_interface,go.plugin,windows
 windows.hyperv_host_cpu_guest_run_time,cpu,period,nanoseconds,Time spent by virtual processor in guest code.,,go.plugin,windows
 windows.hyperv_host_cpu_hypervisor_run_time,cpu,period,nanoseconds,Time spent by virtual processor in hypervisor code.,vm_core,go.plugin,windows
 windows.hyperv_host_cpu_remote_run_time,cpu,period,nanoseconds,Time spent by virtual processor in remote code.,vm_core,go.plugin,windows
