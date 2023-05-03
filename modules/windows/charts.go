@@ -3718,6 +3718,7 @@ var (
 		hypervVswitchLearnedMACAddressTotal.Copy(),
 		hypervVswitchMulticastPacketsReceivedTotal.Copy(),
 		hypervVswitchMulticastPacketsSentTotal.Copy(),
+		hypervVswitchNumberOfSendChannelMovesTotal.Copy(),
 		hypervVswitchNumberOfVMQMovesTotal.Copy(),
 		hypervVswitchPacketsFloodedTotal.Copy(),
 		hypervVswitchPacketsReceivedTotal.Copy(),
