@@ -400,6 +400,7 @@ const (
 	prioHypervVswitchLearnedMACAddresses
 	prioHypervVswitchMulticastPacketsReceived
 	prioHypervVswitchMulticastPacketsSent
+	prioHypervVswitchNumberOfSendChannelMoves
 	prioHypervVswitchNumberOfVMQMoves
 	prioHypervVswitchPacketsFlooded
 	prioHypervVswitchPacketsReceived
@@ -4359,6 +4360,17 @@ var (
 		Priority: prioHypervVswitchMulticastPacketsSent,
 		Dims: module.Dims{
 			{ID: "hyperv_vswitch_%s_multicast_packets_sent_total", Name: "Packets", Algo: module.Incremental},
+		},
+	}
+	hypervVswitchNumberOfSendChannelMovesTotal = module.Chart{
+		ID:       "hyperv_vswitch_%s_number_of_send_channel_moves",
+		Title:    "Number of VMQs moves on virtual switch.",
+		Units:    "VMQs",
+		Fam:      "vswitch",
+		Ctx:      "windows.hyperv_vswitch_number_of_send_channel_moves",
+		Priority: prioHypervVswitchNumberOfSendChannelMoves,
+		Dims: module.Dims{
+			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "VMQ", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchNumberOfVMQMovesTotal = module.Chart{

@@ -56,6 +56,7 @@ func New() *Windows {
 			hypervDevices:               make(map[string]bool),
 			hypervInterfaces:            make(map[string]bool),
 			hypervCores:                 make(map[string]bool),
+			hypervVswitch:               make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -106,6 +107,7 @@ type (
 		hypervDevices               map[string]bool
 		hypervInterfaces            map[string]bool
 		hypervCores                 map[string]bool
+		hypervVswitch               map[string]bool
 	}
 )
 

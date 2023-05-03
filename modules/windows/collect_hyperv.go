@@ -56,6 +56,27 @@ const (
 	metricHypervHostLPGuestRunTimePercent      = "windows_hyperv_host_lp_guest_run_time_percent"
 	metricHypervHostLPHypervisorRunTimePercent = "windows_hyperv_host_lp_hypervisor_run_time_percent"
 	metricHypervHostLPTotalRunTimePercent      = "windows_hyperv_host_lp_total_run_time_percent"
+
+	metricHypervVSwitchBroadcastPacketsReceivedTotal         = "windows_hyperv_vswitch_broadcast_packets_received_total"
+	metricHypervVSwitchBroadcastPacketsSentTotal             = "windows_hyperv_vswitch_broadcast_packets_sent_total"
+	metricHypervVSwitchBytesReceivedTotal                    = "windows_hyperv_vswitch_bytes_received_total"
+	metricHypervVSwitchBytesSentTotal                        = "windows_hyperv_vswitch_bytes_sent_total"
+	metricHypervVSwitchBytesTotal                            = "windows_hyperv_vswitch_bytes_total"
+	metricHypervVSwitchDirectedPacketsReceivedTotal          = "windows_hyperv_vswitch_directed_packets_received_total"
+	metricHypervVSwitchDirectedPacketsSendTotal              = "windows_hyperv_vswitch_directed_packets_send_total"
+	metricHypervVSwitchDroppedPacketsIncomingTotal           = "windows_hyperv_vswitch_dropped_packets_incoming_total"
+	metricHypervVSwitchDroppedPacketsOutcomingTotal          = "windows_hyperv_vswitch_dropped_packets_outcoming_total"
+	metricHypervVSwitchExtensionDroppedAttacksIncomingTotal  = "windows_hyperv_vswitch_extensions_dropped_packets_incoming_total"
+	metricHypervVSwitchExtensionDroppedPacketsOutcomingTotal = "windows_hyperv_vswitch_extensions_dropped_packets_outcoming_total"
+	metricHypervVSwitchLearnedMACAddressTotal                = "windows_hyperv_vswitch_learned_mac_addresses_total"
+	metricHypervVSwitchMulticastPacketsReceivedTotal         = "windows_hyperv_vswitch_multicast_packets_received_total"
+	metricHypervVSwitchMulticastPacketsSentTotal             = "windows_hyperv_vswitch_multicast_packets_sent_total"
+	metricHypervVSwitchNumberOfSendChannelMovesTotal         = "windows_hyperv_vswitch_number_of_send_channel_moves_total"
+	metricHypervVSwitchNumberOfVMQMovesTottal                = "windows_hyperv_vswitch_number_of_vmq_moves_total"
+	metricHypervVSwitchPacketsFloodedTotal                   = "windows_hyperv_vswitch_packets_flooded_total"
+	metricHypervVSwitchPacketsReceivedTotal                  = "windows_hyperv_vswitch_packets_received_total"
+	metricHypervVSwitchPacketsTotal                          = "windows_hyperv_vswitch_packets_total"
+	metricHypervVSwitchPurgedMACAddresses                    = "windows_hyperv_vswitch_purged_mac_addresses_total"
 )
 
 var hypervMetrics = []string{
@@ -93,6 +114,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	devices := make(map[string]bool)
 	interfaces := make(map[string]bool)
 	cores := make(map[string]bool)
+	vswitches := make(map[string]bool)
 	px := "hyperv_vm_device_"
 
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
@@ -241,6 +263,148 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
+	px = "hyperv_vswitch_"
+	for _, pm := range pms.FindByName(metricHypervVSwitchBroadcastPacketsReceivedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_broadcast_packets_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchBroadcastPacketsSentTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_broadcast_packets_sent_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchBytesReceivedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_bytes_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchBytesSentTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_bytes_sent_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchBytesTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_bytes_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchDirectedPacketsReceivedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_directed_packets_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchDirectedPacketsSendTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_directed_packets_send_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchDroppedPacketsIncomingTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_dropped_packets_incoming_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchDroppedPacketsOutcomingTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_dropped_packets_outcoming_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchExtensionDroppedAttacksIncomingTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_extensions_dropped_packets_incoming_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchExtensionDroppedPacketsOutcomingTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_extensions_dropped_packets_outcoming_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchLearnedMACAddressTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_learned_mac_addresses_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchMulticastPacketsReceivedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_multicast_packets_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchMulticastPacketsSentTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_multicast_packets_sent_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchNumberOfSendChannelMovesTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_number_of_send_channel_moves_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchNumberOfVMQMovesTottal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_number_of_vmq_moves_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsFloodedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_packets_flooded_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsReceivedTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_packets_received_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchPacketsTotal) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_packets_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVSwitchPurgedMACAddresses) {
+		if name := pm.Labels.Get("vswitch"); name != "" {
+			parsed_name := hypervParsenames(name)
+			vswitches[parsed_name] = true
+			mx[px+parsed_name+"_purged_mac_addresses"] = int64(pm.Value)
+		}
+	}
+
 	for v := range devices {
 		if !w.cache.hypervDevices[v] {
 			w.cache.hypervDevices[v] = true
@@ -256,7 +420,13 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for v := range cores {
 		if !w.cache.hypervCores[v] {
 			w.cache.hypervCores[v] = true
-			w.addHypervCoreCharts(v)
+			w.addHypervVSwitchCharts(v)
+		}
+	}
+	for v := range cores {
+		if !w.cache.hypervVswitch[v] {
+			w.cache.hypervVswitch[v] = true
+			w.addHypervVSwitchCharts(v)
 		}
 	}
 }
