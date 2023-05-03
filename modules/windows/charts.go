@@ -5160,16 +5160,16 @@ func (w *Windows) addHypervCoreCharts(device string) {
 	}
 }
 
-func (w *Windows) addHypervVSwitchCharts(device string) {
+func (w *Windows) addHypervVSwitchCharts(vswitch string) {
 	charts := hypervVswitchChartsTemplate.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.ID = fmt.Sprintf(chart.ID, vswitch)
 		chart.Labels = []module.Label{
-			{Key: "vm_vswitch", Value: device},
+			{Key: "vm_vswitch", Value: vswitch},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, device)
+			dim.ID = fmt.Sprintf(dim.ID, vswitch)
 		}
 	}
 

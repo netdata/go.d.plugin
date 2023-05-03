@@ -420,10 +420,10 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for v := range cores {
 		if !w.cache.hypervCores[v] {
 			w.cache.hypervCores[v] = true
-			w.addHypervVSwitchCharts(v)
+			w.addHypervCoreCharts(v)
 		}
 	}
-	for v := range cores {
+	for v := range vswitches {
 		if !w.cache.hypervVswitch[v] {
 			w.cache.hypervVswitch[v] = true
 			w.addHypervVSwitchCharts(v)
