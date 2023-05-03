@@ -4006,7 +4006,7 @@ var (
 		Title:    "Number of bytes received per second.",
 		Units:    "bytes/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_bytes_received",
+		Ctx:      "windows.hyperv_vm_interface_bytes_received",
 		Priority: prioHypervVMInterfaceBytesReceived,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_bytes_received_total", Name: "received", Algo: module.Incremental},
@@ -4017,7 +4017,7 @@ var (
 		Title:    "Number of bytes sent per second.",
 		Units:    "bytes/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_bytes_sent",
+		Ctx:      "windows.hyperv_vm_interface_bytes_sent",
 		Priority: prioHypervVMInterfaceBytesSent,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_bytes_sent_total", Name: "sent", Algo: module.Incremental},
@@ -4028,7 +4028,7 @@ var (
 		Title:    "Number of incoming packets dropped per second.",
 		Units:    "dropped packets/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_packets_incoming_dropped",
+		Ctx:      "windows.hyperv_vm_interface_packets_incoming_dropped",
 		Priority: prioHypervVMInterfacePacketsIncomingDropped,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_packets_incoming_dropped_total", Name: "packets", Algo: module.Incremental},
@@ -4039,7 +4039,7 @@ var (
 		Title:    "Number of outgoing packets dropped per second.",
 		Units:    "dropped packets/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_packets_outgoing_dropped",
+		Ctx:      "windows.hyperv_vm_interface_packets_outgoing_dropped",
 		Priority: prioHypervVMInterfacePacketsOutgoingDropped,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_packets_outgoing_dropped_total", Name: "packets", Algo: module.Incremental},
@@ -4050,7 +4050,7 @@ var (
 		Title:    "Number of packets received per second.",
 		Units:    "packets/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_packets_received",
+		Ctx:      "windows.hyperv_vm_interface_packets_received",
 		Priority: prioHypervVMInterfacePacketsReceived,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_packets_received_total", Name: "packets", Algo: module.Incremental},
@@ -4061,7 +4061,7 @@ var (
 		Title:    "Number of pacakets sent per second.",
 		Units:    "packets/s",
 		Fam:      "interface",
-		Ctx:      "hyperv.vm_interface_packets_sent",
+		Ctx:      "windows.hyperv_vm_interface_packets_sent",
 		Priority: prioHypervVMInterfacePacketsReceived,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_packets_sent_total", Name: "packets", Algo: module.Incremental},
