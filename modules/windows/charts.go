@@ -3681,7 +3681,7 @@ var (
 		Title:    "VM with Health OK",
 		Units:    "vm",
 		Fam:      "health",
-		Ctx:      "windows.hyperv_health_critical",
+		Ctx:      "windows.hyperv_health_ok",
 		Priority: prioHypervHealthOk,
 		Dims: module.Dims{
 			{ID: "hyperv_health_ok_total", Name: "ok"},
@@ -3801,7 +3801,7 @@ var (
 	}
 	hypervRootPartitionDepositedPages = module.Chart{
 		ID:       "hyperv_root_partition_deposited_pages",
-		Title:    "Number of devices attached to the partition.",
+		Title:    "Number of pages deposited into the partition.",
 		Units:    "pages",
 		Fam:      "partition",
 		Ctx:      "windows.hyperv_root_partition_deposited_pages",
@@ -3815,7 +3815,7 @@ var (
 		Title:    "Illegal DMA request",
 		Units:    "requests",
 		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_deposited_pages",
+		Ctx:      "windows.hyperv_root_partition_device_dma_errors",
 		Priority: prioHypervRootPartitionDeviceDMAErrors,
 		Dims: module.Dims{
 			{ID: "hyperv_root_partition_deposited_pages_total", Name: "requests"},
@@ -3851,7 +3851,7 @@ var (
 		Ctx:      "windows.hyperv_root_partition_gpa_space_modifications",
 		Priority: prioHypervRootPartitionGPASpaceModifications,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_gpa_space_modifications_total", Name: "GPA", Algo: module.Incremental},
+			{ID: "hyperv_root_partition_gpa_space_modifications_total", Name: "gpa", Algo: module.Incremental},
 		},
 	}
 	hypervRootPartitionIOTlbFlush = module.Chart{
@@ -3878,7 +3878,7 @@ var (
 	}
 	hypervRootPartitionVirtualTlbFlushEntires = module.Chart{
 		ID:       "hyperv_root_partition_virtual_tbl_flush_entires",
-		Title:    "Flushes of I/O TLB",
+		Title:    "The rate of flushes of the entire virtual TLB",
 		Units:    "flushes",
 		Fam:      "partition",
 		Ctx:      "windows.hyperv_root_partition_virtual_tlb_flush_entires",
@@ -3911,7 +3911,7 @@ var (
 	}
 	hypervRootPartitionRecommendedVirtualTlbSize = module.Chart{
 		ID:       "hyperv_root_partition_recommended_virtual_tlb_size",
-		Title:    "Number of pages to be deposited for the Virtual TLB.",
+		Title:    "The recommended number of pages to be deposited for the Virtual TLB.",
 		Units:    "pages",
 		Fam:      "partition",
 		Ctx:      "windows.hyperv_root_partition_recommended_virtual_tlb_size",

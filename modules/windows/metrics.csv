@@ -46,6 +46,30 @@ windows.processes_pool_bytes,,a dimension per process,bytes,"Active threads",sta
 windows.processes_threads,,a dimension per process,threads,"Number of handles open",stacked,,go.d.plugin,windows
 windows.service_state,service,"running, stopped, start_pending, stop_pending, continue_pending, pause_pending, paused, unknown",state,"Service state",line,service,go.d.plugin,windows
 windows.service_status,service,"ok, error, unknown, degraded, pred_fail, starting, stopping, service, stressed, nonrecover, no_contact, lost_comm",status,"Service status",line,service,go.d.plugin,windows
+windows.hyperv_health_critical,,critical,VM with Critical Health,line,,go.plugin,windows
+windows.hyperv_health_ok,,ok,VM with OK Health,line,,go.plugin,windows
+windows.hyperv_hypervisor_logical_processors,,processor,Logical processors in system,line,,go.plugin,windows
+windows.hyperv_hypervisor_virtual_processors,,processor,Virtual processors in system,line,,go.plugin,windows
+windows.hyperv_root_partition_1g_device_pages,,pages,Number of 1G pages present in device space,line,,go.plugin,windows
+windows.hyperv_root_partition_1g_gpa_pages,,pages,Number of 1G pages present in GPA space,line,,go.plugin,windows
+windows.hyperv_root_partition_2m_device_pages,,pages,Number of 2M pages present in device space,line,,go.plugin,windows
+windows.hyperv_root_partition_2m_gpa_pages,,pages,Number of 2M pages present in GPA space,line,,go.plugin,windows
+windows.hyperv_root_partition_4k_device_pages,,pages,Number of 4K pages present in device space,line,,go.plugin,windows
+windows.hyperv_root_partition_4k_gpa_pages,,pages,Number of 4K pages present in GPA space,line,,go.plugin,windows
+windows.hyperv_root_partition_address_space,,address,Number of address spaces in the virtual TLB partition,,go.plugin,windows
+windows.hyperv_root_partition_attached_devices,,devices,Number of devices attached to the partition.,,go.plugin,windows
+windows.hyperv_root_partition_deposited_pages,,pages,Number of pages deposited into the partition.,,go.plugin,windows
+windows.hyperv_root_partition_device_dma_errors,,requests,Illegal DMA request,,go.plugin,windows
+windows.hyperv_root_partition_device_interrupt_errors,,requests,Illegal Interrupt request,,go.plugin,windows
+windows.hyperv_root_partition_device_interrupt_throttle_events,,interrupts,Partition temporary throttled,,go.plugin,windows
+windows.hyperv_root_partition_gpa_space_modifications,,gpa,Modifications to GPA space,,go.plugin,windows
+windows.hyperv_root_partition_io_tlb_flush,,flushes,Flushes of I/O TLB,,go.plugin,windows
+windows.hyperv_root_partition_io_tlb_flush_cost,,period,Average time to process I/O TLB flush,,go.plugin,windows
+windows.hyperv_root_partition_virtual_tlb_flush_entires,,flushes,The rate of flushes of the entire virtual TLB,,go.plugin,windows
+windows.hyperv_root_partition_physical_page_allocated,,timer,Number of timer interrupted skipped.,,go.plugin,windows
+windows.hyperv_root_parition_preferred_numa_node_index,,pages,Number of pages present in the GPA space.,,go.plugin,windows
+windows.hyperv_root_partition_recommended_virtual_tlb_size,,pages,The recommended number of pages to be deposited for the Virtual TLB.,,go.plugin,windows
+windows.hyperv_root_partition_virtual_tlb_pages,,pages,Pages used by the virtual TLB of the partition.,,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
