@@ -70,6 +70,12 @@ windows.hyperv_root_partition_physical_page_allocated,,timer,Number of timer int
 windows.hyperv_root_parition_preferred_numa_node_index,,pages,Number of pages present in the GPA space.,,go.plugin,windows
 windows.hyperv_root_partition_recommended_virtual_tlb_size,,pages,The recommended number of pages to be deposited for the Virtual TLB.,,go.plugin,windows
 windows.hyperv_root_partition_virtual_tlb_pages,,pages,Pages used by the virtual TLB of the partition.,,go.plugin,windows
+windows.hyperv_vm_device_bytes_read,devices,read,Total of bytes read on virtual device,,go.plugin,windows
+windows.hyperv_vm_device_operation_read,devices,read,Total of operations read on virtual device,,go.plugin,windows
+windows.hyperv_vm_device_bytes_written,devices,write,Total of bytes written on virtual device,,go.plugin,windows
+windows.hyperv_vm_device_operation_written,devices,write,Total of operations written on virtual device,,go.plugin,windows
+windows.hyperv_vm_device_error_count,devices,error,Number of errors on virtual device,,go.plugin,windows
+windows.hyperv_vm_device_queue_length,devices,queue,Current Queue length on virtual device,,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
