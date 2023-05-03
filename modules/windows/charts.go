@@ -4365,8 +4365,8 @@ var (
 	}
 	hypervVswitchNumberOfSendChannelMovesTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_number_of_send_channel_moves",
-		Title:    "Number of VMQs moves on virtual switch.",
-		Units:    "Channels",
+		Title:    "Number of send channel moves on virtual switch.",
+		Units:    "channels/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_number_of_send_channel_moves",
 		Priority: prioHypervVswitchNumberOfSendChannelMoves,
@@ -4387,8 +4387,8 @@ var (
 	}
 	hypervVswitchPacketsFloodedTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets_flooded",
-		Title:    "Number of VMQs moves on virtual switch.",
-		Units:    "Packets",
+		Title:    "Total number of packets flooded on virtual switch.",
+		Units:    "Packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets_flooded",
 		Priority: prioHypervVswitchPacketsFlooded,
@@ -4399,7 +4399,7 @@ var (
 	hypervVswitchPacketsReceivedTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets_received",
 		Title:    "Number of received by virtual switch.",
-		Units:    "Packets",
+		Units:    "Packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets_received",
 		Priority: prioHypervVswitchPacketsReceived,
@@ -4410,7 +4410,7 @@ var (
 	hypervVswitchPacketsTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets",
 		Title:    "Number of packets transversing virtual switch.",
-		Units:    "Packets",
+		Units:    "Packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets",
 		Priority: prioHypervVswitchPackets,

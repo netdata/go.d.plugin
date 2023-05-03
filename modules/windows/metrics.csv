@@ -89,6 +89,25 @@ windows.hyperv_host_cpu_total_run_time,cpu,period,nanoseconds,Time spent by virt
 windows.hyperv_host_lp_guest_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest code.,vm_core,go.plugin,windows
 windows.hyperv_host_lp_hypervisor_run_time,cpu,period,percentage,Percentage of time spent by logical processor in hypervisor code.,vm_core,go.plugin,windows
 windows.hyperv_host_lp_total_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest and hypervisor code.,vm_core,go.plugin,windows
+windows.hyperv_vswitch_broadcast_packets_received,vswitch,packets,packets/s,Number of broadcast packets received.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_broadcast_packets_sent,vswitch,packets,packets/s,Number of broadcast packets sent.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_bytes_received,vswitch,bytes,bytes/s,Number of bytes received by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_bytes_sent,vswitch,bytes,bytes/s,Number of bytes sent by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_bytes,vswitch,bytes,bytes/s,Number of bytes sent by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_directed_packets_received,vswitch,packets,packets/s,Number of directed packets received by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_directed_packets_send,vswitch,packets,packets/s,Number of directed packets send by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_dropped_packets_incoming,vswitch,packets,packets/s,Number of incoming packets dropped by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_dropped_packets_outcoming,vswitch,packets,packets/s,Number of outcoming packets dropped by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_extensions_dropped_packets_incoming,vswitch,packets,packets/s,Number of inconming packets dropped by the virtual switch extension.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_extensions_dropped_packets_outcoming,vswitch,packets,packets/s,Number of outconming packets dropped by the virtual switch extension.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_learned_mac_addresses,vswitch,counter,MAC address,Number of learned MAC addresses.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_multicast_packets_received,vswitch,packets,packets/s,Number of multicast packets received.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_multicast_packets_sent,vswitch,packets,packets/s,Number of multicast packets sent.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_number_of_send_channel_moves,vswitch,send,channels/s,Number of send channel moves on virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_number_of_vmq_moves,vswitch,vmq,VMQs,Total number of packets flooded on virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_packets_received,vswitch,packets,packets/s,Number of received by virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vswitch_packets,vswitch,packets,packets/s,Number of packets transversing virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_purged_mac_addresses,vswitch,counter,MAC address,Number of purged MAC addresses of the virtual switch.,vm_vswitch,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
