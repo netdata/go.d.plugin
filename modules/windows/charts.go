@@ -377,6 +377,15 @@ const (
 	prioHypervVMInterfacePacketsReceived
 	prioHypervVMInterfacePacketsSent
 
+	// Hyperv Core
+	prioHypervHostCPUGuestRunTime
+	prioHypervHostCPUHypervisorRunTime
+	prioHypervHostCPURemoteRunTime
+	prioHypervHostCPUTotalRunTime
+	prioHypervHostLPGuestRunTimePercent
+	prioHypervHostLPHypervisorRunTimePercent
+	prioHypervHostLPTotalRunTimePercent
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -3664,6 +3673,15 @@ var (
 		hypervVMInterfacePacketsReceived.Copy(),
 		hypervVMInterfacePacketsSent.Copy(),
 	}
+	hypervCoreChartsTemplate = module.Charts{
+		hypervHostCPUGuestRunTime.Copy(),
+		hypervHostCPUHypervisorRunTime.Copy(),
+		hypervHostCPURemoteRunTime.Copy(),
+		hypervHostCPUTotalRunTime.Copy(),
+		hypervHostLPGuestRunTime.Copy(),
+		hypervHostLPHypervisorRunTime.Copy(),
+		hypervHostLPTotalRunTime.Copy(),
+	}
 
 	hypervHealthCritical = module.Chart{
 		ID:       "hyperv_health_critical",
@@ -4062,9 +4080,88 @@ var (
 		Units:    "packets/s",
 		Fam:      "interface",
 		Ctx:      "windows.hyperv_vm_interface_packets_sent",
-		Priority: prioHypervVMInterfacePacketsReceived,
+		Priority: prioHypervVMInterfacePacketsSent,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_interface_%s_packets_sent_total", Name: "packets", Algo: module.Incremental},
+		},
+	}
+
+	// Hyperv CORE
+	hypervHostCPUGuestRunTime = module.Chart{
+		ID:       "hyperv_host_cpu_%s_guest_run_time",
+		Title:    "Time spent by virtual processor in guest code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_cpu_guest_run_time",
+		Priority: prioHypervHostCPUGuestRunTime,
+		Dims: module.Dims{
+			{ID: "hyperv_host_cpu_%s_guest_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostCPUHypervisorRunTime = module.Chart{
+		ID:       "hyperv_host_cpu_%s_hypervisor_run_time",
+		Title:    "Time spent by virtual processor in hypervisor code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_cpu_hypervisor_run_time",
+		Priority: prioHypervHostCPUHypervisorRunTime,
+		Dims: module.Dims{
+			{ID: "hyperv_host_cpu_%s_hypervisor_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostCPURemoteRunTime = module.Chart{
+		ID:       "hyperv_host_cpu_%s_remote_run_time",
+		Title:    "Time spent by virtual processor in remote code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_cpu_remote_run_time",
+		Priority: prioHypervHostCPURemoteRunTime,
+		Dims: module.Dims{
+			{ID: "hyperv_host_cpu_%s_remote_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostCPUTotalRunTime = module.Chart{
+		ID:       "hyperv_host_cpu_%s_total_run_time",
+		Title:    "Time spent by virtual processor in guest and hypervisor code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_cpu_total_run_time",
+		Priority: prioHypervHostCPUTotalRunTime,
+		Dims: module.Dims{
+			{ID: "hyperv_host_cpu_%s_total_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostLPGuestRunTime = module.Chart{
+		ID:       "hyperv_host_lp_%s_guest_run_time",
+		Title:    "Time spent by logical processor in guest code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_lp_guest_run_time",
+		Priority: prioHypervHostLPGuestRunTimePercent,
+		Dims: module.Dims{
+			{ID: "hyperv_host_lp_%s_guest_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostLPHypervisorRunTime = module.Chart{
+		ID:       "hyperv_host_lp_%s_hypervisor_run_time",
+		Title:    "Time spent by logical processor in hypervisor code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_lp_hypervisor_run_time",
+		Priority: prioHypervHostCPUHypervisorRunTime,
+		Dims: module.Dims{
+			{ID: "hyperv_host_lp_%s_hypervisor_run_time_period", Name: "period"},
+		},
+	}
+	hypervHostLPTotalRunTime = module.Chart{
+		ID:       "hyperv_host_lp_%s_total_run_time",
+		Title:    "Time spent by logical processor in guest and hypervisor code.",
+		Units:    "nanoseconds",
+		Fam:      "core",
+		Ctx:      "windows.hyperv_host_lp_total_run_time",
+		Priority: prioHypervHostLPTotalRunTimePercent,
+		Dims: module.Dims{
+			{ID: "hyperv_host_lp_%s_total_run_time_period", Name: "period"},
 		},
 	}
 )
@@ -4770,6 +4867,24 @@ func (w *Windows) addHypervInterfaceCharts(device string) {
 		chart.ID = fmt.Sprintf(chart.ID, device)
 		chart.Labels = []module.Label{
 			{Key: "vm_interface", Value: device},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, device)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) addHypervCoreCharts(device string) {
+	charts := hypervCoreChartsTemplate.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.Labels = []module.Label{
+			{Key: "vm_core", Value: device},
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, device)
