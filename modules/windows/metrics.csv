@@ -82,6 +82,13 @@ windows.hyperv_vm_interface_packets_incoming_dropped,interfaces,packets,Number o
 windows.hyperv_vm_interface_packets_outgoing_dropped,interfaces,packets,Number of outgoing packets dropped per second.,,go.plugin,windows
 windows.hyperv_vm_interface_packets_received,interfaces,packets,Number of packets received per second.,,go.plugin,windows
 windows.hyperv_vm_interface_packets_sent,interfaces,packets,Number of pacakets sent per second.,,go.plugin,windows
+windows.hyperv_host_cpu_guest_run_time,cpu,period,nanoseconds,Time spent by virtual processor in guest code.,,go.plugin,windows
+windows.hyperv_host_cpu_hypervisor_run_time,cpu,period,nanoseconds,Time spent by virtual processor in hypervisor code.,vm_core,go.plugin,windows
+windows.hyperv_host_cpu_remote_run_time,cpu,period,nanoseconds,Time spent by virtual processor in remote code.,vm_core,go.plugin,windows
+windows.hyperv_host_cpu_total_run_time,cpu,period,nanoseconds,Time spent by virtual processor in guest and hypervisor code.,vm_core,go.plugin,windows
+windows.hyperv_host_lp_guest_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest code.,vm_core,go.plugin,windows
+windows.hyperv_host_lp_hypervisor_run_time,cpu,period,percentage,Percentage of time spent by logical processor in hypervisor code.,vm_core,go.plugin,windows
+windows.hyperv_host_lp_total_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest and hypervisor code.,vm_core,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
