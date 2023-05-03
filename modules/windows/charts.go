@@ -4333,12 +4333,12 @@ var (
 	hypervVswitchLearnedMACAddressTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_learned_mac_addresses",
 		Title:    "Number of learned MAC addresses.",
-		Units:    "MAC Address",
+		Units:    "Counter",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_learned_mac_addresses",
 		Priority: prioHypervVswitchLearnedMACAddresses,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "MAC", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "MAC Address", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchMulticastPacketsReceivedTotal = module.Chart{
@@ -4366,12 +4366,12 @@ var (
 	hypervVswitchNumberOfSendChannelMovesTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_number_of_send_channel_moves",
 		Title:    "Number of VMQs moves on virtual switch.",
-		Units:    "VMQs",
+		Units:    "Channels",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_number_of_send_channel_moves",
 		Priority: prioHypervVswitchNumberOfSendChannelMoves,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "VMQ", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "Send", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchNumberOfVMQMovesTotal = module.Chart{
@@ -4421,12 +4421,12 @@ var (
 	hypervVswitchPurgedMACAddressTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_purged_mac_addresses",
 		Title:    "Number of purged MAC addresses of the virtual switch.",
-		Units:    "Packets",
+		Units:    "Counter",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_purged_mac_addresses",
 		Priority: prioHypervVswitchPurgeMACAddress,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "MAC Address", Algo: module.Incremental},
 		},
 	}
 )
