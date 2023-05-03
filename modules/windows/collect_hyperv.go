@@ -48,6 +48,14 @@ const (
 	metricHypervVMInterfacesPacketsOutgoingDropped = "windows_hyperv_vm_interface_packets_outgoing_dropped"
 	metricHypervVMInterfacesPacketsReceived        = "windows_hyperv_vm_interface_packets_received"
 	metricHypervVMInterfacesPacketsSent            = "windows_hyperv_vm_interface_packets_sent"
+
+	metricHypervHostCPUGuestRunTime            = "windows_hyperv_host_cpu_guest_run_time"
+	metricHypervHostCPUHypervisorRunTime       = "windows_hyperv_host_cpu_hypervisor_run_time"
+	metricHypervHostCPURemoteRunTime           = "windows_hyperv_host_cpu_remote_run_time"
+	metricHypervHostCPUTotalRunTime            = "windows_hyperv_host_cpu_total_run_time"
+	metricHypervHostLPGuestRunTimePercent      = "windows_hyperv_host_lp_guest_run_time_percent"
+	metricHypervHostLPHypervisorRunTimePercent = "windows_hyperv_host_lp_hypervisor_run_time_percent"
+	metricHypervHostLPTotalRunTimePercent      = "windows_hyperv_host_lp_total_run_time_percent"
 )
 
 var hypervMetrics = []string{
@@ -84,6 +92,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 
 	devices := make(map[string]bool)
 	interfaces := make(map[string]bool)
+	cores := make(map[string]bool)
 	px := "hyperv_vm_device_"
 
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
@@ -179,6 +188,59 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
+	px = "hyperv_host_cpu_"
+	for _, pm := range pms.FindByName(metricHypervHostCPUGuestRunTime) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_guest_run_time_period"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervHostCPUHypervisorRunTime) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_hypervisor_run_time_period"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervHostCPURemoteRunTime) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_remote_run_time_period"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervHostCPUTotalRunTime) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_total_run_time_period"] = int64(pm.Value)
+		}
+	}
+
+	px = "hyperv_host_lp_"
+	for _, pm := range pms.FindByName(metricHypervHostLPGuestRunTimePercent) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_guest_run_time_period"] = int64(pm.Value) * 100
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervHostLPHypervisorRunTimePercent) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_hypervisor_run_time_period"] = int64(pm.Value) * 100
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervHostLPTotalRunTimePercent) {
+		if name := pm.Labels.Get("core"); name != "" {
+			parsed_name := hypervParsenames(name)
+			cores[parsed_name] = true
+			mx[px+parsed_name+"_total_run_time_period"] = int64(pm.Value) * 100
+		}
+	}
+
 	for v := range devices {
 		if !w.cache.hypervDevices[v] {
 			w.cache.hypervDevices[v] = true
@@ -189,6 +251,12 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		if !w.cache.hypervInterfaces[v] {
 			w.cache.hypervInterfaces[v] = true
 			w.addHypervInterfaceCharts(v)
+		}
+	}
+	for v := range cores {
+		if !w.cache.hypervCores[v] {
+			w.cache.hypervCores[v] = true
+			w.addHypervCoreCharts(v)
 		}
 	}
 }

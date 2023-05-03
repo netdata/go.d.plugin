@@ -4133,35 +4133,35 @@ var (
 	}
 	hypervHostLPGuestRunTime = module.Chart{
 		ID:       "hyperv_host_lp_%s_guest_run_time",
-		Title:    "Time spent by logical processor in guest code.",
-		Units:    "nanoseconds",
+		Title:    "Percentage of time spent by logical processor in guest code.",
+		Units:    "percentage",
 		Fam:      "core",
 		Ctx:      "windows.hyperv_host_lp_guest_run_time",
 		Priority: prioHypervHostLPGuestRunTimePercent,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_guest_run_time_period", Name: "period"},
+			{ID: "hyperv_host_lp_%s_guest_run_time_period", Name: "period", Div: 100},
 		},
 	}
 	hypervHostLPHypervisorRunTime = module.Chart{
 		ID:       "hyperv_host_lp_%s_hypervisor_run_time",
-		Title:    "Time spent by logical processor in hypervisor code.",
+		Title:    "Percentage of time spent by logical processor in hypervisor code.",
 		Units:    "nanoseconds",
 		Fam:      "core",
 		Ctx:      "windows.hyperv_host_lp_hypervisor_run_time",
 		Priority: prioHypervHostCPUHypervisorRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_hypervisor_run_time_period", Name: "period"},
+			{ID: "hyperv_host_lp_%s_hypervisor_run_time_period", Name: "period", Div: 100},
 		},
 	}
 	hypervHostLPTotalRunTime = module.Chart{
 		ID:       "hyperv_host_lp_%s_total_run_time",
-		Title:    "Time spent by logical processor in guest and hypervisor code.",
+		Title:    "Percentage of time spent by logical processor in guest and hypervisor code.",
 		Units:    "nanoseconds",
 		Fam:      "core",
 		Ctx:      "windows.hyperv_host_lp_total_run_time",
 		Priority: prioHypervHostLPTotalRunTimePercent,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_total_run_time_period", Name: "period"},
+			{ID: "hyperv_host_lp_%s_total_run_time_period", Name: "period", Div: 100},
 		},
 	}
 )
