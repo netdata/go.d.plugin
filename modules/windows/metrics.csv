@@ -76,6 +76,12 @@ windows.hyperv_vm_device_bytes_written,devices,write,Total of bytes written on v
 windows.hyperv_vm_device_operation_written,devices,write,Total of operations written on virtual device,,go.plugin,windows
 windows.hyperv_vm_device_error_count,devices,error,Number of errors on virtual device,,go.plugin,windows
 windows.hyperv_vm_device_queue_length,devices,queue,Current Queue length on virtual device,,go.plugin,windows
+windows.hyperv_vm_interface_bytes_received,interfaces,received,Number of bytes received per second.,,go.plugin,windows
+windows.hyperv_vm_interface_bytes_sent,interfaces,sent,Number of bytes sent per second.,,go.plugin,windows
+windows.hyperv_vm_interface_packets_incoming_dropped,interfaces,packets,Number of incoming packets dropped per second.,,go.plugin,windows
+windows.hyperv_vm_interface_packets_outgoing_dropped,interfaces,packets,Number of outgoing packets dropped per second.,,go.plugin,windows
+windows.hyperv_vm_interface_packets_received,interfaces,packets,Number of packets received per second.,,go.plugin,windows
+windows.hyperv_vm_interface_packets_sent,interfaces,packets,Number of pacakets sent per second.,,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
