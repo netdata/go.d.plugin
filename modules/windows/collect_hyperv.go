@@ -80,7 +80,7 @@ const (
 
 	metricHyperVVIDPhysicalPagesAllocated = "windows_hyperv_vid_physical_pages_allocated"
 	metricHyperVVIDPreferredNumaNodeIndex = "windows_hyperv_vid_preferred_numa_node_index"
-	metricHyperVVIDRemotePhysicalPages = "windows_hyperv_vid_remote_physical_pages"
+	metricHyperVVIDRemotePhysicalPages    = "windows_hyperv_vid_remote_physical_pages"
 )
 
 var hypervMetrics = []string{
