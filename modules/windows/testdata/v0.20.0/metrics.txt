@@ -456,6 +456,7 @@ windows_exporter_collector_duration_seconds{collector="adcs"} 0.0006833
 windows_exporter_collector_duration_seconds{collector="adfs"} 0.0031012
 windows_exporter_collector_duration_seconds{collector="cpu"} 0.00052
 windows_exporter_collector_duration_seconds{collector="exchange"} 0.0334467
+windows_exporter_collector_duration_seconds{collector="hyperv"} 0.9003895
 windows_exporter_collector_duration_seconds{collector="iis"} 0
 windows_exporter_collector_duration_seconds{collector="logical_disk"} 0
 windows_exporter_collector_duration_seconds{collector="logon"} 0.1139134
@@ -482,6 +483,7 @@ windows_exporter_collector_success{collector="adcs"} 1
 windows_exporter_collector_success{collector="adfs"} 1
 windows_exporter_collector_success{collector="cpu"} 1
 windows_exporter_collector_success{collector="exchange"} 1
+windows_exporter_collector_success{collector="hyperv"} 1
 windows_exporter_collector_success{collector="iis"} 1
 windows_exporter_collector_success{collector="logical_disk"} 1
 windows_exporter_collector_success{collector="logon"} 1
@@ -508,6 +510,7 @@ windows_exporter_collector_timeout{collector="adcs"} 0
 windows_exporter_collector_timeout{collector="adfs"} 0
 windows_exporter_collector_timeout{collector="cpu"} 0
 windows_exporter_collector_timeout{collector="exchange"} 0
+windows_exporter_collector_timeout{collector="hyperv"} 0
 windows_exporter_collector_timeout{collector="iis"} 0
 windows_exporter_collector_timeout{collector="logical_disk"} 0
 windows_exporter_collector_timeout{collector="logon"} 0
@@ -688,6 +691,258 @@ windows_exchange_workload_queued_tasks{name="microsoft_exchange_servicehost_darr
 # TYPE windows_exchange_workload_yielded_tasks counter
 windows_exchange_workload_yielded_tasks{name="complianceauditservice_auditcomplianceserviceprioritized_audit_task_execution_manager"} 0
 windows_exchange_workload_yielded_tasks{name="microsoft_exchange_servicehost_darruntime"} 0
+# HELP windows_hyperv_health_critical This counter represents the number of virtual machines with critical health
+# TYPE windows_hyperv_health_critical gauge
+windows_hyperv_health_critical 0
+# HELP windows_hyperv_health_ok This counter represents the number of virtual machines with ok health
+# TYPE windows_hyperv_health_ok gauge
+windows_hyperv_health_ok 1
+# HELP windows_hyperv_host_cpu_guest_run_time The time spent by the virtual processor in guest code
+# TYPE windows_hyperv_host_cpu_guest_run_time gauge
+windows_hyperv_host_cpu_guest_run_time{core="0"} 2.44871648e+09
+# HELP windows_hyperv_host_cpu_hypervisor_run_time The time spent by the virtual processor in hypervisor code
+# TYPE windows_hyperv_host_cpu_hypervisor_run_time gauge
+windows_hyperv_host_cpu_hypervisor_run_time{core="0"} 2.79010764e+08
+# HELP windows_hyperv_host_cpu_remote_run_time The time spent by the virtual processor running on a remote node
+# TYPE windows_hyperv_host_cpu_remote_run_time gauge
+windows_hyperv_host_cpu_remote_run_time{core="0"} 0
+# HELP windows_hyperv_host_cpu_total_run_time The time spent by the virtual processor in guest and hypervisor code
+# TYPE windows_hyperv_host_cpu_total_run_time gauge
+windows_hyperv_host_cpu_total_run_time{core="0"} 2.727727244e+09
+# HELP windows_hyperv_host_lp_guest_run_time_percent The percentage of time spent by the processor in guest code
+# TYPE windows_hyperv_host_lp_guest_run_time_percent gauge
+windows_hyperv_host_lp_guest_run_time_percent{core="0"} 2.476081579e+09
+# HELP windows_hyperv_host_lp_hypervisor_run_time_percent The percentage of time spent by the processor in hypervisor code
+# TYPE windows_hyperv_host_lp_hypervisor_run_time_percent gauge
+windows_hyperv_host_lp_hypervisor_run_time_percent{core="0"} 3.52733652e+08
+# HELP windows_hyperv_host_lp_total_run_time_percent The percentage of time spent by the processor in guest and hypervisor code
+# TYPE windows_hyperv_host_lp_total_run_time_percent gauge
+windows_hyperv_host_lp_total_run_time_percent{core="0"} 2.828815231e+09
+# HELP windows_hyperv_hypervisor_logical_processors The number of logical processors present in the system
+# TYPE windows_hyperv_hypervisor_logical_processors gauge
+windows_hyperv_hypervisor_logical_processors 16
+# HELP windows_hyperv_hypervisor_virtual_processors The number of virtual processors present in the system
+# TYPE windows_hyperv_hypervisor_virtual_processors gauge
+windows_hyperv_hypervisor_virtual_processors 24
+# HELP windows_hyperv_root_partition_1G_device_pages The number of 1G pages present in the device space of the partition
+# TYPE windows_hyperv_root_partition_1G_device_pages gauge
+windows_hyperv_root_partition_1G_device_pages 0
+# HELP windows_hyperv_root_partition_1G_gpa_pages The number of 1G pages present in the GPA space of the partition
+# TYPE windows_hyperv_root_partition_1G_gpa_pages gauge
+windows_hyperv_root_partition_1G_gpa_pages 6
+# HELP windows_hyperv_root_partition_2M_device_pages The number of 2M pages present in the device space of the partition
+# TYPE windows_hyperv_root_partition_2M_device_pages gauge
+windows_hyperv_root_partition_2M_device_pages 0
+# HELP windows_hyperv_root_partition_2M_gpa_pages The number of 2M pages present in the GPA space of the partition
+# TYPE windows_hyperv_root_partition_2M_gpa_pages gauge
+windows_hyperv_root_partition_2M_gpa_pages 5255
+# HELP windows_hyperv_root_partition_4K_device_pages The number of 4K pages present in the device space of the partition
+# TYPE windows_hyperv_root_partition_4K_device_pages gauge
+windows_hyperv_root_partition_4K_device_pages 0
+# HELP windows_hyperv_root_partition_4K_gpa_pages The number of 4K pages present in the GPA space of the partition
+# TYPE windows_hyperv_root_partition_4K_gpa_pages gauge
+windows_hyperv_root_partition_4K_gpa_pages 58880
+# HELP windows_hyperv_root_partition_address_spaces The number of address spaces in the virtual TLB of the partition
+# TYPE windows_hyperv_root_partition_address_spaces gauge
+windows_hyperv_root_partition_address_spaces 0
+# HELP windows_hyperv_root_partition_attached_devices The number of devices attached to the partition
+# TYPE windows_hyperv_root_partition_attached_devices gauge
+windows_hyperv_root_partition_attached_devices 1
+# HELP windows_hyperv_root_partition_deposited_pages The number of pages deposited into the partition
+# TYPE windows_hyperv_root_partition_deposited_pages gauge
+windows_hyperv_root_partition_deposited_pages 31732
+# HELP windows_hyperv_root_partition_device_dma_errors An indicator of illegal DMA requests generated by all devices assigned to the partition
+# TYPE windows_hyperv_root_partition_device_dma_errors gauge
+windows_hyperv_root_partition_device_dma_errors 0
+# HELP windows_hyperv_root_partition_device_interrupt_errors An indicator of illegal interrupt requests generated by all devices assigned to the partition
+# TYPE windows_hyperv_root_partition_device_interrupt_errors gauge
+windows_hyperv_root_partition_device_interrupt_errors 0
+# HELP windows_hyperv_root_partition_device_interrupt_throttle_events The number of times an interrupt from a device assigned to the partition was temporarily throttled because the device was generating too many interrupts
+# TYPE windows_hyperv_root_partition_device_interrupt_throttle_events gauge
+windows_hyperv_root_partition_device_interrupt_throttle_events 0
+# HELP windows_hyperv_root_partition_gpa_space_modifications The rate of modifications to the GPA space of the partition
+# TYPE windows_hyperv_root_partition_gpa_space_modifications counter
+windows_hyperv_root_partition_gpa_space_modifications 0
+# HELP windows_hyperv_root_partition_io_tlb_flush The rate of flushes of I/O TLBs of the partition
+# TYPE windows_hyperv_root_partition_io_tlb_flush counter
+windows_hyperv_root_partition_io_tlb_flush 23901
+# HELP windows_hyperv_root_partition_io_tlb_flush_cost The average time (in nanoseconds) spent processing an I/O TLB flush
+# TYPE windows_hyperv_root_partition_io_tlb_flush_cost gauge
+windows_hyperv_root_partition_io_tlb_flush_cost 312574
+# HELP windows_hyperv_root_partition_physical_pages_allocated The number of timer interrupts skipped for the partition
+# TYPE windows_hyperv_root_partition_physical_pages_allocated gauge
+windows_hyperv_root_partition_physical_pages_allocated 0
+# HELP windows_hyperv_root_partition_preferred_numa_node_index The number of pages present in the GPA space of the partition (zero for root partition)
+# TYPE windows_hyperv_root_partition_preferred_numa_node_index gauge
+windows_hyperv_root_partition_preferred_numa_node_index 0
+# HELP windows_hyperv_root_partition_recommended_virtual_tlb_size The recommended number of pages to be deposited for the virtual TLB
+# TYPE windows_hyperv_root_partition_recommended_virtual_tlb_size gauge
+windows_hyperv_root_partition_recommended_virtual_tlb_size 64
+# HELP windows_hyperv_root_partition_virtual_tlb_flush_entires The rate of flushes of the entire virtual TLB
+# TYPE windows_hyperv_root_partition_virtual_tlb_flush_entires counter
+windows_hyperv_root_partition_virtual_tlb_flush_entires 15234
+# HELP windows_hyperv_root_partition_virtual_tlb_pages The number of pages used by the virtual TLB of the partition
+# TYPE windows_hyperv_root_partition_virtual_tlb_pages gauge
+windows_hyperv_root_partition_virtual_tlb_pages 64
+# HELP windows_hyperv_vid_physical_pages_allocated The number of physical pages allocated
+# TYPE windows_hyperv_vid_physical_pages_allocated gauge
+windows_hyperv_vid_physical_pages_allocated{vm="Ubuntu 22.04 LTS"} 745472
+# HELP windows_hyperv_vid_preferred_numa_node_index The preferred NUMA node index associated with this partition
+# TYPE windows_hyperv_vid_preferred_numa_node_index gauge
+windows_hyperv_vid_preferred_numa_node_index{vm="Ubuntu 22.04 LTS"} 0
+# HELP windows_hyperv_vid_remote_physical_pages The number of physical pages not allocated from the preferred NUMA node
+# TYPE windows_hyperv_vid_remote_physical_pages gauge
+windows_hyperv_vid_remote_physical_pages{vm="Ubuntu 22.04 LTS"} 0
+# HELP windows_hyperv_vm_cpu_guest_run_time The time spent by the virtual processor in guest code
+# TYPE windows_hyperv_vm_cpu_guest_run_time gauge
+windows_hyperv_vm_cpu_guest_run_time{core="0",vm="Ubuntu 22.04 LTS"} 6.2534217e+07
+# HELP windows_hyperv_vm_cpu_hypervisor_run_time The time spent by the virtual processor in hypervisor code
+# TYPE windows_hyperv_vm_cpu_hypervisor_run_time gauge
+windows_hyperv_vm_cpu_hypervisor_run_time{core="0",vm="Ubuntu 22.04 LTS"} 4.457712e+06
+# HELP windows_hyperv_vm_cpu_remote_run_time The time spent by the virtual processor running on a remote node
+# TYPE windows_hyperv_vm_cpu_remote_run_time gauge
+windows_hyperv_vm_cpu_remote_run_time{core="0",vm="Ubuntu 22.04 LTS"} 0
+# HELP windows_hyperv_vm_cpu_total_run_time The time spent by the virtual processor in guest and hypervisor code
+# TYPE windows_hyperv_vm_cpu_total_run_time gauge
+windows_hyperv_vm_cpu_total_run_time{core="0",vm="Ubuntu 22.04 LTS"} 6.6991929e+07
+# HELP windows_hyperv_vm_device_bytes_read This counter represents the total number of bytes that have been read per second on this virtual device
+# TYPE windows_hyperv_vm_device_bytes_read counter
+windows_hyperv_vm_device_bytes_read{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 83456
+windows_hyperv_vm_device_bytes_read{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 5.3118464e+08
+# HELP windows_hyperv_vm_device_bytes_written This counter represents the total number of bytes that have been written per second on this virtual device
+# TYPE windows_hyperv_vm_device_bytes_written counter
+windows_hyperv_vm_device_bytes_written{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 1.148928e+06
+windows_hyperv_vm_device_bytes_written{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 4.25905152e+08
+# HELP windows_hyperv_vm_device_error_count This counter represents the total number of errors that have occurred on this virtual device
+# TYPE windows_hyperv_vm_device_error_count counter
+windows_hyperv_vm_device_error_count{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 0
+windows_hyperv_vm_device_error_count{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 3
+# HELP windows_hyperv_vm_device_operations_read This counter represents the number of read operations that have occurred per second on this virtual device
+# TYPE windows_hyperv_vm_device_operations_read counter
+windows_hyperv_vm_device_operations_read{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 6
+windows_hyperv_vm_device_operations_read{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 13196
+# HELP windows_hyperv_vm_device_operations_written This counter represents the number of write operations that have occurred per second on this virtual device
+# TYPE windows_hyperv_vm_device_operations_written counter
+windows_hyperv_vm_device_operations_written{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 34
+windows_hyperv_vm_device_operations_written{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 3866
+# HELP windows_hyperv_vm_device_queue_length This counter represents the current queue length on this virtual device
+# TYPE windows_hyperv_vm_device_queue_length counter
+windows_hyperv_vm_device_queue_length{vm_device="--?-D:-Ana-VM-hyperv-Virtual Machines-3AA8D474-2365-4041-A7CB-2A78287D6FE0.vmgs"} 1.104182e+06
+windows_hyperv_vm_device_queue_length{vm_device="D:-Ana-VM-hyperv-vhd-Ubuntu 22.04 LTS_838D93A1-7D30-43CD-9F69-F336829C0934.avhdx"} 3.269422187e+09
+# HELP windows_hyperv_vm_interface_bytes_received This counter represents the total number of bytes received per second by the network adapter
+# TYPE windows_hyperv_vm_interface_bytes_received counter
+windows_hyperv_vm_interface_bytes_received{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 473654
+windows_hyperv_vm_interface_bytes_received{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 4.3509444e+07
+# HELP windows_hyperv_vm_interface_bytes_sent This counter represents the total number of bytes sent per second by the network adapter
+# TYPE windows_hyperv_vm_interface_bytes_sent counter
+windows_hyperv_vm_interface_bytes_sent{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 4.3550457e+07
+windows_hyperv_vm_interface_bytes_sent{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 473654
+# HELP windows_hyperv_vm_interface_packets_incoming_dropped This counter represents the total number of dropped packets per second in the incoming direction of the network adapter
+# TYPE windows_hyperv_vm_interface_packets_incoming_dropped counter
+windows_hyperv_vm_interface_packets_incoming_dropped{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 0
+windows_hyperv_vm_interface_packets_incoming_dropped{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 0
+# HELP windows_hyperv_vm_interface_packets_outgoing_dropped This counter represents the total number of dropped packets per second in the outgoing direction of the network adapter
+# TYPE windows_hyperv_vm_interface_packets_outgoing_dropped counter
+windows_hyperv_vm_interface_packets_outgoing_dropped{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 284
+windows_hyperv_vm_interface_packets_outgoing_dropped{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 0
+# HELP windows_hyperv_vm_interface_packets_received This counter represents the total number of packets received per second by the network adapter
+# TYPE windows_hyperv_vm_interface_packets_received counter
+windows_hyperv_vm_interface_packets_received{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 6137
+windows_hyperv_vm_interface_packets_received{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 8621
+# HELP windows_hyperv_vm_interface_packets_sent This counter represents the total number of packets sent per second by the network adapter
+# TYPE windows_hyperv_vm_interface_packets_sent counter
+windows_hyperv_vm_interface_packets_sent{vm_interface="Default Switch_312FF9C7-1F07-4EBA-81FE-F5B4F445B810"} 8905
+windows_hyperv_vm_interface_packets_sent{vm_interface="Ubuntu 22.04 LTS_Adaptador de Rede_3AA8D474-2365-4041-A7CB-2A78287D6FE0--98F1DBEE-505C-4086-B80E-87A27FAECBD4"} 6137
+# HELP windows_hyperv_vm_memory_add_operations_total This counter represents the number of operations adding memory to the VM.
+# TYPE windows_hyperv_vm_memory_add_operations_total counter
+windows_hyperv_vm_memory_add_operations_total{vm="Ubuntu 22.04 LTS"} 3
+# HELP windows_hyperv_vm_memory_added_total This counter represents memory in MB added to the VM
+# TYPE windows_hyperv_vm_memory_added_total counter
+windows_hyperv_vm_memory_added_total{vm="Ubuntu 22.04 LTS"} 856
+# HELP windows_hyperv_vm_memory_physical This gauge represents the current amount of memory in MB assigned to the VM.
+# TYPE windows_hyperv_vm_memory_physical gauge
+windows_hyperv_vm_memory_physical{vm="Ubuntu 22.04 LTS"} 2628
+# HELP windows_hyperv_vm_memory_physical_guest_visible 'This gauge represents the amount of memory in MB visible to the VM guest.'
+# TYPE windows_hyperv_vm_memory_physical_guest_visible gauge
+windows_hyperv_vm_memory_physical_guest_visible{vm="Ubuntu 22.04 LTS"} 2904
+# HELP windows_hyperv_vm_memory_pressure_average This gauge represents the average pressure in the VM.
+# TYPE windows_hyperv_vm_memory_pressure_average gauge
+windows_hyperv_vm_memory_pressure_average{vm="Ubuntu 22.04 LTS"} 83
+# HELP windows_hyperv_vm_memory_pressure_current This gauge represents the current pressure in the VM.
+# TYPE windows_hyperv_vm_memory_pressure_current gauge
+windows_hyperv_vm_memory_pressure_current{vm="Ubuntu 22.04 LTS"} 83
+# HELP windows_hyperv_vm_memory_pressure_maximum This gauge represents the maximum pressure band in the VM.
+# TYPE windows_hyperv_vm_memory_pressure_maximum gauge
+windows_hyperv_vm_memory_pressure_maximum{vm="Ubuntu 22.04 LTS"} 85
+# HELP windows_hyperv_vm_memory_pressure_minimum This gauge represents the minimum pressure band in the VM.
+# TYPE windows_hyperv_vm_memory_pressure_minimum gauge
+windows_hyperv_vm_memory_pressure_minimum{vm="Ubuntu 22.04 LTS"} 81
+# HELP windows_hyperv_vm_memory_remove_operations_total This counter represents the number of operations removing memory from the VM.
+# TYPE windows_hyperv_vm_memory_remove_operations_total counter
+windows_hyperv_vm_memory_remove_operations_total{vm="Ubuntu 22.04 LTS"} 1
+# HELP windows_hyperv_vm_memory_removed_total This counter represents memory in MB removed from the VM
+# TYPE windows_hyperv_vm_memory_removed_total counter
+windows_hyperv_vm_memory_removed_total{vm="Ubuntu 22.04 LTS"} 276
+# HELP windows_hyperv_vswitch_broadcast_packets_received_total This represents the total number of broadcast packets received per second by the virtual switch
+# TYPE windows_hyperv_vswitch_broadcast_packets_received_total counter
+windows_hyperv_vswitch_broadcast_packets_received_total{vswitch="Default Switch"} 51
+# HELP windows_hyperv_vswitch_broadcast_packets_sent_total This represents the total number of broadcast packets sent per second by the virtual switch
+# TYPE windows_hyperv_vswitch_broadcast_packets_sent_total counter
+windows_hyperv_vswitch_broadcast_packets_sent_total{vswitch="Default Switch"} 18
+# HELP windows_hyperv_vswitch_bytes_received_total This represents the total number of bytes received per second by the virtual switch
+# TYPE windows_hyperv_vswitch_bytes_received_total counter
+windows_hyperv_vswitch_bytes_received_total{vswitch="Default Switch"} 4.4024111e+07
+# HELP windows_hyperv_vswitch_bytes_sent_total This represents the total number of bytes sent per second by the virtual switch
+# TYPE windows_hyperv_vswitch_bytes_sent_total counter
+windows_hyperv_vswitch_bytes_sent_total{vswitch="Default Switch"} 4.3983098e+07
+# HELP windows_hyperv_vswitch_bytes_total This represents the total number of bytes per second traversing the virtual switch
+# TYPE windows_hyperv_vswitch_bytes_total counter
+windows_hyperv_vswitch_bytes_total{vswitch="Default Switch"} 8.8007209e+07
+# HELP windows_hyperv_vswitch_directed_packets_received_total This represents the total number of directed packets received per second by the virtual switch
+# TYPE windows_hyperv_vswitch_directed_packets_received_total counter
+windows_hyperv_vswitch_directed_packets_received_total{vswitch="Default Switch"} 14603
+# HELP windows_hyperv_vswitch_directed_packets_send_total This represents the total number of directed packets sent per second by the virtual switch
+# TYPE windows_hyperv_vswitch_directed_packets_send_total counter
+windows_hyperv_vswitch_directed_packets_send_total{vswitch="Default Switch"} 14603
+# HELP windows_hyperv_vswitch_dropped_packets_incoming_total This represents the total number of packet dropped per second by the virtual switch in the incoming direction
+# TYPE windows_hyperv_vswitch_dropped_packets_incoming_total counter
+windows_hyperv_vswitch_dropped_packets_incoming_total{vswitch="Default Switch"} 284
+# HELP windows_hyperv_vswitch_dropped_packets_outcoming_total This represents the total number of packet dropped per second by the virtual switch in the outgoing direction
+# TYPE windows_hyperv_vswitch_dropped_packets_outcoming_total counter
+windows_hyperv_vswitch_dropped_packets_outcoming_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_extensions_dropped_packets_incoming_total This represents the total number of packet dropped per second by the virtual switch extensions in the incoming direction
+# TYPE windows_hyperv_vswitch_extensions_dropped_packets_incoming_total counter
+windows_hyperv_vswitch_extensions_dropped_packets_incoming_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_extensions_dropped_packets_outcoming_total This represents the total number of packet dropped per second by the virtual switch extensions in the outgoing direction
+# TYPE windows_hyperv_vswitch_extensions_dropped_packets_outcoming_total counter
+windows_hyperv_vswitch_extensions_dropped_packets_outcoming_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_learned_mac_addresses_total This counter represents the total number of learned MAC addresses of the virtual switch
+# TYPE windows_hyperv_vswitch_learned_mac_addresses_total counter
+windows_hyperv_vswitch_learned_mac_addresses_total{vswitch="Default Switch"} 2
+# HELP windows_hyperv_vswitch_multicast_packets_received_total This represents the total number of multicast packets received per second by the virtual switch
+# TYPE windows_hyperv_vswitch_multicast_packets_received_total counter
+windows_hyperv_vswitch_multicast_packets_received_total{vswitch="Default Switch"} 388
+# HELP windows_hyperv_vswitch_multicast_packets_sent_total This represents the total number of multicast packets sent per second by the virtual switch
+# TYPE windows_hyperv_vswitch_multicast_packets_sent_total counter
+windows_hyperv_vswitch_multicast_packets_sent_total{vswitch="Default Switch"} 137
+# HELP windows_hyperv_vswitch_number_of_send_channel_moves_total This represents the total number of send channel moves per second on this virtual switch
+# TYPE windows_hyperv_vswitch_number_of_send_channel_moves_total counter
+windows_hyperv_vswitch_number_of_send_channel_moves_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_number_of_vmq_moves_total This represents the total number of VMQ moves per second on this virtual switch
+# TYPE windows_hyperv_vswitch_number_of_vmq_moves_total counter
+windows_hyperv_vswitch_number_of_vmq_moves_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_packets_flooded_total This counter represents the total number of packets flooded by the virtual switch
+# TYPE windows_hyperv_vswitch_packets_flooded_total counter
+windows_hyperv_vswitch_packets_flooded_total{vswitch="Default Switch"} 0
+# HELP windows_hyperv_vswitch_packets_received_total This represents the total number of packets received per second by the virtual switch
+# TYPE windows_hyperv_vswitch_packets_received_total counter
+windows_hyperv_vswitch_packets_received_total{vswitch="Default Switch"} 15042
+# HELP windows_hyperv_vswitch_packets_total This represents the total number of packets per second traversing the virtual switch
+# TYPE windows_hyperv_vswitch_packets_total counter
+windows_hyperv_vswitch_packets_total{vswitch="Default Switch"} 29800
+# HELP windows_hyperv_vswitch_purged_mac_addresses_total This counter represents the total number of purged MAC addresses of the virtual switch
+# TYPE windows_hyperv_vswitch_purged_mac_addresses_total counter
+windows_hyperv_vswitch_purged_mac_addresses_total{vswitch="Default Switch"} 0
 # HELP windows_iis_anonymous_users_total Total number of users who established an anonymous connection with the Web service (WebService.TotalAnonymousUsers)
 # TYPE windows_iis_anonymous_users_total counter
 windows_iis_anonymous_users_total{site="Default Web Site"} 3

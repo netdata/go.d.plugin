@@ -53,6 +53,10 @@ func New() *Windows {
 			exchangeWorkload:            make(map[string]bool),
 			exchangeLDAP:                make(map[string]bool),
 			exchangeHTTPProxy:           make(map[string]bool),
+			hypervVMMem:                 make(map[string]bool),
+			hypervVMDevices:             make(map[string]bool),
+			hypervVMInterfaces:          make(map[string]bool),
+			hypervVswitch:               make(map[string]bool),
 		},
 		charts: &module.Charts{},
 	}
@@ -100,6 +104,10 @@ type (
 		exchangeWorkload            map[string]bool
 		exchangeLDAP                map[string]bool
 		exchangeHTTPProxy           map[string]bool
+		hypervVMMem                 map[string]bool
+		hypervVMDevices             map[string]bool
+		hypervVMInterfaces          map[string]bool
+		hypervVswitch               map[string]bool
 	}
 )
 

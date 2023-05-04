@@ -34,6 +34,7 @@ const (
 	collectorNetFrameworkCLRRemoting        = "netframework_clrremoting"
 	collectorNetFrameworkCLRSecurity        = "netframework_clrsecurity"
 	collectorExchange                       = "exchange"
+	collectorHyperv                         = "hyperv"
 )
 
 func (w *Windows) collect() (map[string]int64, error) {
@@ -138,6 +139,8 @@ func (w *Windows) collectMetrics(mx map[string]int64, pms prometheus.Series) {
 			w.collectNetFrameworkCLRSecurity(mx, pms)
 		case collectorExchange:
 			w.collectExchange(mx, pms)
+		case collectorHyperv:
+			w.collectHyperv(mx, pms)
 		}
 	}
 }
