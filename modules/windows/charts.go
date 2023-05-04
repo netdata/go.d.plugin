@@ -413,6 +413,18 @@ const (
 	prioHypervVIDPreferredNumaNodeIndex
 	prioHypervVIDRemotePhysicalPages
 
+	// Hyperv VM (Memory)
+	prioHypervVMMemoryAddedOperationsTotal
+	prioHypervVMMemoryAddedTotal
+	prioHypervVMMemoryPhysical
+	prioHypervVMMemoryPhysicalGuestVisible
+	prioHypervVMMemoryPressureAverage
+	prioHypervVMMemoryPressureCurrent
+	prioHypervVMMemoryPressureMaximum
+	prioHypervVMMemoryPressureMinimum
+	prioHypervVMMemoryRemovedOPerations
+	prioHypervVMMemoryRemovedTotal
+
 	prioCollectorDuration
 	prioCollectorStatus
 )
@@ -3736,6 +3748,18 @@ var (
 		hypervVIDPreferredNumaNodeIndex.Copy(),
 		hypervVIDRemotePhysicalPages.Copy(),
 	}
+	hypervVMChartsTemplate = module.Charts{
+		hypervHypervVMMemoryAddedOperationsTotal.Copy(),
+		hypervHypervVMMemoryAddedTotal.Copy(),
+		hypervHypervVMMemoryPhysical.Copy(),
+		hypervHypervVMMemoryPhysicalGuestVisible.Copy(),
+		hypervHypervVMMemoryPressureAverage.Copy(),
+		hypervHypervVMMemoryPressureCurrent.Copy(),
+		hypervHypervVMMemoryPressureMaximum.Copy(),
+		hypervHypervVMMemoryPressureMinimum.Copy(),
+		hypervHypervVMMemoryRemoveOperationsTotal.Copy(),
+		hypervHypervVMMemoryRemovedTotal.Copy(),
+	}
 
 	hypervHealthCritical = module.Chart{
 		ID:       "hyperv_health_critical",
@@ -4442,7 +4466,7 @@ var (
 	}
 
 	hypervVIDPhysicalPagesAllocated = module.Chart{
-		ID:       "hyperv_vswitch_%s_vid_physical_pages_allocated",
+		ID:       "hyperv_vid_%s_vid_physical_pages_allocated",
 		Title:    "Number of physical pages allocated.",
 		Units:    "pages",
 		Fam:      "vm",
@@ -4453,7 +4477,7 @@ var (
 		},
 	}
 	hypervVIDPreferredNumaNodeIndex = module.Chart{
-		ID:       "hyperv_vswitch_%s_vid_preferred_numa_node_index",
+		ID:       "hyperv_vid_%s_vid_preferred_numa_node_index",
 		Title:    "Preferred NUMA node index associated with partition",
 		Units:    "index",
 		Fam:      "vm",
@@ -4464,7 +4488,7 @@ var (
 		},
 	}
 	hypervVIDRemotePhysicalPages = module.Chart{
-		ID:       "hyperv_vswitch_%s_vid_remote_physical_page",
+		ID:       "hyperv_vid_%s_vid_remote_physical_page",
 		Title:    "Number of physical pages not allocated from the preferred NUMA node.",
 		Units:    "pages",
 		Fam:      "vm",
@@ -4472,6 +4496,118 @@ var (
 		Priority: prioHypervVIDRemotePhysicalPages,
 		Dims: module.Dims{
 			{ID: "hyperv_vid_%s_vid_remote_physical_page", Name: "pages"},
+		},
+	}
+
+	// Hyperv VM (Memory)
+	hypervHypervVMMemoryAddedOperationsTotal = module.Chart{
+		ID:       "hyperv_vm_%s_memory_add_operations_total",
+		Title:    "Number of operations adding memory to VM",
+		Units:    "operations",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_add_operations_total",
+		Priority: prioHypervVMMemoryAddedOperationsTotal,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_add_operations_total", Name: "memory", Algo: module.Incremental},
+		},
+	}
+	hypervHypervVMMemoryAddedTotal = module.Chart{
+		ID:       "hyperv_vm_%s_memory_added_total",
+		Title:    "Memory added to VM",
+		Units:    "mbytes",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_added_total",
+		Priority: prioHypervVMMemoryAddedTotal,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_added_total", Name: "memory", Algo: module.Incremental},
+		},
+	}
+	hypervHypervVMMemoryPhysical = module.Chart{
+		ID:       "hyperv_vm_%s_memory_physical",
+		Title:    "Memory assigned to VM",
+		Units:    "mbytes",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_physical",
+		Priority: prioHypervVMMemoryPhysical,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_physical", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryPhysicalGuestVisible = module.Chart{
+		ID:       "hyperv_vm_%s_memory_physical_guest_visible",
+		Title:    "Memory visible to VM guests",
+		Units:    "mbytes",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_physical_guest_visible",
+		Priority: prioHypervVMMemoryPhysicalGuestVisible,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_physical_guest_visible", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryPressureAverage = module.Chart{
+		ID:       "hyperv_vm_%s_memory_pressure_average",
+		Title:    "Average pressure in VM",
+		Units:    "percentage",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_pressure_average",
+		Priority: prioHypervVMMemoryPressureAverage,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_pressure_average", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryPressureCurrent = module.Chart{
+		ID:       "hyperv_vm_%s_memory_pressure_current",
+		Title:    "Current pressure in VM",
+		Units:    "percentage",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_pressure_current",
+		Priority: prioHypervVMMemoryPressureCurrent,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_pressure_current", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryPressureMaximum = module.Chart{
+		ID:       "hyperv_vm_%s_memory_pressure_maximum",
+		Title:    "Maximum pressure band in VM",
+		Units:    "percentage",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_pressure_maximum",
+		Priority: prioHypervVMMemoryPressureMaximum,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_pressure_maximum", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryPressureMinimum = module.Chart{
+		ID:       "hyperv_vm_%s_memory_pressure_minimum",
+		Title:    "Minimum pressure band in VM",
+		Units:    "percentage",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_pressure_minimum",
+		Priority: prioHypervVMMemoryPressureMinimum,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_pressure_minimum", Name: "memory"},
+		},
+	}
+	hypervHypervVMMemoryRemoveOperationsTotal = module.Chart{
+		ID:       "hyperv_vm_%s_memory_remove_operations_total",
+		Title:    "Number of operations removing memory from the VM.",
+		Units:    "operations",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_remove_operations_total",
+		Priority: prioHypervVMMemoryRemovedOPerations,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_remove_operations_total", Name: "operations"},
+		},
+	}
+	hypervHypervVMMemoryRemovedTotal = module.Chart{
+		ID:       "hyperv_vm_%s_memory_removed_total",
+		Title:    "Memory in MB removed from the VM.",
+		Units:    "mbytes",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vm_memory_remove_operations_total",
+		Priority: prioHypervVMMemoryRemovedOPerations,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_memory_remove_operations_total", Name: "memory"},
 		},
 	}
 )
@@ -5234,6 +5370,24 @@ func (w *Windows) addHypervVIDCharts(vid string) {
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, vid)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) addHypervVMCharts(vm string) {
+	charts := hypervVMChartsTemplate.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, vm)
+		chart.Labels = []module.Label{
+			{Key: "vm_name", Value: vm},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, vm)
 		}
 	}
 
