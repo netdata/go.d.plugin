@@ -46,85 +46,6 @@ windows.processes_pool_bytes,,a dimension per process,bytes,"Active threads",sta
 windows.processes_threads,,a dimension per process,threads,"Number of handles open",stacked,,go.d.plugin,windows
 windows.service_state,service,"running, stopped, start_pending, stop_pending, continue_pending, pause_pending, paused, unknown",state,"Service state",line,service,go.d.plugin,windows
 windows.service_status,service,"ok, error, unknown, degraded, pred_fail, starting, stopping, service, stressed, nonrecover, no_contact, lost_comm",status,"Service status",line,service,go.d.plugin,windows
-windows.hyperv_health_critical,,critical,VM with Critical Health,line,,go.plugin,windows
-windows.hyperv_health_ok,,ok,vm,VM with OK Health,line,,go.plugin,windows
-windows.hyperv_hypervisor_logical_processors,,processor,vm,Logical processors in system,line,,go.plugin,windows
-windows.hyperv_hypervisor_virtual_processors,,processor,processor,Virtual processors in system,line,,go.plugin,windows
-windows.hyperv_root_partition_1g_device_pages,,pages,pages,Number of 1G pages present in device space,line,,go.plugin,windows
-windows.hyperv_root_partition_1g_gpa_pages,,pages,pages,Number of 1G pages present in GPA space,line,,go.plugin,windows
-windows.hyperv_root_partition_2m_device_pages,,pages,pages,Number of 2M pages present in device space,line,,go.plugin,windows
-windows.hyperv_root_partition_2m_gpa_pages,,pages,pages,Number of 2M pages present in GPA space,line,,go.plugin,windows
-windows.hyperv_root_partition_4k_device_pages,,pages,pages,Number of 4K pages present in device space,line,,go.plugin,windows
-windows.hyperv_root_partition_4k_gpa_pages,,pages,pages,Number of 4K pages present in GPA space,line,,go.plugin,windows
-windows.hyperv_root_partition_address_space,,address,address,Number of address spaces in the virtual TLB partition,,go.plugin,windows
-windows.hyperv_root_partition_attached_devices,,devices,devices,Number of devices attached to the partition.,,go.plugin,windows
-windows.hyperv_root_partition_deposited_pages,,pages,pages,Number of pages deposited into the partition.,,go.plugin,windows
-windows.hyperv_root_partition_device_dma_errors,,requests,requests,Illegal DMA request,,go.plugin,windows
-windows.hyperv_root_partition_device_interrupt_errors,,requests,requests,Illegal Interrupt request,,go.plugin,windows
-windows.hyperv_root_partition_device_interrupt_throttle_events,,interrupts,interrupts,Partition temporary throttled,,go.plugin,windows
-windows.hyperv_root_partition_gpa_space_modifications,,gpa,modifications/s,Modifications to GPA space,,go.plugin,windows
-windows.hyperv_root_partition_io_tlb_flush,,flushes,flushes/s,Flushes of I/O TLB,,go.plugin,windows
-windows.hyperv_root_partition_io_tlb_flush_cost,,period,nanoseconds,Average time to process I/O TLB flush,,go.plugin,windows
-windows.hyperv_root_partition_virtual_tlb_flush_entires,,flushes,flushes,The rate of flushes of the entire virtual TLB,,go.plugin,windows
-windows.hyperv_root_partition_physical_page_allocated,,timer,timer,Number of timer interrupted skipped.,,go.plugin,windows
-windows.hyperv_root_parition_preferred_numa_node_index,,pages,pages,Number of pages present in the GPA space.,,go.plugin,windows
-windows.hyperv_root_partition_recommended_virtual_tlb_size,,pages,pages,The recommended number of pages to be deposited for the Virtual TLB.,,go.plugin,windows
-windows.hyperv_root_partition_virtual_tlb_pages,,pages,pages,Pages used by the virtual TLB of the partition.,,go.plugin,windows
-windows.hyperv_vm_device_bytes_read,devices,read,bytes/s,Total of bytes read on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_device_operation_read,devices,read,reads/s,Total of operations read on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_device_bytes_written,devices,write,bytes/s,Total of bytes written on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_device_operation_written,devices,write,writes/s,Total of operations written on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_device_error_count,devices,error,errors,Number of errors on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_device_queue_length,devices,queue,queue,Current Queue length on virtual device,vm_device,go.plugin,windows
-windows.hyperv_vm_interface_bytes_received,interfaces,received,bytes/s,Number of bytes received per second.,vm_interface,go.plugin,windows
-windows.hyperv_vm_interface_bytes_sent,interfaces,sent,bytes/s,Number of bytes sent per second.,vm_interface,go.plugin,windows
-windows.hyperv_vm_interface_packets_incoming_dropped,interfaces,packets,packets/s,Number of incoming packets dropped per second.,vm_interface,go.plugin,windows
-windows.hyperv_vm_interface_packets_outgoing_dropped,interfaces,packets,packets/s,Number of outgoing packets dropped per second.,vm_interface,go.plugin,windows
-windows.hyperv_vm_interface_packets_received,interfaces,packets,packets/s,Number of packets received per second.,vm_interface,go.plugin,windows
-windows.hyperv_vm_interface_packets_sent,interfaces,packets,packets/s,Number of pacakets sent per second.,vm_interface,go.plugin,windows
-windows.hyperv_host_cpu_guest_run_time,cpu,period,nanoseconds,Time spent by virtual processor in guest code.,,go.plugin,windows
-windows.hyperv_host_cpu_hypervisor_run_time,cpu,period,nanoseconds,Time spent by virtual processor in hypervisor code.,vm_core,go.plugin,windows
-windows.hyperv_host_cpu_remote_run_time,cpu,period,nanoseconds,Time spent by virtual processor in remote code.,vm_core,go.plugin,windows
-windows.hyperv_host_cpu_total_run_time,cpu,period,nanoseconds,Time spent by virtual processor in guest and hypervisor code.,vm_core,go.plugin,windows
-windows.hyperv_host_lp_guest_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest code.,vm_core,go.plugin,windows
-windows.hyperv_host_lp_hypervisor_run_time,cpu,period,percentage,Percentage of time spent by logical processor in hypervisor code.,vm_core,go.plugin,windows
-windows.hyperv_host_lp_total_run_time,cpu,period,percentage,Percentage of time spent by logical processor in guest and hypervisor code.,vm_core,go.plugin,windows
-windows.hyperv_vswitch_broadcast_packets_received,vswitch,packets,packets/s,Number of broadcast packets received.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_broadcast_packets_sent,vswitch,packets,packets/s,Number of broadcast packets sent.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_bytes_received,vswitch,bytes,bytes/s,Number of bytes received by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_bytes_sent,vswitch,bytes,bytes/s,Number of bytes sent by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_bytes,vswitch,bytes,bytes/s,Number of bytes sent by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_directed_packets_received,vswitch,packets,packets/s,Number of directed packets received by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_directed_packets_send,vswitch,packets,packets/s,Number of directed packets send by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_dropped_packets_incoming,vswitch,packets,packets/s,Number of incoming packets dropped by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_dropped_packets_outcoming,vswitch,packets,packets/s,Number of outcoming packets dropped by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_extensions_dropped_packets_incoming,vswitch,packets,packets/s,Number of inconming packets dropped by the virtual switch extension.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_extensions_dropped_packets_outcoming,vswitch,packets,packets/s,Number of outconming packets dropped by the virtual switch extension.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_learned_mac_addresses,vswitch,counter,mac_address,Number of learned MAC addresses.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_multicast_packets_received,vswitch,packets,packets/s,Number of multicast packets received.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_multicast_packets_sent,vswitch,packets,packets/s,Number of multicast packets sent.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_number_of_send_channel_moves,vswitch,send,channels/s,Number of send channel moves on virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_number_of_vmq_moves,vswitch,vmq,vmq,Total number of packets flooded on virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_packets_received,vswitch,packets,packets/s,Number of received by virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vswitch_packets,vswitch,packets,packets/s,Number of packets transversing virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_purged_mac_addresses,vswitch,counter,mac_address,Number of purged MAC addresses of the virtual switch.,vm_vswitch,go.plugin,windows
-windows.hyperv_vid_physical_pages_allocated,vm,pages,pages,Number of physical pages allocated.,vm_name,go.plugin,windows
-windows.hyperv_vid_preferred_numa_node_index,vm,index,index,Preferred NUMA node index associated with partition,vm_name,go.plugin,windows
-windows.hyperv_vid_remote_physical_page,vm,pages,pages,Number of physical pages not allocated from the preferred NUMA node.,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_add_operations_total,vm,memory,operations,Number of operations adding memory to VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_added_total,vm,memory,mbytes,Memory added to VM.,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_physical,vm,memory,mbytes,Memory assigned to VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_physical_guest_visible,vm,memory,mbytes,Memory visible to VM guests,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_pressure_average,vm,memory,mbytes,Average pressure in VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_pressure_current,vm,memory,mbytes,Current pressure in VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_pressure_maximum,vm,memory,mbytes,Maximum pressure band in VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_pressure_minimum,vm,memory,mbytes,Minimum pressure band in VM,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_remove_operations_total,vm,operations,operations,Number of operations removing memory from the VM.,vm_name,go.plugin,windows
-windows.hyperv_vm_memory_removed_total,vm,memory,mbytes,Memory in MB removed from the VM.,vm_name,go.plugin,windows
-windows.hyperv_vm_cpu_guest_run_time,vm,vm,nanoseconds,Time spent by virtual process in guest code.,"vm_name, vm_cpu",go.plugin,windows
-windows.hyperv_vm_cpu_hypervisor_run_time,vm,vm,nanoseconds,Time spent by virtual process in hypervisor code.,"vm_name, vm_cpu",go.plugin,windows
-windows.hyperv_vm_cpu_remote_run_time,vm,vm,nanoseconds,Time spent by virtual process in remote code.,"vm_name, vm_cpu",go.plugin,windows
-windows.hyperv_vm_cpu_total_run_time,vm,vm,nanoseconds,Time spent by virtual process in guest and hypervisor code.,"vm_name, vm_cpu",go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
@@ -303,3 +224,38 @@ exchange.http_proxy_mailbox_proxy_failure_rate,http proxy,failures,percentage,"P
 exchange.http_proxy_mailbox_server_locator_avg_latency_sec,http proxy,latency,seconds,"Average latency of MailboxServerLocator web service calls",line,workload,go.d.plugin,windows
 exchange.http_proxy_outstanding_proxy_requests,http proxy,outstanding,requests,"Concurrent outstanding proxy requests",line,workload,go.d.plugin,windows
 exchange.http_proxy_requests,http proxy,processed,requests/s,"Number of proxy requests processed each second",line,workload,go.d.plugin,windows
+hyperv.vms_health,,vms,"ok, critical","Virtual machines health status",stacked,,go.d.plugin,windows
+hyperv.root_partition_device_space_pages,,pages,"4K, 2M, 1G","Root partition pages in the device space",line,,go.d.plugin,windows
+hyperv.root_partition_gpa_space_pages,,pages,"4K, 2M, 1G","Root partition pages in the GPA space",line,,go.d.plugin,windows
+hyperv.root_partition_gpa_space_modifications,,modifications/s,gpa,"Root partition GPA space modifications",line,,go.d.plugin,windows
+hyperv.root_partition_attached_devices,,devices,attached,"Root partition attached devices",line,,go.d.plugin,windows
+hyperv.root_partition_deposited_pages,,pages,deposited,"Root partition deposited pages",line,,go.d.plugin,windows
+hyperv.root_partition_skipped_interrupts,,interrupts,skipped,"Root partition skipped interrupts",line,,go.d.plugin,windows
+hyperv.root_partition_device_dma_errors,,requests,illegal_dma,"Root partition illegal DMA requests",line,,go.d.plugin,windows
+hyperv.root_partition_device_interrupt_errors,,requests,illegal_interrupt,"Root partition illegal interrupt requests",line,,go.d.plugin,windows
+hyperv.root_partition_device_interrupt_throttle_events,,events,throttling,"Root partition throttled interrupts",line,,go.d.plugin,windows
+hyperv.root_partition_io_tlb_flush,,flushes/s,flushes,"Root partition flushes of I/O TLBs",line,,go.d.plugin,windows
+hyperv.root_partition_address_space,,address spaces,address_spaces,"Root partition address spaces in the virtual TLB",line,,go.d.plugin,windows
+hyperv.root_partition_virtual_tlb_flush_entries,,flushes/s,flushes,"Root partition flushes of the entire virtual TLB",line,,go.d.plugin,windows
+hyperv.root_partition_virtual_tlb_pages,,pages,used,"Root partition pages used by the virtual TLB",line,,go.d.plugin,windows
+hyperv.vm_memory_physical,vm,MiB,assigned_memory,"VM assigned memory",line,vm_name,go.d.plugin,windows
+hyperv.vm_memory_physical_guest_visible,vm,MiB,visible_memory,"VM guest visible memory",line,vm_name,go.d.plugin,windows
+hyperv.vm_memory_pressure_current,vm,percentage,pressure,"VM current pressure",line,vm_name,go.d.plugin,windows
+hyperv.vm_vid_physical_pages_allocated,vm,pages,allocated,"VM physical pages allocated",line,vm_name,go.d.plugin,windows
+hyperv.vm_vid_remote_physical_pages,vm,pages,remote_physical,"VM physical pages not allocated from the preferred NUMA node",line,vm_name,go.d.plugin,windows
+hyperv.vm_device_bytes,vm device,bytes/s,"read, written","VM storage device IO",area,vm_device,go.d.plugin,windows
+hyperv.vm_device_operations,vm device,operations/s,"read, write","VM storage device IOPS",line,vm_device,go.d.plugin,windows
+hyperv.vm_device_errors,vm device,errors/s,errors,"VM storage device errors",line,vm_device,go.d.plugin,windows
+hyperv.vm_interface_bytes,vm interface,bytes/s,"received, sent","VM interface traffic",area,vm_interface,go.d.plugin,windows
+hyperv.vm_interface_packets,vm interface,packets/s,"received, sent","VM interface packets",line,vm_interface,go.d.plugin,windows
+hyperv.vm_interface_packets_dropped,vm interface,drops/s,"incoming, outgoing","VM interface packets dropped",line,vm_interface,go.d.plugin,windows
+hyperv.vswitch_bytes,vswitch,bytes/s,"received, sent","Virtual switch traffic",area,vswitch,go.d.plugin,windows
+hyperv.vswitch_packets,vswitch,packets/s,"received, sent","Virtual switch packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_directed_packets,vswitch,packets/s,"received, sent","Virtual switch directed packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_broadcast_packets,vswitch,packets/s,"received, sent","Virtual switch broadcast packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_multicast_packets,vswitch,packets/s,"received, sent","Virtual switch multicast packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_dropped_packets,vswitch,drops/s,"incoming, outgoing","Virtual switch dropped packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_extensions_dropped_packets,vswitch,drops/s,"incoming, outgoing","Virtual switch extensions dropped packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_packets_flooded,vswitch,packets/s,flooded,"Virtual switch flooded packets",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_learned_mac_addresses,vswitch,mac addresses/s,learned,"Virtual switch learned MAC addresses",line,vswitch,go.d.plugin,windows
+hyperv.vswitch_purged_mac_addresses,vswitch,mac addresses/s,purged,"Virtual switch purged MAC addresses",line,vswitch,go.d.plugin,windows

@@ -11,8 +11,8 @@ agent running on each host.
 
 To quickly test Netdata directly on a Windows machine, you can use
 the [Netdata MSI installer](https://github.com/netdata/msi-installer#instructions). The installer runs Netdata in a
-custom WSL deployment. WSL was not designed for production environments, so **we do not recommend using the MSI installer in
-production**.
+custom WSL deployment. WSL was not designed for production environments, so **we do not recommend using the MSI
+installer in production**.
 
 For production use, you need to install Netdata on one or more nodes running Linux:
 
@@ -58,7 +58,7 @@ The module collects metrics from the following collectors:
 - [netframework_clrmemory](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrmemory.md)
 - [netframework_clrremoting](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.netframework_clrremoting.md)
 - [exchange](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.exchange.md)
-- [hyperv][https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.hyperv.md]
+- [hyperv](https://github.com/prometheus-community/windows_exporter/blob/master/docs/collector.hyperv.md)
 
 All metrics have a prefix.
 
@@ -74,6 +74,10 @@ Labels per scope:
 - certificate template: cert_template.
 - service: service.
 - process: process.
+- vm: vm_name.
+- vm device: vm_device.
+- vm interface: vm_interface.
+- vswitch: vswitch.
 
 | Metric                                                               |        Scope         |                                                                                     Dimensions                                                                                     |       Units       |
 |----------------------------------------------------------------------|:--------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------:|
@@ -301,90 +305,47 @@ Labels per scope:
 | exchange.http_proxy_mailbox_proxy_failure_rate                       |      http proxy      |                                                                                      failures                                                                                      |    percentage     |
 | exchange.http_proxy_mailbox_server_locator_avg_latency_sec           |      http proxy      |                                                                                      latency                                                                                       |      seconds      |
 | exchange.http_proxy_outstanding_proxy_requests                       |      http proxy      |                                                                                    outstanding                                                                                     |     requests      |
-| exchange.http_proxy_requests                                         |      http proxy      |                                                                                     processed                                                                                      |    requests/s     |
-| windows.hyperv_health_critical                                       |        global        |                                                                                         vm                                                                                         |        vm         |
-| windows.hyperv_health_ok                                             |        global        |                                                                                         vm                                                                                         |        vm         |
-| windows.hyperv_hypervisor_logical_processors                         |        global        |                                                                                      processor                                                                                     |     processor     |
-| windows.hyperv_hypervisor_virtual_processors                         |        global        |                                                                                      processor                                                                                     |     processor     |
-| windows.hyperv_root_partition_1g_device_pages                        |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_1g_gpa_pages                           |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_2m_device_pages                        |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_2m_gpa_pages                           |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_4k_device_pages                        |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_4k_gpa_pages                           |        global        |                                                                                        pages                                                                                       |       pages       |
-| windows.hyperv_root_partition_address_space                          |        global        |                                                                                       address                                                                                      |      address      |
-| windows.hyperv_root_partition_attached_devices                       |        global        |                                                                                       devices                                                                                      |      devices      |
-| windows.hyperv_root_partition_deposited_pages                        |        global        |                                                                                       requests                                                                                     |     requests      |
-| windows.hyperv_root_partition_device_interrupt_errors                |        global        |                                                                                       requests                                                                                     |     requests      |
-| windows.hyperv_root_partition_device_interrupt_throttle_events       |        global        |                                                                                      interrupts                                                                                    |    interrupts     |
-| windows.hyperv_root_partition_gpa_space_modifications                |        global        |                                                                                     modifications                                                                                  |  modifications/s  |
-| windows.hyperv_root_partition_io_tlb_flush                           |        global        |                                                                                        flushes                                                                                     |     flushes/s     |
-| windows.hyperv_root_partition_io_tlb_flush_cost                      |        global        |                                                                                         period                                                                                     |    nanoseconds    |
-| windows.hyperv_root_partition_virtual_tlb_flush_entires              |        global        |                                                                                         flushes                                                                                    |      flushes      |
-| windows.hyperv_root_partition_virtual_tlb_flush_entires              |        global        |                                                                                          timer                                                                                     |       timer       |
-| windows.hyperv_root_parition_preferred_numa_node_index               |        global        |                                                                                          pages                                                                                     |       pages       |
-| windows.hyperv_root_partition_recommended_virtual_tlb_size           |        global        |                                                                                          pages                                                                                     |       pages       |
-| windows.hyperv_root_partition_virtual_tlb_pages                      |        global        |                                                                                          pages                                                                                     |       pages       |
-| windows.hyperv_vm_device_bytes_read                                  |       devices        |                                                                                          read                                                                                      |      bytes/s      |
-| windows.hyperv_vm_device_operation_read                              |       devices        |                                                                                          read                                                                                      |      reads/s      |
-| windows.hyperv_vm_device_bytes_write                                 |       devices        |                                                                                          write                                                                                     |      writes/s     |
-| windows.hyperv_vm_device_operation_write                             |       devices        |                                                                                          write                                                                                     |      writes/s     |
-| windows.hyperv_vm_device_error_count                                 |       devices        |                                                                                          errors                                                                                    |       error       |
-| windows.hyperv_vm_device_queue_length                                |       devices        |                                                                                          errors                                                                                    |       error       |
-| windows.hyperv_vm_interface_bytes_received                           |      interfaces      |                                                                                         received                                                                                   |      bytes/s      |
-| windows.hyperv_vm_interface_bytes_sent                               |      interfaces      |                                                                                           sent                                                                                     |      bytes/s      |
-| windows.hyperv_vm_interface_packets_incoming_dropped                 |      interfaces      |                                                                                          packets                                                                                   | dropped packets/s |
-| windows.hyperv_vm_interface_packets_outgoing_dropped                 |      interfaces      |                                                                                          packets                                                                                   |     packets/s     |
-| windows.hyperv_vm_interface_packets_received                         |      interfaces      |                                                                                          packets                                                                                   |     packets/s     |
-| windows.hyperv_vm_interface_packets_sent                             |      interfaces      |                                                                                          packets                                                                                   |     packets/s     |
-| windows.hyperv_host_cpu_guest_run_time                               |          cpu         |                                                                                           period                                                                                   |    nanoseconds    |
-| windows.hyperv_host_cpu_hypervisor_run_time                          |          cpu         |                                                                                           period                                                                                   |    nanoseconds    |
-| windows.hyperv_host_cpu_remote_run_time                              |          cpu         |                                                                                           period                                                                                   |    nanoseconds    |
-| windows.hyperv_host_cpu_total_run_time                               |          cpu         |                                                                                           period                                                                                   |    nanoseconds    |
-| windows.hyperv_host_lp_guest_run_time                                |          cpu         |                                                                                           period                                                                                   |     percentage    |
-| windows.hyperv_host_lp_hypervisor_run_time                           |          cpu         |                                                                                           period                                                                                   |     percentage    |
-| windows.hyperv_host_lp_total_run_time                                |          cpu         |                                                                                           period                                                                                   |     percentage    |
-| windows.hyperv_vswitch_broadcast_packets_received                    |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_broadcast_packets_sent                        |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_bytes_received                                |        vswitch       |                                                                                            bytes                                                                                   |      bytes/s      |
-| windows.hyperv_vswitch_bytes_sent                                    |        vswitch       |                                                                                            bytes                                                                                   |      bytes/s      |
-| windows.hyperv_vswitch_bytes                                         |        vswitch       |                                                                                            bytes                                                                                   |      bytes/s      |
-| windows.hyperv_vswitch_directed_packets_received                     |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_directed_packets_send                         |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_dropped_packets_incoming                      |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_dropped_packets_outcoming                     |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_extensions_dropped_packets_incoming           |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_extensions_dropped_packets_outcoming          |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_learned_mac_addresses                         |        vswitch       |                                                                                         mac_address                                                                                |      counter      |
-| windows.hyperv_vswitch_multicast_packets_received                    |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_multicast_packets_sent                        |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_number_of_send_channel_moves                  |        vswitch       |                                                                                            send                                                                                 |     channels/s    |
-| windows.hyperv_vswitch_number_of_send_channel_moves                  |        vswitch       |                                                                                             vmq                                                                                    |       vmq         |
-| windows.hyperv_vswitch_packets_flooded                               |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_packets_received                              |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_vswitch_packets                                       |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
-| windows.hyperv_purged_mac_addresses                                  |        vswitch       |                                                                                         mac_address                                                                                |      counter      |
-| windows.hyperv_vid_physical_pages_allocated                          |           vm         |                                                                                            pages                                                                                   |       pages       |
-| windows.hyperv_vid_preferred_numa_node_index                         |           vm         |                                                                                            index                                                                                   |       index       |
-| windows.hyperv_vid_remote_physical_page                              |           vm         |                                                                                            pages                                                                                   |       pages       |
-| windows.hyperv_vm_memory_add_operations_total                        |           vm         |                                                                                            memory                                                                                  |    operations     |
-| windows.hyperv_vm_memory_added_total                                 |           vm         |                                                                                            memory                                                                                  |       mbytes      |
-| windows.hyperv_vm_memory_physical_guest_visible                      |           vm         |                                                                                            memory                                                                                  |       mbytes      |
-| windows.hyperv_vm_memory_pressure_average                            |           vm         |                                                                                            memory                                                                                  |    percentage     |
-| windows.hyperv_vm_memory_pressure_current                            |           vm         |                                                                                            memory                                                                                  |    percentage     |
-| windows.hyperv_vm_memory_pressure_maximum                            |           vm         |                                                                                            memory                                                                                  |    percentage     |
-| windows.hyperv_vm_memory_pressure_minimum                            |           vm         |                                                                                            memory                                                                                  |    percentage     |
-| windows.hyperv_vm_memory_remove_operations_total                     |           vm         |                                                                                          operations                                                                                |    operations     |
-| windows.hyperv_vm_memory_removed_total                               |           vm         |                                                                                          operations                                                                                |    operations     |
-| windows.hyperv_vm_cpu_guest_run_time                                 |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
-| windows.hyperv_vm_cpu_hypervisor_run_time                            |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
-| windows.hyperv_vm_cpu_remote_run_time                                |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
-| windows.hyperv_vm_cpu_total_run_time                                 |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
+| hyperv.vms_health                                                    |                      |                                                                                    ok, critical                                                                                    |        vms        |
+| hyperv.root_partition_device_space_pages                             |                      |                                                                                     4K, 2M, 1G                                                                                     |       pages       |
+| hyperv.root_partition_gpa_space_pages                                |                      |                                                                                     4K, 2M, 1G                                                                                     |       pages       |
+| hyperv.root_partition_gpa_space_modifications                        |                      |                                                                                        gpa                                                                                         |  modifications/s  |
+| hyperv.root_partition_attached_devices                               |                      |                                                                                      attached                                                                                      |      devices      |
+| hyperv.root_partition_deposited_pages                                |                      |                                                                                     deposited                                                                                      |       pages       |
+| hyperv.root_partition_skipped_interrupts                             |                      |                                                                                      skipped                                                                                       |    interrupts     |
+| hyperv.root_partition_device_dma_errors                              |                      |                                                                                      skipped                                                                                       |     requests      |
+| hyperv.root_partition_device_interrupt_errors                        |                      |                                                                                 illegal_interrupt                                                                                  |     requests      |
+| hyperv.root_partition_device_interrupt_throttle_events               |                      |                                                                                     throttling                                                                                     |      events       |
+| hyperv.root_partition_io_tlb_flush                                   |                      |                                                                                      flushes                                                                                       |     flushes/s     |
+| hyperv.root_partition_address_space                                  |                      |                                                                                   address_spaces                                                                                   |  address spaces   |
+| hyperv.root_partition_virtual_tlb_flush_entries                      |                      |                                                                                      flushes                                                                                       |     flushes/s     |
+| hyperv.root_partition_virtual_tlb_pages                              |                      |                                                                                        used                                                                                        |       pages       |
+| hyperv.vm_memory_physical                                            |          vm          |                                                                                  assigned_memory                                                                                   |        MiB        |
+| hyperv.vm_memory_physical_guest_visible                              |          vm          |                                                                                   visible_memory                                                                                   |        MiB        |
+| hyperv.vm_memory_pressure_current                                    |          vm          |                                                                                      pressure                                                                                      |    percentage     |
+| hyperv.vm_vid_physical_pages_allocated                               |          vm          |                                                                                     allocated                                                                                      |       pages       |
+| hyperv.vm_vid_remote_physical_pages                                  |          vm          |                                                                                  remote_physical                                                                                   |       pages       |
+| hyperv.vm_device_bytes                                               |      vm device       |                                                                                   read, written                                                                                    |      bytes/s      |
+| hyperv.vm_device_operations                                          |      vm device       |                                                                                    read, write                                                                                     |   operations/s    |
+| hyperv.vm_device_errors                                              |      vm device       |                                                                                       errors                                                                                       |     errors/s      |
+| hyperv.vm_interface_bytes                                            |     vm interface     |                                                                                   received, sent                                                                                   |      bytes/s      |
+| hyperv.vm_interface_packets                                          |     vm interface     |                                                                                   received, sent                                                                                   |     packets/s     |
+| hyperv.vm_interface_packets_dropped                                  |     vm interface     |                                                                                 incoming, outgoing                                                                                 |      drops/s      |
+| hyperv.vswitch_bytes                                                 |       vswitch        |                                                                                   received, sent                                                                                   |      bytes/s      |
+| hyperv.vswitch_packets                                               |       vswitch        |                                                                                   received, sent                                                                                   |     packets/s     |
+| hyperv.vswitch_directed_packets                                      |       vswitch        |                                                                                   received, sent                                                                                   |     packets/s     |
+| hyperv.vswitch_broadcast_packets                                     |       vswitch        |                                                                                   received, sent                                                                                   |     packets/s     |
+| hyperv.vswitch_multicast_packets                                     |       vswitch        |                                                                                   received, sent                                                                                   |     packets/s     |
+| hyperv.vswitch_dropped_packets                                       |       vswitch        |                                                                                 incoming, outgoing                                                                                 |      drops/s      |
+| hyperv.vswitch_extensions_dropped_packets                            |       vswitch        |                                                                                 incoming, outgoing                                                                                 |      drops/s      |
+| hyperv.vswitch_packets_flooded                                       |       vswitch        |                                                                                      flooded                                                                                       |     packets/s     |
+| hyperv.vswitch_learned_mac_addresses                                 |       vswitch        |                                                                                      learned                                                                                       |  mac addresses/s  |
+| hyperv.vswitch_purged_mac_addresses                                  |       vswitch        |                                                                                       purged                                                                                       |  mac addresses/s  |
 
 ## Configuration
 
 Edit the `go.d/windows.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory),
+which is typically at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
@@ -410,25 +371,29 @@ module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/c
 
 ### Virtual Nodes
 
-Netdata’s new virtual nodes functionality allows you to define nodes in configuration files and have them be treated as regular nodes in all of the UI, dashboards, tabs, filters etc. For example, you can create a virtual node each for all your Windows machines and monitor them as discrete entities. Virtual nodes can help you simplify your infrastructure monitoring and focus on the individual node that matters.
+Netdata’s new virtual nodes functionality allows you to define nodes in configuration files and have them be treated as
+regular nodes in all the UI, dashboards, tabs, filters etc. For example, you can create a virtual node each for all
+your Windows machines and monitor them as discrete entities. Virtual nodes can help you simplify your infrastructure
+monitoring and focus on the individual node that matters.
 
-To define your windows server a virtual node you need to:
+To define your Windows server a virtual node you need to:
 
-  * Define virtual nodes in `/etc/netdata/vnodes/vnodes.conf`
+* Define virtual nodes in `/etc/netdata/vnodes/vnodes.conf`
 
-    ```yaml
-    - hostname: win_server1
-      guid: <value>
-    ```
-    Just remember to use a valid guid (On Linux you can use `uuidgen` command to generate one, on Windows just use the `[guid]::NewGuid()` command in PowerShell)
-    
-  * Add the vnode config to the windows monitoring job we created earlier, see higlighted line below:
-    ```yaml
-      jobs:
-        - name: win_server1
-          vnode: win_server1
-          url: http://203.0.113.10:9182/metrics
-    ```
+  ```yaml
+  - hostname: win_server1
+    guid: <value>
+  ```
+  Just remember to use a valid guid (On Linux you can use `uuidgen` command to generate one, on Windows just use
+  the `[guid]::NewGuid()` command in PowerShell)
+
+* Add the vnode config to the windows monitoring job we created earlier, see higlighted line below:
+  ```yaml
+    jobs:
+      - name: win_server1
+        vnode: win_server1
+        url: http://203.0.113.10:9182/metrics
+  ```
 
 ## Troubleshooting
 

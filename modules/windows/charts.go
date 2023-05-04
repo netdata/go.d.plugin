@@ -332,104 +332,51 @@ const (
 	prioExchangeAvailServiceRequests
 
 	// Hyperv Health
-	prioHypervHealthCritical
-	prioHypervHealthOk
-
-	// Hyperv Processor
-	prioHypervHypervisorLogicalProcessors
-	prioHypervHypervisorVirtualProcessors
+	prioHypervVMHealth
 
 	// Hyperv Partition
-	prioHypervRootPartition1GDevicePages
-	prioHypervRootPartition1GGPAPages
-	prioHypervRootPartition2MDevicePages
-	prioHypervRootPartition2MGPAPages
-	prioHypervRootPartition4KDevicePages
-	prioHypervRootPartition4KGPAPages
-	prioHypervRootPartitionAddressSpace
+	prioHypervRootPartitionDeviceSpacePages
+	prioHypervRootPartitionGPASpacePages
+	prioHypervRootPartitionGPASpaceModifications
 	prioHypervRootPartitionAttachedDevices
 	prioHypervRootPartitionDepositedPages
+	prioHypervRootPartitionSkippedInterrupts
 	prioHypervRootPartitionDeviceDMAErrors
 	prioHypervRootPartitionDeviceInterruptErrors
 	prioHypervRootPartitionDeviceInterruptThrottleEvents
-	prioHypervRootPartitionGPASpaceModifications
 	prioHypervRootPartitionIOTlbFlush
-	prioHypervRootPartitionIOTlbFlushCost
+	prioHypervRootPartitionAddressSpace
 	prioHypervRootPartitionVirtualTlbFlushEntires
-	prioHypervRootPartitionPhysicalPagesAllocated
-	prioHypervRootPartitionPreferredNumaNodeIndex
-	prioHypervRootPartitionRecommendedVirtualTlbSize
 	prioHypervRootPartitionVirtualTlbPages
 
-	// Hyperv Device
-	prioHypervVMDeviceBytesRead
-	prioHypervVMDeviceBytesOperationsRead
-	prioHypervVMDeviceBytesWritten
-	prioHypervVMDeviceBytesOperationsWritten
-	prioHypervVMDeviceErrorCount
-	prioHypervVMDeviceQueueLength
-
-	// Hyperv Interface
-	prioHypervVMInterfaceBytesReceived
-	prioHypervVMInterfaceBytesSent
-	prioHypervVMInterfacePacketsIncomingDropped
-	prioHypervVMInterfacePacketsOutgoingDropped
-	prioHypervVMInterfacePacketsReceived
-	prioHypervVMInterfacePacketsSent
-
-	// Hyperv Core
-	prioHypervHostCPUGuestRunTime
-	prioHypervHostCPUHypervisorRunTime
-	prioHypervHostCPURemoteRunTime
-	prioHypervHostCPUTotalRunTime
-	prioHypervHostLPGuestRunTimePercent
-	prioHypervHostLPHypervisorRunTimePercent
-	prioHypervHostLPTotalRunTimePercent
-
-	// Hyperv Vswitch
-	prioHypervVswitchBroadcastPacketsReceived
-	prioHypervVswitchBroadcastPacketsSent
-	prioHypervVswitchBytesReceivedTotal
-	prioHypervVswitchBytesSentTotal
-	prioHypervVswitchBytesTotal
-	prioHypervVswitchDirectedPacketsReceived
-	prioHypervVswitchDirectedPacketsSend
-	prioHypervVswitchDroppedPacketsIncoming
-	prioHypervVswitchDroppedPacketsOutcoming
-	prioHypervVswitchExtensionsDroppedPacketsIncoming
-	prioHypervVswitchExtensionsDroppedPacketsOutcoming
-	prioHypervVswitchLearnedMACAddresses
-	prioHypervVswitchMulticastPacketsReceived
-	prioHypervVswitchMulticastPacketsSent
-	prioHypervVswitchNumberOfSendChannelMoves
-	prioHypervVswitchNumberOfVMQMoves
-	prioHypervVswitchPacketsFlooded
-	prioHypervVswitchPacketsReceived
-	prioHypervVswitchPackets
-	prioHypervVswitchPurgeMACAddress
-
-	// Hyperv VID
-	prioHypervVIDPhysicalPagesAllocated
-	prioHypervVIDPreferredNumaNodeIndex
-	prioHypervVIDRemotePhysicalPages
-
 	// Hyperv VM (Memory)
-	prioHypervVMMemoryAddedOperationsTotal
-	prioHypervVMMemoryAddedTotal
 	prioHypervVMMemoryPhysical
 	prioHypervVMMemoryPhysicalGuestVisible
-	prioHypervVMMemoryPressureAverage
 	prioHypervVMMemoryPressureCurrent
-	prioHypervVMMemoryPressureMaximum
-	prioHypervVMMemoryPressureMinimum
-	prioHypervVMMemoryRemovedOPerations
-	prioHypervVMMemoryRemovedTotal
+	prioHypervVIDPhysicalPagesAllocated
+	prioHypervVIDRemotePhysicalPages
 
-	// Hyperv VM CPU
-	prioHyperVMCPUGuestRunTime
-	prioHyperVMCPUHypervisorRunTime
-	prioHyperVMCPURemoteRunTime
-	prioHyperVMCPUTotalRunTime
+	// Hyperv Device
+	prioHypervVMDeviceBytes
+	prioHypervVMDeviceOperations
+	prioHypervVMDeviceErrors
+
+	// Hyperv Interface
+	prioHypervVMInterfaceBytes
+	prioHypervVMInterfacePacketsDropped
+	prioHypervVMInterfacePackets
+
+	// Hyperv Vswitch
+	prioHypervVswitchTrafficTotal
+	prioHypervVswitchPackets
+	prioHypervVswitchDirectedPackets
+	prioHypervVswitchBroadcastPackets
+	prioHypervVswitchMulticastPackets
+	prioHypervVswitchDroppedPackets
+	prioHypervVswitchExtensionsDroppedPackets
+	prioHypervVswitchPacketsFlooded
+	prioHypervVswitchLearnedMACAddresses
+	prioHypervVswitchPurgeMACAddress
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -3679,994 +3626,509 @@ var (
 // HyperV
 var (
 	hypervChartsTmpl = module.Charts{
-		hypervHealthCritical.Copy(),
-		hypervHealthOK.Copy(),
-		hypervHypervisorLogicalProcessors.Copy(),
-		hypervHypervisorVirtualProcessors.Copy(),
-		hypervRootPartition1GDevicePage.Copy(),
-		hypervRootPartition1GGPAPage.Copy(),
-		hypervRootPartition2MDevicePage.Copy(),
-		hypervRootPartition2MGPAPage.Copy(),
-		hypervRootPartition4KDevicePage.Copy(),
-		hypervRootPartition4KGPAPage.Copy(),
-		hypervRootPartitionAddressSpace.Copy(),
-		hypervRootPartitionAttachedDevices.Copy(),
-		hypervRootPartitionDepositedPages.Copy(),
-		hypervRootPartitionDeviceDMAErrors.Copy(),
-		hypervRootPartitionDeviceInterruptErrors.Copy(),
-		hypervRootPartitionDeviceInterruptThrottled.Copy(),
-		hypervRootPartitionGPASpaceModifications.Copy(),
-		hypervRootPartitionIOTlbFlush.Copy(),
-		hypervRootPartitionIOTlbFlushCost.Copy(),
-		hypervRootPartitionVirtualTlbFlushEntires.Copy(),
-		hypervRootPartitionRecommendedVirtualTlbSize.Copy(),
+		hypervVirtualMachinesHealthChart.Copy(),
+		hypervRootPartitionDeviceSpacePagesChart.Copy(),
+		hypervRootPartitionGPASpacePagesChart.Copy(),
+		hypervRootPartitionGPASpaceModificationsChart.Copy(),
+		hypervRootPartitionAttachedDevicesChart.Copy(),
+		hypervRootPartitionDepositedPagesChart.Copy(),
+		hypervRootPartitionSkippedInterrupts.Copy(),
+		hypervRootPartitionDeviceDMAErrorsChart.Copy(),
+		hypervRootPartitionDeviceInterruptErrorsChart.Copy(),
+		hypervRootPartitionDeviceInterruptThrottledEventsChart.Copy(),
+		hypervRootPartitionIOTlbFlushChart.Copy(),
+		hypervRootPartitionAddressSpaceChart.Copy(),
+		hypervRootPartitionVirtualTlbFlushEntries.Copy(),
 		hypervRootPartitionVirtualTlbPages.Copy(),
 	}
-	hypervDeviceChartsTemplate = module.Charts{
-		hypervVMDeviceBytesRead.Copy(),
-		hypervVMDeviceBytesOperationRead.Copy(),
-		hypervVMDeviceBytesWritten.Copy(),
-		hypervVMDeviceBytesOperationWritten.Copy(),
-		hypervVMDeviceErrorCount.Copy(),
-		hypervVMDeviceQueueLength.Copy(),
-	}
-	hypervInterfacesChartsTemplate = module.Charts{
-		hypervVMInterfaceBytesReceived.Copy(),
-		hypervVMInterfaceBytesSent.Copy(),
-		hypervVMInterfacePacketsIncomingDropped.Copy(),
-		hypervVMInterfacePacketsOutgoingDropped.Copy(),
-		hypervVMInterfacePacketsReceived.Copy(),
-		hypervVMInterfacePacketsSent.Copy(),
-	}
-	hypervCoreChartsTemplate = module.Charts{
-		hypervHostCPUGuestRunTime.Copy(),
-		hypervHostCPUHypervisorRunTime.Copy(),
-		hypervHostCPURemoteRunTime.Copy(),
-		hypervHostCPUTotalRunTime.Copy(),
-		hypervHostLPGuestRunTime.Copy(),
-		hypervHostLPHypervisorRunTime.Copy(),
-		hypervHostLPTotalRunTime.Copy(),
-	}
-	hypervVswitchChartsTemplate = module.Charts{
-		hypervVswitchBroadcastPacketsReceived.Copy(),
-		hypervVswitchBroadcastPacketsSent.Copy(),
-		hypervVswitchBytesReceivedTotal.Copy(),
-		hypervVswitchBytesSentTotal.Copy(),
-		hypervVswitchBytesTotal.Copy(),
-		hypervVswitchDirectedPacketsReceivedTotal.Copy(),
-		hypervVswitchDirectedPacketsSendTotal.Copy(),
-		hypervVswitchDroppedPacketsIncomingTotal.Copy(),
-		hypervVswitchDroppedPacketsOutcomingTotal.Copy(),
-		hypervVswitchExtensionDroppedPacketsIncomingTotal.Copy(),
-		hypervVswitchExtensionDroppedPacketsOuttomingTotal.Copy(),
-		hypervVswitchLearnedMACAddressTotal.Copy(),
-		hypervVswitchMulticastPacketsReceivedTotal.Copy(),
-		hypervVswitchMulticastPacketsSentTotal.Copy(),
-		hypervVswitchNumberOfSendChannelMovesTotal.Copy(),
-		hypervVswitchNumberOfVMQMovesTotal.Copy(),
-		hypervVswitchPacketsFloodedTotal.Copy(),
-		hypervVswitchPacketsReceivedTotal.Copy(),
-		hypervVswitchPacketsTotal.Copy(),
-		hypervVswitchPurgedMACAddressTotal.Copy(),
-	}
-	hypervVIDChartsTemplate = module.Charts{
-		hypervVIDPhysicalPagesAllocated.Copy(),
-		hypervVIDPreferredNumaNodeIndex.Copy(),
-		hypervVIDRemotePhysicalPages.Copy(),
-	}
-	hypervVMChartsTemplate = module.Charts{
-		hypervHypervVMMemoryAddedOperationsTotal.Copy(),
-		hypervHypervVMMemoryAddedTotal.Copy(),
-		hypervHypervVMMemoryPhysical.Copy(),
-		hypervHypervVMMemoryPhysicalGuestVisible.Copy(),
-		hypervHypervVMMemoryPressureAverage.Copy(),
-		hypervHypervVMMemoryPressureCurrent.Copy(),
-		hypervHypervVMMemoryPressureMaximum.Copy(),
-		hypervHypervVMMemoryPressureMinimum.Copy(),
-		hypervHypervVMMemoryRemoveOperationsTotal.Copy(),
-		hypervHypervVMMemoryRemovedTotal.Copy(),
-	}
-	hypervVMCPUChartsTemplate = module.Charts{
-		hypervHypervCPUGuestRunTime.Copy(),
-		hypervHypervCPUHypervisorRunTime.Copy(),
-		hypervHypervCPURemoteRunTime.Copy(),
-		hypervHypervCPUTotalRunTime.Copy(),
-	}
-
-	hypervHealthCritical = module.Chart{
-		ID:       "hyperv_health_critical",
-		Title:    "VM with Critical Health",
-		Units:    "vm",
-		Fam:      "health",
-		Ctx:      "windows.hyperv_health_critical",
-		Priority: prioHypervHealthCritical,
+	hypervVirtualMachinesHealthChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "health_vm",
+		Title:      "Virtual machines health status",
+		Units:      "vms",
+		Fam:        "vms health",
+		Ctx:        "hyperv.vms_health",
+		Priority:   prioHypervVMHealth,
+		Type:       module.Stacked,
 		Dims: module.Dims{
-			{ID: "hyperv_health_critical_total", Name: "critical"},
+			{ID: "hyperv_health_ok", Name: "ok"},
+			{ID: "hyperv_health_critical", Name: "critical"},
 		},
 	}
-	hypervHealthOK = module.Chart{
-		ID:       "hyperv_health_ok",
-		Title:    "VM with Health OK",
-		Units:    "vm",
-		Fam:      "health",
-		Ctx:      "windows.hyperv_health_ok",
-		Priority: prioHypervHealthOk,
+	hypervRootPartitionDeviceSpacePagesChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_device_space_pages",
+		Title:      "Root partition pages in the device space",
+		Units:      "pages",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_device_space_pages",
+		Priority:   prioHypervRootPartitionDeviceSpacePages,
 		Dims: module.Dims{
-			{ID: "hyperv_health_ok_total", Name: "ok"},
+			{ID: "hyperv_root_partition_4K_device_pages", Name: "4K"},
+			{ID: "hyperv_root_partition_2M_device_pages", Name: "2M"},
+			{ID: "hyperv_root_partition_1G_device_pages", Name: "1G"},
 		},
 	}
-
-	hypervHypervisorLogicalProcessors = module.Chart{
-		ID:       "hyperv_hypervisor_logical_processors",
-		Title:    "Logical processors in system",
-		Units:    "processor",
-		Fam:      "processor",
-		Ctx:      "windows.hyperv_hypervisor_logical_processors",
-		Priority: prioHypervHypervisorLogicalProcessors,
+	hypervRootPartitionGPASpacePagesChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_gpa_space_pages",
+		Title:      "Root partition pages in the GPA space",
+		Units:      "pages",
+		Fam:        "root partition",
+		Ctx:        "windows.hyperv_root_partition_gpa_space_pages",
+		Priority:   prioHypervRootPartitionGPASpacePages,
 		Dims: module.Dims{
-			{ID: "hyperv_hypervisor_logical_processors_total", Name: "processor"},
+			{ID: "hyperv_root_partition_4K_gpa_pages", Name: "4K"},
+			{ID: "hyperv_root_partition_2M_gpa_pages", Name: "2M"},
+			{ID: "hyperv_root_partition_1G_gpa_pages", Name: "1G"},
 		},
 	}
-	hypervHypervisorVirtualProcessors = module.Chart{
-		ID:       "hyperv_hypervisor_virtual_processors",
-		Title:    "Virtual processors in system",
-		Units:    "processor",
-		Fam:      "processor",
-		Ctx:      "windows.hyperv_hypervisor_virtual_processors",
-		Priority: prioHypervHypervisorLogicalProcessors,
+	hypervRootPartitionGPASpaceModificationsChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_gpa_space_modifications",
+		Title:      "Root partition GPA space modifications",
+		Units:      "modifications/s",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_gpa_space_modifications",
+		Priority:   prioHypervRootPartitionGPASpaceModifications,
 		Dims: module.Dims{
-			{ID: "hyperv_hypervisor_virtual_processors_total", Name: "processor"},
+			{ID: "hyperv_root_partition_gpa_space_modifications", Name: "gpa", Algo: module.Incremental},
 		},
 	}
-
-	hypervRootPartition1GDevicePage = module.Chart{
-		ID:       "hyperv_root_partition_1g_device_pages",
-		Title:    "Number of 1G pages present in device space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_1g_device_pages",
-		Priority: prioHypervRootPartition1GDevicePages,
+	hypervRootPartitionAttachedDevicesChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_attached_devices",
+		Title:      "Root partition attached devices",
+		Units:      "devices",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_attached_devices",
+		Priority:   prioHypervRootPartitionAttachedDevices,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_1g_device_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_attached_devices", Name: "attached"},
 		},
 	}
-	hypervRootPartition1GGPAPage = module.Chart{
-		ID:       "hyperv_root_partition_1g_gpa_pages",
-		Title:    "Number of 1G pages present in GPA space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_1g_gpa_pages",
-		Priority: prioHypervRootPartition1GGPAPages,
+	hypervRootPartitionDepositedPagesChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_deposited_pages",
+		Title:      "Root partition deposited pages",
+		Units:      "pages",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_deposited_pages",
+		Priority:   prioHypervRootPartitionDepositedPages,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_1g_gpa_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_deposited_pages", Name: "deposited"},
 		},
 	}
-	hypervRootPartition2MDevicePage = module.Chart{
-		ID:       "hyperv_root_partition_2m_device_pages",
-		Title:    "Number of 2M pages present in device space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_2m_device_pages",
-		Priority: prioHypervRootPartition2MDevicePages,
+	hypervRootPartitionSkippedInterrupts = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_skipped_interrupts",
+		Title:      "Root partition skipped interrupts",
+		Units:      "interrupts",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_skipped_interrupts",
+		Priority:   prioHypervRootPartitionSkippedInterrupts,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_2m_device_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_physical_pages_allocated", Name: "skipped"},
 		},
 	}
-	hypervRootPartition2MGPAPage = module.Chart{
-		ID:       "hyperv_root_partition_2m_gpa_pages",
-		Title:    "Number of 2M pages present in GPA space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_2m_gpa_pages",
-		Priority: prioHypervRootPartition2MGPAPages,
+	hypervRootPartitionDeviceDMAErrorsChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_device_dma_errors",
+		Title:      "Root partition illegal DMA requests",
+		Units:      "requests",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_device_dma_errors",
+		Priority:   prioHypervRootPartitionDeviceDMAErrors,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_2m_gpa_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_deposited_pages", Name: "illegal_dma"},
 		},
 	}
-	hypervRootPartition4KDevicePage = module.Chart{
-		ID:       "hyperv_root_partition_4k_device_pages",
-		Title:    "Number of 4K pages present in device space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_4k_device_pages",
-		Priority: prioHypervRootPartition4KDevicePages,
+	hypervRootPartitionDeviceInterruptErrorsChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "partition_device_interrupt_errors",
+		Title:      "Root partition illegal interrupt requests",
+		Units:      "requests",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_device_interrupt_errors",
+		Priority:   prioHypervRootPartitionDeviceInterruptErrors,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_4k_device_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_device_interrupt_errors", Name: "illegal_interrupt"},
 		},
 	}
-	hypervRootPartition4KGPAPage = module.Chart{
-		ID:       "hyperv_root_partition_4k_gpa_pages",
-		Title:    "Number of 4K pages present in GPA space",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_4k_gpa_pages",
-		Priority: prioHypervRootPartition4KGPAPages,
+	hypervRootPartitionDeviceInterruptThrottledEventsChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_device_interrupt_throttle_events",
+		Title:      "Root partition throttled interrupts",
+		Units:      "events",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_device_interrupt_throttle_events",
+		Priority:   prioHypervRootPartitionDeviceInterruptThrottleEvents,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_4k_gpa_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_device_interrupt_throttle_events", Name: "throttling"},
 		},
 	}
-	hypervRootPartitionAddressSpace = module.Chart{
-		ID:       "hyperv_root_partition_address_space",
-		Title:    "Number of address spaces in the virtual TLB partition",
-		Units:    "address",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_address_space",
-		Priority: prioHypervRootPartitionAddressSpace,
+	hypervRootPartitionIOTlbFlushChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_io_tbl_flush",
+		Title:      "Root partition flushes of I/O TLBs",
+		Units:      "flushes/s",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_io_tlb_flush",
+		Priority:   prioHypervRootPartitionIOTlbFlush,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_address_spaces_total", Name: "address"},
+			{ID: "hyperv_root_partition_io_tlb_flush", Name: "flushes", Algo: module.Incremental},
 		},
 	}
-	hypervRootPartitionAttachedDevices = module.Chart{
-		ID:       "hyperv_root_partition_attached_devices",
-		Title:    "Number of devices attached to the partition.",
-		Units:    "devices",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_attached_devices",
-		Priority: prioHypervRootPartitionAttachedDevices,
+	hypervRootPartitionAddressSpaceChart = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_address_space",
+		Title:      "Root partition address spaces in the virtual TLB",
+		Units:      "address spaces",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_address_space",
+		Priority:   prioHypervRootPartitionAddressSpace,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_attached_devices_total", Name: "devices"},
+			{ID: "hyperv_root_partition_address_spaces", Name: "address_spaces"},
 		},
 	}
-	hypervRootPartitionDepositedPages = module.Chart{
-		ID:       "hyperv_root_partition_deposited_pages",
-		Title:    "Number of pages deposited into the partition.",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_deposited_pages",
-		Priority: prioHypervRootPartitionDepositedPages,
+	hypervRootPartitionVirtualTlbFlushEntries = module.Chart{
+		OverModule: "hyperv",
+		ID:         "root_partition_virtual_tbl_flush_entries",
+		Title:      "Root partition flushes of the entire virtual TLB",
+		Units:      "flushes/s",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_virtual_tlb_flush_entries",
+		Priority:   prioHypervRootPartitionVirtualTlbFlushEntires,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_deposited_pages_total", Name: "pages"},
-		},
-	}
-	hypervRootPartitionDeviceDMAErrors = module.Chart{
-		ID:       "hyperv_root_partition_device_dma_errors",
-		Title:    "Illegal DMA request",
-		Units:    "requests",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_device_dma_errors",
-		Priority: prioHypervRootPartitionDeviceDMAErrors,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_deposited_pages_total", Name: "requests"},
-		},
-	}
-	hypervRootPartitionDeviceInterruptErrors = module.Chart{
-		ID:       "hyperv_root_partition_device_interrupt_errors",
-		Title:    "Illegal Interrupt request",
-		Units:    "requests",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_device_interrupt_errors",
-		Priority: prioHypervRootPartitionDeviceInterruptErrors,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_device_interrupt_errors_total", Name: "requests"},
-		},
-	}
-	hypervRootPartitionDeviceInterruptThrottled = module.Chart{
-		ID:       "hyperv_root_partition_device_interrupt_throttle_events",
-		Title:    "Partition temporary throttled",
-		Units:    "interrupts",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_device_interrupt_throttle_events",
-		Priority: prioHypervRootPartitionDeviceInterruptThrottleEvents,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_device_interrupt_throttle_events_total", Name: "interrupts"},
-		},
-	}
-	hypervRootPartitionGPASpaceModifications = module.Chart{
-		ID:       "hyperv_root_partition_gpa_space_modifications",
-		Title:    "Modifications to GPA space",
-		Units:    "modifications/s",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_gpa_space_modifications",
-		Priority: prioHypervRootPartitionGPASpaceModifications,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_gpa_space_modifications_total", Name: "gpa", Algo: module.Incremental},
-		},
-	}
-	hypervRootPartitionIOTlbFlush = module.Chart{
-		ID:       "hyperv_root_partition_io_tbl_flush",
-		Title:    "Flushes of I/O TLB",
-		Units:    "flushes/s",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_io_tlb_flush",
-		Priority: prioHypervRootPartitionIOTlbFlush,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_io_tlb_flush_total", Name: "flushes", Algo: module.Incremental},
-		},
-	}
-	hypervRootPartitionIOTlbFlushCost = module.Chart{
-		ID:       "hyperv_root_partition_io_tbl_flush_cost",
-		Title:    "Average time to process I/O TLB flush",
-		Units:    "nanoseconds",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_io_tlb_flush_cost",
-		Priority: prioHypervRootPartitionIOTlbFlushCost,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_io_tlb_flush_cost_total", Name: "period"},
-		},
-	}
-	hypervRootPartitionVirtualTlbFlushEntires = module.Chart{
-		ID:       "hyperv_root_partition_virtual_tbl_flush_entires",
-		Title:    "The rate of flushes of the entire virtual TLB",
-		Units:    "flushes",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_virtual_tlb_flush_entires",
-		Priority: prioHypervRootPartitionVirtualTlbFlushEntires,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_virtual_tlb_flush_entires_total", Name: "flushes", Algo: module.Incremental},
-		},
-	}
-	hypervRootPartitionPhysicalPagesAllocated = module.Chart{
-		ID:       "hyperv_root_partition_physical_page_allocated",
-		Title:    "Number of timer interrupted skipped.",
-		Units:    "timer",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_physical_page_allocated",
-		Priority: prioHypervRootPartitionPhysicalPagesAllocated,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_physical_page_allocated_total", Name: "timer"},
-		},
-	}
-	hypervRootPartitionPreferredNumaNodeIndex = module.Chart{
-		ID:       "hyperv_root_partition_preferred_numa_node_index",
-		Title:    "Number of pages present in the GPA space.",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_parition_preferred_numa_node_index",
-		Priority: prioHypervRootPartitionPreferredNumaNodeIndex,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_preferred_numa_node_index_total", Name: "pages"},
-		},
-	}
-	hypervRootPartitionRecommendedVirtualTlbSize = module.Chart{
-		ID:       "hyperv_root_partition_recommended_virtual_tlb_size",
-		Title:    "The recommended number of pages to be deposited for the Virtual TLB.",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_recommended_virtual_tlb_size",
-		Priority: prioHypervRootPartitionRecommendedVirtualTlbSize,
-		Dims: module.Dims{
-			{ID: "hyperv_root_partition_recommended_virtual_tlb_size_total", Name: "pages"},
+			{ID: "hyperv_root_partition_virtual_tlb_flush_entires", Name: "flushes", Algo: module.Incremental},
 		},
 	}
 	hypervRootPartitionVirtualTlbPages = module.Chart{
-		ID:       "hyperv_root_partition_virtual_tlb_pages",
-		Title:    "Pages used by the virtual TLB of the partition.",
-		Units:    "pages",
-		Fam:      "partition",
-		Ctx:      "windows.hyperv_root_partition_virtual_tlb_pages",
-		Priority: prioHypervRootPartitionVirtualTlbPages,
+		OverModule: "hyperv",
+		ID:         "root_partition_virtual_tlb_pages",
+		Title:      "Root partition pages used by the virtual TLB",
+		Units:      "pages",
+		Fam:        "root partition",
+		Ctx:        "hyperv.root_partition_virtual_tlb_pages",
+		Priority:   prioHypervRootPartitionVirtualTlbPages,
 		Dims: module.Dims{
-			{ID: "hyperv_root_partition_virtual_tlb_pages_total", Name: "pages"},
+			{ID: "hyperv_root_partition_virtual_tlb_pages", Name: "used"},
 		},
+	}
+)
+
+// HyperV VM Memory
+var (
+	hypervVMMemoryChartsTemplate = module.Charts{
+		hypervHypervVMMemoryPhysicalChartTmpl.Copy(),
+		hypervHypervVMMemoryPhysicalGuestVisibleChartTmpl.Copy(),
+		hypervHypervVMMemoryPressureCurrentChartTmpl.Copy(),
+		hypervVIDPhysicalPagesAllocatedChartTmpl.Copy(),
+		hypervVIDRemotePhysicalPagesChartTmpl.Copy(),
 	}
 
-	// Devices VM
-	hypervVMDeviceBytesRead = module.Chart{
-		ID:       "hyperv_vm_device_%s_bytes_read",
-		Title:    "Total of bytes read on virtual device",
-		Units:    "bytes/s",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_bytes_read",
-		Priority: prioHypervVMDeviceBytesRead,
+	hypervHypervVMMemoryPhysicalChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_memory_physical",
+		Title:      "VM assigned memory",
+		Units:      "MiB",
+		Fam:        "vm mem",
+		Ctx:        "hyperv.vm_memory_physical",
+		Priority:   prioHypervVMMemoryPhysical,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_bytes_read_counter", Name: "read", Algo: module.Incremental},
+			{ID: "hyperv_vm_%s_memory_physical", Name: "assigned_memory"},
 		},
 	}
-	hypervVMDeviceBytesOperationRead = module.Chart{
-		ID:       "hyperv_vm_device_%s_operation_read",
-		Title:    "Total of operations read on virtual device",
-		Units:    "reads/s",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_operation_read",
-		Priority: prioHypervVMDeviceBytesOperationsRead,
+	hypervHypervVMMemoryPhysicalGuestVisibleChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_memory_physical_guest_visible",
+		Title:      "VM guest visible memory",
+		Units:      "MiB",
+		Fam:        "vm mem",
+		Ctx:        "hyperv.vm_memory_physical_guest_visible",
+		Priority:   prioHypervVMMemoryPhysicalGuestVisible,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_operation_read_counter", Name: "read", Algo: module.Incremental},
+			{ID: "hyperv_vm_%s_memory_physical_guest_visible", Name: "visible_memory"},
 		},
 	}
-	hypervVMDeviceBytesWritten = module.Chart{
-		ID:       "hyperv_vm_device_%s_bytes_written",
-		Title:    "Total of bytes written on virtual device",
-		Units:    "bytes/s",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_bytes_written",
-		Priority: prioHypervVMDeviceBytesWritten,
+	hypervHypervVMMemoryPressureCurrentChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_memory_pressure_current",
+		Title:      "VM current pressure",
+		Units:      "percentage",
+		Fam:        "vm mem",
+		Ctx:        "hyperv.vm_memory_pressure_current",
+		Priority:   prioHypervVMMemoryPressureCurrent,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_bytes_written_counter", Name: "write", Algo: module.Incremental},
+			{ID: "hyperv_vm_%s_memory_pressure_current", Name: "pressure"},
 		},
 	}
-	hypervVMDeviceBytesOperationWritten = module.Chart{
-		ID:       "hyperv_vm_device_%s_operation_written",
-		Title:    "Total of operations written on virtual device",
-		Units:    "writes/s",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_operation_written",
-		Priority: prioHypervVMDeviceBytesOperationsWritten,
+	hypervVIDPhysicalPagesAllocatedChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_vid_physical_pages_allocated",
+		Title:      "VM physical pages allocated",
+		Units:      "pages",
+		Fam:        "vm mem",
+		Ctx:        "hyperv.vm_vid_physical_pages_allocated",
+		Priority:   prioHypervVIDPhysicalPagesAllocated,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_operation_written_counter", Name: "write", Algo: module.Incremental},
+			{ID: "hyperv_vid_%s_physical_pages_allocated", Name: "allocated"},
 		},
 	}
-	hypervVMDeviceErrorCount = module.Chart{
-		ID:       "hyperv_vm_device_%s_error_count",
-		Title:    "Number of errors on virtual device",
-		Units:    "errors",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_error_count",
-		Priority: prioHypervVMDeviceErrorCount,
+	hypervVIDRemotePhysicalPagesChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_remote_physical_pages",
+		Title:      "VM physical pages not allocated from the preferred NUMA node",
+		Units:      "pages",
+		Fam:        "vm mem",
+		Ctx:        "hyperv.vm_vid_remote_physical_pages",
+		Priority:   prioHypervVIDRemotePhysicalPages,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_error_counter", Name: "error", Algo: module.Incremental},
+			{ID: "hyperv_vid_%s_remote_physical_pages", Name: "remote_physical"},
 		},
 	}
-	hypervVMDeviceQueueLength = module.Chart{
-		ID:       "hyperv_vm_device_%s_queue_length",
-		Title:    "Current Queue length on virtual device",
-		Units:    "queue",
-		Fam:      "device",
-		Ctx:      "windows.hyperv_vm_device_queue_length",
-		Priority: prioHypervVMDeviceQueueLength,
+)
+
+// HyperV VM storage device
+var (
+	hypervVMDeviceChartsTemplate = module.Charts{
+		hypervVMDeviceIOChartTmpl.Copy(),
+		hypervVMDeviceIOPSChartTmpl.Copy(),
+		hypervVMDeviceErrorCountChartTmpl.Copy(),
+	}
+	hypervVMDeviceIOChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_device_%s_bytes_read",
+		Title:      "VM storage device IO",
+		Units:      "bytes/s",
+		Fam:        "vm disk",
+		Ctx:        "hyperv.vm_device_bytes",
+		Priority:   prioHypervVMDeviceBytes,
+		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_device_%s_queue_length_total", Name: "queue", Algo: module.Incremental},
+			{ID: "hyperv_vm_device_%s_bytes_read", Name: "read", Algo: module.Incremental},
+			{ID: "hyperv_vm_device_%s_bytes_written", Name: "written", Algo: module.Incremental},
 		},
+	}
+	hypervVMDeviceIOPSChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_device_%s_operation_read",
+		Title:      "VM storage device IOPS",
+		Units:      "operations/s",
+		Fam:        "vm disk",
+		Ctx:        "hyperv.vm_device_operations",
+		Priority:   prioHypervVMDeviceOperations,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_operations_read", Name: "read", Algo: module.Incremental},
+			{ID: "hyperv_vm_device_%s_operations_written", Name: "write", Algo: module.Incremental},
+		},
+	}
+	hypervVMDeviceErrorCountChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_device_%s_error_count",
+		Title:      "VM storage device errors",
+		Units:      "errors/s",
+		Fam:        "vm disk",
+		Ctx:        "hyperv.vm_device_errors",
+		Priority:   prioHypervVMDeviceErrors,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_device_%s_error_count", Name: "errors", Algo: module.Incremental},
+		},
+	}
+)
+
+// HyperV VM network interface
+var (
+	hypervVMInterfaceChartsTemplate = module.Charts{
+		hypervVMInterfaceTrafficChartTmpl.Copy(),
+		hypervVMInterfacePacketsChartTmpl.Copy(),
+		hypervVMInterfacePacketsDroppedChartTmpl.Copy(),
 	}
 
-	// Interfaces VM
-	hypervVMInterfaceBytesReceived = module.Chart{
-		ID:       "hyperv_vm_interface_%s_bytes_received",
-		Title:    "Number of bytes received per second.",
-		Units:    "bytes/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_bytes_received",
-		Priority: prioHypervVMInterfaceBytesReceived,
+	hypervVMInterfaceTrafficChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_interface_%s_bytes",
+		Title:      "VM interface traffic",
+		Units:      "bytes/s",
+		Fam:        "vm net",
+		Ctx:        "hyperv.vm_interface_bytes",
+		Priority:   prioHypervVMInterfaceBytes,
+		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_bytes_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_bytes_received", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_bytes_sent", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervVMInterfaceBytesSent = module.Chart{
-		ID:       "hyperv_vm_interface_%s_bytes_sent",
-		Title:    "Number of bytes sent per second.",
-		Units:    "bytes/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_bytes_sent",
-		Priority: prioHypervVMInterfaceBytesSent,
+	hypervVMInterfacePacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_interface_%s_packets",
+		Title:      "VM interface packets",
+		Units:      "packets/s",
+		Fam:        "vm net",
+		Ctx:        "hyperv.vm_interface_packets",
+		Priority:   prioHypervVMInterfacePackets,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_bytes_sent_total", Name: "sent", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_packets_received", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_packets_sent", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervVMInterfacePacketsIncomingDropped = module.Chart{
-		ID:       "hyperv_vm_interface_%s_packets_incoming_dropped",
-		Title:    "Number of incoming packets dropped per second.",
-		Units:    "packets/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_packets_incoming_dropped",
-		Priority: prioHypervVMInterfacePacketsIncomingDropped,
+	hypervVMInterfacePacketsDroppedChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_interface_%s_packets_dropped",
+		Title:      "VM interface packets dropped",
+		Units:      "drops/s",
+		Fam:        "vm net",
+		Ctx:        "hyperv.vm_interface_packets_dropped",
+		Priority:   prioHypervVMInterfacePacketsDropped,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_packets_incoming_dropped_total", Name: "packets", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_packets_incoming_dropped", Name: "incoming", Algo: module.Incremental},
+			{ID: "hyperv_vm_interface_%s_packets_outgoing_dropped", Name: "outgoing", Algo: module.Incremental},
 		},
 	}
-	hypervVMInterfacePacketsOutgoingDropped = module.Chart{
-		ID:       "hyperv_vm_interface_%s_packets_outgoing_dropped",
-		Title:    "Number of outgoing packets dropped per second.",
-		Units:    "packets/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_packets_outgoing_dropped",
-		Priority: prioHypervVMInterfacePacketsOutgoingDropped,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_packets_outgoing_dropped_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVMInterfacePacketsReceived = module.Chart{
-		ID:       "hyperv_vm_interface_%s_packets_received",
-		Title:    "Number of packets received per second.",
-		Units:    "packets/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_packets_received",
-		Priority: prioHypervVMInterfacePacketsReceived,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_packets_received_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVMInterfacePacketsSent = module.Chart{
-		ID:       "hyperv_vm_interface_%s_packets_sent",
-		Title:    "Number of pacakets sent per second.",
-		Units:    "packets/s",
-		Fam:      "interface",
-		Ctx:      "windows.hyperv_vm_interface_packets_sent",
-		Priority: prioHypervVMInterfacePacketsSent,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_interface_%s_packets_sent_total", Name: "packets", Algo: module.Incremental},
-		},
+)
+
+// HyperV Virtual Switch
+var (
+	hypervVswitchChartsTemplate = module.Charts{
+		hypervVswitchTrafficChartTmpl.Copy(),
+		hypervVswitchPacketsChartTmpl.Copy(),
+		hypervVswitchDirectedPacketsChartTmpl.Copy(),
+		hypervVswitchBroadcastPacketsChartTmpl.Copy(),
+		hypervVswitchMulticastPacketsChartTmpl.Copy(),
+		hypervVswitchDroppedPacketsChartTmpl.Copy(),
+		hypervVswitchExtensionDroppedPacketsChartTmpl.Copy(),
+		hypervVswitchPacketsFloodedTotalChartTmpl.Copy(),
+		hypervVswitchLearnedMACAddressChartTmpl.Copy(),
+		hypervVswitchPurgedMACAddressChartTmpl.Copy(),
 	}
 
-	// Hyperv CORE
-	hypervHostCPUGuestRunTime = module.Chart{
-		ID:       "hyperv_host_cpu_%s_guest_run_time",
-		Title:    "Time spent by virtual processor in guest code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_cpu_guest_run_time",
-		Priority: prioHypervHostCPUGuestRunTime,
+	hypervVswitchTrafficChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_traffic",
+		Title:      "Virtual switch traffic",
+		Units:      "bytes/s",
+		Fam:        "vswitch traffic",
+		Ctx:        "hyperv.vswitch_bytes",
+		Priority:   prioHypervVswitchTrafficTotal,
+		Type:       module.Area,
 		Dims: module.Dims{
-			{ID: "hyperv_host_cpu_%s_guest_run_time_period", Name: "period"},
+			{ID: "hyperv_vswitch_%s_bytes_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_bytes_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervHostCPUHypervisorRunTime = module.Chart{
-		ID:       "hyperv_host_cpu_%s_hypervisor_run_time",
-		Title:    "Time spent by virtual processor in hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_cpu_hypervisor_run_time",
-		Priority: prioHypervHostCPUHypervisorRunTime,
+	hypervVswitchPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_packets",
+		Title:      "Virtual switch packets",
+		Units:      "packets/s",
+		Fam:        "vswitch packets",
+		Ctx:        "hyperv.vswitch_packets",
+		Priority:   prioHypervVswitchPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_cpu_%s_hypervisor_run_time_period", Name: "period"},
+			{ID: "hyperv_vswitch_%s_packets_received_total", Name: "received", Algo: module.Incremental},
+			// FIXME: https://github.com/prometheus-community/windows_exporter/pull/1201
+			//{ID: "hyperv_vswitch_%s_packets_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervHostCPURemoteRunTime = module.Chart{
-		ID:       "hyperv_host_cpu_%s_remote_run_time",
-		Title:    "Time spent by virtual processor in remote code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_cpu_remote_run_time",
-		Priority: prioHypervHostCPURemoteRunTime,
+	hypervVswitchDirectedPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_directed_packets",
+		Title:      "Virtual switch directed packets",
+		Units:      "packets/s",
+		Fam:        "vswitch packets",
+		Ctx:        "hyperv.vswitch_directed_packets",
+		Priority:   prioHypervVswitchDirectedPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_cpu_%s_remote_run_time_period", Name: "period"},
+			{ID: "hyperv_vswitch_%s_directed_packets_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_directed_packets_send_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervHostCPUTotalRunTime = module.Chart{
-		ID:       "hyperv_host_cpu_%s_total_run_time",
-		Title:    "Time spent by virtual processor in guest and hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_cpu_total_run_time",
-		Priority: prioHypervHostCPUTotalRunTime,
+	hypervVswitchBroadcastPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_broadcast_packets",
+		Title:      "Virtual switch broadcast packets",
+		Units:      "packets/s",
+		Fam:        "vswitch packets",
+		Ctx:        "hyperv.vswitch_broadcast_packets",
+		Priority:   prioHypervVswitchBroadcastPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_cpu_%s_total_run_time_period", Name: "period"},
+			{ID: "hyperv_vswitch_%s_broadcast_packets_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_broadcast_packets_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervHostLPGuestRunTime = module.Chart{
-		ID:       "hyperv_host_lp_%s_guest_run_time",
-		Title:    "Percentage of time spent by logical processor in guest code.",
-		Units:    "percentage",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_lp_guest_run_time",
-		Priority: prioHypervHostLPGuestRunTimePercent,
+	hypervVswitchMulticastPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_multicast_packets",
+		Title:      "Virtual switch multicast packets",
+		Units:      "packets/s",
+		Fam:        "vswitch packets",
+		Ctx:        "hyperv.vswitch_multicast_packets",
+		Priority:   prioHypervVswitchMulticastPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_guest_run_time_period", Name: "period", Div: 100},
+			{ID: "hyperv_vswitch_%s_multicast_packets_received_total", Name: "received", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_multicast_packets_sent_total", Name: "sent", Algo: module.Incremental},
 		},
 	}
-	hypervHostLPHypervisorRunTime = module.Chart{
-		ID:       "hyperv_host_lp_%s_hypervisor_run_time",
-		Title:    "Percentage of time spent by logical processor in hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_lp_hypervisor_run_time",
-		Priority: prioHypervHostCPUHypervisorRunTime,
+	hypervVswitchDroppedPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_dropped_packets",
+		Title:      "Virtual switch dropped packets",
+		Units:      "drops/s",
+		Fam:        "vswitch drops",
+		Ctx:        "hyperv.vswitch_dropped_packets",
+		Priority:   prioHypervVswitchDroppedPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_hypervisor_run_time_period", Name: "period", Div: 100},
+			{ID: "hyperv_vswitch_%s_dropped_packets_incoming_total", Name: "incoming", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_dropped_packets_outcoming_total", Name: "outgoing", Algo: module.Incremental},
 		},
 	}
-	hypervHostLPTotalRunTime = module.Chart{
-		ID:       "hyperv_host_lp_%s_total_run_time",
-		Title:    "Percentage of time spent by logical processor in guest and hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "core",
-		Ctx:      "windows.hyperv_host_lp_total_run_time",
-		Priority: prioHypervHostLPTotalRunTimePercent,
+	hypervVswitchExtensionDroppedPacketsChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_extensions_dropped_packets_incoming",
+		Title:      "Virtual switch extensions dropped packets",
+		Units:      "drops/s",
+		Fam:        "vswitch drops",
+		Ctx:        "hyperv.vswitch_extensions_dropped_packets",
+		Priority:   prioHypervVswitchExtensionsDroppedPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_host_lp_%s_total_run_time_period", Name: "period", Div: 100},
+			{ID: "hyperv_vswitch_%s_extensions_dropped_packets_incoming_total", Name: "incoming", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_extensions_dropped_packets_outcoming_total", Name: "outgoing", Algo: module.Incremental},
 		},
 	}
-
-	// Hyperv Vswitch
-	hypervVswitchBroadcastPacketsReceived = module.Chart{
-		ID:       "hyperv_vswitch_%s_broadcast_packets_received",
-		Title:    "Number of broadcast packets received.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_broadcast_packets_received",
-		Priority: prioHypervVswitchBroadcastPacketsReceived,
+	hypervVswitchPacketsFloodedTotalChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_packets_flooded",
+		Title:      "Virtual switch flooded packets",
+		Units:      "packets/s",
+		Fam:        "vswitch flood",
+		Ctx:        "hyperv.vswitch_packets_flooded",
+		Priority:   prioHypervVswitchPacketsFlooded,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_broadcast_packets_received_total", Name: "packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_packets_flooded_total", Name: "flooded", Algo: module.Incremental},
 		},
 	}
-	hypervVswitchBroadcastPacketsSent = module.Chart{
-		ID:       "hyperv_vswitch_%s_broadcast_packets_sent",
-		Title:    "Number of broadcast packets sent.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_broadcast_packets_sent",
-		Priority: prioHypervVswitchBroadcastPacketsSent,
+	hypervVswitchLearnedMACAddressChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_learned_mac_addresses",
+		Title:      "Virtual switch learned MAC addresses",
+		Units:      "mac addresses/s",
+		Fam:        "vswitch mac addresses",
+		Ctx:        "hyperv.vswitch_learned_mac_addresses",
+		Priority:   prioHypervVswitchLearnedMACAddresses,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_broadcast_packets_sent_total", Name: "packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "learned", Algo: module.Incremental},
 		},
 	}
-	hypervVswitchBytesReceivedTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_bytes_received",
-		Title:    "Number of bytes received by virtual switch.",
-		Units:    "bytes/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_bytes_received",
-		Priority: prioHypervVswitchBytesReceivedTotal,
+	hypervVswitchPurgedMACAddressChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vswitch_%s_purged_mac_addresses",
+		Title:      "Virtual switch purged MAC addresses",
+		Units:      "mac addresses/s",
+		Fam:        "vswitch mac addresses",
+		Ctx:        "hyperv.vswitch_purged_mac_addresses",
+		Priority:   prioHypervVswitchPurgeMACAddress,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_bytes_received_total", Name: "bytes", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchBytesSentTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_bytes_sent",
-		Title:    "Number of bytes sent by virtual switch.",
-		Units:    "bytes/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_bytes_sent",
-		Priority: prioHypervVswitchBytesSentTotal,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_bytes_sent_total", Name: "bytes", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchBytesTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_bytes",
-		Title:    "Number of bytes transversing virtual switch.",
-		Units:    "bytes/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_bytes",
-		Priority: prioHypervVswitchBytesTotal,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_bytes_total", Name: "bytes", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchDirectedPacketsReceivedTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_directed_packets_received",
-		Title:    "Number of directed packets received by virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_directed_packets_received",
-		Priority: prioHypervVswitchDirectedPacketsReceived,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_directed_packets_received_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchDirectedPacketsSendTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_directed_packets_send",
-		Title:    "Number of directed packets send by virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_directed_packets_send",
-		Priority: prioHypervVswitchDirectedPacketsSend,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_directed_packets_send_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchDroppedPacketsIncomingTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_dropped_packets_incoming",
-		Title:    "Number of incoming packets dropped by virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_dropped_packets_incoming",
-		Priority: prioHypervVswitchDroppedPacketsIncoming,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_dropped_packets_incoming_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchDroppedPacketsOutcomingTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_dropped_packets_outcoming",
-		Title:    "Number of outcoming packets dropped by virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_dropped_packets_outcoming",
-		Priority: prioHypervVswitchDroppedPacketsOutcoming,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_dropped_packets_outcoming_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchExtensionDroppedPacketsIncomingTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_extensions_dropped_packets_incoming",
-		Title:    "Number of inconming packets dropped by the virtual switch extension.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_extensions_dropped_packets_incoming",
-		Priority: prioHypervVswitchExtensionsDroppedPacketsIncoming,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_extensions_dropped_packets_incoming_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchExtensionDroppedPacketsOuttomingTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_extensions_dropped_packets_outcoming",
-		Title:    "Number of outgoing packets dropped by the virtual switch extension.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_extensions_dropped_packets_outcoming",
-		Priority: prioHypervVswitchExtensionsDroppedPacketsOutcoming,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_extensions_dropped_packets_outcoming_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchLearnedMACAddressTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_learned_mac_addresses",
-		Title:    "Number of learned MAC addresses.",
-		Units:    "counter",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_learned_mac_addresses",
-		Priority: prioHypervVswitchLearnedMACAddresses,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "mac_address", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchMulticastPacketsReceivedTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_multicast_packets_received",
-		Title:    "Number of multicast packets received.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_multicast_packets_received",
-		Priority: prioHypervVswitchMulticastPacketsReceived,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_multicast_packets_received_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchMulticastPacketsSentTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_multicast_packets_sent",
-		Title:    "Number of multicast packets sent.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_multicast_packets_sent",
-		Priority: prioHypervVswitchMulticastPacketsSent,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_multicast_packets_sent_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchNumberOfSendChannelMovesTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_number_of_send_channel_moves",
-		Title:    "Number of send channel moves on virtual switch.",
-		Units:    "channels/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_number_of_send_channel_moves",
-		Priority: prioHypervVswitchNumberOfSendChannelMoves,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "send", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchNumberOfVMQMovesTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_number_of_vmq_moves",
-		Title:    "Number of VMQs moves on virtual switch.",
-		Units:    "vmq",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_number_of_vmq_moves",
-		Priority: prioHypervVswitchNumberOfVMQMoves,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_number_of_vmq_moves_total", Name: "vmq", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchPacketsFloodedTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_packets_flooded",
-		Title:    "Total number of packets flooded on virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_packets_flooded",
-		Priority: prioHypervVswitchPacketsFlooded,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_flooded_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchPacketsReceivedTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_packets_received",
-		Title:    "Number of received by virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_packets_received",
-		Priority: prioHypervVswitchPacketsReceived,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_received_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchPacketsTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_packets",
-		Title:    "Number of packets transversing virtual switch.",
-		Units:    "packets/s",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vswitch_packets",
-		Priority: prioHypervVswitchPackets,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_total", Name: "packets", Algo: module.Incremental},
-		},
-	}
-	hypervVswitchPurgedMACAddressTotal = module.Chart{
-		ID:       "hyperv_vswitch_%s_purged_mac_addresses",
-		Title:    "Number of purged MAC addresses of the virtual switch.",
-		Units:    "counter",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_purged_mac_addresses",
-		Priority: prioHypervVswitchPurgeMACAddress,
-		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "mac_address", Algo: module.Incremental},
-		},
-	}
-
-	// Hyperv VID
-	hypervVIDPhysicalPagesAllocated = module.Chart{
-		ID:       "hyperv_vid_%s_vid_physical_pages_allocated",
-		Title:    "Number of physical pages allocated.",
-		Units:    "pages",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vid_physical_pages_allocated",
-		Priority: prioHypervVIDPhysicalPagesAllocated,
-		Dims: module.Dims{
-			{ID: "hyperv_vid_%s_vid_physical_pages_allocated_total", Name: "pages"},
-		},
-	}
-	hypervVIDPreferredNumaNodeIndex = module.Chart{
-		ID:       "hyperv_vid_%s_vid_preferred_numa_node_index",
-		Title:    "Preferred NUMA node index associated with partition",
-		Units:    "index",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
-		Priority: prioHypervVIDPreferredNumaNodeIndex,
-		Dims: module.Dims{
-			{ID: "hyperv_vid_%s_vid_preferred_numa_node_index", Name: "index"},
-		},
-	}
-	hypervVIDRemotePhysicalPages = module.Chart{
-		ID:       "hyperv_vid_%s_vid_remote_physical_page",
-		Title:    "Number of physical pages not allocated from the preferred NUMA node.",
-		Units:    "pages",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vid_remote_physical_page",
-		Priority: prioHypervVIDRemotePhysicalPages,
-		Dims: module.Dims{
-			{ID: "hyperv_vid_%s_vid_remote_physical_page", Name: "pages"},
-		},
-	}
-
-	// Hyperv VM (Memory)
-	hypervHypervVMMemoryAddedOperationsTotal = module.Chart{
-		ID:       "hyperv_vm_%s_memory_add_operations_total",
-		Title:    "Number of operations adding memory to VM",
-		Units:    "operations",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_add_operations_total",
-		Priority: prioHypervVMMemoryAddedOperationsTotal,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_add_operations_total", Name: "memory", Algo: module.Incremental},
-		},
-	}
-	hypervHypervVMMemoryAddedTotal = module.Chart{
-		ID:       "hyperv_vm_%s_memory_added_total",
-		Title:    "Memory added to VM",
-		Units:    "mbytes",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_added_total",
-		Priority: prioHypervVMMemoryAddedTotal,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_added_total", Name: "memory", Algo: module.Incremental},
-		},
-	}
-	hypervHypervVMMemoryPhysical = module.Chart{
-		ID:       "hyperv_vm_%s_memory_physical",
-		Title:    "Memory assigned to VM",
-		Units:    "mbytes",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_physical",
-		Priority: prioHypervVMMemoryPhysical,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_physical", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryPhysicalGuestVisible = module.Chart{
-		ID:       "hyperv_vm_%s_memory_physical_guest_visible",
-		Title:    "Memory visible to VM guests",
-		Units:    "mbytes",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_physical_guest_visible",
-		Priority: prioHypervVMMemoryPhysicalGuestVisible,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_physical_guest_visible", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryPressureAverage = module.Chart{
-		ID:       "hyperv_vm_%s_memory_pressure_average",
-		Title:    "Average pressure in VM",
-		Units:    "percentage",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_pressure_average",
-		Priority: prioHypervVMMemoryPressureAverage,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_pressure_average", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryPressureCurrent = module.Chart{
-		ID:       "hyperv_vm_%s_memory_pressure_current",
-		Title:    "Current pressure in VM",
-		Units:    "percentage",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_pressure_current",
-		Priority: prioHypervVMMemoryPressureCurrent,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_pressure_current", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryPressureMaximum = module.Chart{
-		ID:       "hyperv_vm_%s_memory_pressure_maximum",
-		Title:    "Maximum pressure band in VM",
-		Units:    "percentage",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_pressure_maximum",
-		Priority: prioHypervVMMemoryPressureMaximum,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_pressure_maximum", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryPressureMinimum = module.Chart{
-		ID:       "hyperv_vm_%s_memory_pressure_minimum",
-		Title:    "Minimum pressure band in VM",
-		Units:    "percentage",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_pressure_minimum",
-		Priority: prioHypervVMMemoryPressureMinimum,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_pressure_minimum", Name: "memory"},
-		},
-	}
-	hypervHypervVMMemoryRemoveOperationsTotal = module.Chart{
-		ID:       "hyperv_vm_%s_memory_remove_operations_total",
-		Title:    "Number of operations removing memory from the VM.",
-		Units:    "operations",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_remove_operations_total",
-		Priority: prioHypervVMMemoryRemovedOPerations,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_remove_operations_total", Name: "operations"},
-		},
-	}
-	hypervHypervVMMemoryRemovedTotal = module.Chart{
-		ID:       "hyperv_vm_%s_memory_removed_total",
-		Title:    "Memory in MB removed from the VM.",
-		Units:    "mbytes",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_removed_total",
-		Priority: prioHypervVMMemoryRemovedTotal,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_memory_removed_total", Name: "memory"},
-		},
-	}
-
-	// Hyperv VM CPU
-	hypervHypervCPUGuestRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_cpu_%s_guest_run_time",
-		Title:    "Time spent by virtual process in guest code.",
-		Units:    "nanoseconds",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_cpu_guest_run_time",
-		Priority: prioHyperVMCPUGuestRunTime,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_guest_run_time_total", Name: "vm"},
-		},
-	}
-	hypervHypervCPUHypervisorRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_cpu_%s_hypervisor_run_time",
-		Title:    "Time spent by virtual process in hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_cpu_hypervisor_run_time",
-		Priority: prioHyperVMCPUHypervisorRunTime,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_hypervisor_run_time_total", Name: "vm"},
-		},
-	}
-	hypervHypervCPURemoteRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_cpu_%s_remote_run_time",
-		Title:    "Time spent by virtual process in remote code.",
-		Units:    "nanoseconds",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_cpu_remote_run_time",
-		Priority: prioHyperVMCPURemoteRunTime,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_remote_run_time_total", Name: "vm"},
-		},
-	}
-	hypervHypervCPUTotalRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_cpu_%s_total_run_time",
-		Title:    "Time spent by virtual process in guest and hypervisor code.",
-		Units:    "nanoseconds",
-		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_cpu_total_run_time",
-		Priority: prioHyperVMCPUTotalRunTime,
-		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_run_time_total", Name: "vm"},
+			{ID: "hyperv_vswitch_%s_purged_mac_addresses_total", Name: "purged", Algo: module.Incremental},
 		},
 	}
 )
@@ -5347,16 +4809,41 @@ func (w *Windows) addHypervCharts() {
 	}
 }
 
-func (w *Windows) addHypervDeviceCharts(device string) {
-	charts := hypervDeviceChartsTemplate.Copy()
+func (w *Windows) addHypervVMMemoryCharts(vm string) {
+	charts := hypervVMMemoryChartsTemplate.Copy()
+	n := hypervCleanName(vm)
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, device)
+		chart.ID = fmt.Sprintf(chart.ID, n)
+		chart.Labels = []module.Label{
+			{Key: "vm_name", Value: vm},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, n)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) removeHypervVMMemoryCharts(vm string) {
+	px := fmt.Sprintf("vm_%s", hypervCleanName(vm))
+	w.removeCharts(px)
+}
+
+func (w *Windows) addHypervVMDeviceCharts(device string) {
+	charts := hypervVMDeviceChartsTemplate.Copy()
+	n := hypervCleanName(device)
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, n)
 		chart.Labels = []module.Label{
 			{Key: "vm_device", Value: device},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, device)
+			dim.ID = fmt.Sprintf(dim.ID, n)
 		}
 	}
 
@@ -5365,16 +4852,22 @@ func (w *Windows) addHypervDeviceCharts(device string) {
 	}
 }
 
-func (w *Windows) addHypervInterfaceCharts(iface string) {
-	charts := hypervInterfacesChartsTemplate.Copy()
+func (w *Windows) removeHypervVMDeviceCharts(device string) {
+	px := fmt.Sprintf("vm_device_%s", hypervCleanName(device))
+	w.removeCharts(px)
+}
+
+func (w *Windows) addHypervVMInterfaceCharts(iface string) {
+	charts := hypervVMInterfaceChartsTemplate.Copy()
+	n := hypervCleanName(iface)
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, iface)
+		chart.ID = fmt.Sprintf(chart.ID, n)
 		chart.Labels = []module.Label{
 			{Key: "vm_interface", Value: iface},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, iface)
+			dim.ID = fmt.Sprintf(dim.ID, n)
 		}
 	}
 
@@ -5383,34 +4876,22 @@ func (w *Windows) addHypervInterfaceCharts(iface string) {
 	}
 }
 
-func (w *Windows) addHypervCoreCharts(core string) {
-	charts := hypervCoreChartsTemplate.Copy()
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, core)
-		chart.Labels = []module.Label{
-			{Key: "vm_core", Value: core},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, core)
-		}
-	}
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
+func (w *Windows) removeHypervVMInterfaceCharts(iface string) {
+	px := fmt.Sprintf("vm_interface_%s", hypervCleanName(iface))
+	w.removeCharts(px)
 }
 
 func (w *Windows) addHypervVSwitchCharts(vswitch string) {
 	charts := hypervVswitchChartsTemplate.Copy()
+	n := hypervCleanName(vswitch)
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, vswitch)
+		chart.ID = fmt.Sprintf(chart.ID, n)
 		chart.Labels = []module.Label{
-			{Key: "vm_vswitch", Value: vswitch},
+			{Key: "vswitch", Value: vswitch},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, vswitch)
+			dim.ID = fmt.Sprintf(dim.ID, n)
 		}
 	}
 
@@ -5419,59 +4900,9 @@ func (w *Windows) addHypervVSwitchCharts(vswitch string) {
 	}
 }
 
-func (w *Windows) addHypervVIDCharts(vid string) {
-	charts := hypervVIDChartsTemplate.Copy()
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, vid)
-		chart.Labels = []module.Label{
-			{Key: "vm_name", Value: vid},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, vid)
-		}
-	}
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func (w *Windows) addHypervVMCharts(vm string) {
-	charts := hypervVMChartsTemplate.Copy()
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, vm)
-		chart.Labels = []module.Label{
-			{Key: "vm_name", Value: vm},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, vm)
-		}
-	}
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
-}
-
-func (w *Windows) addHypervVMCPUCharts(vm string, cpu string) {
-	charts := hypervVMCPUChartsTemplate.Copy()
-
-	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, vm, cpu)
-		chart.Labels = []module.Label{
-			{Key: "vm_name", Value: vm},
-			{Key: "vm_cpu", Value: cpu},
-		}
-		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, vm, cpu)
-		}
-	}
-
-	if err := w.Charts().Add(*charts...); err != nil {
-		w.Warning(err)
-	}
+func (w *Windows) removeHypervVSwitchCharts(vswitch string) {
+	px := fmt.Sprintf("vswitch_%s", hypervCleanName(vswitch))
+	w.removeCharts(px)
 }
 
 func (w *Windows) removeCollectorCharts(name string) {
