@@ -92,6 +92,11 @@ const (
 	metricHypervVMMemoryPressureMinimum      = "windows_hyperv_vm_memory_pressure_minimum"
 	metricHypervVMMemoryRemoveOperatonsTotal = "windows_hyperv_vm_memory_remove_operations_total"
 	metricHypervVMMemoryRemovedTotal         = "windows_hyperv_vm_memory_removed_total"
+
+	metricsHypervVMCPUGuestRunTime      = "windows_hyperv_vm_cpu_guest_run_time"
+	metricsHypervVMCPUHypervisorRunTime = "windows_hyperv_vm_cpu_hypervisor_run_time"
+	metricsHypervVMCPURemoteRunTime     = "windows_hyperv_vm_cpu_remote_run_time"
+	metricsHypervVMCPUTotalRunTime      = "windows_hyperv_vm_cpu_total_run_time"
 )
 
 var hypervMetrics = []string{
@@ -508,11 +513,40 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 			mx[px+parsed_name+"_memory_remove_operations_total"] = int64(pm.Value)
 		}
 	}
-	for _, pm := range pms.FindByName(metricHypervVMMemoryRemovedTotal) {
-		if name := pm.Labels.Get("vm"); name != "" {
-			parsed_name := hypervParseNames(name)
-			vm[parsed_name] = true
-			mx[px+parsed_name+"_memory_removed_total"] = int64(pm.Value)
+	for _, pm := range pms.FindByName(metricsHypervVMCPUGuestRunTime) {
+		if vmname := pm.Labels.Get("vm"); vmname != "" {
+			parsed_name := hypervParseNames(vmname)
+			if cpu := pm.Labels.Get("vm"); cpu != "" {
+				vm[parsed_name] = true
+				mx[px+parsed_name+"_cpu_"+cpu+"_guest_run_time_total"] = int64(pm.Value)
+			}
+		}
+	}
+	for _, pm := range pms.FindByName(metricsHypervVMCPUHypervisorRunTime) {
+		if vmname := pm.Labels.Get("vm"); vmname != "" {
+			parsed_name := hypervParseNames(vmname)
+			if cpu := pm.Labels.Get("vm"); cpu != "" {
+				vm[parsed_name] = true
+				mx[px+parsed_name+"_cpu_"+cpu+"_hypervisor_run_time_total"] = int64(pm.Value)
+			}
+		}
+	}
+	for _, pm := range pms.FindByName(metricsHypervVMCPURemoteRunTime) {
+		if vmname := pm.Labels.Get("vm"); vmname != "" {
+			parsed_name := hypervParseNames(vmname)
+			if cpu := pm.Labels.Get("vm"); cpu != "" {
+				vm[parsed_name] = true
+				mx[px+parsed_name+"_cpu_"+cpu+"_remote_run_time_total"] = int64(pm.Value)
+			}
+		}
+	}
+	for _, pm := range pms.FindByName(metricsHypervVMCPUTotalRunTime) {
+		if vmname := pm.Labels.Get("vm"); vmname != "" {
+			parsed_name := hypervParseNames(vmname)
+			if cpu := pm.Labels.Get("vm"); cpu != "" {
+				vm[parsed_name] = true
+				mx[px+parsed_name+"_cpu_"+cpu+"_run_time_total"] = int64(pm.Value)
+			}
 		}
 	}
 
@@ -545,6 +579,9 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 			w.cache.hypervVM[v] = true
 			w.addHypervVIDCharts(v)
 			w.addHypervVMCharts(v)
+			for cpu := range cores {
+				w.addHypervVMCPUCharts(v, cpu)
+			}
 		}
 	}
 }

@@ -4626,47 +4626,47 @@ var (
 
 	// Hyperv VM CPU
 	hypervHypervCPUGuestRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_%s_cpu_guest_run_time",
+		ID:       "hyperv_vm_%s_cpu_%s_guest_run_time",
 		Title:    "Time spent by virtual process in guest code.",
 		Units:    "nanoseconds",
 		Fam:      "vm",
 		Ctx:      "windows.hyperv_vm_cpu_guest_run_time",
 		Priority: prioHyperVMCPUGuestRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_%s_cpu_guest_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_guest_run_time_total", Name: "memory"},
 		},
 	}
 	hypervHypervCPUHypervisorRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_%s_cpu_hypervisor_run_time",
+		ID:       "hyperv_vm_%s_cpu_%s_hypervisor_run_time",
 		Title:    "Time spent by virtual process in hypervisor code.",
 		Units:    "nanoseconds",
 		Fam:      "vm",
 		Ctx:      "windows.hyperv_vm_cpu_hypervisor_run_time",
 		Priority: prioHyperVMCPUHypervisorRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_%s_cpu_hypervisor_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_hypervisor_run_time_total", Name: "memory"},
 		},
 	}
 	hypervHypervCPURemoteRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_%s_cpu_remote_run_time",
+		ID:       "hyperv_vm_%s_cpu_%s_remote_run_time",
 		Title:    "Time spent by virtual process in remote code.",
 		Units:    "nanoseconds",
 		Fam:      "vm",
 		Ctx:      "windows.hyperv_vm_cpu_remote_run_time",
 		Priority: prioHyperVMCPURemoteRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_%s_cpu_remote_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_remote_run_time_total", Name: "memory"},
 		},
 	}
 	hypervHypervCPUTotalRunTime = module.Chart{
-		ID:       "hyperv_vm_%s_%s_cpu_total_run_time",
+		ID:       "hyperv_vm_%s_cpu_%s_total_run_time",
 		Title:    "Time spent by virtual process in guest and hypervisor code.",
 		Units:    "nanoseconds",
 		Fam:      "vm",
 		Ctx:      "windows.hyperv_vm_cpu_total_run_time",
 		Priority: prioHyperVMCPUTotalRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_%s_cpu_total_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_run_time_total", Name: "memory"},
 		},
 	}
 )
@@ -5456,16 +5456,16 @@ func (w *Windows) addHypervVMCharts(vm string) {
 }
 
 func (w *Windows) addHypervVMCPUCharts(vm string, cpu string) {
-	charts := hypervVMChartsTemplate.Copy()
+	charts := hypervVMCPUChartsTemplate.Copy()
 
 	for _, chart := range *charts {
-		chart.ID = fmt.Sprintf(chart.ID, cpu, vm)
+		chart.ID = fmt.Sprintf(chart.ID, vm, cpu)
 		chart.Labels = []module.Label{
 			{Key: "vm_name", Value: vm},
 			{Key: "vm_cpu", Value: cpu},
 		}
 		for _, dim := range chart.Dims {
-			dim.ID = fmt.Sprintf(dim.ID, cpu, vm)
+			dim.ID = fmt.Sprintf(dim.ID, vm, cpu)
 		}
 	}
 
