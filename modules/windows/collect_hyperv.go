@@ -513,10 +513,17 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 			mx[px+parsed_name+"_memory_remove_operations_total"] = int64(pm.Value)
 		}
 	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryRemovedTotal) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_removed_total"] = int64(pm.Value)
+		}
+	}
 	for _, pm := range pms.FindByName(metricsHypervVMCPUGuestRunTime) {
 		if vmname := pm.Labels.Get("vm"); vmname != "" {
 			parsed_name := hypervParseNames(vmname)
-			if cpu := pm.Labels.Get("vm"); cpu != "" {
+			if cpu := pm.Labels.Get("core"); cpu != "" {
 				vm[parsed_name] = true
 				mx[px+parsed_name+"_cpu_"+cpu+"_guest_run_time_total"] = int64(pm.Value)
 			}
@@ -525,7 +532,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByName(metricsHypervVMCPUHypervisorRunTime) {
 		if vmname := pm.Labels.Get("vm"); vmname != "" {
 			parsed_name := hypervParseNames(vmname)
-			if cpu := pm.Labels.Get("vm"); cpu != "" {
+			if cpu := pm.Labels.Get("core"); cpu != "" {
 				vm[parsed_name] = true
 				mx[px+parsed_name+"_cpu_"+cpu+"_hypervisor_run_time_total"] = int64(pm.Value)
 			}
@@ -534,7 +541,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByName(metricsHypervVMCPURemoteRunTime) {
 		if vmname := pm.Labels.Get("vm"); vmname != "" {
 			parsed_name := hypervParseNames(vmname)
-			if cpu := pm.Labels.Get("vm"); cpu != "" {
+			if cpu := pm.Labels.Get("core"); cpu != "" {
 				vm[parsed_name] = true
 				mx[px+parsed_name+"_cpu_"+cpu+"_remote_run_time_total"] = int64(pm.Value)
 			}
@@ -543,7 +550,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	for _, pm := range pms.FindByName(metricsHypervVMCPUTotalRunTime) {
 		if vmname := pm.Labels.Get("vm"); vmname != "" {
 			parsed_name := hypervParseNames(vmname)
-			if cpu := pm.Labels.Get("vm"); cpu != "" {
+			if cpu := pm.Labels.Get("core"); cpu != "" {
 				vm[parsed_name] = true
 				mx[px+parsed_name+"_cpu_"+cpu+"_run_time_total"] = int64(pm.Value)
 			}
