@@ -81,6 +81,17 @@ const (
 	metricHyperVVIDPhysicalPagesAllocated = "windows_hyperv_vid_physical_pages_allocated"
 	metricHyperVVIDPreferredNumaNodeIndex = "windows_hyperv_vid_preferred_numa_node_index"
 	metricHyperVVIDRemotePhysicalPages    = "windows_hyperv_vid_remote_physical_pages"
+
+	metricHypervVMMemoryAddOperationsTotal   = "windows_hyperv_vm_memory_add_operations_total"
+	metricHypervVMMemoryAddedTotal           = "windows_hyperv_vm_memory_added_total"
+	metricHypervVMMemoryPhysical             = "windows_hyperv_vm_memory_physical"
+	metricHypervVMMemoryPhysicalGuestVisible = "windows_hyperv_vm_memory_physical_guest_visible"
+	metricHypervVMMemoryPressureAverage      = "windows_hyperv_vm_memory_pressure_average"
+	metricHypervVMMemoryPressureCurrent      = "windows_hyperv_vm_memory_pressure_current"
+	metricHypervVMMemoryPressureMaximum      = "windows_hyperv_vm_memory_pressure_maximum"
+	metricHypervVMMemoryPressureMinimum      = "windows_hyperv_vm_memory_pressure_minimum"
+	metricHypervVMMemoryRemoveOperatonsTotal = "windows_hyperv_vm_memory_remove_operations_total"
+	metricHypervVMMemoryRemovedTotal         = "windows_hyperv_vm_memory_removed_total"
 )
 
 var hypervMetrics = []string{
@@ -433,6 +444,78 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
+	px = "hyperv_vm_"
+	for _, pm := range pms.FindByName(metricHypervVMMemoryAddOperationsTotal) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_add_operations_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryAddedTotal) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_added_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPhysical) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_physical"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPhysicalGuestVisible) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_physical_guest_visible"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPressureAverage) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_pressure_average"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPressureCurrent) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_pressure_current"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPressureMaximum) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_pressure_maximum"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryPressureMinimum) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_pressure_minimum"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryRemoveOperatonsTotal) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_remove_operations_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHypervVMMemoryRemovedTotal) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_memory_removed_total"] = int64(pm.Value)
+		}
+	}
+
 	for v := range devices {
 		if !w.cache.hypervDevices[v] {
 			w.cache.hypervDevices[v] = true
@@ -461,6 +544,7 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		if !w.cache.hypervVM[v] {
 			w.cache.hypervVM[v] = true
 			w.addHypervVIDCharts(v)
+			w.addHypervVMCharts(v)
 		}
 	}
 }
