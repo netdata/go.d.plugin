@@ -4604,7 +4604,7 @@ var (
 		Title:    "Memory in MB removed from the VM.",
 		Units:    "mbytes",
 		Fam:      "vm",
-		Ctx:      "windows.hyperv_vm_memory_remove_operations_total",
+		Ctx:      "windows.hyperv_vm_memory_removed_total",
 		Priority: prioHypervVMMemoryRemovedOPerations,
 		Dims: module.Dims{
 			{ID: "hyperv_vm_%s_memory_removed_total", Name: "memory"},
