@@ -4633,7 +4633,7 @@ var (
 		Ctx:      "windows.hyperv_vm_cpu_guest_run_time",
 		Priority: prioHyperVMCPUGuestRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_guest_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_guest_run_time_total", Name: "vm"},
 		},
 	}
 	hypervHypervCPUHypervisorRunTime = module.Chart{
@@ -4644,7 +4644,7 @@ var (
 		Ctx:      "windows.hyperv_vm_cpu_hypervisor_run_time",
 		Priority: prioHyperVMCPUHypervisorRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_hypervisor_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_hypervisor_run_time_total", Name: "vm"},
 		},
 	}
 	hypervHypervCPURemoteRunTime = module.Chart{
@@ -4655,7 +4655,7 @@ var (
 		Ctx:      "windows.hyperv_vm_cpu_remote_run_time",
 		Priority: prioHyperVMCPURemoteRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_remote_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_remote_run_time_total", Name: "vm"},
 		},
 	}
 	hypervHypervCPUTotalRunTime = module.Chart{
@@ -4666,7 +4666,7 @@ var (
 		Ctx:      "windows.hyperv_vm_cpu_total_run_time",
 		Priority: prioHyperVMCPUTotalRunTime,
 		Dims: module.Dims{
-			{ID: "hyperv_vm_%s_cpu_%s_run_time_total", Name: "memory"},
+			{ID: "hyperv_vm_%s_cpu_%s_run_time_total", Name: "vm"},
 		},
 	}
 )

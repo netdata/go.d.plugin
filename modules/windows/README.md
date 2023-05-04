@@ -376,6 +376,10 @@ Labels per scope:
 | windows.hyperv_vm_memory_pressure_minimum                            |           vm         |                                                                                            memory                                                                                  |    percentage     |
 | windows.hyperv_vm_memory_remove_operations_total                     |           vm         |                                                                                          operations                                                                                |    operations     |
 | windows.hyperv_vm_memory_removed_total                               |           vm         |                                                                                          operations                                                                                |    operations     |
+| windows.hyperv_vm_cpu_guest_run_time                                 |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
+| windows.hyperv_vm_cpu_hypervisor_run_time                            |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
+| windows.hyperv_vm_cpu_remote_run_time                                |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
+| windows.hyperv_vm_cpu_total_run_time                                 |           vm         |                                                                                              vm                                                                                    |    nanoseconds    |
 
 ## Configuration
 
