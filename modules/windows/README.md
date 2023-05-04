@@ -364,6 +364,9 @@ Labels per scope:
 | windows.hyperv_vswitch_packets_received                              |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
 | windows.hyperv_vswitch_packets                                       |        vswitch       |                                                                                           packets                                                                                  |     packets/s     |
 | windows.hyperv_purged_mac_addresses                                  |        vswitch       |                                                                                         mac_address                                                                                |      counter      |
+| windows.hyperv_vid_physical_pages_allocated                          |           vm         |                                                                                            pages                                                                                   |       pages       |
+| windows.hyperv_vid_preferred_numa_node_index                         |           vm         |                                                                                            index                                                                                   |       index       |
+| windows.hyperv_vid_remote_physical_page                              |           vm         |                                                                                            pages                                                                                   |       pages       |
 
 ## Configuration
 

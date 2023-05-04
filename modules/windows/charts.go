@@ -4445,7 +4445,7 @@ var (
 		ID:       "hyperv_vswitch_%s_vid_physical_pages_allocated",
 		Title:    "Number of physical pages allocated.",
 		Units:    "pages",
-		Fam:      "vswitch",
+		Fam:      "vm",
 		Ctx:      "windows.hyperv_vid_physical_pages_allocated",
 		Priority: prioHypervVIDPhysicalPagesAllocated,
 		Dims: module.Dims{
@@ -4456,7 +4456,7 @@ var (
 		ID:       "hyperv_vswitch_%s_vid_preferred_numa_node_index",
 		Title:    "Preferred NUMA node index associated with partition",
 		Units:    "index",
-		Fam:      "vswitch",
+		Fam:      "vm",
 		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
 		Priority: prioHypervVIDPreferredNumaNodeIndex,
 		Dims: module.Dims{
@@ -4467,8 +4467,8 @@ var (
 		ID:       "hyperv_vswitch_%s_vid_remote_physical_page",
 		Title:    "Number of physical pages not allocated from the preferred NUMA node.",
 		Units:    "pages",
-		Fam:      "vswitch",
-		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
+		Fam:      "vm",
+		Ctx:      "windows.hyperv_vid_remote_physical_page",
 		Priority: prioHypervVIDRemotePhysicalPages,
 		Dims: module.Dims{
 			{ID: "hyperv_vid_%s_vid_remote_physical_page", Name: "pages"},
