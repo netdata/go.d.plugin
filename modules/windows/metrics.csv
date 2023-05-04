@@ -111,6 +111,16 @@ windows.hyperv_purged_mac_addresses,vswitch,counter,mac_address,Number of purged
 windows.hyperv_vid_physical_pages_allocated,vm,pages,pages,Number of physical pages allocated.,vm_name,go.plugin,windows
 windows.hyperv_vid_preferred_numa_node_index,vm,index,index,Preferred NUMA node index associated with partition,vm_name,go.plugin,windows
 windows.hyperv_vid_remote_physical_page,vm,pages,pages,Number of physical pages not allocated from the preferred NUMA node.,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_add_operations_total,vm,memory,operations,Number of operations adding memory to VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_added_total,vm,memory,mbytes,Memory added to VM.,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_physical,vm,memory,mbytes,Memory assigned to VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_physical_guest_visible,vm,memory,mbytes,Memory visible to VM guests,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_pressure_average,vm,memory,mbytes,Average pressure in VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_pressure_current,vm,memory,mbytes,Current pressure in VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_pressure_maximum,vm,memory,mbytes,Maximum pressure band in VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_pressure_minimum,vm,memory,mbytes,Minimum pressure band in VM,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_remove_operations_total,vm,operations,operations,Number of operations removing memory from the VM.,vm_name,go.plugin,windows
+windows.hyperv_vm_memory_removed_total,vm,memory,mbytes,Memory in MB removed from the VM.,vm_name,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows

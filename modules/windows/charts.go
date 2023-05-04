@@ -4465,6 +4465,7 @@ var (
 		},
 	}
 
+	// Hyperv VID
 	hypervVIDPhysicalPagesAllocated = module.Chart{
 		ID:       "hyperv_vid_%s_vid_physical_pages_allocated",
 		Title:    "Number of physical pages allocated.",
