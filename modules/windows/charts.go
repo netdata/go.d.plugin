@@ -4052,7 +4052,7 @@ var (
 	hypervVMDeviceQueueLength = module.Chart{
 		ID:       "hyperv_vm_device_%s_queue_length",
 		Title:    "Current Queue length on virtual device",
-		Units:    "error",
+		Units:    "queue",
 		Fam:      "device",
 		Ctx:      "windows.hyperv_vm_device_queue_length",
 		Priority: prioHypervVMDeviceQueueLength,
@@ -4087,7 +4087,7 @@ var (
 	hypervVMInterfacePacketsIncomingDropped = module.Chart{
 		ID:       "hyperv_vm_interface_%s_packets_incoming_dropped",
 		Title:    "Number of incoming packets dropped per second.",
-		Units:    "dropped packets/s",
+		Units:    "packets/s",
 		Fam:      "interface",
 		Ctx:      "windows.hyperv_vm_interface_packets_incoming_dropped",
 		Priority: prioHypervVMInterfacePacketsIncomingDropped,
