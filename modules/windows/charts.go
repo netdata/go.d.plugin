@@ -2864,7 +2864,7 @@ var (
 	thermalzoneTemperatureChartTmpl = module.Chart{
 		ID:       "thermalzone_%s_temperature",
 		Title:    "Thermal zone temperature",
-		Units:    "celsius",
+		Units:    "Celsius",
 		Fam:      "thermalzone",
 		Ctx:      "windows.thermalzone_temperature",
 		Priority: prioThermalzoneTemperature,
