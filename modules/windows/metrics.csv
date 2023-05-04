@@ -108,6 +108,9 @@ windows.hyperv_vswitch_number_of_vmq_moves,vswitch,vmq,VMQs,Total number of pack
 windows.hyperv_vswitch_packets_received,vswitch,packets,packets/s,Number of received by virtual switch.,vm_vswitch,go.plugin,windows
 windows.hyperv_vswitch_packets,vswitch,packets,packets/s,Number of packets transversing virtual switch.,vm_vswitch,go.plugin,windows
 windows.hyperv_purged_mac_addresses,vswitch,counter,MAC address,Number of purged MAC addresses of the virtual switch.,vm_vswitch,go.plugin,windows
+windows.hyperv_vid_physical_pages_allocated,vm,pages,pages,Number of physical pages allocated.,vm_name,go.plugin,windows
+windows.hyperv_vid_preferred_numa_node_index,vm,index,index,Preferred NUMA node index associated with partition,vm_name,go.plugin,windows
+windows.hyperv_vid_remote_physical_page,vm,pages,pages,Number of physical pages not allocated from the preferred NUMA node.,vm_name,go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows

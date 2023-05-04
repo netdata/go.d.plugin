@@ -5230,7 +5230,7 @@ func (w *Windows) addHypervVIDCharts(vid string) {
 	for _, chart := range *charts {
 		chart.ID = fmt.Sprintf(chart.ID, vid)
 		chart.Labels = []module.Label{
-			{Key: "vm_vid", Value: vid},
+			{Key: "vm_name", Value: vid},
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, vid)
