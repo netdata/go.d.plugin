@@ -77,6 +77,10 @@ const (
 	metricHypervVSwitchPacketsReceivedTotal                  = "windows_hyperv_vswitch_packets_received_total"
 	metricHypervVSwitchPacketsTotal                          = "windows_hyperv_vswitch_packets_total"
 	metricHypervVSwitchPurgedMACAddresses                    = "windows_hyperv_vswitch_purged_mac_addresses_total"
+
+	metricHyperVVIDPhysicalPagesAllocated = "windows_hyperv_vid_physical_pages_allocated"
+	metricHyperVVIDPreferredNumaNodeIndex = "windows_hyperv_vid_preferred_numa_node_index"
+	metricHyperVVIDRemotePhysicalPages = "windows_hyperv_vid_remote_physical_pages"
 )
 
 var hypervMetrics = []string{
@@ -115,8 +119,9 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 	interfaces := make(map[string]bool)
 	cores := make(map[string]bool)
 	vswitches := make(map[string]bool)
-	px := "hyperv_vm_device_"
+	vm := make(map[string]bool)
 
+	px := "hyperv_vm_device_"
 	for _, pm := range pms.FindByNames(hypervMetrics...) {
 		name := strings.TrimPrefix(pm.Name(), "windows_")
 		v := pm.Value
@@ -405,6 +410,29 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
+	px = "hyperv_vid_"
+	for _, pm := range pms.FindByName(metricHyperVVIDPhysicalPagesAllocated) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_vid_physical_pages_allocated_total"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHyperVVIDPreferredNumaNodeIndex) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_vid_preferred_numa_node_index"] = int64(pm.Value)
+		}
+	}
+	for _, pm := range pms.FindByName(metricHyperVVIDRemotePhysicalPages) {
+		if name := pm.Labels.Get("vm"); name != "" {
+			parsed_name := hypervParseNames(name)
+			vm[parsed_name] = true
+			mx[px+parsed_name+"_vid_remote_physical_page"] = int64(pm.Value)
+		}
+	}
+
 	for v := range devices {
 		if !w.cache.hypervDevices[v] {
 			w.cache.hypervDevices[v] = true
@@ -427,6 +455,12 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		if !w.cache.hypervVswitch[v] {
 			w.cache.hypervVswitch[v] = true
 			w.addHypervVSwitchCharts(v)
+		}
+	}
+	for v := range vm {
+		if !w.cache.hypervVM[v] {
+			w.cache.hypervVM[v] = true
+			w.addHypervVIDCharts(v)
 		}
 	}
 }

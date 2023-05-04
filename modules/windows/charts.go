@@ -4449,7 +4449,7 @@ var (
 		Ctx:      "windows.hyperv_vid_physical_pages_allocated",
 		Priority: prioHypervVIDPhysicalPagesAllocated,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_vid_physical_pages_allocated_total", Name: "pages"},
+			{ID: "hyperv_vid_%s_vid_physical_pages_allocated_total", Name: "pages"},
 		},
 	}
 	hypervVIDPreferredNumaNodeIndex = module.Chart{
@@ -4460,7 +4460,7 @@ var (
 		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
 		Priority: prioHypervVIDPreferredNumaNodeIndex,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_vid_preferred_numa_node_index", Name: "index"},
+			{ID: "hyperv_vid_%s_vid_preferred_numa_node_index", Name: "index"},
 		},
 	}
 	hypervVIDRemotePhysicalPages = module.Chart{
@@ -4471,7 +4471,7 @@ var (
 		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
 		Priority: prioHypervVIDRemotePhysicalPages,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_vid_remote_physical_page", Name: "pages"},
+			{ID: "hyperv_vid_%s_vid_remote_physical_page", Name: "pages"},
 		},
 	}
 )
