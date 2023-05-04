@@ -121,6 +121,10 @@ windows.hyperv_vm_memory_pressure_maximum,vm,memory,mbytes,Maximum pressure band
 windows.hyperv_vm_memory_pressure_minimum,vm,memory,mbytes,Minimum pressure band in VM,vm_name,go.plugin,windows
 windows.hyperv_vm_memory_remove_operations_total,vm,operations,operations,Number of operations removing memory from the VM.,vm_name,go.plugin,windows
 windows.hyperv_vm_memory_removed_total,vm,memory,mbytes,Memory in MB removed from the VM.,vm_name,go.plugin,windows
+windows.hyperv_vm_cpu_guest_run_time,vm,vm,nanoseconds,Time spent by virtual process in guest code.,"vm_name, vm_cpu",go.plugin,windows
+windows.hyperv_vm_cpu_hypervisor_run_time,vm,vm,nanoseconds,Time spent by virtual process in hypervisor code.,"vm_name, vm_cpu",go.plugin,windows
+windows.hyperv_vm_cpu_remote_run_time,vm,vm,nanoseconds,Time spent by virtual process in remote code.,"vm_name, vm_cpu",go.plugin,windows
+windows.hyperv_vm_cpu_total_run_time,vm,vm,nanoseconds,Time spent by virtual process in guest and hypervisor code.,"vm_name, vm_cpu",go.plugin,windows
 iis.website_traffic,website,"received, sent",bytes/s,"Website traffic",area,website,go.d.plugin,windows
 iis.website_requests_rate,website,requests,requests/s,"Website requests rate",line,website,go.d.plugin,windows
 iis.website_active_connections_count,website,active,connections,"Website active connections",line,website,go.d.plugin,windows
