@@ -386,6 +386,7 @@ const (
 	prioHypervHostLPHypervisorRunTimePercent
 	prioHypervHostLPTotalRunTimePercent
 
+	// Hyperv Vswitch
 	prioHypervVswitchBroadcastPacketsReceived
 	prioHypervVswitchBroadcastPacketsSent
 	prioHypervVswitchBytesReceivedTotal
@@ -406,6 +407,11 @@ const (
 	prioHypervVswitchPacketsReceived
 	prioHypervVswitchPackets
 	prioHypervVswitchPurgeMACAddress
+
+	// Hyperv VID
+	prioHypervVIDPhysicalPagesAllocated
+	prioHypervVIDPreferredNumaNodeIndex
+	prioHypervVIDRemotePhysicalPages
 
 	prioCollectorDuration
 	prioCollectorStatus
@@ -3725,6 +3731,11 @@ var (
 		hypervVswitchPacketsTotal.Copy(),
 		hypervVswitchPurgedMACAddressTotal.Copy(),
 	}
+	hypervVIDChartsTemplate = module.Charts{
+		hypervVIDPhysicalPagesAllocated.Copy(),
+		hypervVIDPreferredNumaNodeIndex.Copy(),
+		hypervVIDRemotePhysicalPages.Copy(),
+	}
 
 	hypervHealthCritical = module.Chart{
 		ID:       "hyperv_health_critical",
@@ -4427,6 +4438,40 @@ var (
 		Priority: prioHypervVswitchPurgeMACAddress,
 		Dims: module.Dims{
 			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "mac_address", Algo: module.Incremental},
+		},
+	}
+
+	hypervVIDPhysicalPagesAllocated = module.Chart{
+		ID:       "hyperv_vswitch_%s_vid_physical_pages_allocated",
+		Title:    "Number of physical pages allocated.",
+		Units:    "pages",
+		Fam:      "vswitch",
+		Ctx:      "windows.hyperv_vid_physical_pages_allocated",
+		Priority: prioHypervVIDPhysicalPagesAllocated,
+		Dims: module.Dims{
+			{ID: "hyperv_vswitch_%s_vid_physical_pages_allocated_total", Name: "pages"},
+		},
+	}
+	hypervVIDPreferredNumaNodeIndex = module.Chart{
+		ID:       "hyperv_vswitch_%s_vid_preferred_numa_node_index",
+		Title:    "Preferred NUMA node index associated with partition",
+		Units:    "index",
+		Fam:      "vswitch",
+		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
+		Priority: prioHypervVIDPreferredNumaNodeIndex,
+		Dims: module.Dims{
+			{ID: "hyperv_vswitch_%s_vid_preferred_numa_node_index", Name: "index"},
+		},
+	}
+	hypervVIDRemotePhysicalPages = module.Chart{
+		ID:       "hyperv_vswitch_%s_vid_remote_physical_page",
+		Title:    "Number of physical pages not allocated from the preferred NUMA node.",
+		Units:    "pages",
+		Fam:      "vswitch",
+		Ctx:      "windows.hyperv_vid_preferred_numa_node_index",
+		Priority: prioHypervVIDRemotePhysicalPages,
+		Dims: module.Dims{
+			{ID: "hyperv_vswitch_%s_vid_remote_physical_page", Name: "pages"},
 		},
 	}
 )
@@ -5171,6 +5216,24 @@ func (w *Windows) addHypervVSwitchCharts(vswitch string) {
 		}
 		for _, dim := range chart.Dims {
 			dim.ID = fmt.Sprintf(dim.ID, vswitch)
+		}
+	}
+
+	if err := w.Charts().Add(*charts...); err != nil {
+		w.Warning(err)
+	}
+}
+
+func (w *Windows) addHypervVIDCharts(vid string) {
+	charts := hypervVIDChartsTemplate.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, vid)
+		chart.Labels = []module.Label{
+			{Key: "vm_vid", Value: vid},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, vid)
 		}
 	}
 
