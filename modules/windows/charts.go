@@ -4098,7 +4098,7 @@ var (
 	hypervVMInterfacePacketsOutgoingDropped = module.Chart{
 		ID:       "hyperv_vm_interface_%s_packets_outgoing_dropped",
 		Title:    "Number of outgoing packets dropped per second.",
-		Units:    "dropped packets/s",
+		Units:    "packets/s",
 		Fam:      "interface",
 		Ctx:      "windows.hyperv_vm_interface_packets_outgoing_dropped",
 		Priority: prioHypervVMInterfacePacketsOutgoingDropped,
@@ -4333,34 +4333,34 @@ var (
 	hypervVswitchLearnedMACAddressTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_learned_mac_addresses",
 		Title:    "Number of learned MAC addresses.",
-		Units:    "Counter",
+		Units:    "counter",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_learned_mac_addresses",
 		Priority: prioHypervVswitchLearnedMACAddresses,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "MAC Address", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_learned_mac_addresses_total", Name: "mac_address", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchMulticastPacketsReceivedTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_multicast_packets_received",
 		Title:    "Number of multicast packets received.",
-		Units:    "Packets/s",
+		Units:    "packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_multicast_packets_received",
 		Priority: prioHypervVswitchMulticastPacketsReceived,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_multicast_packets_received_total", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_multicast_packets_received_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchMulticastPacketsSentTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_multicast_packets_sent",
 		Title:    "Number of multicast packets sent.",
-		Units:    "Packets/s",
+		Units:    "packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_multicast_packets_sent",
 		Priority: prioHypervVswitchMulticastPacketsSent,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_multicast_packets_sent_total", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_multicast_packets_sent_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchNumberOfSendChannelMovesTotal = module.Chart{
@@ -4371,62 +4371,62 @@ var (
 		Ctx:      "windows.hyperv_vswitch_number_of_send_channel_moves",
 		Priority: prioHypervVswitchNumberOfSendChannelMoves,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "Send", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_number_of_send_channel_moves_total", Name: "send", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchNumberOfVMQMovesTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_number_of_vmq_moves",
 		Title:    "Number of VMQs moves on virtual switch.",
-		Units:    "VMQs",
+		Units:    "vmq",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_number_of_vmq_moves",
 		Priority: prioHypervVswitchNumberOfVMQMoves,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_number_of_vmq_moves_total", Name: "VMQ", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_number_of_vmq_moves_total", Name: "vmq", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchPacketsFloodedTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets_flooded",
 		Title:    "Total number of packets flooded on virtual switch.",
-		Units:    "Packets/s",
+		Units:    "packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets_flooded",
 		Priority: prioHypervVswitchPacketsFlooded,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_flooded_total", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_packets_flooded_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchPacketsReceivedTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets_received",
 		Title:    "Number of received by virtual switch.",
-		Units:    "Packets/s",
+		Units:    "packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets_received",
 		Priority: prioHypervVswitchPacketsReceived,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_received_total", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_packets_received_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchPacketsTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_packets",
 		Title:    "Number of packets transversing virtual switch.",
-		Units:    "Packets/s",
+		Units:    "packets/s",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_vswitch_packets",
 		Priority: prioHypervVswitchPackets,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_packets_total", Name: "Packets", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_packets_total", Name: "packets", Algo: module.Incremental},
 		},
 	}
 	hypervVswitchPurgedMACAddressTotal = module.Chart{
 		ID:       "hyperv_vswitch_%s_purged_mac_addresses",
 		Title:    "Number of purged MAC addresses of the virtual switch.",
-		Units:    "Counter",
+		Units:    "counter",
 		Fam:      "vswitch",
 		Ctx:      "windows.hyperv_purged_mac_addresses",
 		Priority: prioHypervVswitchPurgeMACAddress,
 		Dims: module.Dims{
-			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "MAC Address", Algo: module.Incremental},
+			{ID: "hyperv_vswitch_%s_purged_mac_addresses", Name: "mac_address", Algo: module.Incremental},
 		},
 	}
 )
