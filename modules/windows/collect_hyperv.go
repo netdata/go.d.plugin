@@ -119,13 +119,13 @@ func (w *Windows) collectHyperv(mx map[string]int64, pms prometheus.Series) {
 		}
 	}
 
-	w.collectHypervVMMemory(mx, pms)
+	w.collectHypervVM(mx, pms)
 	w.collectHypervVMDevices(mx, pms)
 	w.collectHypervVMInterface(mx, pms)
 	w.collectHypervVSwitch(mx, pms)
 }
 
-func (w *Windows) collectHypervVMMemory(mx map[string]int64, pms prometheus.Series) {
+func (w *Windows) collectHypervVM(mx map[string]int64, pms prometheus.Series) {
 	seen := make(map[string]bool)
 	px := "hyperv_vm_"
 
@@ -133,6 +133,9 @@ func (w *Windows) collectHypervVMMemory(mx map[string]int64, pms prometheus.Seri
 		metricHypervVMMemoryPhysical,
 		metricHypervVMMemoryPhysicalGuestVisible,
 		metricHypervVMMemoryPressureCurrent,
+		metricsHypervVMCPUGuestRunTime,
+		metricsHypervVMCPUHypervisorRunTime,
+		metricsHypervVMCPURemoteRunTime,
 	} {
 		for _, pm := range pms.FindByName(v) {
 			if vm := pm.Labels.Get("vm"); vm != "" {
@@ -160,13 +163,13 @@ func (w *Windows) collectHypervVMMemory(mx map[string]int64, pms prometheus.Seri
 	for v := range seen {
 		if !w.cache.hypervVMMem[v] {
 			w.cache.hypervVMMem[v] = true
-			w.addHypervVMMemoryCharts(v)
+			w.addHypervVMCharts(v)
 		}
 	}
 	for v := range w.cache.hypervVMMem {
 		if !seen[v] {
 			delete(w.cache.hypervVMMem, v)
-			w.removeHypervVMMemoryCharts(v)
+			w.removeHypervVMCharts(v)
 		}
 	}
 }

@@ -238,6 +238,7 @@ hyperv.root_partition_io_tlb_flush,,flushes/s,flushes,"Root partition flushes of
 hyperv.root_partition_address_space,,address spaces,address_spaces,"Root partition address spaces in the virtual TLB",line,,go.d.plugin,windows
 hyperv.root_partition_virtual_tlb_flush_entries,,flushes/s,flushes,"Root partition flushes of the entire virtual TLB",line,,go.d.plugin,windows
 hyperv.root_partition_virtual_tlb_pages,,pages,used,"Root partition pages used by the virtual TLB",line,,go.d.plugin,windows
+hyperv.vm_cpu_usage,vm,percentage,"gues, hypervisor, remote","VM CPU usage (100% = 1 core)",stacked,vm_name,go.d.plugin,windows
 hyperv.vm_memory_physical,vm,MiB,assigned_memory,"VM assigned memory",line,vm_name,go.d.plugin,windows
 hyperv.vm_memory_physical_guest_visible,vm,MiB,visible_memory,"VM guest visible memory",line,vm_name,go.d.plugin,windows
 hyperv.vm_memory_pressure_current,vm,percentage,pressure,"VM current pressure",line,vm_name,go.d.plugin,windows

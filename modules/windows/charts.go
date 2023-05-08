@@ -350,6 +350,7 @@ const (
 	prioHypervRootPartitionVirtualTlbPages
 
 	// Hyperv VM (Memory)
+	prioHypervVMCPUUsage
 	prioHypervVMMemoryPhysical
 	prioHypervVMMemoryPhysicalGuestVisible
 	prioHypervVMMemoryPressureCurrent
@@ -3819,14 +3820,29 @@ var (
 
 // HyperV VM Memory
 var (
-	hypervVMMemoryChartsTemplate = module.Charts{
+	hypervVMChartsTemplate = module.Charts{
+		hypervHypervVMCPUUsageChartTmpl.Copy(),
 		hypervHypervVMMemoryPhysicalChartTmpl.Copy(),
 		hypervHypervVMMemoryPhysicalGuestVisibleChartTmpl.Copy(),
 		hypervHypervVMMemoryPressureCurrentChartTmpl.Copy(),
 		hypervVIDPhysicalPagesAllocatedChartTmpl.Copy(),
 		hypervVIDRemotePhysicalPagesChartTmpl.Copy(),
 	}
-
+	hypervHypervVMCPUUsageChartTmpl = module.Chart{
+		OverModule: "hyperv",
+		ID:         "vm_%s_cpu_usage",
+		Title:      "VM CPU usage (100% = 1 core)",
+		Units:      "percentage",
+		Fam:        "vm cpu",
+		Ctx:        "hyperv.vm_cpu_usage",
+		Priority:   prioHypervVMCPUUsage,
+		Type:       module.Stacked,
+		Dims: module.Dims{
+			{ID: "hyperv_vm_%s_cpu_guest_run_time", Name: "guest", Div: 1e5, Algo: module.Incremental},
+			{ID: "hyperv_vm_%s_cpu_hypervisor_run_time", Name: "hypervisor", Div: 1e5, Algo: module.Incremental},
+			{ID: "hyperv_vm_%s_cpu_remote_run_time", Name: "remote", Div: 1e5, Algo: module.Incremental},
+		},
+	}
 	hypervHypervVMMemoryPhysicalChartTmpl = module.Chart{
 		OverModule: "hyperv",
 		ID:         "vm_%s_memory_physical",
@@ -4809,8 +4825,8 @@ func (w *Windows) addHypervCharts() {
 	}
 }
 
-func (w *Windows) addHypervVMMemoryCharts(vm string) {
-	charts := hypervVMMemoryChartsTemplate.Copy()
+func (w *Windows) addHypervVMCharts(vm string) {
+	charts := hypervVMChartsTemplate.Copy()
 	n := hypervCleanName(vm)
 
 	for _, chart := range *charts {
@@ -4828,7 +4844,7 @@ func (w *Windows) addHypervVMMemoryCharts(vm string) {
 	}
 }
 
-func (w *Windows) removeHypervVMMemoryCharts(vm string) {
+func (w *Windows) removeHypervVMCharts(vm string) {
 	px := fmt.Sprintf("vm_%s", hypervCleanName(vm))
 	w.removeCharts(px)
 }
