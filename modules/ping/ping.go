@@ -42,6 +42,7 @@ type (
 		Privileged  bool         `yaml:"privileged"`
 		SendPackets int          `yaml:"packets"`
 		Interval    web.Duration `yaml:"interval"`
+		Interface   string       `yaml:"interface"`
 	}
 )
 
