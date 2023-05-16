@@ -15,6 +15,7 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/multipath"
 
 	"github.com/jessevdk/go-flags"
+	"golang.org/x/net/http/httpproxy"
 
 	_ "github.com/netdata/go.d.plugin/modules"
 )
@@ -115,6 +116,9 @@ func main() {
 	if u, err := user.Current(); err == nil {
 		a.Debugf("current user: name=%s, uid=%s", u.Username, u.Uid)
 	}
+
+	cfg := httpproxy.FromEnvironment()
+	a.Infof("env HTTP_PROXY '%s', HTTPS_PROXY '%s' (both upper and lower case are respected)", cfg.HTTPProxy, cfg.HTTPSProxy)
 
 	a.Run()
 }
