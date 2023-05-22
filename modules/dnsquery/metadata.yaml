@@ -1,0 +1,25 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: server
+      description: TBD
+      labels:
+        - server
+        - network
+        - record_type
+      metrics:
+        - name: dns_query.query_status
+          description: DNS Query Status
+          unit: status
+          dimensions:
+            - name: success
+            - name: network_error
+            - name: dns_error
+        - name: dns_query.query_time
+          description: DNS Query Time
+          unit: seconds
+          dimensions:
+            - name: query_time

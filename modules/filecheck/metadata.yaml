@@ -1,0 +1,45 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: filecheck.file_existence
+          description: 'File Existence (0: not exists, 1: exists)'
+          unit: boolean
+          dimensions:
+            - name: a dimension per file
+        - name: filecheck.file_mtime_ago
+          description: File Time Since the Last Modification
+          unit: seconds
+          dimensions:
+            - name: a dimension per file
+        - name: filecheck.file_size
+          description: File Size
+          unit: bytes
+          dimensions:
+            - name: a dimension per file
+        - name: filecheck.dir_existence
+          description: 'Dir Existence (0: not exists, 1: exists)'
+          unit: boolean
+          dimensions:
+            - name: a dimension per directory
+        - name: filecheck.dir_mtime_ago
+          description: Dir Time Since the Last Modification
+          unit: seconds
+          dimensions:
+            - name: a dimension per directory
+        - name: filecheck.dir_num_of_files
+          description: Dir Number of Files
+          unit: files
+          dimensions:
+            - name: a dimension per directory
+        - name: filecheck.dir_size
+          description: Dir Size
+          unit: bytes
+          dimensions:
+            - name: a dimension per directory

@@ -1,0 +1,72 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: k8s_kubeproxy.kubeproxy_sync_proxy_rules
+          description: Sync Proxy Rules
+          unit: events/s
+          dimensions:
+            - name: sync_proxy_rules
+        - name: k8s_kubeproxy.kubeproxy_sync_proxy_rules_latency_microsecond
+          description: Sync Proxy Rules Latency
+          unit: observes/s
+          dimensions:
+            - name: '0.001'
+            - name: '0.002'
+            - name: '0.004'
+            - name: '0.008'
+            - name: '0.016'
+            - name: '0.032'
+            - name: '0.064'
+            - name: '0.128'
+            - name: '0.256'
+            - name: '0.512'
+            - name: '1.024'
+            - name: '2.048'
+            - name: '4.096'
+            - name: '8.192'
+            - name: '16.384'
+            - name: +Inf
+        - name: k8s_kubeproxy.kubeproxy_sync_proxy_rules_latency
+          description: Sync Proxy Rules Latency Percentage
+          unit: percentage
+          dimensions:
+            - name: '0.001'
+            - name: '0.002'
+            - name: '0.004'
+            - name: '0.008'
+            - name: '0.016'
+            - name: '0.032'
+            - name: '0.064'
+            - name: '0.128'
+            - name: '0.256'
+            - name: '0.512'
+            - name: '1.024'
+            - name: '2.048'
+            - name: '4.096'
+            - name: '8.192'
+            - name: '16.384'
+            - name: +Inf
+        - name: k8s_kubeproxy.rest_client_requests_by_code
+          description: HTTP Requests By Status Code
+          unit: requests/s
+          dimensions:
+            - name: a dimension per HTTP status code
+        - name: k8s_kubeproxy.rest_client_requests_by_method
+          description: HTTP Requests By Status Method
+          unit: requests/s
+          dimensions:
+            - name: a dimension per HTTP method
+        - name: k8s_kubeproxy.http_request_duration
+          description: HTTP Requests Duration
+          unit: microseconds
+          dimensions:
+            - name: '0.5'
+            - name: '0.9'
+            - name: '0.99'

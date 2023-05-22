@@ -1,0 +1,49 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: phpfpm.connections
+          description: Active Connections
+          unit: connections
+          dimensions:
+            - name: active
+            - name: max_active
+            - name: idle
+        - name: phpfpm.requests
+          description: Requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: phpfpm.performance
+          description: Performance
+          unit: status
+          dimensions:
+            - name: max_children_reached
+            - name: slow_requests
+        - name: phpfpm.request_duration
+          description: Requests Duration Among All Idle Processes
+          unit: milliseconds
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg
+        - name: phpfpm.request_cpu
+          description: Last Request CPU Usage Among All Idle Processes
+          unit: percentage
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg
+        - name: phpfpm.request_mem
+          description: Last Request Memory Usage Among All Idle Processes
+          unit: KB
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg

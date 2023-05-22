@@ -1,0 +1,84 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: freeradius.authentication
+          description: Authentication
+          unit: packets/s
+          dimensions:
+            - name: requests
+            - name: responses
+        - name: freeradius.authentication_access_responses
+          description: Authentication Responses
+          unit: packets/s
+          dimensions:
+            - name: accepts
+            - name: rejects
+            - name: challenges
+        - name: freeradius.bad_authentication
+          description: Bad Authentication Requests
+          unit: packets/s
+          dimensions:
+            - name: dropped
+            - name: duplicate
+            - name: invalid
+            - name: malformed
+            - name: unknown-types
+        - name: freeradius.proxy_authentication
+          description: Authentication
+          unit: packets/s
+          dimensions:
+            - name: requests
+            - name: responses
+        - name: freeradius.proxy_authentication_access_responses
+          description: Authentication Responses
+          unit: packets/s
+          dimensions:
+            - name: accepts
+            - name: rejects
+            - name: challenges
+        - name: freeradius.proxy_bad_authentication
+          description: Bad Authentication Requests
+          unit: packets/s
+          dimensions:
+            - name: dropped
+            - name: duplicate
+            - name: invalid
+            - name: malformed
+            - name: unknown-types
+        - name: freeradius.accounting
+          description: Accounting
+          unit: packets/s
+          dimensions:
+            - name: requests
+            - name: responses
+        - name: freeradius.bad_accounting
+          description: Bad Accounting Requests
+          unit: packets/s
+          dimensions:
+            - name: dropped
+            - name: duplicate
+            - name: invalid
+            - name: malformed
+            - name: unknown-types
+        - name: freeradius.proxy_accounting
+          description: Accounting
+          unit: packets/s
+          dimensions:
+            - name: requests
+            - name: responses
+        - name: freeradius.proxy_bad_accounting
+          description: Bad Accounting Requests
+          unit: packets/s
+          dimensions:
+            - name: dropped
+            - name: duplicate
+            - name: invalid
+            - name: malformed
+            - name: unknown-types

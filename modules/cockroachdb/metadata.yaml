@@ -1,0 +1,377 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: cockroachdb.process_cpu_time_combined_percentage
+          description: Combined CPU Time Percentage, Normalized 0-1 by Number of Cores
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: cockroachdb.process_cpu_time_percentage
+          description: CPU Time Percentage
+          unit: percentage
+          dimensions:
+            - name: user
+            - name: sys
+        - name: cockroachdb.process_cpu_time
+          description: CPU Time
+          unit: ms
+          dimensions:
+            - name: user
+            - name: sys
+        - name: cockroachdb.process_memory
+          description: Memory Usage
+          unit: KiB
+          dimensions:
+            - name: rss
+        - name: cockroachdb.process_file_descriptors
+          description: File Descriptors
+          unit: fd
+          dimensions:
+            - name: open
+        - name: cockroachdb.process_uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime
+        - name: cockroachdb.host_disk_bandwidth
+          description: Host Disk Cumulative Bandwidth
+          unit: KiB
+          dimensions:
+            - name: read
+            - name: write
+        - name: cockroachdb.host_disk_operations
+          description: Host Disk Cumulative Operations
+          unit: operations
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: cockroachdb.host_disk_iops_in_progress
+          description: Host Disk Cumulative IOPS In Progress
+          unit: iops
+          dimensions:
+            - name: in_progress
+        - name: cockroachdb.host_network_bandwidth
+          description: Host Network Cumulative Bandwidth
+          unit: kilobits
+          dimensions:
+            - name: received
+            - name: sent
+        - name: cockroachdb.host_network_packets
+          description: Host Network Cumulative Packets
+          unit: packets
+          dimensions:
+            - name: received
+            - name: sent
+        - name: cockroachdb.live_nodes
+          description: Live Nodes in the Cluster
+          unit: nodes
+          dimensions:
+            - name: live_nodes
+        - name: cockroachdb.node_liveness_heartbeats
+          description: Node Liveness Heartbeats
+          unit: heartbeats
+          dimensions:
+            - name: successful
+            - name: failed
+        - name: cockroachdb.total_storage_capacity
+          description: Total Storage Capacity
+          unit: KiB
+          dimensions:
+            - name: total
+        - name: cockroachdb.storage_capacity_usability
+          description: Storage Capacity Usability
+          unit: KiB
+          dimensions:
+            - name: usable
+            - name: unusable
+        - name: cockroachdb.storage_usable_capacity
+          description: Storage Usable Capacity
+          unit: KiB
+          dimensions:
+            - name: available
+            - name: used
+        - name: cockroachdb.storage_used_capacity_percentage
+          description: Storage Used Capacity Utilization
+          unit: percentage
+          dimensions:
+            - name: total
+            - name: usable
+        - name: cockroachdb.sql_connections
+          description: Active SQL Connections
+          unit: connections
+          dimensions:
+            - name: active
+        - name: cockroachdb.sql_bandwidth
+          description: SQL Bandwidth
+          unit: KiB
+          dimensions:
+            - name: received
+            - name: sent
+        - name: cockroachdb.sql_statements_total
+          description: SQL Statements Total
+          unit: statements
+          dimensions:
+            - name: started
+            - name: executed
+        - name: cockroachdb.sql_errors
+          description: SQL Statements and Transaction Errors
+          unit: errors
+          dimensions:
+            - name: statement
+            - name: transaction
+        - name: cockroachdb.sql_started_ddl_statements
+          description: SQL Started DDL Statements
+          unit: statements
+          dimensions:
+            - name: ddl
+        - name: cockroachdb.sql_executed_ddl_statements
+          description: SQL Executed DDL Statements
+          unit: statements
+          dimensions:
+            - name: ddl
+        - name: cockroachdb.sql_started_dml_statements
+          description: SQL Started DML Statements
+          unit: statements
+          dimensions:
+            - name: select
+            - name: update
+            - name: delete
+            - name: insert
+        - name: cockroachdb.sql_executed_dml_statements
+          description: SQL Executed DML Statements
+          unit: statements
+          dimensions:
+            - name: select
+            - name: update
+            - name: delete
+            - name: insert
+        - name: cockroachdb.sql_started_tcl_statements
+          description: SQL Started TCL Statements
+          unit: statements
+          dimensions:
+            - name: begin
+            - name: commit
+            - name: rollback
+            - name: savepoint
+            - name: savepoint_cockroach_restart
+            - name: release_savepoint_cockroach_restart
+            - name: rollback_to_savepoint_cockroach_restart
+        - name: cockroachdb.sql_executed_tcl_statements
+          description: SQL Executed TCL Statements
+          unit: statements
+          dimensions:
+            - name: begin
+            - name: commit
+            - name: rollback
+            - name: savepoint
+            - name: savepoint_cockroach_restart
+            - name: release_savepoint_cockroach_restart
+            - name: rollback_to_savepoint_cockroach_restart
+        - name: cockroachdb.sql_active_distributed_queries
+          description: Active Distributed SQL Queries
+          unit: queries
+          dimensions:
+            - name: active
+        - name: cockroachdb.sql_distributed_flows
+          description: Distributed SQL Flows
+          unit: flows
+          dimensions:
+            - name: active
+            - name: queued
+        - name: cockroachdb.live_bytes
+          description: Used Live Data
+          unit: KiB
+          dimensions:
+            - name: applications
+            - name: system
+        - name: cockroachdb.logical_data
+          description: Logical Data
+          unit: KiB
+          dimensions:
+            - name: keys
+            - name: values
+        - name: cockroachdb.logical_data_count
+          description: Logical Data Count
+          unit: num
+          dimensions:
+            - name: keys
+            - name: values
+        - name: cockroachdb.kv_transactions
+          description: KV Transactions
+          unit: transactions
+          dimensions:
+            - name: committed
+            - name: fast-path_committed
+            - name: aborted
+        - name: cockroachdb.kv_transaction_restarts
+          description: KV Transaction Restarts
+          unit: restarts
+          dimensions:
+            - name: write_too_old
+            - name: write_too_old_multiple
+            - name: forwarded_timestamp
+            - name: possible_reply
+            - name: async_consensus_failure
+            - name: read_within_uncertainty_interval
+            - name: aborted
+            - name: push_failure
+            - name: unknown
+        - name: cockroachdb.ranges
+          description: Ranges
+          unit: ranges
+          dimensions:
+            - name: ranges
+        - name: cockroachdb.ranges_replication_problem
+          description: Ranges Replication Problems
+          unit: ranges
+          dimensions:
+            - name: unavailable
+            - name: under_replicated
+            - name: over_replicated
+        - name: cockroachdb.range_events
+          description: Range Events
+          unit: events
+          dimensions:
+            - name: split
+            - name: add
+            - name: remove
+            - name: merge
+        - name: cockroachdb.range_snapshot_events
+          description: Range Snapshot Events
+          unit: events
+          dimensions:
+            - name: generated
+            - name: applied_raft_initiated
+            - name: applied_learner
+            - name: applied_preemptive
+        - name: cockroachdb.rocksdb_read_amplification
+          description: RocksDB Read Amplification
+          unit: reads/query
+          dimensions:
+            - name: reads
+        - name: cockroachdb.rocksdb_table_operations
+          description: RocksDB Table Operations
+          unit: operations
+          dimensions:
+            - name: compactions
+            - name: flushes
+        - name: cockroachdb.rocksdb_cache_usage
+          description: RocksDB Block Cache Usage
+          unit: KiB
+          dimensions:
+            - name: used
+        - name: cockroachdb.rocksdb_cache_operations
+          description: RocksDB Block Cache Operations
+          unit: operations
+          dimensions:
+            - name: hits
+            - name: misses
+        - name: cockroachdb.rocksdb_cache_hit_rate
+          description: RocksDB Block Cache Hit Rate
+          unit: percentage
+          dimensions:
+            - name: hit_rate
+        - name: cockroachdb.rocksdb_sstables
+          description: RocksDB SSTables
+          unit: sstables
+          dimensions:
+            - name: sstables
+        - name: cockroachdb.replicas
+          description: Number of Replicas
+          unit: replicas
+          dimensions:
+            - name: replicas
+        - name: cockroachdb.replicas_quiescence
+          description: Replicas Quiescence
+          unit: replicas
+          dimensions:
+            - name: quiescent
+            - name: active
+        - name: cockroachdb.replicas_leaders
+          description: Number of Raft Leaders
+          unit: replicas
+          dimensions:
+            - name: leaders
+            - name: not_leaseholders
+        - name: cockroachdb.replicas_leaseholders
+          description: Number of Leaseholders
+          unit: leaseholders
+          dimensions:
+            - name: leaseholders
+        - name: cockroachdb.queue_processing_failures
+          description: Queues Processing Failures
+          unit: failures
+          dimensions:
+            - name: gc
+            - name: replica_gc
+            - name: replication
+            - name: split
+            - name: consistency
+            - name: raft_log
+            - name: raft_snapshot
+            - name: time_series_maintenance
+        - name: cockroachdb.rebalancing_queries
+          description: Rebalancing Average Queries
+          unit: queries/s
+          dimensions:
+            - name: avg
+        - name: cockroachdb.rebalancing_writes
+          description: Rebalancing Average Writes
+          unit: writes/s
+          dimensions:
+            - name: avg
+        - name: cockroachdb.timeseries_samples
+          description: Time Series Written Samples
+          unit: samples
+          dimensions:
+            - name: written
+        - name: cockroachdb.timeseries_write_errors
+          description: Time Series Write Errors
+          unit: errors
+          dimensions:
+            - name: write
+        - name: cockroachdb.timeseries_write_bytes
+          description: Time Series Bytes Written
+          unit: KiB
+          dimensions:
+            - name: written
+        - name: cockroachdb.slow_requests
+          description: Slow Requests
+          unit: requests
+          dimensions:
+            - name: acquiring_latches
+            - name: acquiring_lease
+            - name: in_raft
+        - name: cockroachdb.code_heap_memory_usage
+          description: Heap Memory Usage
+          unit: KiB
+          dimensions:
+            - name: go
+            - name: cgo
+        - name: cockroachdb.goroutines
+          description: Number of Goroutines
+          unit: goroutines
+          dimensions:
+            - name: goroutines
+        - name: cockroachdb.gc_count
+          description: GC Runs
+          unit: invokes
+          dimensions:
+            - name: gc
+        - name: cockroachdb.gc_pause
+          description: GC Pause Time
+          unit: us
+          dimensions:
+            - name: pause
+        - name: cockroachdb.cgo_calls
+          description: Cgo Calls
+          unit: calls
+          dimensions:
+            - name: cgo

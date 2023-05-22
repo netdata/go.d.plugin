@@ -1,0 +1,73 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: apache.connections
+          description: Connections
+          unit: connections
+          dimensions:
+            - name: connections
+        - name: apache.conns_async
+          description: Active Connections
+          unit: connections
+          dimensions:
+            - name: keepalive
+            - name: closing
+            - name: writing
+        - name: apache.workers
+          description: Workers Threads
+          unit: workers
+          dimensions:
+            - name: idle
+            - name: busy
+        - name: apache.scoreboard
+          description: Scoreboard
+          unit: connections
+          dimensions:
+            - name: waiting
+            - name: starting
+            - name: reading
+            - name: sending
+            - name: keepalive
+            - name: dns_lookup
+            - name: closing
+            - name: logging
+            - name: finishing
+            - name: idle_cleanup
+            - name: open
+        - name: apache.requests
+          description: Requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: apache.net
+          description: Bandwidth
+          unit: kilobit/s
+          dimensions:
+            - name: sent
+        - name: apache.reqpersec
+          description: Lifetime Average Number Of Requests Per Second
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: apache.bytespersec
+          description: Lifetime Average Number Of Bytes Served Per Second
+          unit: KiB/s
+          dimensions:
+            - name: served
+        - name: apache.bytesperreq
+          description: Lifetime Average Response Size
+          unit: KiB
+          dimensions:
+            - name: size
+        - name: apache.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime

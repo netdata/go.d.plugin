@@ -1,0 +1,39 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: logind.sessions
+          description: Logind Sessions
+          unit: sessions
+          dimensions:
+            - name: remote
+            - name: local
+        - name: logind.sessions_type
+          description: Logind Sessions By Type
+          unit: sessions
+          dimensions:
+            - name: console
+            - name: graphical
+            - name: other
+        - name: logind.sessions_state
+          description: Logind Sessions By State
+          unit: sessions
+          dimensions:
+            - name: online
+            - name: closing
+            - name: active
+        - name: logind.users_state
+          description: Logind Users By State
+          unit: users
+          dimensions:
+            - name: offline
+            - name: closing
+            - name: online
+            - name: lingering
+            - name: active

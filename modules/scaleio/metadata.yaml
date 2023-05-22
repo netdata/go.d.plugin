@@ -1,0 +1,207 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: scaleio.system_capacity_total
+          description: Total Capacity
+          unit: KiB
+          dimensions:
+            - name: total
+        - name: scaleio.system_capacity_in_use
+          description: Capacity In Use
+          unit: KiB
+          dimensions:
+            - name: in_use
+        - name: scaleio.system_capacity_usage
+          description: Capacity Usage
+          unit: KiB
+          dimensions:
+            - name: thick
+            - name: decreased
+            - name: thin
+            - name: snapshot
+            - name: spare
+            - name: unused
+        - name: scaleio.system_capacity_available_volume_allocation
+          description: Available For Volume Allocation
+          unit: KiB
+          dimensions:
+            - name: available
+        - name: scaleio.system_capacity_health_state
+          description: Capacity Health State
+          unit: KiB
+          dimensions:
+            - name: protected
+            - name: degraded
+            - name: in_maintenance
+            - name: failed
+            - name: unavailable
+        - name: scaleio.system_workload_primary_bandwidth_total
+          description: Primary Backend Bandwidth Total (Read and Write)
+          unit: KiB/s
+          dimensions:
+            - name: total
+        - name: scaleio.system_workload_primary_bandwidth
+          description: Primary Backend Bandwidth
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.system_workload_primary_iops_total
+          description: Primary Backend IOPS Total (Read and Write)
+          unit: iops/s
+          dimensions:
+            - name: total
+        - name: scaleio.system_workload_primary_iops
+          description: Primary Backend IOPS
+          unit: iops/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.system_workload_primary_io_size_total
+          description: Primary Backend I/O Size Total (Read and Write)
+          unit: KiB
+          dimensions:
+            - name: io_size
+        - name: scaleio.system_rebalance
+          description: Rebalance
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.system_rebalance_left
+          description: Rebalance Pending Capacity
+          unit: KiB
+          dimensions:
+            - name: left
+        - name: scaleio.system_rebalance_time_until_finish
+          description: Rebalance Approximate Time Until Finish
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: scaleio.system_rebuild
+          description: Rebuild Bandwidth Total (Forward, Backward and Normal)
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.system_rebuild_left
+          description: Rebuild Pending Capacity Total (Forward, Backward and Normal)
+          unit: KiB
+          dimensions:
+            - name: left
+        - name: scaleio.system_defined_components
+          description: Components
+          unit: components
+          dimensions:
+            - name: devices
+            - name: fault_sets
+            - name: protection_domains
+            - name: rfcache_devices
+            - name: sdc
+            - name: sds
+            - name: snapshots
+            - name: storage_pools
+            - name: volumes
+            - name: vtrees
+        - name: scaleio.system_components_volumes_by_type
+          description: Volumes By Type
+          unit: volumes
+          dimensions:
+            - name: thick
+            - name: thin
+        - name: scaleio.system_components_volumes_by_mapping
+          description: Volumes By Mapping
+          unit: volumes
+          dimensions:
+            - name: mapped
+            - name: unmapped
+    - name: storage pool
+      description: TBD
+      labels: []
+      metrics:
+        - name: scaleio.storage_pool_capacity_total
+          description: Total Capacity
+          unit: KiB
+          dimensions:
+            - name: total
+        - name: scaleio.storage_pool_capacity_in_use
+          description: Capacity In Use
+          unit: KiB
+          dimensions:
+            - name: in_use
+        - name: scaleio.storage_pool_capacity_usage
+          description: Capacity Usage
+          unit: KiB
+          dimensions:
+            - name: thick
+            - name: decreased
+            - name: thin
+            - name: snapshot
+            - name: spare
+            - name: unused
+        - name: scaleio.storage_pool_capacity_utilization
+          description: Capacity Utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: scaleio.storage_pool_capacity_available_volume_allocation
+          description: Available For Volume Allocation
+          unit: KiB
+          dimensions:
+            - name: available
+        - name: scaleio.storage_pool_capacity_health_state
+          description: Capacity Health State
+          unit: KiB
+          dimensions:
+            - name: protected
+            - name: degraded
+            - name: in_maintenance
+            - name: failed
+            - name: unavailable
+        - name: scaleio.storage_pool_components
+          description: Components
+          unit: components
+          dimensions:
+            - name: devices
+            - name: snapshots
+            - name: volumes
+            - name: vtrees
+    - name: sdc
+      description: TBD
+      labels: []
+      metrics:
+        - name: scaleio.sdc_mdm_connection_state
+          description: MDM Connection State
+          unit: boolean
+          dimensions:
+            - name: connected
+        - name: scaleio.sdc_bandwidth
+          description: Bandwidth
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.sdc_iops
+          description: IOPS
+          unit: iops/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.sdc_io_size
+          description: IOPS Size
+          unit: KiB
+          dimensions:
+            - name: read
+            - name: write
+        - name: scaleio.sdc_num_of_mapped_volumed
+          description: Mapped Volumes
+          unit: volumes
+          dimensions:
+            - name: mapped

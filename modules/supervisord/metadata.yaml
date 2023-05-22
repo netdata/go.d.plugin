@@ -1,0 +1,46 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: supervisord.summary_processes
+          description: Processes
+          unit: processes
+          dimensions:
+            - name: running
+            - name: non-running
+    - name: process group
+      description: TBD
+      labels: []
+      metrics:
+        - name: supervisord.processes
+          description: Processes
+          unit: processes
+          dimensions:
+            - name: running
+            - name: non-running
+        - name: supervisord.process_state_code
+          description: State code
+          unit: code
+          dimensions:
+            - name: a dimension per process
+        - name: supervisord.process_exit_status
+          description: Exit status
+          unit: exit status
+          dimensions:
+            - name: a dimension per process
+        - name: supervisord.process_uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: a dimension per process
+        - name: supervisord.process_downtime
+          description: Downtime
+          unit: seconds
+          dimensions:
+            - name: a dimension per process

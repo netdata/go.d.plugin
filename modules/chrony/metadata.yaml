@@ -1,0 +1,82 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: chrony.stratum
+          description: Distance to the reference clock
+          unit: level
+          dimensions:
+            - name: stratum
+        - name: chrony.current_correction
+          description: Current correction
+          unit: seconds
+          dimensions:
+            - name: current_correction
+        - name: chrony.root_delay
+          description: Network path delay to stratum-1
+          unit: seconds
+          dimensions:
+            - name: root_delay
+        - name: chrony.root_dispersion
+          description: Dispersion accumulated back to stratum-1
+          unit: seconds
+          dimensions:
+            - name: root_delay
+        - name: chrony.last_offset
+          description: Offset on the last clock update
+          unit: seconds
+          dimensions:
+            - name: offset
+        - name: chrony.rms_offset
+          description: Long-term average of the offset value
+          unit: seconds
+          dimensions:
+            - name: offset
+        - name: chrony.frequency
+          description: Frequency
+          unit: ppm
+          dimensions:
+            - name: frequency
+        - name: chrony.residual_frequency
+          description: Residual frequency
+          unit: ppm
+          dimensions:
+            - name: residual_frequency
+        - name: chrony.skew
+          description: Skew
+          unit: frequency
+          dimensions:
+            - name: skew
+        - name: chrony.update_interval
+          description: Interval between the last two clock updates
+          unit: seconds
+          dimensions:
+            - name: update_interval
+        - name: chrony.ref_measurement_time
+          description: Time since the last measurement
+          unit: seconds
+          dimensions:
+            - name: ref_measurement_time
+        - name: chrony.leap_status
+          description: Leap status
+          unit: status
+          dimensions:
+            - name: normal
+            - name: insert_second
+            - name: delete_second
+            - name: unsynchronised
+        - name: chrony.activity
+          description: Peers activity
+          unit: sources
+          dimensions:
+            - name: online
+            - name: offline
+            - name: burst_online
+            - name: burst_offline
+            - name: unresolved

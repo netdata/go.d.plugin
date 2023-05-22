@@ -1,0 +1,150 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: rabbitmq.messages_count
+          description: Messages
+          unit: messages
+          dimensions:
+            - name: ready
+            - name: unacknowledged
+        - name: rabbitmq.messages_rate
+          description: Messages
+          unit: messages/s
+          dimensions:
+            - name: ack
+            - name: publish
+            - name: publish_in
+            - name: publish_out
+            - name: confirm
+            - name: deliver
+            - name: deliver_no_ack
+            - name: get
+            - name: get_no_ack
+            - name: deliver_get
+            - name: redeliver
+            - name: return_unroutable
+        - name: rabbitmq.objects_count
+          description: Objects
+          unit: messages
+          dimensions:
+            - name: channels
+            - name: consumers
+            - name: connections
+            - name: queues
+            - name: exchanges
+        - name: rabbitmq.connection_churn_rate
+          description: Connection churn
+          unit: operations/s
+          dimensions:
+            - name: created
+            - name: closed
+        - name: rabbitmq.channel_churn_rate
+          description: Channel churn
+          unit: operations/s
+          dimensions:
+            - name: created
+            - name: closed
+        - name: rabbitmq.queue_churn_rate
+          description: Queue churn
+          unit: operations/s
+          dimensions:
+            - name: created
+            - name: deleted
+            - name: declared
+        - name: rabbitmq.file_descriptors_count
+          description: File descriptors
+          unit: fd
+          dimensions:
+            - name: available
+            - name: used
+        - name: rabbitmq.sockets_count
+          description: Used sockets
+          unit: sockets
+          dimensions:
+            - name: available
+            - name: used
+        - name: rabbitmq.erlang_processes_count
+          description: Erlang processes
+          unit: processes
+          dimensions:
+            - name: available
+            - name: used
+        - name: rabbitmq.erlang_run_queue_processes_count
+          description: Erlang run queue
+          unit: processes
+          dimensions:
+            - name: length
+        - name: rabbitmq.memory_usage
+          description: Memory
+          unit: bytes
+          dimensions:
+            - name: used
+        - name: rabbitmq.disk_space_free_size
+          description: Free disk space
+          unit: bytes
+          dimensions:
+            - name: free
+    - name: vhost
+      description: TBD
+      labels:
+        - vhost
+      metrics:
+        - name: rabbitmq.vhost_messages_count
+          description: Vhost messages
+          unit: messages
+          dimensions:
+            - name: ready
+            - name: unacknowledged
+        - name: rabbitmq.vhost_messages_rate
+          description: Vhost messages rate
+          unit: messages/s
+          dimensions:
+            - name: ack
+            - name: publish
+            - name: publish_in
+            - name: publish_out
+            - name: confirm
+            - name: deliver
+            - name: deliver_no_ack
+            - name: get
+            - name: get_no_ack
+            - name: deliver_get
+            - name: redeliver
+            - name: return_unroutable
+    - name: queue
+      description: TBD
+      labels:
+        - vhost
+        - queue
+      metrics:
+        - name: rabbitmq.queue_messages_count
+          description: Queue messages
+          unit: messages
+          dimensions:
+            - name: ready
+            - name: unacknowledged
+            - name: paged_out
+            - name: persistent
+        - name: rabbitmq.queue_messages_rate
+          description: Queue messages rate
+          unit: messages/s
+          dimensions:
+            - name: ack
+            - name: publish
+            - name: publish_in
+            - name: publish_out
+            - name: confirm
+            - name: deliver
+            - name: deliver_no_ack
+            - name: get
+            - name: get_no_ack
+            - name: deliver_get
+            - name: redeliver
+            - name: return_unroutable

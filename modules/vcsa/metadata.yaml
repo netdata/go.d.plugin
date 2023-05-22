@@ -1,0 +1,29 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: vcsa.system_health
+          description: Overall System Health
+          unit: status
+          dimensions:
+            - name: system
+        - name: vcsa.components_health
+          description: Components Health
+          unit: status
+          dimensions:
+            - name: applmgmt
+            - name: database_storage
+            - name: mem
+            - name: storage
+            - name: swap
+        - name: vcsa.software_updates_health
+          description: Software Updates Health
+          unit: status
+          dimensions:
+            - name: software_packages

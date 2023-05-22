@@ -1,0 +1,16 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels:
+        - domain
+      metrics:
+        - name: whoisquery.time_until_expiration
+          description: Time Until Domain Expiration
+          unit: seconds
+          dimensions:
+            - name: expiry

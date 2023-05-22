@@ -1,0 +1,463 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: postgres.connections_utilization
+          description: Connections utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: postgres.connections_usage
+          description: Connections usage
+          unit: connections
+          dimensions:
+            - name: available
+            - name: used
+        - name: postgres.connections_state_count
+          description: Connections in each state
+          unit: connections
+          dimensions:
+            - name: active
+            - name: idle
+            - name: idle_in_transaction
+            - name: idle_in_transaction_aborted
+            - name: disabled
+        - name: postgres.transactions_duration
+          description: Observed transactions time
+          unit: transactions/s
+          dimensions:
+            - name: a dimension per bucket
+        - name: postgres.queries_duration
+          description: Observed active queries time
+          unit: queries/s
+          dimensions:
+            - name: a dimension per bucket
+        - name: postgres.locks_utilization
+          description: Acquired locks utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: postgres.checkpoints_rate
+          description: Checkpoints
+          unit: checkpoints/s
+          dimensions:
+            - name: scheduled
+            - name: requested
+        - name: postgres.checkpoints_time
+          description: Checkpoint time
+          unit: milliseconds
+          dimensions:
+            - name: write
+            - name: sync
+        - name: postgres.bgwriter_halts_rate
+          description: Background writer scan halts
+          unit: events/s
+          dimensions:
+            - name: maxwritten
+        - name: postgres.buffers_io_rate
+          description: Buffers written rate
+          unit: B/s
+          dimensions:
+            - name: checkpoint
+            - name: backend
+            - name: bgwriter
+        - name: postgres.buffers_backend_fsync_rate
+          description: Backend fsync calls
+          unit: calls/s
+          dimensions:
+            - name: fsync
+        - name: postgres.buffers_allocated_rate
+          description: Buffers allocated
+          unit: B/s
+          dimensions:
+            - name: allocated
+        - name: postgres.wal_io_rate
+          description: Write-Ahead Log writes
+          unit: B/s
+          dimensions:
+            - name: write
+        - name: postgres.wal_files_count
+          description: Write-Ahead Log files
+          unit: files
+          dimensions:
+            - name: written
+            - name: recycled
+        - name: postgres.wal_archiving_files_count
+          description: Write-Ahead Log archived files
+          unit: files/s
+          dimensions:
+            - name: ready
+            - name: done
+        - name: postgres.autovacuum_workers_count
+          description: Autovacuum workers
+          unit: workers
+          dimensions:
+            - name: analyze
+            - name: vacuum_analyze
+            - name: vacuum
+            - name: vacuum_freeze
+            - name: brin_summarize
+        - name: postgres.txid_exhaustion_towards_autovacuum_perc
+          description: Percent towards emergency autovacuum
+          unit: percentage
+          dimensions:
+            - name: emergency_autovacuum
+        - name: postgres.txid_exhaustion_perc
+          description: Percent towards transaction ID wraparound
+          unit: percentage
+          dimensions:
+            - name: txid_exhaustion
+        - name: postgres.txid_exhaustion_oldest_txid_num
+          description: Oldest transaction XID
+          unit: xid
+          dimensions:
+            - name: xid
+        - name: postgres.catalog_relations_count
+          description: Relation count
+          unit: relations
+          dimensions:
+            - name: ordinary_table
+            - name: index
+            - name: sequence
+            - name: toast_table
+            - name: view
+            - name: materialized_view
+            - name: composite_type
+            - name: foreign_table
+            - name: partitioned_table
+            - name: partitioned_index
+        - name: postgres.catalog_relations_size
+          description: Relation size
+          unit: B
+          dimensions:
+            - name: ordinary_table
+            - name: index
+            - name: sequence
+            - name: toast_table
+            - name: view
+            - name: materialized_view
+            - name: composite_type
+            - name: foreign_table
+            - name: partitioned_table
+            - name: partitioned_index
+        - name: postgres.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime
+        - name: postgres.databases_count
+          description: Number of databases
+          unit: databases
+          dimensions:
+            - name: databases
+    - name: repl application
+      description: TBD
+      labels:
+        - application
+      metrics:
+        - name: postgres.replication_app_wal_lag_size
+          description: Standby application WAL lag size
+          unit: B
+          dimensions:
+            - name: sent_lag
+            - name: write_lag
+            - name: flush_lag
+            - name: replay_lag
+        - name: postgres.replication_app_wal_lag_time
+          description: Standby application WAL lag time
+          unit: seconds
+          dimensions:
+            - name: write_lag
+            - name: flush_lag
+            - name: replay_lag
+    - name: repl slot
+      description: TBD
+      labels:
+        - slot
+      metrics:
+        - name: postgres.replication_slot_files_count
+          description: Replication slot files
+          unit: files
+          dimensions:
+            - name: wal_keep
+            - name: pg_replslot_files
+    - name: database
+      description: TBD
+      labels:
+        - database
+      metrics:
+        - name: postgres.db_transactions_ratio
+          description: Database transactions ratio
+          unit: percentage
+          dimensions:
+            - name: committed
+            - name: rollback
+        - name: postgres.db_transactions_rate
+          description: Database transactions
+          unit: transactions/s
+          dimensions:
+            - name: committed
+            - name: rollback
+        - name: postgres.db_connections_utilization
+          description: Database connections utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: postgres.db_connections_count
+          description: Database connections
+          unit: connections
+          dimensions:
+            - name: connections
+        - name: postgres.db_cache_io_ratio
+          description: Database buffer cache miss ratio
+          unit: percentage
+          dimensions:
+            - name: miss
+        - name: postgres.db_io_rate
+          description: Database reads
+          unit: B/s
+          dimensions:
+            - name: memory
+            - name: disk
+        - name: postgres.db_ops_fetched_rows_ratio
+          description: Database rows fetched ratio
+          unit: percentage
+          dimensions:
+            - name: fetched
+        - name: postgres.db_ops_read_rows_rate
+          description: Database rows read
+          unit: rows/s
+          dimensions:
+            - name: returned
+            - name: fetched
+        - name: postgres.db_ops_write_rows_rate
+          description: Database rows written
+          unit: rows/s
+          dimensions:
+            - name: inserted
+            - name: deleted
+            - name: updated
+        - name: postgres.db_conflicts_rate
+          description: Database canceled queries
+          unit: queries/s
+          dimensions:
+            - name: conflicts
+        - name: postgres.db_conflicts_reason_rate
+          description: Database canceled queries by reason
+          unit: queries/s
+          dimensions:
+            - name: tablespace
+            - name: lock
+            - name: snapshot
+            - name: bufferpin
+            - name: deadlock
+        - name: postgres.db_deadlocks_rate
+          description: Database deadlocks
+          unit: deadlocks/s
+          dimensions:
+            - name: deadlocks
+        - name: postgres.db_locks_held_count
+          description: Database locks held
+          unit: locks
+          dimensions:
+            - name: access_share
+            - name: row_share
+            - name: row_exclusive
+            - name: share_update
+            - name: share
+            - name: share_row_exclusive
+            - name: exclusive
+            - name: access_exclusive
+        - name: postgres.db_locks_awaited_count
+          description: Database locks awaited
+          unit: locks
+          dimensions:
+            - name: access_share
+            - name: row_share
+            - name: row_exclusive
+            - name: share_update
+            - name: share
+            - name: share_row_exclusive
+            - name: exclusive
+            - name: access_exclusive
+        - name: postgres.db_temp_files_created_rate
+          description: Database created temporary files
+          unit: files/s
+          dimensions:
+            - name: created
+        - name: postgres.db_temp_files_io_rate
+          description: Database temporary files data written to disk
+          unit: B/s
+          dimensions:
+            - name: written
+        - name: postgres.db_size
+          description: Database size
+          unit: B
+          dimensions:
+            - name: size
+    - name: table
+      description: TBD
+      labels:
+        - database
+        - schema
+        - table
+      metrics:
+        - name: postgres.table_rows_dead_ratio
+          description: Table dead rows
+          unit: percentage
+          dimensions:
+            - name: dead
+        - name: postgres.table_rows_count
+          description: Table total rows
+          unit: rows
+          dimensions:
+            - name: live
+            - name: dead
+        - name: postgres.table_ops_rows_rate
+          description: Table throughput
+          unit: rows/s
+          dimensions:
+            - name: inserted
+            - name: deleted
+            - name: updated
+        - name: postgres.table_ops_rows_hot_ratio
+          description: Table HOT updates ratio
+          unit: percentage
+          dimensions:
+            - name: hot
+        - name: postgres.table_ops_rows_hot_rate
+          description: Table HOT updates
+          unit: rows/s
+          dimensions:
+            - name: hot
+        - name: postgres.table_cache_io_ratio
+          description: Table I/O cache miss ratio
+          unit: percentage
+          dimensions:
+            - name: miss
+        - name: postgres.table_io_rate
+          description: Table I/O
+          unit: B/s
+          dimensions:
+            - name: memory
+            - name: disk
+        - name: postgres.table_index_cache_io_ratio
+          description: Table index I/O cache miss ratio
+          unit: percentage
+          dimensions:
+            - name: miss
+        - name: postgres.table_index_io_rate
+          description: Table index I/O
+          unit: B/s
+          dimensions:
+            - name: memory
+            - name: disk
+        - name: postgres.table_toast_cache_io_ratio
+          description: Table TOAST I/O cache miss ratio
+          unit: percentage
+          dimensions:
+            - name: miss
+        - name: postgres.table_toast_io_rate
+          description: Table TOAST I/O
+          unit: B/s
+          dimensions:
+            - name: memory
+            - name: disk
+        - name: postgres.table_toast_index_cache_io_ratio
+          description: Table TOAST index I/O cache miss ratio
+          unit: percentage
+          dimensions:
+            - name: miss
+        - name: postgres.table_toast_index_io_rate
+          description: Table TOAST index I/O
+          unit: B/s
+          dimensions:
+            - name: memory
+            - name: disk
+        - name: postgres.table_scans_rate
+          description: Table scans
+          unit: scans/s
+          dimensions:
+            - name: index
+            - name: sequential
+        - name: postgres.table_scans_rows_rate
+          description: Table live rows fetched by scans
+          unit: rows/s
+          dimensions:
+            - name: index
+            - name: sequential
+        - name: postgres.table_autovacuum_since_time
+          description: Table time since last auto VACUUM
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: postgres.table_vacuum_since_time
+          description: Table time since last manual VACUUM
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: postgres.table_autoanalyze_since_time
+          description: Table time since last auto ANALYZE
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: postgres.table_analyze_since_time
+          description: Table time since last manual ANALYZE
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: postgres.table_null_columns
+          description: Table null columns
+          unit: columns
+          dimensions:
+            - name: 'null'
+        - name: postgres.table_size
+          description: Table total size
+          unit: B
+          dimensions:
+            - name: size
+        - name: postgres.table_bloat_size_perc
+          description: Table bloat size percentage
+          unit: percentage
+          dimensions:
+            - name: bloat
+        - name: postgres.table_bloat_size
+          description: Table bloat size
+          unit: B
+          dimensions:
+            - name: bloat
+    - name: index
+      description: TBD
+      labels:
+        - database
+        - schema
+        - table
+        - index
+      metrics:
+        - name: postgres.index_size
+          description: Index size
+          unit: B
+          dimensions:
+            - name: size
+        - name: postgres.index_bloat_size_perc
+          description: Index bloat size percentage
+          unit: percentage
+          dimensions:
+            - name: bloat
+        - name: postgres.index_bloat_size
+          description: Index bloat size
+          unit: B
+          dimensions:
+            - name: bloat
+        - name: postgres.index_usage_status
+          description: Index usage status
+          unit: status
+          dimensions:
+            - name: used
+            - name: unused

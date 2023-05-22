@@ -1,0 +1,52 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: energid.blockindex
+          description: Blockchain index
+          unit: count
+          dimensions:
+            - name: blocks
+            - name: headers
+        - name: energid.difficulty
+          description: Blockchain difficulty
+          unit: difficulty
+          dimensions:
+            - name: difficulty
+        - name: energid.mempool
+          description: Memory pool
+          unit: bytes
+          dimensions:
+            - name: max
+            - name: usage
+            - name: tx_size
+        - name: energid.secmem
+          description: Secure memory
+          unit: bytes
+          dimensions:
+            - name: total
+            - name: used
+            - name: free
+            - name: locked
+        - name: energid.network
+          description: Network
+          unit: connections
+          dimensions:
+            - name: connections
+        - name: energid.timeoffset
+          description: Network time offset
+          unit: seconds
+          dimensions:
+            - name: timeoffset
+        - name: energid.utxo_transactions
+          description: Transactions
+          unit: transactions
+          dimensions:
+            - name: transactions
+            - name: output_transactions

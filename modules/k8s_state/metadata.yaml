@@ -1,0 +1,246 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: node
+      description: TBD
+      labels:
+        - k8s_kind
+        - k8s_cluster_id
+        - k8s_cluster_name
+        - k8s_node_name
+      metrics:
+        - name: k8s_state.node_allocatable_cpu_requests_utilization
+          description: CPU requests utilization
+          unit: '%'
+          dimensions:
+            - name: requests
+        - name: k8s_state.node_allocatable_cpu_requests_used
+          description: CPU requests used
+          unit: millicpu
+          dimensions:
+            - name: requests
+        - name: k8s_state.node_allocatable_cpu_limits_utilization
+          description: CPU limits utilization
+          unit: '%'
+          dimensions:
+            - name: limits
+        - name: k8s_state.node_allocatable_cpu_limits_used
+          description: CPU limits used
+          unit: millicpu
+          dimensions:
+            - name: limits
+        - name: k8s_state.node_allocatable_mem_requests_utilization
+          description: Memory requests utilization
+          unit: '%'
+          dimensions:
+            - name: requests
+        - name: k8s_state.node_allocatable_mem_requests_used
+          description: Memory requests used
+          unit: bytes
+          dimensions:
+            - name: requests
+        - name: k8s_state.node_allocatable_mem_limits_utilization
+          description: Memory limits utilization
+          unit: '%'
+          dimensions:
+            - name: limits
+        - name: k8s_state.node_allocatable_mem_limits_used
+          description: Memory limits used
+          unit: bytes
+          dimensions:
+            - name: limits
+        - name: k8s_state.node_allocatable_pods_utilization
+          description: Pods resource utilization
+          unit: '%'
+          dimensions:
+            - name: allocated
+        - name: k8s_state.node_allocatable_pods_usage
+          description: Pods resource usage
+          unit: pods
+          dimensions:
+            - name: available
+            - name: allocated
+        - name: k8s_state.node_condition
+          description: Condition status
+          unit: status
+          dimensions:
+            - name: a dimension per condition
+        - name: k8s_state.node_schedulability
+          description: Schedulability
+          unit: state
+          dimensions:
+            - name: schedulable
+            - name: unschedulable
+        - name: k8s_state.node_pods_readiness
+          description: Pods readiness
+          unit: '%'
+          dimensions:
+            - name: ready
+        - name: k8s_state.node_pods_readiness_state
+          description: Pods readiness state
+          unit: pods
+          dimensions:
+            - name: ready
+            - name: unready
+        - name: k8s_state.node_pods_condition
+          description: Pods condition
+          unit: pods
+          dimensions:
+            - name: pod_ready
+            - name: pod_scheduled
+            - name: pod_initialized
+            - name: containers_ready
+        - name: k8s_state.node_pods_phase
+          description: Pods phase
+          unit: pods
+          dimensions:
+            - name: running
+            - name: failed
+            - name: succeeded
+            - name: pending
+        - name: k8s_state.node_containers
+          description: Containers
+          unit: containers
+          dimensions:
+            - name: containers
+            - name: init_containers
+        - name: k8s_state.node_containers_state
+          description: Containers state
+          unit: containers
+          dimensions:
+            - name: running
+            - name: waiting
+            - name: terminated
+        - name: k8s_state.node_init_containers_state
+          description: Init containers state
+          unit: containers
+          dimensions:
+            - name: running
+            - name: waiting
+            - name: terminated
+        - name: k8s_state.node_age
+          description: Age
+          unit: seconds
+          dimensions:
+            - name: age
+    - name: pod
+      description: TBD
+      labels:
+        - k8s_kind
+        - k8s_cluster_id
+        - k8s_cluster_name
+        - k8s_node_name
+        - k8s_namespace
+        - k8s_controller_kind
+        - k8s_controller_name
+        - k8s_pod_uid
+        - k8s_pod_name
+        - k8s_qos_class
+      metrics:
+        - name: k8s_state.pod_cpu_requests_used
+          description: CPU requests used
+          unit: millicpu
+          dimensions:
+            - name: requests
+        - name: k8s_state.pod_cpu_limits_used
+          description: CPU limits used
+          unit: millicpu
+          dimensions:
+            - name: limits
+        - name: k8s_state.pod_mem_requests_used
+          description: Memory requests used
+          unit: bytes
+          dimensions:
+            - name: requests
+        - name: k8s_state.pod_mem_limits_used
+          description: Memory limits used
+          unit: bytes
+          dimensions:
+            - name: limits
+        - name: k8s_state.pod_condition
+          description: Condition
+          unit: state
+          dimensions:
+            - name: pod_ready
+            - name: pod_scheduled
+            - name: pod_initialized
+            - name: containers_ready
+        - name: k8s_state.pod_phase
+          description: Phase
+          unit: state
+          dimensions:
+            - name: running
+            - name: failed
+            - name: succeeded
+            - name: pending
+        - name: k8s_state.pod_age
+          description: Age
+          unit: seconds
+          dimensions:
+            - name: age
+        - name: k8s_state.pod_containers
+          description: Containers
+          unit: containers
+          dimensions:
+            - name: containers
+            - name: init_containers
+        - name: k8s_state.pod_containers_state
+          description: Containers state
+          unit: containers
+          dimensions:
+            - name: running
+            - name: waiting
+            - name: terminated
+        - name: k8s_state.pod_init_containers_state
+          description: Init containers state
+          unit: containers
+          dimensions:
+            - name: running
+            - name: waiting
+            - name: terminated
+    - name: container
+      description: TBD
+      labels:
+        - k8s_kind
+        - k8s_cluster_id
+        - k8s_cluster_name
+        - k8s_node_name
+        - k8s_namespace
+        - k8s_controller_kind
+        - k8s_controller_name
+        - k8s_pod_uid
+        - k8s_pod_name
+        - k8s_qos_class
+        - k8s_container_id
+        - k8s_container_name
+      metrics:
+        - name: k8s_state.pod_container_readiness_state
+          description: Readiness state
+          unit: state
+          dimensions:
+            - name: ready
+        - name: k8s_state.pod_container_restarts
+          description: Restarts
+          unit: restarts
+          dimensions:
+            - name: restarts
+        - name: k8s_state.pod_container_state
+          description: Container state
+          unit: state
+          dimensions:
+            - name: running
+            - name: waiting
+            - name: terminated
+        - name: k8s_state.pod_container_waiting_state_reason
+          description: Container waiting state reason
+          unit: state
+          dimensions:
+            - name: a dimension per reason
+        - name: k8s_state.pod_container_terminated_state_reason
+          description: Container terminated state reason
+          unit: state
+          dimensions:
+            - name: a dimension per reason

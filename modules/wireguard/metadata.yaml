@@ -1,0 +1,39 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: device
+      description: TBD
+      labels:
+        - device
+      metrics:
+        - name: wireguard.device_network_io
+          description: Device traffic
+          unit: B/s
+          dimensions:
+            - name: receive
+            - name: transmit
+        - name: wireguard.device_peers
+          description: Device peers
+          unit: peers
+          dimensions:
+            - name: peers
+    - name: peer
+      description: TBD
+      labels:
+        - device
+        - public_key
+      metrics:
+        - name: wireguard.peer_network_io
+          description: Peer traffic
+          unit: B/s
+          dimensions:
+            - name: receive
+            - name: transmit
+        - name: wireguard.peer_latest_handshake_ago
+          description: Peer time elapsed since the latest handshake
+          unit: seconds
+          dimensions:
+            - name: time

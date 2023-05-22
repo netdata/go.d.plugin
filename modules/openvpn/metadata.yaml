@@ -1,0 +1,37 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: openvpn.active_clients
+          description: Total Number Of Active Clients
+          unit: clients
+          dimensions:
+            - name: clients
+        - name: openvpn.total_traffic
+          description: Total Traffic
+          unit: kilobits/s
+          dimensions:
+            - name: in
+            - name: out
+    - name: user
+      description: TBD
+      labels:
+        - username
+      metrics:
+        - name: openvpn.user_traffic
+          description: User Traffic
+          unit: kilobits/s
+          dimensions:
+            - name: in
+            - name: out
+        - name: openvpn.user_connection_time
+          description: User Connection Time
+          unit: seconds
+          dimensions:
+            - name: time

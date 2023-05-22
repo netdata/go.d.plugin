@@ -1,0 +1,21 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels:
+        - source
+      metrics:
+        - name: x509check.time_until_expiration
+          description: Time Until Certificate Expiration
+          unit: seconds
+          dimensions:
+            - name: expiry
+        - name: x509check.revocation_status
+          description: Revocation Status
+          unit: boolean
+          dimensions:
+            - name: revoked

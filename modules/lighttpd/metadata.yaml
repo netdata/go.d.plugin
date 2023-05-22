@@ -1,0 +1,46 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: lighttpd.requests
+          description: Requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: lighttpd.net
+          description: Bandwidth
+          unit: kilobits/s
+          dimensions:
+            - name: sent
+        - name: lighttpd.workers
+          description: Servers
+          unit: servers
+          dimensions:
+            - name: idle
+            - name: busy
+        - name: lighttpd.scoreboard
+          description: ScoreBoard
+          unit: connections
+          dimensions:
+            - name: waiting
+            - name: open
+            - name: close
+            - name: hard_error
+            - name: keepalive
+            - name: read
+            - name: read_post
+            - name: write
+            - name: handle_request
+            - name: request_start
+            - name: request_end
+        - name: lighttpd.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime

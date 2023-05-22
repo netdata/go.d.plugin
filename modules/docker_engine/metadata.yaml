@@ -1,0 +1,84 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: docker_engine.engine_daemon_container_actions
+          description: Container Actions
+          unit: actions/s
+          dimensions:
+            - name: changes
+            - name: commit
+            - name: create
+            - name: delete
+            - name: start
+        - name: docker_engine.engine_daemon_container_states_containers
+          description: Containers In Various States
+          unit: containers
+          dimensions:
+            - name: running
+            - name: paused
+            - name: stopped
+        - name: docker_engine.builder_builds_failed_total
+          description: Builder Builds Fails By Reason
+          unit: fails/s
+          dimensions:
+            - name: build_canceled
+            - name: build_target_not_reachable_error
+            - name: command_not_supported_error
+            - name: dockerfile_empty_error
+            - name: dockerfile_syntax_error
+            - name: error_processing_commands_error
+            - name: missing_onbuild_arguments_error
+            - name: unknown_instruction_error
+        - name: docker_engine.engine_daemon_health_checks_failed_total
+          description: Health Checks
+          unit: events/s
+          dimensions:
+            - name: fails
+        - name: docker_engine.swarm_manager_leader
+          description: Swarm Manager Leader
+          unit: bool
+          dimensions:
+            - name: is_leader
+        - name: docker_engine.swarm_manager_object_store
+          description: Swarm Manager Object Store
+          unit: objects
+          dimensions:
+            - name: nodes
+            - name: services
+            - name: tasks
+            - name: networks
+            - name: secrets
+            - name: configs
+        - name: docker_engine.swarm_manager_nodes_per_state
+          description: Swarm Manager Nodes Per State
+          unit: nodes
+          dimensions:
+            - name: ready
+            - name: down
+            - name: unknown
+            - name: disconnected
+        - name: docker_engine.swarm_manager_tasks_per_state
+          description: Swarm Manager Tasks Per State
+          unit: tasks
+          dimensions:
+            - name: running
+            - name: failed
+            - name: ready
+            - name: rejected
+            - name: starting
+            - name: shutdown
+            - name: new
+            - name: orphaned
+            - name: preparing
+            - name: pending
+            - name: complete
+            - name: remove
+            - name: accepted
+            - name: assigned

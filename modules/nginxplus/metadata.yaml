@@ -1,0 +1,350 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: nginxplus.client_connections_rate
+          description: Client connections rate
+          unit: connections/s
+          dimensions:
+            - name: accepted
+            - name: dropped
+        - name: nginxplus.client_connections_count
+          description: Client connections
+          unit: connections
+          dimensions:
+            - name: active
+            - name: idle
+        - name: nginxplus.ssl_handshakes_rate
+          description: SSL handshakes rate
+          unit: handshakes/s
+          dimensions:
+            - name: successful
+            - name: failed
+        - name: nginxplus.ssl_handshakes_failures_rate
+          description: SSL handshakes failures rate
+          unit: failures/s
+          dimensions:
+            - name: no_common_protocol
+            - name: no_common_cipher
+            - name: timeout
+            - name: peer_rejected_cert
+        - name: nginxplus.ssl_verification_errors_rate
+          description: SSL verification errors rate
+          unit: errors/s
+          dimensions:
+            - name: no_cert
+            - name: expired_cert
+            - name: revoked_cert
+            - name: hostname_mismatch
+            - name: other
+        - name: nginxplus.ssl_session_reuses_rate
+          description: Session reuses during SSL handshak
+          unit: reuses/s
+          dimensions:
+            - name: ssl_session
+        - name: nginxplus.http_requests_rate
+          description: HTTP requests rate
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: nginxplus.http_requests_count
+          description: HTTP requests
+          unit: requests
+          dimensions:
+            - name: requests
+        - name: nginxplus.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime
+    - name: http server zone
+      description: TBD
+      labels:
+        - http_server_zone
+      metrics:
+        - name: nginxplus.http_server_zone_requests_rate
+          description: HTTP Server Zone requests rate
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: nginxplus.http_server_zone_responses_per_code_class_rate
+          description: HTTP Server Zone responses rate
+          unit: responses/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: nginxplus.http_server_zone_traffic_rate
+          description: HTTP Server Zone traffic
+          unit: bytes/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: nginxplus.http_server_zone_requests_processing_count
+          description: HTTP Server Zone currently processed requests
+          unit: requests
+          dimensions:
+            - name: processing
+        - name: nginxplus.http_server_zone_requests_discarded_rate
+          description: HTTP Server Zone requests discarded rate
+          unit: requests/s
+          dimensions:
+            - name: discarded
+    - name: http location zone
+      description: TBD
+      labels:
+        - http_location_zone
+      metrics:
+        - name: nginxplus.http_location_zone_requests_rate
+          description: HTTP Location Zone requests rate
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: nginxplus.http_location_zone_responses_per_code_class_rate
+          description: HTTP Location Zone responses rate
+          unit: responses/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: nginxplus.http_location_zone_traffic_rate
+          description: HTTP Location Zone traffic rate
+          unit: bytes/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: nginxplus.http_location_zone_requests_discarded_rate
+          description: HTTP Location Zone requests discarded rate
+          unit: requests/s
+          dimensions:
+            - name: discarded
+    - name: http upstream
+      description: TBD
+      labels:
+        - http_upstream_name
+        - http_upstream_zone
+      metrics:
+        - name: nginxplus.http_upstream_peers_count
+          description: HTTP Upstream peers
+          unit: peers
+          dimensions:
+            - name: peers
+        - name: nginxplus.http_upstream_zombies_count
+          description: HTTP Upstream zombies
+          unit: servers
+          dimensions:
+            - name: zombie
+        - name: nginxplus.http_upstream_keepalive_count
+          description: HTTP Upstream keepalive
+          unit: connections
+          dimensions:
+            - name: keepalive
+    - name: http upstream server
+      description: TBD
+      labels:
+        - http_upstream_name
+        - http_upstream_zone
+        - http_upstream_server_address
+        - http_upstream_server_name
+      metrics:
+        - name: nginxplus.http_upstream_server_requests_rate
+          description: HTTP Upstream Server requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: nginxplus.http_upstream_server_responses_per_code_class_rate
+          description: HTTP Upstream Server responses
+          unit: responses/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: nginxplus.http_upstream_server_response_time
+          description: HTTP Upstream Server average response time
+          unit: milliseconds
+          dimensions:
+            - name: response
+        - name: nginxplus.http_upstream_server_response_header_time
+          description: HTTP Upstream Server average response header time
+          unit: milliseconds
+          dimensions:
+            - name: header
+        - name: nginxplus.http_upstream_server_traffic_rate
+          description: HTTP Upstream Server traffic rate
+          unit: bytes/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: nginxplus.http_upstream_server_state
+          description: HTTP Upstream Server state
+          unit: state
+          dimensions:
+            - name: up
+            - name: down
+            - name: draining
+            - name: unavail
+            - name: checking
+            - name: unhealthy
+        - name: nginxplus.http_upstream_server_connections_count
+          description: HTTP Upstream Server connections
+          unit: connections
+          dimensions:
+            - name: active
+        - name: nginxplus.http_upstream_server_downtime
+          description: HTTP Upstream Server downtime
+          unit: seconds
+          dimensions:
+            - name: downtime
+    - name: http cache
+      description: TBD
+      labels:
+        - http_cache
+      metrics:
+        - name: nginxplus.http_cache_state
+          description: HTTP Cache state
+          unit: state
+          dimensions:
+            - name: warm
+            - name: cold
+        - name: nginxplus.http_cache_iops
+          description: HTTP Cache size
+          unit: responses/s
+          dimensions:
+            - name: served
+            - name: written
+            - name: bypass
+        - name: nginxplus.http_cache_io
+          description: HTTP Cache IOPS
+          unit: bytes/s
+          dimensions:
+            - name: served
+            - name: written
+            - name: bypass
+        - name: nginxplus.http_cache_size
+          description: HTTP Cache IO
+          unit: bytes
+          dimensions:
+            - name: size
+    - name: stream server zone
+      description: TBD
+      labels:
+        - stream_server_zone
+      metrics:
+        - name: nginxplus.stream_server_zone_connections_rate
+          description: Stream Server Zone connections rate
+          unit: connections/s
+          dimensions:
+            - name: accepted
+        - name: nginxplus.stream_server_zone_sessions_per_code_class_rate
+          description: Stream Server Zone sessions rate
+          unit: sessions/s
+          dimensions:
+            - name: 2xx
+            - name: 4xx
+            - name: 5xx
+        - name: nginxplus.stream_server_zone_traffic_rate
+          description: Stream Server Zone traffic rate
+          unit: bytes/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: nginxplus.stream_server_zone_connections_processing_count
+          description: Stream Server Zone connections processed
+          unit: connections
+          dimensions:
+            - name: processing
+        - name: nginxplus.stream_server_zone_connections_discarded_rate
+          description: Stream Server Zone connections discarded
+          unit: connections/s
+          dimensions:
+            - name: discarded
+    - name: stream upstream
+      description: TBD
+      labels:
+        - stream_upstream_name
+        - stream_upstream_zone
+      metrics:
+        - name: nginxplus.stream_upstream_peers_count
+          description: Stream Upstream peers
+          unit: peers
+          dimensions:
+            - name: peers
+        - name: nginxplus.stream_upstream_zombies_count
+          description: Stream Upstream zombies
+          unit: servers
+          dimensions:
+            - name: zombie
+    - name: stream upstream server
+      description: TBD
+      labels:
+        - stream_upstream_name
+        - stream_upstream_zone
+        - stream_upstream_server_address
+        - stream_upstream_server_name
+      metrics:
+        - name: nginxplus.stream_upstream_server_connections_rate
+          description: Stream Upstream Server connections
+          unit: connections/s
+          dimensions:
+            - name: forwarded
+        - name: nginxplus.stream_upstream_server_traffic_rate
+          description: Stream Upstream Server traffic rate
+          unit: bytes/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: nginxplus.stream_upstream_server_state
+          description: Stream Upstream Server state
+          unit: state
+          dimensions:
+            - name: up
+            - name: down
+            - name: unavail
+            - name: checking
+            - name: unhealthy
+        - name: nginxplus.stream_upstream_server_downtime
+          description: Stream Upstream Server downtime
+          unit: seconds
+          dimensions:
+            - name: downtime
+        - name: nginxplus.stream_upstream_server_connections_count
+          description: Stream Upstream Server connections
+          unit: connections
+          dimensions:
+            - name: active
+    - name: resolver zone
+      description: TBD
+      labels:
+        - resolver_zone
+      metrics:
+        - name: nginxplus.resolver_zone_requests_rate
+          description: Resolver requests rate
+          unit: requests/s
+          dimensions:
+            - name: name
+            - name: srv
+            - name: addr
+        - name: nginxplus.resolver_zone_responses_rate
+          description: Resolver responses rate
+          unit: responses/s
+          dimensions:
+            - name: noerror
+            - name: formerr
+            - name: servfail
+            - name: nxdomain
+            - name: notimp
+            - name: refused
+            - name: timedout
+            - name: unknown

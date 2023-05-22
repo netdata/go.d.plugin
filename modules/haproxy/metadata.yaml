@@ -1,0 +1,55 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: haproxy.backend_current_sessions
+          description: Current number of active sessions
+          unit: sessions
+          dimensions:
+            - name: a dimension per proxy
+        - name: haproxy.backend_sessions
+          description: Sessions rate
+          unit: sessions/s
+          dimensions:
+            - name: a dimension per proxy
+        - name: haproxy.backend_response_time_average
+          description: Average response time for last 1024 successful connections
+          unit: milliseconds
+          dimensions:
+            - name: a dimension per proxy
+        - name: haproxy.backend_queue_time_average
+          description: Average queue time for last 1024 successful connections
+          unit: milliseconds
+          dimensions:
+            - name: a dimension per proxy
+        - name: haproxy.backend_current_queue
+          description: Current number of queued requests
+          unit: requests
+          dimensions:
+            - name: a dimension per proxy
+    - name: proxy
+      description: TBD
+      labels: []
+      metrics:
+        - name: haproxy.backend_http_responses
+          description: HTTP responses by code class
+          unit: responses/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+            - name: other
+        - name: haproxy.backend_network_io
+          description: Network traffic
+          unit: bytes/s
+          dimensions:
+            - name: in
+            - name: out

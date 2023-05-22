@@ -1,0 +1,109 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: squidlog.requests
+          description: Total Requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: squidlog.excluded_requests
+          description: Excluded Requests
+          unit: requests/s
+          dimensions:
+            - name: unmatched
+        - name: squidlog.type_requests
+          description: Requests By Type
+          unit: requests/s
+          dimensions:
+            - name: success
+            - name: bad
+            - name: redirect
+            - name: error
+        - name: squidlog.http_status_code_class_responses
+          description: Responses By HTTP Status Code Class
+          unit: responses/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: squidlog.http_status_code_responses
+          description: Responses By HTTP Status Code
+          unit: responses/s
+          dimensions:
+            - name: a dimension per HTTP response code
+        - name: squidlog.bandwidth
+          description: Bandwidth
+          unit: kilobits/s
+          dimensions:
+            - name: sent
+        - name: squidlog.response_time
+          description: Response Time
+          unit: milliseconds
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg
+        - name: squidlog.uniq_clients
+          description: Unique Clients
+          unit: clients
+          dimensions:
+            - name: clients
+        - name: squidlog.cache_result_code_requests
+          description: Requests By Cache Result Code
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result code
+        - name: squidlog.cache_result_code_transport_tag_requests
+          description: Requests By Cache Result Delivery Transport Tag
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result delivery transport tag
+        - name: squidlog.cache_result_code_handling_tag_requests
+          description: Requests By Cache Result Handling Tag
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result handling tag
+        - name: squidlog.cache_code_object_tag_requests
+          description: Requests By Cache Result Produced Object Tag
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result produced object tag
+        - name: squidlog.cache_code_load_source_tag_requests
+          description: Requests By Cache Result Load Source Tag
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result load source tag
+        - name: squidlog.cache_code_error_tag_requests
+          description: Requests By Cache Result Errors Tag
+          unit: requests/s
+          dimensions:
+            - name: a dimension per cache result error tag
+        - name: squidlog.http_method_requests
+          description: Requests By HTTP Method
+          unit: requests/s
+          dimensions:
+            - name: a dimension per HTTP method
+        - name: squidlog.mime_type_requests
+          description: Requests By MIME Type
+          unit: requests/s
+          dimensions:
+            - name: a dimension per MIME type
+        - name: squidlog.hier_code_requests
+          description: Requests By Hierarchy Code
+          unit: requests/s
+          dimensions:
+            - name: a dimension per hierarchy code
+        - name: squidlog.server_address_forwarded_requests
+          description: Forwarded Requests By Server Address
+          unit: requests/s
+          dimensions:
+            - name: a dimension per server address

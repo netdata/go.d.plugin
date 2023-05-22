@@ -1,0 +1,467 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: mysql.net
+          description: Bandwidth
+          unit: kilobits/s
+          dimensions:
+            - name: in
+            - name: out
+        - name: mysql.queries
+          description: Queries
+          unit: queries/s
+          dimensions:
+            - name: queries
+            - name: questions
+            - name: slow_queries
+        - name: mysql.queries_type
+          description: Queries By Type
+          unit: queries/s
+          dimensions:
+            - name: select
+            - name: delete
+            - name: update
+            - name: insert
+            - name: replace
+        - name: mysql.handlers
+          description: Handlers
+          unit: handlers/s
+          dimensions:
+            - name: commit
+            - name: delete
+            - name: prepare
+            - name: read_first
+            - name: read_key
+            - name: read_next
+            - name: read_prev
+            - name: read_rnd
+            - name: read_rnd_next
+            - name: rollback
+            - name: savepoint
+            - name: savepointrollback
+            - name: update
+            - name: write
+        - name: mysql.table_open_cache_overflows
+          description: Table open cache overflows
+          unit: overflows/s
+          dimensions:
+            - name: open_cache
+        - name: mysql.table_locks
+          description: Table Locks
+          unit: locks/s
+          dimensions:
+            - name: immediate
+            - name: waited
+        - name: mysql.join_issues
+          description: Table Select Join Issues
+          unit: joins/s
+          dimensions:
+            - name: full_join
+            - name: full_range_join
+            - name: range
+            - name: range_check
+            - name: scan
+        - name: mysql.sort_issues
+          description: Table Sort Issues
+          unit: issues/s
+          dimensions:
+            - name: merge_passes
+            - name: range
+            - name: scan
+        - name: mysql.tmp
+          description: Tmp Operations
+          unit: events/s
+          dimensions:
+            - name: disk_tables
+            - name: files
+            - name: tables
+        - name: mysql.connections
+          description: Connections
+          unit: connections/s
+          dimensions:
+            - name: all
+            - name: aborted
+        - name: mysql.connections_active
+          description: Active Connections
+          unit: connections
+          dimensions:
+            - name: active
+            - name: limit
+            - name: max_active
+        - name: mysql.threads
+          description: Threads
+          unit: threads
+          dimensions:
+            - name: connected
+            - name: cached
+            - name: running
+        - name: mysql.threads_created
+          description: Threads Creation Rate
+          unit: threads/s
+          dimensions:
+            - name: created
+        - name: mysql.thread_cache_misses
+          description: Threads Cache Misses
+          unit: misses
+          dimensions:
+            - name: misses
+        - name: mysql.innodb_io
+          description: InnoDB I/O Bandwidth
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: mysql.innodb_io_ops
+          description: InnoDB I/O Operations
+          unit: operations/s
+          dimensions:
+            - name: reads
+            - name: writes
+            - name: fsyncs
+        - name: mysql.innodb_io_pending_ops
+          description: InnoDB Pending I/O Operations
+          unit: operations
+          dimensions:
+            - name: reads
+            - name: writes
+            - name: fsyncs
+        - name: mysql.innodb_log
+          description: InnoDB Log Operations
+          unit: operations/s
+          dimensions:
+            - name: waits
+            - name: write_requests
+            - name: writes
+        - name: mysql.innodb_cur_row_lock
+          description: InnoDB Current Row Locks
+          unit: operations
+          dimensions:
+            - name: current waits
+        - name: mysql.innodb_rows
+          description: InnoDB Row Operations
+          unit: operations/s
+          dimensions:
+            - name: inserted
+            - name: read
+            - name: updated
+            - name: deleted
+        - name: mysql.innodb_buffer_pool_pages
+          description: InnoDB Buffer Pool Pages
+          unit: pages
+          dimensions:
+            - name: data
+            - name: dirty
+            - name: free
+            - name: misc
+            - name: total
+        - name: mysql.innodb_buffer_pool_pages_flushed
+          description: InnoDB Buffer Pool Flush Pages Requests
+          unit: requests/s
+          dimensions:
+            - name: flush_pages
+        - name: mysql.innodb_buffer_pool_bytes
+          description: InnoDB Buffer Pool Bytes
+          unit: MiB
+          dimensions:
+            - name: data
+            - name: dirty
+        - name: mysql.innodb_buffer_pool_read_ahead
+          description: InnoDB Buffer Pool Read Pages
+          unit: pages/s
+          dimensions:
+            - name: all
+            - name: evicted
+        - name: mysql.innodb_buffer_pool_read_ahead_rnd
+          description: InnoDB Buffer Pool Random Read-Aheads
+          unit: operations/s
+          dimensions:
+            - name: read-ahead
+        - name: mysql.innodb_buffer_pool_ops
+          description: InnoDB Buffer Pool Operations
+          unit: operations/s
+          dimensions:
+            - name: disk_reads
+            - name: wait_free
+        - name: mysql.innodb_os_log
+          description: InnoDB OS Log Pending Operations
+          unit: operations
+          dimensions:
+            - name: fsyncs
+            - name: writes
+        - name: mysql.innodb_os_log_fsync_writes
+          description: InnoDB OS Log Operations
+          unit: operations/s
+          dimensions:
+            - name: fsyncs
+        - name: mysql.innodb_os_log_io
+          description: InnoDB OS Log Bandwidth
+          unit: KiB/s
+          dimensions:
+            - name: write
+        - name: mysql.innodb_deadlocks
+          description: InnoDB Deadlocks
+          unit: operations/s
+          dimensions:
+            - name: deadlocks
+        - name: mysql.files
+          description: Open Files
+          unit: files
+          dimensions:
+            - name: files
+        - name: mysql.files_rate
+          description: Opened Files Rate
+          unit: files/s
+          dimensions:
+            - name: files
+        - name: mysql.connection_errors
+          description: Connection Errors
+          unit: errors/s
+          dimensions:
+            - name: accept
+            - name: internal
+            - name: max
+            - name: peer_addr
+            - name: select
+            - name: tcpwrap
+        - name: mysql.opened_tables
+          description: Opened Tables
+          unit: tables/s
+          dimensions:
+            - name: tables
+        - name: mysql.open_tables
+          description: Open Tables
+          unit: tables
+          dimensions:
+            - name: cache
+            - name: tables
+        - name: mysql.process_list_fetch_query_duration
+          description: Process List Fetch Duration
+          unit: milliseconds
+          dimensions:
+            - name: duration
+        - name: mysql.process_list_queries_count
+          description: Queries Count
+          unit: queries
+          dimensions:
+            - name: system
+            - name: user
+        - name: mysql.process_list_longest_query_duration
+          description: Longest Query Duration
+          unit: seconds
+          dimensions:
+            - name: duration
+        - name: mysql.qcache_ops
+          description: QCache Operations
+          unit: queries/s
+          dimensions:
+            - name: hits
+            - name: lowmem_prunes
+            - name: inserts
+            - name: not_cached
+        - name: mysql.qcache
+          description: QCache Queries in Cache
+          unit: queries
+          dimensions:
+            - name: queries
+        - name: mysql.qcache_freemem
+          description: QCache Free Memory
+          unit: MiB
+          dimensions:
+            - name: free
+        - name: mysql.qcache_memblocks
+          description: QCache Memory Blocks
+          unit: blocks
+          dimensions:
+            - name: free
+            - name: total
+        - name: mysql.galera_writesets
+          description: Replicated Writesets
+          unit: writesets/s
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: mysql.galera_bytes
+          description: Replicated Bytes
+          unit: KiB/s
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: mysql.galera_queue
+          description: Galera Queue
+          unit: writesets
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: mysql.galera_conflicts
+          description: Replication Conflicts
+          unit: transactions
+          dimensions:
+            - name: bf_aborts
+            - name: cert_fails
+        - name: mysql.galera_flow_control
+          description: Flow Control
+          unit: ms
+          dimensions:
+            - name: paused
+        - name: mysql.galera_cluster_status
+          description: Cluster Component Status
+          unit: status
+          dimensions:
+            - name: primary
+            - name: non_primary
+            - name: disconnected
+        - name: mysql.galera_cluster_state
+          description: Cluster Component State
+          unit: state
+          dimensions:
+            - name: undefined
+            - name: joining
+            - name: donor
+            - name: joined
+            - name: synced
+            - name: error
+        - name: mysql.galera_cluster_size
+          description: Number of Nodes in the Cluster
+          unit: nodes
+          dimensions:
+            - name: nodes
+        - name: mysql.galera_cluster_weight
+          description: The Total Weight of the Current Members in the Cluster
+          unit: weight
+          dimensions:
+            - name: weight
+        - name: mysql.galera_connected
+          description: Cluster Connection Status
+          unit: boolean
+          dimensions:
+            - name: connected
+        - name: mysql.galera_ready
+          description: Accept Queries Readiness Status
+          unit: boolean
+          dimensions:
+            - name: ready
+        - name: mysql.galera_open_transactions
+          description: Open Transactions
+          unit: transactions
+          dimensions:
+            - name: open
+        - name: mysql.galera_thread_count
+          description: Total Number of WSRep (applier/rollbacker) Threads
+          unit: threads
+          dimensions:
+            - name: threads
+        - name: mysql.key_blocks
+          description: MyISAM Key Cache Blocks
+          unit: blocks
+          dimensions:
+            - name: unused
+            - name: used
+            - name: not_flushed
+        - name: mysql.key_requests
+          description: MyISAM Key Cache Requests
+          unit: requests/s
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: mysql.key_disk_ops
+          description: MyISAM Key Cache Disk Operations
+          unit: operations/s
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: mysql.binlog_cache
+          description: Binlog Cache
+          unit: transactions/s
+          dimensions:
+            - name: disk
+            - name: all
+        - name: mysql.binlog_stmt_cache
+          description: Binlog Statement Cache
+          unit: statements/s
+          dimensions:
+            - name: disk
+            - name: all
+    - name: connection
+      description: TBD
+      labels: []
+      metrics:
+        - name: mysql.slave_behind
+          description: Slave Behind Seconds
+          unit: seconds
+          dimensions:
+            - name: seconds
+        - name: mysql.slave_status
+          description: I/O / SQL Thread Running State
+          unit: boolean
+          dimensions:
+            - name: sql_running
+            - name: io_running
+    - name: user
+      description: TBD
+      labels:
+        - user
+      metrics:
+        - name: mysql.userstats_cpu
+          description: User CPU Time
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: mysql.userstats_rows
+          description: User Rows Operations
+          unit: operations/s
+          dimensions:
+            - name: read
+            - name: sent
+            - name: updated
+            - name: inserted
+            - name: deleted
+        - name: mysql.userstats_commands
+          description: User Commands
+          unit: commands/s
+          dimensions:
+            - name: select
+            - name: update
+            - name: other
+        - name: mysql.userstats_denied_commands
+          description: User Denied Commands
+          unit: commands/s
+          dimensions:
+            - name: denied
+        - name: mysql.userstats_created_transactions
+          description: User Transactions
+          unit: transactions/s
+          dimensions:
+            - name: commit
+            - name: rollback
+        - name: mysql.userstats_binlog_written
+          description: User Binlog Written
+          unit: B/s
+          dimensions:
+            - name: written
+        - name: mysql.userstats_empty_queries
+          description: User Empty Queries
+          unit: queries/s
+          dimensions:
+            - name: empty
+        - name: mysql.userstats_connections
+          description: User Created Connections
+          unit: connections/s
+          dimensions:
+            - name: created
+        - name: mysql.userstats_lost_connections
+          description: User Lost Connections
+          unit: connections/s
+          dimensions:
+            - name: lost
+        - name: mysql.userstats_denied_connections
+          description: User Denied Connections
+          unit: connections/s
+          dimensions:
+            - name: denied
