@@ -25,7 +25,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/whois v1.15.0
 	github.com/likexian/whois-parser v1.24.8
-	github.com/mattn/go-isatty v0.0.18
+	github.com/mattn/go-isatty v0.0.19
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.54
 	github.com/mitchellh/go-homedir v1.1.0
