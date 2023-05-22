@@ -1,0 +1,175 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: cassandra.client_requests_rate
+          description: Client requests rate
+          unit: requests/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: cassandra.client_request_read_latency_histogram
+          description: Client request read latency histogram
+          unit: seconds
+          dimensions:
+            - name: p50
+            - name: p75
+            - name: p95
+            - name: p98
+            - name: p99
+            - name: p999
+        - name: cassandra.client_request_write_latency_histogram
+          description: Client request write latency histogram
+          unit: seconds
+          dimensions:
+            - name: p50
+            - name: p75
+            - name: p95
+            - name: p98
+            - name: p99
+            - name: p999
+        - name: cassandra.client_requests_latency
+          description: Client requests total latency
+          unit: seconds
+          dimensions:
+            - name: read
+            - name: write
+        - name: cassandra.row_cache_hit_ratio
+          description: Key cache hit ratio
+          unit: percentage
+          dimensions:
+            - name: hit_ratio
+        - name: cassandra.row_cache_hit_rate
+          description: Key cache hit rate
+          unit: events/s
+          dimensions:
+            - name: hits
+            - name: misses
+        - name: cassandra.row_cache_utilization
+          description: Key cache utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: cassandra.row_cache_size
+          description: Key cache size
+          unit: bytes
+          dimensions:
+            - name: size
+        - name: cassandra.key_cache_hit_ratio
+          description: Row cache hit ratio
+          unit: percentage
+          dimensions:
+            - name: hit_ratio
+        - name: cassandra.key_cache_hit_rate
+          description: Row cache hit rate
+          unit: events/s
+          dimensions:
+            - name: hits
+            - name: misses
+        - name: cassandra.key_cache_utilization
+          description: Row cache utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: cassandra.key_cache_size
+          description: Row cache size
+          unit: bytes
+          dimensions:
+            - name: size
+        - name: cassandra.storage_live_disk_space_used
+          description: Disk space used by live data
+          unit: bytes
+          dimensions:
+            - name: used
+        - name: cassandra.compaction_completed_tasks_rate
+          description: Completed compactions rate
+          unit: tasks/s
+          dimensions:
+            - name: completed
+        - name: cassandra.compaction_pending_tasks_count
+          description: Pending compactions
+          unit: tasks
+          dimensions:
+            - name: pending
+        - name: cassandra.compaction_compacted_rate
+          description: Compaction data rate
+          unit: bytes/s
+          dimensions:
+            - name: compacted
+        - name: cassandra.jvm_memory_used
+          description: Memory used
+          unit: bytes
+          dimensions:
+            - name: heap
+            - name: nonheap
+        - name: cassandra.jvm_gc_rate
+          description: Garbage collections rate
+          unit: gc/s
+          dimensions:
+            - name: parnew
+            - name: cms
+        - name: cassandra.jvm_gc_time
+          description: Garbage collection time
+          unit: seconds
+          dimensions:
+            - name: parnew
+            - name: cms
+        - name: cassandra.dropped_messages_rate
+          description: Dropped messages rate
+          unit: messages/s
+          dimensions:
+            - name: dropped
+        - name: cassandra.client_requests_timeouts_rate
+          description: Client requests timeouts rate
+          unit: timeout/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: cassandra.client_requests_unavailables_rate
+          description: Client requests unavailable exceptions rate
+          unit: exceptions/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: cassandra.client_requests_failures_rate
+          description: Client requests failures rate
+          unit: failures/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: cassandra.storage_exceptions_rate
+          description: Storage exceptions rate
+          unit: exceptions/s
+          dimensions:
+            - name: storage
+    - name: thread pool
+      description: TBD
+      labels:
+        - thread_pool
+      metrics:
+        - name: cassandra.thread_pool_active_tasks_count
+          description: Active tasks
+          unit: tasks
+          dimensions:
+            - name: active
+        - name: cassandra.thread_pool_pending_tasks_count
+          description: Pending tasks
+          unit: tasks
+          dimensions:
+            - name: pending
+        - name: cassandra.thread_pool_blocked_tasks_count
+          description: Blocked tasks
+          unit: tasks
+          dimensions:
+            - name: blocked
+        - name: cassandra.thread_pool_blocked_tasks_rate
+          description: Blocked tasks rate
+          unit: tasks/s
+          dimensions:
+            - name: blocked

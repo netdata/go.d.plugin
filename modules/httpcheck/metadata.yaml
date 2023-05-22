@@ -1,0 +1,35 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels:
+        - url
+      metrics:
+        - name: httpcheck.response_time
+          description: HTTP Response Time
+          unit: ms
+          dimensions:
+            - name: time
+        - name: httpcheck.response_length
+          description: HTTP Response Body Length
+          unit: characters
+          dimensions:
+            - name: length
+        - name: httpcheck.status
+          description: HTTP Check Status
+          unit: boolean
+          dimensions:
+            - name: success
+            - name: no_connection
+            - name: timeout
+            - name: bad_content
+            - name: bad_status
+        - name: httpcheck.in_state
+          description: HTTP Current State Duration
+          unit: boolean
+          dimensions:
+            - name: time

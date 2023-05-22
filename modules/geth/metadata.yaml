@@ -1,0 +1,113 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: geth.eth_db_chaindata_ancient_io_rate
+          description: Ancient Chaindata rate
+          unit: bytes/s
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: geth.eth_db_chaindata_ancient_io
+          description: Session ancient Chaindata
+          unit: bytes
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: geth.eth_db_chaindata_disk_io
+          description: Session chaindata on disk
+          unit: bytes
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: geth.goroutines
+          description: Number of goroutines
+          unit: goroutines
+          dimensions:
+            - name: goroutines
+        - name: geth.eth_db_chaindata_disk_io_rate
+          description: On disk Chaindata rate
+          unit: bytes/s
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: geth.chaindata_db_size
+          description: Chaindata Size
+          unit: bytes
+          dimensions:
+            - name: level_db
+            - name: ancient_db
+        - name: geth.chainhead
+          description: Chainhead
+          unit: block
+          dimensions:
+            - name: block
+            - name: receipt
+            - name: header
+        - name: geth.tx_pool_pending
+          description: Pending Transaction Pool
+          unit: transactions
+          dimensions:
+            - name: invalid
+            - name: pending
+            - name: local
+            - name: discard
+            - name: no_funds
+            - name: ratelimit
+            - name: replace
+        - name: geth.tx_pool_current
+          description: Transaction Pool
+          unit: transactions
+          dimensions:
+            - name: invalid
+            - name: pending
+            - name: local
+            - name: pool
+        - name: geth.tx_pool_queued
+          description: Queued Transaction Pool
+          unit: transactions
+          dimensions:
+            - name: discard
+            - name: eviction
+            - name: no_funds
+            - name: ratelimit
+        - name: geth.p2p_bandwidth
+          description: P2P bandwidth
+          unit: bytes/s
+          dimensions:
+            - name: ingress
+            - name: egress
+        - name: geth.reorgs
+          description: Executed Reorgs
+          unit: reorgs
+          dimensions:
+            - name: executed
+        - name: geth.reorgs_blocks
+          description: Blocks Added/Removed from Reorg
+          unit: blocks
+          dimensions:
+            - name: added
+            - name: dropped
+        - name: geth.p2p_peers
+          description: Number of Peers
+          unit: peers
+          dimensions:
+            - name: peers
+        - name: geth.p2p_peers_calls
+          description: P2P Serves and Dials
+          unit: calls/s
+          dimensions:
+            - name: dials
+            - name: serves
+        - name: geth.rpc_calls
+          description: rpc calls
+          unit: calls/s
+          dimensions:
+            - name: failed
+            - name: successful

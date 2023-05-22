@@ -1,0 +1,86 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: solr.search_requests
+          description: Search Requests
+          unit: requests/s
+          dimensions:
+            - name: search
+        - name: solr.search_errors
+          description: Search Errors
+          unit: errors/s
+          dimensions:
+            - name: errors
+        - name: solr.search_errors_by_type
+          description: Search Errors By Type
+          unit: errors/s
+          dimensions:
+            - name: client
+            - name: server
+            - name: timeouts
+        - name: solr.search_requests_processing_time
+          description: Search Requests Processing Time
+          unit: milliseconds
+          dimensions:
+            - name: time
+        - name: solr.search_requests_timings
+          description: Search Requests Timings
+          unit: milliseconds
+          dimensions:
+            - name: min
+            - name: median
+            - name: mean
+            - name: max
+        - name: solr.search_requests_processing_time_percentile
+          description: Search Requests Processing Time Percentile
+          unit: milliseconds
+          dimensions:
+            - name: p75
+            - name: p95
+            - name: p99
+            - name: p999
+        - name: solr.update_requests
+          description: Update Requests
+          unit: requests/s
+          dimensions:
+            - name: search
+        - name: solr.update_errors
+          description: Update Errors
+          unit: errors/s
+          dimensions:
+            - name: errors
+        - name: solr.update_errors_by_type
+          description: Update Errors By Type
+          unit: errors/s
+          dimensions:
+            - name: client
+            - name: server
+            - name: timeouts
+        - name: solr.update_requests_processing_time
+          description: Update Requests Processing Time
+          unit: milliseconds
+          dimensions:
+            - name: time
+        - name: solr.update_requests_timings
+          description: Update Requests Timings
+          unit: milliseconds
+          dimensions:
+            - name: min
+            - name: median
+            - name: mean
+            - name: max
+        - name: solr.update_requests_processing_time_percentile
+          description: Update Requests Processing Time Percentile
+          unit: milliseconds
+          dimensions:
+            - name: p75
+            - name: p95
+            - name: p99
+            - name: p999

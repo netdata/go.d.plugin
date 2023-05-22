@@ -1,0 +1,90 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: dnsdist.queries
+          description: Client queries received
+          unit: queries/s
+          dimensions:
+            - name: all
+            - name: recursive
+            - name: empty
+        - name: dnsdist.queries_dropped
+          description: Client queries dropped
+          unit: queries/s
+          dimensions:
+            - name: rule_drop
+            - name: dynamic_blocked
+            - name: no_policy
+            - name: non_queries
+        - name: dnsdist.packets_dropped
+          description: Packets dropped
+          unit: packets/s
+          dimensions:
+            - name: acl
+        - name: dnsdist.answers
+          description: Answers statistics
+          unit: answers/s
+          dimensions:
+            - name: self_answered
+            - name: nxdomain
+            - name: refused
+            - name: trunc_failures
+        - name: dnsdist.backend_responses
+          description: Backend responses
+          unit: responses/s
+          dimensions:
+            - name: responses
+        - name: dnsdist.backend_commerrors
+          description: Backend communication errors
+          unit: errors/s
+          dimensions:
+            - name: send_errors
+        - name: dnsdist.backend_errors
+          description: Backend error responses
+          unit: responses/s
+          dimensions:
+            - name: timeouts
+            - name: servfail
+            - name: non_compliant
+        - name: dnsdist.cache
+          description: Cache performance
+          unit: answers/s
+          dimensions:
+            - name: hits
+            - name: misses
+        - name: dnsdist.servercpu
+          description: DNSdist server CPU utilization
+          unit: ms/s
+          dimensions:
+            - name: system_state
+            - name: user_state
+        - name: dnsdist.servermem
+          description: DNSdist server memory utilization
+          unit: MiB
+          dimensions:
+            - name: memory_usage
+        - name: dnsdist.query_latency
+          description: Query latency
+          unit: queries/s
+          dimensions:
+            - name: 1ms
+            - name: 10ms
+            - name: 50ms
+            - name: 100ms
+            - name: 1sec
+            - name: slow
+        - name: dnsdist.query_latency_avg
+          description: Average latency for the last N queries
+          unit: microseconds
+          dimensions:
+            - name: '100'
+            - name: 1k
+            - name: 10k
+            - name: 1000k

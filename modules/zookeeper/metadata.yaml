@@ -1,0 +1,59 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: zookeeper.requests
+          description: Outstanding Requests
+          unit: requests
+          dimensions:
+            - name: outstanding
+        - name: zookeeper.requests_latency
+          description: Requests Latency
+          unit: ms
+          dimensions:
+            - name: min
+            - name: avg
+            - name: max
+        - name: zookeeper.connections
+          description: Alive Connections
+          unit: connections
+          dimensions:
+            - name: alive
+        - name: zookeeper.packets
+          description: Packets
+          unit: pps
+          dimensions:
+            - name: received
+            - name: sent
+        - name: zookeeper.file_descriptor
+          description: Open File Descriptors
+          unit: file descriptors
+          dimensions:
+            - name: open
+        - name: zookeeper.nodes
+          description: Number of Nodes
+          unit: nodes
+          dimensions:
+            - name: znode
+            - name: ephemerals
+        - name: zookeeper.watches
+          description: Number of Watches
+          unit: watches
+          dimensions:
+            - name: watches
+        - name: zookeeper.approximate_data_size
+          description: Approximate Data Tree Size
+          unit: KiB
+          dimensions:
+            - name: size
+        - name: zookeeper.server_state
+          description: Server State
+          unit: state
+          dimensions:
+            - name: state

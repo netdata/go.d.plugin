@@ -1,0 +1,37 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: dnsmasq_dhcp.dhcp_ranges
+          description: Number of DHCP Ranges
+          unit: ranges
+          dimensions:
+            - name: ipv4
+            - name: ipv6
+        - name: dnsmasq_dhcp.dhcp_hosts
+          description: Number of DHCP Hosts
+          unit: hosts
+          dimensions:
+            - name: ipv4
+            - name: ipv6
+    - name: dhcp range
+      description: TBD
+      labels:
+        - dhcp_range
+      metrics:
+        - name: dnsmasq_dhcp.dhcp_range_utilization
+          description: DHCP Range utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: dnsmasq_dhcp.dhcp_range_allocated_leases
+          description: DHCP Range Allocated Leases
+          unit: leases
+          dimensions:
+            - name: allocated

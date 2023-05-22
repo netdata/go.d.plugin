@@ -1,0 +1,363 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: mongodb.operations_rate
+          description: Operations rate
+          unit: operations/s
+          dimensions:
+            - name: reads
+            - name: writes
+            - name: commands
+        - name: mongodb.operations_latency_time
+          description: Operations Latency
+          unit: milliseconds
+          dimensions:
+            - name: reads
+            - name: writes
+            - name: commands
+        - name: mongodb.operations_by_type_rate
+          description: Operations by type
+          unit: operations/s
+          dimensions:
+            - name: insert
+            - name: query
+            - name: update
+            - name: delete
+            - name: getmore
+            - name: command
+        - name: mongodb.document_operations_rate
+          description: Document operations
+          unit: operations/s
+          dimensions:
+            - name: inserted
+            - name: deleted
+            - name: returned
+            - name: updated
+        - name: mongodb.scanned_indexes_rate
+          description: Scanned indexes
+          unit: indexes/s
+          dimensions:
+            - name: scanned
+        - name: mongodb.scanned_documents_rate
+          description: Scanned documents
+          unit: documents/s
+          dimensions:
+            - name: scanned
+        - name: mongodb.active_clients_count
+          description: Connected clients
+          unit: clients
+          dimensions:
+            - name: readers
+            - name: writers
+        - name: mongodb.queued_operations_count
+          description: Queued operations because of a lock
+          unit: operations
+          dimensions:
+            - name: reads
+            - name: writes
+        - name: mongodb.cursors_open_count
+          description: Open cursors
+          unit: cursors
+          dimensions:
+            - name: open
+        - name: mongodb.cursors_open_no_timeout_count
+          description: Open cursors with disabled timeout
+          unit: cursors
+          dimensions:
+            - name: open_no_timeout
+        - name: mongodb.cursors_opened_rate
+          description: Opened cursors rate
+          unit: cursors/s
+          dimensions:
+            - name: opened
+        - name: mongodb.cursors_timed_out_rate
+          description: Timed-out cursors
+          unit: cursors/s
+          dimensions:
+            - name: timed_out
+        - name: mongodb.cursors_by_lifespan_count
+          description: Cursors lifespan
+          unit: cursors
+          dimensions:
+            - name: le_1s
+            - name: 1s_5s
+            - name: 5s_15s
+            - name: 15s_30s
+            - name: 30s_1m
+            - name: 1m_10m
+            - name: ge_10m
+        - name: mongodb.transactions_count
+          description: Current transactions
+          unit: transactions
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: open
+            - name: prepared
+        - name: mongodb.transactions_rate
+          description: Transactions rate
+          unit: transactions/s
+          dimensions:
+            - name: started
+            - name: aborted
+            - name: committed
+            - name: prepared
+        - name: mongodb.connections_usage
+          description: Connections usage
+          unit: connections
+          dimensions:
+            - name: available
+            - name: used
+        - name: mongodb.connections_by_state_count
+          description: Connections By State
+          unit: connections
+          dimensions:
+            - name: active
+            - name: threaded
+            - name: exhaust_is_master
+            - name: exhaust_hello
+            - name: awaiting_topology_changes
+        - name: mongodb.connections_rate
+          description: Connections Rate
+          unit: connections/s
+          dimensions:
+            - name: created
+        - name: mongodb.asserts_rate
+          description: Raised assertions
+          unit: asserts/s
+          dimensions:
+            - name: regular
+            - name: warning
+            - name: msg
+            - name: user
+            - name: tripwire
+            - name: rollovers
+        - name: mongodb.network_traffic_rate
+          description: Network traffic
+          unit: bytes/s
+          dimensions:
+            - name: in
+            - name: out
+        - name: mongodb.network_requests_rate
+          description: Network Requests
+          unit: requests/s
+          dimensions:
+            - name: requests
+        - name: mongodb.network_slow_dns_resolutions_rate
+          description: Slow DNS resolution operations
+          unit: resolutions/s
+          dimensions:
+            - name: slow_dns
+        - name: mongodb.network_slow_ssl_handshakes_rate
+          description: Slow SSL handshake operations
+          unit: handshakes/s
+          dimensions:
+            - name: slow_ssl
+        - name: mongodb.memory_resident_size
+          description: Used resident memory
+          unit: bytes
+          dimensions:
+            - name: used
+        - name: mongodb.memory_virtual_size
+          description: Used virtual memory
+          unit: bytes
+          dimensions:
+            - name: used
+        - name: mongodb.memory_page_faults_rate
+          description: Memory page faults
+          unit: pgfaults/s
+          dimensions:
+            - name: pgfaults
+        - name: mongodb.memory_tcmalloc_stats
+          description: TCMalloc statistics
+          unit: bytes
+          dimensions:
+            - name: allocated
+            - name: central_cache_freelist
+            - name: transfer_cache_freelist
+            - name: thread_cache_freelists
+            - name: pageheap_freelist
+            - name: pageheap_unmapped
+        - name: mongodb.wiredtiger_concurrent_read_transactions_usage
+          description: Wired Tiger concurrent read transactions usage
+          unit: transactions
+          dimensions:
+            - name: available
+            - name: used
+        - name: mongodb.wiredtiger_concurrent_write_transactions_usage
+          description: Wired Tiger concurrent write transactions usage
+          unit: transactions
+          dimensions:
+            - name: available
+            - name: used
+        - name: mongodb.wiredtiger_cache_usage
+          description: Wired Tiger cache usage
+          unit: bytes
+          dimensions:
+            - name: used
+        - name: mongodb.wiredtiger_cache_dirty_space_size
+          description: Wired Tiger cache dirty space size
+          unit: bytes
+          dimensions:
+            - name: dirty
+        - name: mongodb.wiredtiger_cache_io_rate
+          description: Wired Tiger IO activity
+          unit: pages/s
+          dimensions:
+            - name: read
+            - name: written
+        - name: mongodb.wiredtiger_cache_evictions_rate
+          description: Wired Tiger cache evictions
+          unit: pages/s
+          dimensions:
+            - name: unmodified
+            - name: modified
+        - name: mongodb.sharding_nodes_count
+          description: Sharding Nodes
+          unit: nodes
+          dimensions:
+            - name: shard_aware
+            - name: shard_unaware
+        - name: mongodb.sharding_sharded_databases_count
+          description: Sharded databases
+          unit: databases
+          dimensions:
+            - name: partitioned
+            - name: unpartitioned
+        - name: mongodb.sharding_sharded_collections_count
+          description: Sharded collections
+          unit: collections
+          dimensions:
+            - name: partitioned
+            - name: unpartitioned
+    - name: lock type
+      description: TBD
+      labels:
+        - lock_type
+      metrics:
+        - name: mongodb.lock_acquisitions_rate
+          description: Lock acquisitions
+          unit: acquisitions/s
+          dimensions:
+            - name: shared
+            - name: exclusive
+            - name: intent_shared
+            - name: intent_exclusive
+    - name: commit type
+      description: TBD
+      labels:
+        - commit_type
+      metrics:
+        - name: mongodb.transactions_commits_rate
+          description: Transactions commits
+          unit: commits/s
+          dimensions:
+            - name: success
+            - name: fail
+        - name: mongodb.transactions_commits_duration_time
+          description: Transactions successful commits duration
+          unit: milliseconds
+          dimensions:
+            - name: commits
+    - name: database
+      description: TBD
+      labels:
+        - database
+      metrics:
+        - name: mongodb.database_collection_count
+          description: Database collections
+          unit: collections
+          dimensions:
+            - name: collections
+        - name: mongodb.database_indexes_count
+          description: Database indexes
+          unit: indexes
+          dimensions:
+            - name: indexes
+        - name: mongodb.database_views_count
+          description: Database views
+          unit: views
+          dimensions:
+            - name: views
+        - name: mongodb.database_documents_count
+          description: Database documents
+          unit: documents
+          dimensions:
+            - name: documents
+        - name: mongodb.database_data_size
+          description: Database data size
+          unit: bytes
+          dimensions:
+            - name: data_size
+        - name: mongodb.database_storage_size
+          description: Database storage size
+          unit: bytes
+          dimensions:
+            - name: storage_size
+        - name: mongodb.database_index_size
+          description: Database index size
+          unit: bytes
+          dimensions:
+            - name: index_size
+    - name: replica set member
+      description: TBD
+      labels:
+        - repl_set_member
+      metrics:
+        - name: mongodb.repl_set_member_state
+          description: Replica Set member state
+          unit: state
+          dimensions:
+            - name: primary
+            - name: startup
+            - name: secondary
+            - name: recovering
+            - name: startup2
+            - name: unknown
+            - name: arbiter
+            - name: down
+            - name: rollback
+            - name: removed
+        - name: mongodb.repl_set_member_health_status
+          description: Replica Set member health status
+          unit: status
+          dimensions:
+            - name: up
+            - name: down
+        - name: mongodb.repl_set_member_replication_lag_time
+          description: Replica Set member replication lag
+          unit: milliseconds
+          dimensions:
+            - name: replication_lag
+        - name: mongodb.repl_set_member_heartbeat_latency_time
+          description: Replica Set member heartbeat latency
+          unit: milliseconds
+          dimensions:
+            - name: heartbeat_latency
+        - name: mongodb.repl_set_member_ping_rtt_time
+          description: Replica Set member ping RTT
+          unit: milliseconds
+          dimensions:
+            - name: ping_rtt
+        - name: mongodb.repl_set_member_uptime
+          description: Replica Set member uptime
+          unit: seconds
+          dimensions:
+            - name: uptime
+    - name: shard
+      description: TBD
+      labels:
+        - shard_id
+      metrics:
+        - name: mongodb.sharding_shard_chunks_count
+          description: Shard chunks
+          unit: chunks
+          dimensions:
+            - name: chunks

@@ -1,0 +1,33 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: dnsmasq.servers_queries
+          description: Queries forwarded to the upstream servers
+          unit: queries/s
+          dimensions:
+            - name: success
+            - name: failed
+        - name: dnsmasq.cache_performance
+          description: Cache performance
+          unit: events/s
+          dimensions:
+            - name: hist
+            - name: misses
+        - name: dnsmasq.cache_operations
+          description: Cache operations
+          unit: operations/s
+          dimensions:
+            - name: insertions
+            - name: evictions
+        - name: dnsmasq.cache_size
+          description: Cache size
+          unit: entries
+          dimensions:
+            - name: size

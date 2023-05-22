@@ -1,0 +1,121 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: gpu
+      description: TBD
+      labels:
+        - uuid
+        - product_name
+      metrics:
+        - name: nvidia_smi.gpu_pcie_bandwidth_usage
+          description: PCI Express Bandwidth Usage
+          unit: B/s
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: nvidia_smi.gpu_pcie_bandwidth_utilization
+          description: PCI Express Bandwidth Utilization
+          unit: '%'
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: nvidia_smi.gpu_fan_speed_perc
+          description: Fan speed
+          unit: '%'
+          dimensions:
+            - name: fan_speed
+        - name: nvidia_smi.gpu_utilization
+          description: GPU utilization
+          unit: '%'
+          dimensions:
+            - name: gpu
+        - name: nvidia_smi.gpu_memory_utilization
+          description: Memory utilization
+          unit: '%'
+          dimensions:
+            - name: memory
+        - name: nvidia_smi.gpu_decoder_utilization
+          description: Decoder utilization
+          unit: '%'
+          dimensions:
+            - name: decoder
+        - name: nvidia_smi.gpu_encoder_utilization
+          description: Encoder utilization
+          unit: '%'
+          dimensions:
+            - name: encoder
+        - name: nvidia_smi.gpu_frame_buffer_memory_usage
+          description: Frame buffer memory usage
+          unit: B
+          dimensions:
+            - name: free
+            - name: used
+            - name: reserved
+        - name: nvidia_smi.gpu_bar1_memory_usage
+          description: BAR1 memory usage
+          unit: B
+          dimensions:
+            - name: free
+            - name: used
+        - name: nvidia_smi.gpu_temperature
+          description: Temperature
+          unit: Celsius
+          dimensions:
+            - name: temperature
+        - name: nvidia_smi.gpu_voltage
+          description: Voltage
+          unit: V
+          dimensions:
+            - name: voltage
+        - name: nvidia_smi.gpu_clock_freq
+          description: Clock current frequency
+          unit: MHz
+          dimensions:
+            - name: graphics
+            - name: video
+            - name: sm
+            - name: mem
+        - name: nvidia_smi.gpu_power_draw
+          description: Power draw
+          unit: Watts
+          dimensions:
+            - name: power_draw
+        - name: nvidia_smi.gpu_performance_state
+          description: Performance state
+          unit: state
+          dimensions:
+            - name: P0-P15
+        - name: nvidia_smi.gpu_mig_mode_current_status
+          description: MIG current mode
+          unit: status
+          dimensions:
+            - name: enabled
+            - name: disabled
+        - name: nvidia_smi.gpu_mig_devices_count
+          description: MIG devices
+          unit: devices
+          dimensions:
+            - name: mig
+    - name: mig
+      description: TBD
+      labels:
+        - gpu_uuid
+        - gpu_product_name
+        - gpu_instance_id
+      metrics:
+        - name: nvidia_smi.gpu_mig_frame_buffer_memory_usage
+          description: Frame buffer memory usage
+          unit: B
+          dimensions:
+            - name: free
+            - name: used
+            - name: reserved
+        - name: nvidia_smi.gpu_mig_bar1_memory_usage
+          description: BAR1 memory usage
+          unit: B
+          dimensions:
+            - name: free
+            - name: used

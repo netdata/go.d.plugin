@@ -1,0 +1,29 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels:
+        - host
+        - port
+      metrics:
+        - name: portcheck.status
+          description: TCP Check Status
+          unit: boolean
+          dimensions:
+            - name: success
+            - name: failed
+            - name: timeout
+        - name: portcheck.state_duration
+          description: Current State Duration
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: portcheck.latency
+          description: TCP Connection Latency
+          unit: ms
+          dimensions:
+            - name: time

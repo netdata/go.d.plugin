@@ -1,0 +1,127 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: ntpd.sys_offset
+          description: Combined offset of server relative to this host
+          unit: milliseconds
+          dimensions:
+            - name: offset
+        - name: ntpd.sys_jitter
+          description: Combined system jitter and clock jitter
+          unit: milliseconds
+          dimensions:
+            - name: system
+            - name: clock
+        - name: ntpd.sys_frequency
+          description: Frequency offset relative to hardware clock
+          unit: ppm
+          dimensions:
+            - name: frequency
+        - name: ntpd.sys_wander
+          description: Clock frequency wander
+          unit: ppm
+          dimensions:
+            - name: clock
+        - name: ntpd.sys_rootdelay
+          description: Total roundtrip delay to the primary reference clock
+          unit: milliseconds
+          dimensions:
+            - name: delay
+        - name: ntpd.sys_rootdisp
+          description: Total root dispersion to the primary reference clock
+          unit: milliseconds
+          dimensions:
+            - name: dispersion
+        - name: ntpd.sys_stratum
+          description: Stratum
+          unit: stratum
+          dimensions:
+            - name: stratum
+        - name: ntpd.sys_tc
+          description: Time constant and poll exponent
+          unit: log2
+          dimensions:
+            - name: current
+            - name: minimum
+        - name: ntpd.sys_precision
+          description: Precision
+          unit: log2
+          dimensions:
+            - name: precision
+    - name: peer
+      description: TBD
+      labels:
+        - peer_address
+      metrics:
+        - name: ntpd.peer_offset
+          description: Peer offset
+          unit: milliseconds
+          dimensions:
+            - name: offset
+        - name: ntpd.peer_delay
+          description: Peer delay
+          unit: milliseconds
+          dimensions:
+            - name: delay
+        - name: ntpd.peer_dispersion
+          description: Peer dispersion
+          unit: milliseconds
+          dimensions:
+            - name: dispersion
+        - name: ntpd.peer_jitter
+          description: Peer jitter
+          unit: milliseconds
+          dimensions:
+            - name: jitter
+        - name: ntpd.peer_xleave
+          description: Peer interleave delay
+          unit: milliseconds
+          dimensions:
+            - name: xleave
+        - name: ntpd.peer_rootdelay
+          description: Peer roundtrip delay to the primary reference clock
+          unit: milliseconds
+          dimensions:
+            - name: rootdelay
+        - name: ntpd.peer_rootdisp
+          description: Peer root dispersion to the primary reference clock
+          unit: milliseconds
+          dimensions:
+            - name: dispersion
+        - name: ntpd.peer_stratum
+          description: Peer stratum
+          unit: stratum
+          dimensions:
+            - name: stratum
+        - name: ntpd.peer_hmode
+          description: Peer host mode
+          unit: hmode
+          dimensions:
+            - name: hmode
+        - name: ntpd.peer_pmode
+          description: Peer mode
+          unit: pmode
+          dimensions:
+            - name: pmode
+        - name: ntpd.peer_hpoll
+          description: Peer host poll exponent
+          unit: log2
+          dimensions:
+            - name: hpoll
+        - name: ntpd.peer_ppoll
+          description: Peer poll exponent
+          unit: log2
+          dimensions:
+            - name: ppoll
+        - name: ntpd.peer_precision
+          description: Peer precision
+          unit: log2
+          dimensions:
+            - name: precision

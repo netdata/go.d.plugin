@@ -1,0 +1,68 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: pihole.dns_queries_total
+          description: DNS Queries Total (Cached, Blocked and Forwarded)
+          unit: queries
+          dimensions:
+            - name: queries
+        - name: pihole.dns_queries
+          description: DNS Queries
+          unit: queries
+          dimensions:
+            - name: cached
+            - name: blocked
+            - name: forwarded
+        - name: pihole.dns_queries_percentage
+          description: DNS Queries Percentage
+          unit: percentage
+          dimensions:
+            - name: cached
+            - name: blocked
+            - name: forwarded
+        - name: pihole.unique_clients
+          description: Unique Clients
+          unit: clients
+          dimensions:
+            - name: unique
+        - name: pihole.domains_on_blocklist
+          description: Domains On Blocklist
+          unit: domains
+          dimensions:
+            - name: blocklist
+        - name: pihole.blocklist_last_update
+          description: Blocklist Last Update
+          unit: seconds
+          dimensions:
+            - name: ago
+        - name: pihole.unwanted_domains_blocking_status
+          description: Unwanted Domains Blocking Status
+          unit: status
+          dimensions:
+            - name: enabled
+            - name: disabled
+        - name: pihole.dns_queries_types
+          description: DNS Queries Per Type
+          unit: percentage
+          dimensions:
+            - name: a
+            - name: aaaa
+            - name: any
+            - name: ptr
+            - name: soa
+            - name: srv
+            - name: txt
+        - name: pihole.dns_queries_forwarded_destination
+          description: DNS Queries Per Destination
+          unit: percentage
+          dimensions:
+            - name: cached
+            - name: blocked
+            - name: other

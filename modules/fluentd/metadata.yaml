@@ -1,0 +1,25 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: fluentd.retry_count
+          description: Plugin Retry Count
+          unit: count
+          dimensions:
+            - name: a dimension per plugin
+        - name: fluentd.buffer_queue_length
+          description: Plugin Buffer Queue Length
+          unit: queue_length
+          dimensions:
+            - name: a dimension per plugin
+        - name: fluentd.buffer_total_queued_size
+          description: Plugin Buffer Total Size
+          unit: queued_size
+          dimensions:
+            - name: a dimension per plugin

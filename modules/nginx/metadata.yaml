@@ -1,0 +1,33 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: nginx.connections
+          description: Active Client Connections Including Waiting Connections
+          unit: connections
+          dimensions:
+            - name: active
+        - name: nginx.connections_status
+          description: Active Connections Per Status
+          unit: connections
+          dimensions:
+            - name: reading
+            - name: writing
+            - name: idle
+        - name: nginx.connections_accepted_handled
+          description: Accepted And Handled Connections
+          unit: connections/s
+          dimensions:
+            - name: accepted
+            - name: handled
+        - name: nginx.requests
+          description: Client Requests
+          unit: requests/s
+          dimensions:
+            - name: requests

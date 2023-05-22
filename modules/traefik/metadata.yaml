@@ -1,0 +1,33 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: entrypoint, protocol
+      description: TBD
+      labels: []
+      metrics:
+        - name: traefik.entrypoint_requests
+          description: Processed HTTP requests
+          unit: requests/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: traefik.entrypoint_request_duration_average
+          description: Average HTTP request processing time
+          unit: milliseconds
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: traefik.entrypoint_open_connections
+          description: Open connections
+          unit: connections
+          dimensions:
+            - name: a dimension per HTTP method

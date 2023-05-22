@@ -1,0 +1,110 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: unit
+      description: TBD
+      labels:
+        - unit_name
+      metrics:
+        - name: systemd.service_unit_state
+          description: Service Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.socket_unit_state
+          description: Socket Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.target_unit_state
+          description: Target Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.path_unit_state
+          description: Path Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.device_unit_state
+          description: Device Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.mount_unit_state
+          description: Mount Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.automount_unit_state
+          description: Automount Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.swap_unit_state
+          description: Swap Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.timer_unit_state
+          description: Timer Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.scope_unit_state
+          description: Scope Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed
+        - name: systemd.slice_unit_state
+          description: Slice Unit State
+          unit: state
+          dimensions:
+            - name: active
+            - name: inactive
+            - name: activating
+            - name: deactivating
+            - name: failed

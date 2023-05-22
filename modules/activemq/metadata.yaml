@@ -1,0 +1,26 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: activemq.messages
+          description: Messaged
+          unit: messages/s
+          dimensions:
+            - name: enqueued
+            - name: dequeued
+        - name: activemq.unprocessed_messages
+          description: Unprocessed Messages
+          unit: messages
+          dimensions:
+            - name: unprocessed
+        - name: activemq.consumers
+          description: Consumers
+          unit: consumers
+          dimensions:
+            - name: consumers

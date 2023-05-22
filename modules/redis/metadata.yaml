@@ -1,0 +1,150 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: redis.connections
+          description: Accepted and rejected (maxclients limit) connections
+          unit: connections/s
+          dimensions:
+            - name: accepted
+            - name: rejected
+        - name: redis.clients
+          description: Clients
+          unit: clients
+          dimensions:
+            - name: connected
+            - name: blocked
+            - name: tracking
+            - name: in_timeout_table
+        - name: redis.ping_latency
+          description: Ping latency
+          unit: seconds
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg
+        - name: redis.commands
+          description: Processed commands
+          unit: commands/s
+          dimensions:
+            - name: processes
+        - name: redis.keyspace_lookup_hit_rate
+          description: Keys lookup hit rate
+          unit: percentage
+          dimensions:
+            - name: lookup_hit_rate
+        - name: redis.memory
+          description: Memory usage
+          unit: bytes
+          dimensions:
+            - name: max
+            - name: used
+            - name: rss
+            - name: peak
+            - name: dataset
+            - name: lua
+            - name: scripts
+        - name: redis.mem_fragmentation_ratio
+          description: Ratio between used_memory_rss and used_memory
+          unit: ratio
+          dimensions:
+            - name: mem_fragmentation
+        - name: redis.key_eviction_events
+          description: Evicted keys due to maxmemory limit
+          unit: keys/s
+          dimensions:
+            - name: evicted
+        - name: redis.net
+          description: Bandwidth
+          unit: kilobits/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: redis.rdb_changes
+          description: TI,TLE
+          unit: operations
+          dimensions:
+            - name: changes
+        - name: redis.bgsave_now
+          description: Duration of the on-going RDB save operation if any
+          unit: seconds
+          dimensions:
+            - name: current_bgsave_time
+        - name: redis.bgsave_health
+          description: 'Status of the last RDB save operation (0: ok, 1: err)'
+          unit: status
+          dimensions:
+            - name: last_bgsave
+        - name: redis.bgsave_last_rdb_save_since_time
+          description: Time elapsed since the last successful RDB save
+          unit: seconds
+          dimensions:
+            - name: last_bgsave_time
+        - name: redis.aof_file_size
+          description: AOF file size
+          unit: bytes
+          dimensions:
+            - name: current
+            - name: base
+        - name: redis.commands_calls
+          description: Calls per command
+          unit: calls
+          dimensions:
+            - name: a dimension per command
+        - name: redis.commands_usec
+          description: Total CPU time consumed by the commands
+          unit: microseconds
+          dimensions:
+            - name: a dimension per command
+        - name: redis.commands_usec_per_sec
+          description: Average CPU consumed per command execution
+          unit: microseconds/s
+          dimensions:
+            - name: a dimension per command
+        - name: redis.key_expiration_events
+          description: Expired keys
+          unit: keys/s
+          dimensions:
+            - name: expired
+        - name: redis.database_keys
+          description: Keys per database
+          unit: keys
+          dimensions:
+            - name: a dimension per database
+        - name: redis.database_expires_keys
+          description: Keys with an expiration per database
+          unit: keys
+          dimensions:
+            - name: a dimension per database
+        - name: redis.connected_replicas
+          description: Connected replicas
+          unit: replicas
+          dimensions:
+            - name: connected
+        - name: redis.master_link_status
+          description: Master link status
+          unit: status
+          dimensions:
+            - name: up
+            - name: down
+        - name: redis.master_last_io_since_time
+          description: Time elapsed since the last interaction with master
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: redis.master_link_down_since_time
+          description: Time elapsed since the link between master and slave is down
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: redis.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: uptime

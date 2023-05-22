@@ -1,0 +1,65 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: powerdns_recursor.questions_in
+          description: Incoming questions
+          unit: questions/s
+          dimensions:
+            - name: total
+            - name: tcp
+            - name: ipv6
+        - name: powerdns_recursor.questions_out
+          description: Outgoing questions
+          unit: questions/s
+          dimensions:
+            - name: udp
+            - name: tcp
+            - name: ipv6
+            - name: throttled
+        - name: powerdns_recursor.answer_time
+          description: Queries answered within a time range
+          unit: queries/s
+          dimensions:
+            - name: 0-1ms
+            - name: 1-10ms
+            - name: 10-100ms
+            - name: 100-1000ms
+            - name: slow
+        - name: powerdns_recursor.timeouts
+          description: Timeouts on outgoing UDP queries
+          unit: timeouts/s
+          dimensions:
+            - name: total
+            - name: ipv4
+            - name: ipv6
+        - name: powerdns_recursor.drops
+          description: Drops
+          unit: drops/s
+          dimensions:
+            - name: over-capacity-drops
+            - name: query-pipe-full-drops
+            - name: too-old-drops
+            - name: truncated-drops
+            - name: empty-queries
+        - name: powerdns_recursor.cache_usage
+          description: Cache Usage
+          unit: events/s
+          dimensions:
+            - name: cache-hits
+            - name: cache-misses
+            - name: packet-cache-hits
+            - name: packet-cache-misses
+        - name: powerdns_recursor.cache_size
+          description: Cache Size
+          unit: entries
+          dimensions:
+            - name: cache
+            - name: packet-cache
+            - name: negative-cache

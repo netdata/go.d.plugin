@@ -1,0 +1,40 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: dockerhub.pulls_sum
+          description: Pulls Summary
+          unit: pulls
+          dimensions:
+            - name: sum
+        - name: dockerhub.pulls
+          description: Pulls
+          unit: pulls
+          dimensions:
+            - name: a dimension per repository
+        - name: dockerhub.pulls_rate
+          description: Pulls Rate
+          unit: pulls/s
+          dimensions:
+            - name: a dimension per repository
+        - name: dockerhub.stars
+          description: Stars
+          unit: stars
+          dimensions:
+            - name: a dimension per repository
+        - name: dockerhub.status
+          description: Current Status
+          unit: status
+          dimensions:
+            - name: a dimension per repository
+        - name: dockerhub.last_updated
+          description: Time Since Last Updated
+          unit: seconds
+          dimensions:
+            - name: a dimension per repository

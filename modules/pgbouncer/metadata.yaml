@@ -1,0 +1,88 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: pgbouncer.client_connections_utilization
+          description: Client connections utilization
+          unit: percentage
+          dimensions:
+            - name: used
+    - name: database
+      description: TBD
+      labels:
+        - database
+        - postgres_database
+      metrics:
+        - name: pgbouncer.db_client_connections
+          description: Database client connections
+          unit: connections
+          dimensions:
+            - name: active
+            - name: waiting
+            - name: cancel_req
+        - name: pgbouncer.db_server_connections
+          description: Database server connections
+          unit: connections
+          dimensions:
+            - name: active
+            - name: idle
+            - name: used
+            - name: tested
+            - name: login
+        - name: pgbouncer.db_server_connections_utilization
+          description: Database server connections utilization
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: pgbouncer.db_clients_wait_time
+          description: Database clients wait time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_client_max_wait_time
+          description: Database client max wait time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_transactions
+          description: Database pooled SQL transactions
+          unit: transactions/s
+          dimensions:
+            - name: transactions
+        - name: pgbouncer.db_transactions_time
+          description: Database transactions time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_transaction_avg_time
+          description: Database transaction average time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_queries
+          description: Database pooled SQL queries
+          unit: queries/s
+          dimensions:
+            - name: queries
+        - name: pgbouncer.db_queries_time
+          description: Database queries time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_query_avg_time
+          description: Database query average time
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: pgbouncer.db_network_io
+          description: Database traffic
+          unit: B/s
+          dimensions:
+            - name: received
+            - name: sent

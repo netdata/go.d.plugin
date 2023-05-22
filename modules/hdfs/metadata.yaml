@@ -1,0 +1,151 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: hdfs.heap_memory
+          description: Heap Memory
+          unit: MiB
+          dimensions:
+            - name: committed
+            - name: used
+        - name: hdfs.gc_count_total
+          description: GC Events
+          unit: events/s
+          dimensions:
+            - name: gc
+        - name: hdfs.gc_time_total
+          description: GC Time
+          unit: ms
+          dimensions:
+            - name: ms
+        - name: hdfs.gc_threshold
+          description: Number of Times That the GC Threshold is Exceeded
+          unit: events/s
+          dimensions:
+            - name: info
+            - name: warn
+        - name: hdfs.threads
+          description: Number of Threads
+          unit: num
+          dimensions:
+            - name: new
+            - name: runnable
+            - name: blocked
+            - name: waiting
+            - name: timed_waiting
+            - name: terminated
+        - name: hdfs.logs_total
+          description: Number of Logs
+          unit: logs/s
+          dimensions:
+            - name: info
+            - name: error
+            - name: warn
+            - name: fatal
+        - name: hdfs.rpc_bandwidth
+          description: RPC Bandwidth
+          unit: kilobits/s
+          dimensions:
+            - name: received
+            - name: sent
+        - name: hdfs.rpc_calls
+          description: RPC Calls
+          unit: calls/s
+          dimensions:
+            - name: calls
+        - name: hdfs.open_connections
+          description: RPC Open Connections
+          unit: connections
+          dimensions:
+            - name: open
+        - name: hdfs.call_queue_length
+          description: RPC Call Queue Length
+          unit: num
+          dimensions:
+            - name: length
+        - name: hdfs.avg_queue_time
+          description: RPC Avg Queue Time
+          unit: ms
+          dimensions:
+            - name: time
+        - name: hdfs.avg_processing_time
+          description: RPC Avg Processing Time
+          unit: ms
+          dimensions:
+            - name: time
+        - name: hdfs.capacity
+          description: Capacity Across All Datanodes
+          unit: KiB
+          dimensions:
+            - name: remaining
+            - name: used
+        - name: hdfs.used_capacity
+          description: Used Capacity Across All Datanodes
+          unit: KiB
+          dimensions:
+            - name: dfs
+            - name: non_dfs
+        - name: hdfs.load
+          description: Number of Concurrent File Accesses (read/write) Across All
+            DataNodes
+          unit: load
+          dimensions:
+            - name: load
+        - name: hdfs.volume_failures_total
+          description: Number of Volume Failures Across All Datanodes
+          unit: events/s
+          dimensions:
+            - name: failures
+        - name: hdfs.files_total
+          description: Number of Tracked Files
+          unit: num
+          dimensions:
+            - name: files
+        - name: hdfs.blocks_total
+          description: Number of Allocated Blocks in the System
+          unit: num
+          dimensions:
+            - name: blocks
+        - name: hdfs.blocks
+          description: Number of Problem Blocks (can point to an unhealthy cluster)
+          unit: num
+          dimensions:
+            - name: corrupt
+            - name: missing
+            - name: under_replicated
+        - name: hdfs.data_nodes
+          description: Number of Data Nodes By Status
+          unit: num
+          dimensions:
+            - name: live
+            - name: dead
+            - name: stale
+        - name: hdfs.datanode_capacity
+          description: Capacity
+          unit: KiB
+          dimensions:
+            - name: remaining
+            - name: used
+        - name: hdfs.datanode_used_capacity
+          description: Used Capacity
+          unit: KiB
+          dimensions:
+            - name: dfs
+            - name: non_dfs
+        - name: hdfs.datanode_failed_volumes
+          description: Number of Failed Volumes
+          unit: num
+          dimensions:
+            - name: failed volumes
+        - name: hdfs.datanode_bandwidth
+          description: Bandwidth
+          unit: KiB/s
+          dimensions:
+            - name: reads
+            - name: writes

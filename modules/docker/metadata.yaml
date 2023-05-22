@@ -1,0 +1,68 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: docker.containers_state
+          description: Total number of Docker containers in various states
+          unit: containers
+          dimensions:
+            - name: running
+            - name: paused
+            - name: stopped
+        - name: docker.containers_health_status
+          description: Total number of Docker containers in various health states
+          unit: containers
+          dimensions:
+            - name: healthy
+            - name: unhealthy
+            - name: not_running_unhealthy
+            - name: starting
+            - name: no_healthcheck
+        - name: docker.images
+          description: Total number of Docker images in various states
+          unit: images
+          dimensions:
+            - name: active
+            - name: dangling
+        - name: docker.images_size
+          description: Total size of all Docker images
+          unit: bytes
+          dimensions:
+            - name: size
+    - name: container
+      description: TBD
+      labels:
+        - container_name
+        - image
+      metrics:
+        - name: docker.container_state
+          description: Docker container state
+          unit: state
+          dimensions:
+            - name: running
+            - name: paused
+            - name: exited
+            - name: created
+            - name: restarting
+            - name: removing
+            - name: dead
+        - name: docker.container_health_status
+          description: Docker container health status
+          unit: status
+          dimensions:
+            - name: healthy
+            - name: unhealthy
+            - name: not_running_unhealthy
+            - name: starting
+            - name: no_healthcheck
+        - name: docker.container_writeable_layer_size
+          description: Docker container writable layer size
+          unit: size
+          dimensions:
+            - name: writeable_layer

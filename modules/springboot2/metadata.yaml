@@ -1,0 +1,56 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: springboot2.response_codes
+          description: Response Codes
+          unit: requests/s
+          dimensions:
+            - name: 1xx
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: springboot2.thread
+          description: Threads
+          unit: threads
+          dimensions:
+            - name: daemon
+            - name: total
+        - name: springboot2.heap
+          description: Overview
+          unit: B
+          dimensions:
+            - name: free
+            - name: eden
+            - name: survivor
+            - name: old
+        - name: springboot2.heap_eden
+          description: Eden Space
+          unit: B
+          dimensions:
+            - name: used
+            - name: commited
+        - name: springboot2.heap_survivor
+          description: Survivor Space
+          unit: B
+          dimensions:
+            - name: used
+            - name: commited
+        - name: springboot2.heap_old
+          description: Old Space
+          unit: B
+          dimensions:
+            - name: used
+            - name: commited
+        - name: springboot2.uptime
+          description: TThe uptime of the Java virtual machine
+          unit: seconds
+          dimensions:
+            - name: uptime

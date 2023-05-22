@@ -1,0 +1,34 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: host
+      description: TBD
+      labels:
+        - host
+      metrics:
+        - name: ping.host_rtt
+          description: Ping round-trip time
+          unit: milliseconds
+          dimensions:
+            - name: min
+            - name: max
+            - name: avg
+        - name: ping.host_std_dev_rtt
+          description: Ping round-trip time standard deviation
+          unit: milliseconds
+          dimensions:
+            - name: std_dev
+        - name: ping.host_packet_loss
+          description: Ping packet loss
+          unit: percentage
+          dimensions:
+            - name: loss
+        - name: ping.host_packets
+          description: Ping packets transferred
+          unit: packets
+          dimensions:
+            - name: received
+            - name: sent

@@ -1,0 +1,35 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: phpdaemon.workers
+          description: Workers
+          unit: workers
+          dimensions:
+            - name: alive
+            - name: shutdown
+        - name: phpdaemon.alive_workers
+          description: Alive Workers State
+          unit: workers
+          dimensions:
+            - name: idle
+            - name: busy
+            - name: reloading
+        - name: phpdaemon.idle_workers
+          description: Idle Workers State
+          unit: workers
+          dimensions:
+            - name: preinit
+            - name: init
+            - name: initialized
+        - name: phpdaemon.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: time

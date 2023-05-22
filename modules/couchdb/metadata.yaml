@@ -1,0 +1,135 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: couchdb.activity
+          description: Overall Activity
+          unit: requests/s
+          dimensions:
+            - name: db_reads
+            - name: db_writes
+            - name: view_reads
+        - name: couchdb.request_methods
+          description: HTTP request methods
+          unit: requests/s
+          dimensions:
+            - name: copy
+            - name: delete
+            - name: get
+            - name: head
+            - name: options
+            - name: post
+            - name: put
+        - name: couchdb.response_codes
+          description: HTTP response status codes
+          unit: responses/s
+          dimensions:
+            - name: '200'
+            - name: '201'
+            - name: '202'
+            - name: '204'
+            - name: '206'
+            - name: '301'
+            - name: '302'
+            - name: '304'
+            - name: '400'
+            - name: '401'
+            - name: '403'
+            - name: '404'
+            - name: '406'
+            - name: '409'
+            - name: '412'
+            - name: '413'
+            - name: '414'
+            - name: '415'
+            - name: '416'
+            - name: '417'
+            - name: '500'
+            - name: '501'
+            - name: '503'
+        - name: couchdb.response_code_classes
+          description: HTTP response status code classes
+          unit: responses/s
+          dimensions:
+            - name: 2xx
+            - name: 3xx
+            - name: 4xx
+            - name: 5xx
+        - name: couchdb.active_tasks
+          description: Active task breakdown
+          unit: tasks
+          dimensions:
+            - name: indexer
+            - name: db_compaction
+            - name: replication
+            - name: view_compaction
+        - name: couchdb.replicator_jobs
+          description: Replicator job breakdown
+          unit: jobs
+          dimensions:
+            - name: running
+            - name: pending
+            - name: crashed
+            - name: internal_replication_jobs
+        - name: couchdb.open_files
+          description: Open files
+          unit: files
+          dimensions:
+            - name: files
+        - name: couchdb.erlang_vm_memory
+          description: Erlang VM memory usage
+          unit: B
+          dimensions:
+            - name: atom
+            - name: binaries
+            - name: code
+            - name: ets
+            - name: procs
+            - name: other
+        - name: couchdb.proccounts
+          description: Process counts
+          unit: processes
+          dimensions:
+            - name: os_procs
+            - name: erl_procs
+        - name: couchdb.peakmsgqueue
+          description: Peak message queue size
+          unit: messages
+          dimensions:
+            - name: peak_size
+        - name: couchdb.reductions
+          description: Erlang reductions
+          unit: reductions
+          dimensions:
+            - name: reductions
+        - name: couchdb.db_sizes_file
+          description: Database sizes (file)
+          unit: KiB
+          dimensions:
+            - name: a dimension per database
+        - name: couchdb.db_sizes_external
+          description: Database sizes (external)
+          unit: KiB
+          dimensions:
+            - name: a dimension per database
+        - name: couchdb.db_sizes_active
+          description: Database sizes (active)
+          unit: KiB
+          dimensions:
+            - name: a dimension per database
+        - name: couchdb.db_doc_count
+          description: 'Database # of docs'
+          unit: docs
+          dimensions:
+            - name: a dimension per database
+        - name: couchdb.db_doc_del_count
+          description: 'Database # of deleted docs'
+          unit: docs
+          dimensions:
+            - name: a dimension per database

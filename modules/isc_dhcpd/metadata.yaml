@@ -1,0 +1,25 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: isc_dhcpd.active_leases_total
+          description: Active Leases Total
+          unit: leases
+          dimensions:
+            - name: active
+        - name: isc_dhcpd.pool_active_leases
+          description: Pool Active Leases
+          unit: leases
+          dimensions:
+            - name: a dimension per DHCP pool
+        - name: isc_dhcpd.pool_utilization
+          description: Pool Utilization
+          unit: percentage
+          dimensions:
+            - name: a dimension per DHCP pool

@@ -1,0 +1,241 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: global
+      description: TBD
+      labels: []
+      metrics:
+        - name: unbound.queries
+          description: Received Queries
+          unit: queries
+          dimensions:
+            - name: queries
+        - name: unbound.queries_ip_ratelimited
+          description: Rate Limited Queries
+          unit: queries
+          dimensions:
+            - name: ratelimited
+        - name: unbound.dnscrypt_queries
+          description: DNSCrypt Queries
+          unit: queries
+          dimensions:
+            - name: crypted
+            - name: cert
+            - name: cleartext
+            - name: malformed
+        - name: unbound.cache
+          description: Cache Statistics
+          unit: events
+          dimensions:
+            - name: hits
+            - name: miss
+        - name: unbound.cache_percentage
+          description: Cache Statistics Percentage
+          unit: percentage
+          dimensions:
+            - name: hits
+            - name: miss
+        - name: unbound.prefetch
+          description: Cache Prefetches
+          unit: prefetches
+          dimensions:
+            - name: prefetches
+        - name: unbound.expired
+          description: Replies Served From Expired Cache
+          unit: replies
+          dimensions:
+            - name: expired
+        - name: unbound.zero_ttl_replies
+          description: Replies Served From Expired Cache
+          unit: replies
+          dimensions:
+            - name: zero_ttl
+        - name: unbound.recursive_replies
+          description: Replies That Needed Recursive Processing
+          unit: replies
+          dimensions:
+            - name: recursive
+        - name: unbound.recursion_time
+          description: Time Spent On Recursive Processing
+          unit: milliseconds
+          dimensions:
+            - name: avg
+            - name: median
+        - name: unbound.request_list_usage
+          description: Request List Usage
+          unit: queries
+          dimensions:
+            - name: avg
+            - name: max
+        - name: unbound.current_request_list_usage
+          description: Current Request List Usage
+          unit: queries
+          dimensions:
+            - name: all
+            - name: users
+        - name: unbound.request_list_jostle_list
+          description: Request List Jostle List Events
+          unit: queries
+          dimensions:
+            - name: overwritten
+            - name: dropped
+        - name: unbound.tcpusage
+          description: TCP Handler Buffers
+          unit: buffers
+          dimensions:
+            - name: usage
+        - name: unbound.uptime
+          description: Uptime
+          unit: seconds
+          dimensions:
+            - name: time
+        - name: unbound.cache_memory
+          description: Cache Memory
+          unit: KB
+          dimensions:
+            - name: message
+            - name: rrset
+            - name: dnscrypt_nonce
+            - name: dnscrypt_shared_secret
+        - name: unbound.mod_memory
+          description: Module Memory
+          unit: KB
+          dimensions:
+            - name: iterator
+            - name: respip
+            - name: validator
+            - name: subnet
+            - name: ipsec
+        - name: unbound.mem_streamwait
+          description: TCP and TLS Stream Waif Buffer Memory
+          unit: KB
+          dimensions:
+            - name: streamwait
+        - name: unbound.cache_count
+          description: Cache Items Count
+          unit: items
+          dimensions:
+            - name: infra
+            - name: key
+            - name: msg
+            - name: rrset
+            - name: dnscrypt_nonce
+            - name: shared_secret
+        - name: unbound.type_queries
+          description: Queries By Type
+          unit: queries
+          dimensions:
+            - name: a dimension per query type
+        - name: unbound.class_queries
+          description: Queries By Class
+          unit: queries
+          dimensions:
+            - name: a dimension per query class
+        - name: unbound.opcode_queries
+          description: Queries By OpCode
+          unit: queries
+          dimensions:
+            - name: a dimension per query opcode
+        - name: unbound.flag_queries
+          description: Queries By Flag
+          unit: queries
+          dimensions:
+            - name: qr
+            - name: aa
+            - name: tc
+            - name: rd
+            - name: ra
+            - name: z
+            - name: ad
+            - name: cd
+        - name: unbound.rcode_answers
+          description: Replies By RCode
+          unit: replies
+          dimensions:
+            - name: a dimension per reply rcode
+    - name: thread
+      description: TBD
+      labels: []
+      metrics:
+        - name: unbound.thread_queries
+          description: Thread Received Queries
+          unit: queries
+          dimensions:
+            - name: queries
+        - name: unbound.thread_queries_ip_ratelimited
+          description: Thread Rate Limited Queries
+          unit: queries
+          dimensions:
+            - name: ratelimited
+        - name: unbound.thread_dnscrypt_queries
+          description: Thread DNSCrypt Queries
+          unit: queries
+          dimensions:
+            - name: crypted
+            - name: cert
+            - name: cleartext
+            - name: malformed
+        - name: unbound.thread_cache
+          description: Cache Statistics
+          unit: events
+          dimensions:
+            - name: hits
+            - name: miss
+        - name: unbound.thread_cache_percentage
+          description: Cache Statistics Percentage
+          unit: percentage
+          dimensions:
+            - name: hits
+            - name: miss
+        - name: unbound.thread_prefetch
+          description: Cache Prefetches
+          unit: prefetches
+          dimensions:
+            - name: prefetches
+        - name: unbound.thread_expired
+          description: Replies Served From Expired Cache
+          unit: replies
+          dimensions:
+            - name: expired
+        - name: unbound.thread_zero_ttl_replies
+          description: Replies Served From Expired Cache
+          unit: replies
+          dimensions:
+            - name: zero_ttl
+        - name: unbound.thread_recursive_replies
+          description: Replies That Needed Recursive Processing
+          unit: replies
+          dimensions:
+            - name: recursive
+        - name: unbound.thread_recursion_time
+          description: Time Spent On Recursive Processing
+          unit: milliseconds
+          dimensions:
+            - name: avg
+            - name: median
+        - name: unbound.thread_request_list_usage
+          description: Time Spent On Recursive Processing
+          unit: queries
+          dimensions:
+            - name: avg
+            - name: max
+        - name: unbound.thread_current_request_list_usage
+          description: Current Request List Usage
+          unit: queries
+          dimensions:
+            - name: all
+            - name: users
+        - name: unbound.thread_request_list_jostle_list
+          description: Request List Jostle List Events
+          unit: queries
+          dimensions:
+            - name: overwritten
+            - name: dropped
+        - name: unbound.thread_tcpusage
+          description: TCP Handler Buffers
+          unit: buffers
+          dimensions:
+            - name: usage

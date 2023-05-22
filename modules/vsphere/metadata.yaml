@@ -1,0 +1,152 @@
+metrics:
+  folding:
+    title: Metrics
+    enabled: false
+  description: TBD
+  scope:
+    - name: virtual machine
+      description: TBD
+      labels: []
+      metrics:
+        - name: vsphere.vm_cpu_usage_total
+          description: Cpu Usage Total
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: vsphere.vm_mem_usage_percentage
+          description: Memory Usage Percentage
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: vsphere.vm_mem_usage
+          description: Memory Usage
+          unit: KiB
+          dimensions:
+            - name: granted
+            - name: consumed
+            - name: active
+            - name: shared
+        - name: vsphere.vm_mem_swap_rate
+          description: VMKernel Memory Swap Rate
+          unit: KiB/s
+          dimensions:
+            - name: in
+            - name: out
+        - name: vsphere.vm_mem_swap
+          description: VMKernel Memory Swap
+          unit: KiB
+          dimensions:
+            - name: swapped
+        - name: vsphere.vm_net_bandwidth_total
+          description: Network Bandwidth Total
+          unit: KiB/s
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.vm_net_packets_total
+          description: Network Packets Total
+          unit: packets
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.vm_net_drops_total
+          description: Network Drops Total
+          unit: packets
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.vm_disk_usage_total
+          description: Disk Usage Total
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: vsphere.vm_disk_max_latency
+          description: Disk Max Latency
+          unit: ms
+          dimensions:
+            - name: latency
+        - name: vsphere.vm_overall_status
+          description: Overall Alarm Status
+          unit: status
+          dimensions:
+            - name: status
+        - name: vsphere.vm_system_uptime
+          description: System Uptime
+          unit: seconds
+          dimensions:
+            - name: time
+    - name: host
+      description: TBD
+      labels: []
+      metrics:
+        - name: vsphere.host_cpu_usage_total
+          description: Cpu Usage Total
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: vsphere.host_mem_usage_percentage
+          description: Memory Usage Percentage
+          unit: percentage
+          dimensions:
+            - name: used
+        - name: vsphere.host_mem_usage
+          description: Memory Usage
+          unit: KiB
+          dimensions:
+            - name: granted
+            - name: consumed
+            - name: active
+            - name: shared
+            - name: sharedcommon
+        - name: vsphere.host_mem_swap_rate
+          description: VMKernel Memory Swap Rate
+          unit: KiB/s
+          dimensions:
+            - name: in
+            - name: out
+        - name: vsphere.host_net_bandwidth_total
+          description: Network Bandwidth Total
+          unit: KiB/s
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.host_net_packets_total
+          description: Network Packets Total
+          unit: packets
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.host_net_drops_total
+          description: Network Drops Total
+          unit: packets
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.host_net_errors_total
+          description: Network Errors Total
+          unit: errors
+          dimensions:
+            - name: rx
+            - name: tx
+        - name: vsphere.host_disk_usage_total
+          description: Disk Usage Total
+          unit: KiB/s
+          dimensions:
+            - name: read
+            - name: write
+        - name: vsphere.host_disk_max_latency
+          description: Disk Max Latency
+          unit: ms
+          dimensions:
+            - name: latency
+        - name: vsphere.host_overall_status
+          description: Overall Alarm Status
+          unit: status
+          dimensions:
+            - name: status
+        - name: vsphere.host_system_uptime
+          description: System Uptime
+          unit: seconds
+          dimensions:
+            - name: time
