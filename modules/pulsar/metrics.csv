@@ -7,7 +7,7 @@ pulsar.storage_operations_rate,,"read, write",message batches/s,"Storage Read/Wr
 pulsar.msg_backlog,,backlog,messages,"Messages Backlog Size",line,,go.d.plugin,pulsar
 pulsar.storage_write_latency,,"<=0.5ms, <=1ms, <=5ms, =10ms, <=20ms, <=50ms, <=100ms, <=200ms, <=1s, >1s",entries/s,"Storage Write Latency",stacked,,go.d.plugin,pulsar
 pulsar.entry_size,,"<=128B, <=512B, <=1KB, <=2KB, <=4KB, <=16KB, <=100KB, <=1MB, >1MB",entries/s,"Entry Size",stacked,,go.d.plugin,pulsar
-pulsar.subscription_delayed,,delayed,message bacthes,"Subscriptions Delayed for Dispatching",line,,go.d.plugin,pulsar
+pulsar.subscription_delayed,,delayed,message batches,"Subscriptions Delayed for Dispatching",line,,go.d.plugin,pulsar
 pulsar.subscription_msg_rate_redeliver,,redelivered,messages/s,"Subscriptions Redelivered Message Rate",line,,go.d.plugin,pulsar
 pulsar.subscription_blocked_on_unacked_messages,,blocked,subscriptions,"Subscriptions Blocked On Unacked Messages",line,,go.d.plugin,pulsar
 pulsar.replication_rate,,"in, out",messages/s,"Replication Rate",line,,go.d.plugin,pulsar
@@ -21,7 +21,7 @@ pulsar.namespace_storage_operations_rate,namespace,"read, write",message batches
 pulsar.namespace_msg_backlog,namespace,backlog,messages,"Messages Backlog Size",line,,go.d.plugin,pulsar
 pulsar.namespace_storage_write_latency,namespace,"<=0.5ms, <=1ms, <=5ms, =10ms, <=20ms, <=50ms, <=100ms, <=200ms, <=1s, >1s",entries/s,"Storage Write Latency",stacked,,go.d.plugin,pulsar
 pulsar.namespace_entry_size,namespace,"<=128B, <=512B, <=1KB, <=2KB, <=4KB, <=16KB, <=100KB, <=1MB, >1MB",entries/s,"Entry Size",stacked,,go.d.plugin,pulsar
-pulsar.namespace_subscription_delayed,namespace,delayed,message bacthes,"Subscriptions Delayed for Dispatching",line,,go.d.plugin,pulsar
+pulsar.namespace_subscription_delayed,namespace,delayed,message batches,"Subscriptions Delayed for Dispatching",line,,go.d.plugin,pulsar
 pulsar.namespace_subscription_msg_rate_redeliver,namespace,redelivered,messages/s,"Subscriptions Redelivered Message Rate",line,,go.d.plugin,pulsar
 pulsar.namespace_subscription_blocked_on_unacked_messages,namespace,blocked,subscriptions,"Subscriptions Blocked On Unacked Messages",line,,go.d.plugin,pulsar
 pulsar.namespace_replication_rate,namespace,"in, out",messages/s,"Replication Rate",line,,go.d.plugin,pulsar

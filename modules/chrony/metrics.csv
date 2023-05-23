@@ -7,7 +7,7 @@ chrony.last_offset,,offset,seconds,"Offset on the last clock update",line,,go.d,
 chrony.rms_offset,,offset,seconds,"Long-term average of the offset value",line,,go.d,chrony
 chrony.frequency,,frequency,ppm,"Frequency",line,,go.d,chrony
 chrony.residual_frequency,,residual_frequency,ppm,"Residual frequency",line,,go.d,chrony
-chrony.skew,,skew,frequency,"Skew",line,,go.d,chrony
+chrony.skew,,skew,ppm,"Skew",line,,go.d,chrony
 chrony.update_interval,,update_interval,seconds,"Interval between the last two clock updates",line,,go.d,chrony
 chrony.ref_measurement_time,,ref_measurement_time,seconds,"Time since the last measurement",line,,go.d,chrony
 chrony.leap_status,,"normal, insert_second, delete_second, unsynchronised",status,"Leap status",line,,go.d,chrony
