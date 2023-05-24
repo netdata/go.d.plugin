@@ -545,8 +545,8 @@ var (
 		Type:  module.Stacked,
 		Dims: Dims{
 			{ID: metricRangesUnavailable, Name: "unavailable"},
-			{ID: metricRangesUnderReplicated, Name: "under replicated"},
-			{ID: metricRangesOverReplicated, Name: "over replicated"},
+			{ID: metricRangesUnderReplicated, Name: "under_replicated"},
+			{ID: metricRangesOverReplicated, Name: "over_replicated"},
 		},
 	}
 	chartRangesEvents = Chart{
