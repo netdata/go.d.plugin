@@ -122,7 +122,7 @@ setup:
                 max_topics: 100
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
-        - name: Basic HTTP auth
+        - name: Basic HTTP authentication
           description: TBD
           folding:
             title: Example
