@@ -103,7 +103,7 @@ setup:
                 url: http://127.0.0.1:7072/metrics
 
         - name: Basic HTTP authentication
-          description: TBD
+          description:  Local server with basic HTTP authentication.
           folding:
             title: Example
             enabled: true
