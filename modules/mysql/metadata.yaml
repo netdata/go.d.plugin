@@ -406,7 +406,8 @@ metrics:
     - name: user
       description: TBD
       labels:
-        - user
+        - name: user
+          description: TBD
       metrics:
         - name: mysql.userstats_cpu
           description: User CPU Time

@@ -584,78 +584,84 @@ metrics:
             - name: normal
         - name: hyperv.vms_health
           description: Virtual machines health status
-          unit: ok, critical
+          unit: vms
           dimensions:
-            - name: vms
+            - name: ok
+            - name: critical
         - name: hyperv.root_partition_device_space_pages
           description: Root partition pages in the device space
-          unit: 4K, 2M, 1G
+          unit: pages
           dimensions:
-            - name: pages
+            - name: 4K
+            - name: 2M
+            - name: 1G
         - name: hyperv.root_partition_gpa_space_pages
           description: Root partition pages in the GPA space
-          unit: 4K, 2M, 1G
+          unit: pages
           dimensions:
-            - name: pages
+            - name: 4K
+            - name: 2M
+            - name: 1G
         - name: hyperv.root_partition_gpa_space_modifications
           description: Root partition GPA space modifications
-          unit: gpa
+          unit: modifications/s
           dimensions:
-            - name: modifications/s
+            - name: gpa
         - name: hyperv.root_partition_attached_devices
           description: Root partition attached devices
-          unit: attached
+          unit: devices
           dimensions:
-            - name: devices
+            - name: attached
         - name: hyperv.root_partition_deposited_pages
           description: Root partition deposited pages
-          unit: deposited
+          unit: pages
           dimensions:
-            - name: pages
+            - name: deposited
         - name: hyperv.root_partition_skipped_interrupts
           description: Root partition skipped interrupts
-          unit: skipped
+          unit: interrupts
           dimensions:
-            - name: interrupts
+            - name: skipped
         - name: hyperv.root_partition_device_dma_errors
           description: Root partition illegal DMA requests
-          unit: illegal_dma
+          unit: requests
           dimensions:
-            - name: requests
+            - name: illegal_dma
         - name: hyperv.root_partition_device_interrupt_errors
           description: Root partition illegal interrupt requests
-          unit: illegal_interrupt
+          unit: requests
           dimensions:
-            - name: requests
+            - name: illegal_interrupt
         - name: hyperv.root_partition_device_interrupt_throttle_events
           description: Root partition throttled interrupts
-          unit: throttling
+          unit: events
           dimensions:
-            - name: events
+            - name: throttling
         - name: hyperv.root_partition_io_tlb_flush
           description: Root partition flushes of I/O TLBs
-          unit: flushes
+          unit: flushes/s
           dimensions:
-            - name: flushes/s
+            - name: flushes
         - name: hyperv.root_partition_address_space
           description: Root partition address spaces in the virtual TLB
-          unit: address_spaces
+          unit: address spaces
           dimensions:
-            - name: address spaces
+            - name: address_spaces
         - name: hyperv.root_partition_virtual_tlb_flush_entries
           description: Root partition flushes of the entire virtual TLB
-          unit: flushes
+          unit: flushes/s
           dimensions:
-            - name: flushes/s
+            - name: flushes
         - name: hyperv.root_partition_virtual_tlb_pages
           description: Root partition pages used by the virtual TLB
-          unit: used
+          unit: pages
           dimensions:
-            - name: pages
+            - name: used
     - name: cpu core
       description: TBD
       labels:
-        - core
+        - name: core
+          description: TBD
       metrics:
         - name: windows.cpu_core_utilization
           description: Core CPU Utilization
@@ -685,7 +691,8 @@ metrics:
     - name: logical disk
       description: TBD
       labels:
-        - disk
+        - name: disk
+          description: TBD
       metrics:
         - name: windows.logical_disk_utilization
           description: Space usage
@@ -714,7 +721,8 @@ metrics:
     - name: network device
       description: TBD
       labels:
-        - nic
+        - name: nic
+          description: TBD
       metrics:
         - name: windows.net_nic_bandwidth
           description: Bandwidth
@@ -743,7 +751,8 @@ metrics:
     - name: thermalzone
       description: TBD
       labels:
-        - thermalzone
+        - name: thermalzone
+          description: TBD
       metrics:
         - name: windows.thermalzone_temperature
           description: Thermal zone temperature
@@ -753,7 +762,8 @@ metrics:
     - name: service
       description: TBD
       labels:
-        - service
+        - name: service
+          description: TBD
       metrics:
         - name: windows.service_state
           description: Service state
@@ -786,7 +796,8 @@ metrics:
     - name: website
       description: TBD
       labels:
-        - website
+        - name: website
+          description: TBD
       metrics:
         - name: iis.website_traffic
           description: Website traffic
@@ -851,7 +862,8 @@ metrics:
     - name: mssql instance
       description: TBD
       labels:
-        - mssql_instance
+        - name: mssql_instance
+          description: TBD
       metrics:
         - name: mssql.instance_accessmethods_page_splits
           description: Page splits
@@ -981,8 +993,10 @@ metrics:
     - name: database
       description: TBD
       labels:
-        - mssql_instance
-        - database
+        - name: mssql_instance
+          description: TBD
+        - name: database
+          description: TBD
       metrics:
         - name: mssql.database_active_transactions
           description: Active transactions per database
@@ -1022,7 +1036,8 @@ metrics:
     - name: certificate template
       description: TBD
       labels:
-        - cert_template
+        - name: cert_template
+          description: TBD
       metrics:
         - name: adcs.cert_template_requests
           description: Certificate requests processed
@@ -1093,7 +1108,8 @@ metrics:
     - name: process
       description: TBD
       labels:
-        - process
+        - name: process
+          description: TBD
       metrics:
         - name: netframework.clrexception_thrown
           description: Thrown exceptions
@@ -1318,7 +1334,8 @@ metrics:
     - name: exchange workload
       description: TBD
       labels:
-        - workload
+        - name: workload
+          description: TBD
       metrics:
         - name: exchange.workload_active_tasks
           description: Workload active tasks
@@ -1349,7 +1366,8 @@ metrics:
     - name: ldap process
       description: TBD
       labels:
-        - workload
+        - name: workload
+          description: TBD
       metrics:
         - name: exchange.ldap_long_running_ops_per_sec
           description: Long Running LDAP operations
@@ -1379,7 +1397,8 @@ metrics:
     - name: http proxy
       description: TBD
       labels:
-        - workload
+        - name: workload
+          description: TBD
       metrics:
         - name: exchange.http_proxy_avg_auth_latency
           description: Average time spent authenticating CAS
@@ -1414,130 +1433,148 @@ metrics:
     - name: vm
       description: TBD
       labels:
-        - vm_name
+        - name: vm_name
+          description: TBD
       metrics:
         - name: hyperv.vm_cpu_usage
           description: VM CPU usage (100% = 1 core)
-          unit: gues, hypervisor, remote
+          unit: percentage
           dimensions:
-            - name: percentage
+            - name: gues
+            - name: hypervisor
+            - name: remote
         - name: hyperv.vm_memory_physical
           description: VM assigned memory
-          unit: assigned_memory
+          unit: MiB
           dimensions:
-            - name: MiB
+            - name: assigned_memory
         - name: hyperv.vm_memory_physical_guest_visible
           description: VM guest visible memory
-          unit: visible_memory
+          unit: MiB
           dimensions:
-            - name: MiB
+            - name: visible_memory
         - name: hyperv.vm_memory_pressure_current
           description: VM current pressure
-          unit: pressure
+          unit: percentage
           dimensions:
-            - name: percentage
+            - name: pressure
         - name: hyperv.vm_vid_physical_pages_allocated
           description: VM physical pages allocated
-          unit: allocated
+          unit: pages
           dimensions:
-            - name: pages
+            - name: allocated
         - name: hyperv.vm_vid_remote_physical_pages
           description: VM physical pages not allocated from the preferred NUMA node
-          unit: remote_physical
+          unit: pages
           dimensions:
-            - name: pages
+            - name: remote_physical
     - name: vm device
       description: TBD
       labels:
-        - vm_device
+        - name: vm_device
+          description: TBD
       metrics:
         - name: hyperv.vm_device_bytes
           description: VM storage device IO
-          unit: read, written
+          unit: bytes/s
           dimensions:
-            - name: bytes/s
+            - name: read
+            - name: written
         - name: hyperv.vm_device_operations
           description: VM storage device IOPS
-          unit: read, write
+          unit: operations/s
           dimensions:
-            - name: operations/s
+            - name: read
+            - name: write
         - name: hyperv.vm_device_errors
           description: VM storage device errors
-          unit: errors
+          unit: errors/s
           dimensions:
-            - name: errors/s
+            - name: errors
     - name: vm interface
       description: TBD
       labels:
-        - vm_interface
+        - name: vm_interface
+          description: TBD
       metrics:
         - name: hyperv.vm_interface_bytes
           description: VM interface traffic
-          unit: received, sent
+          unit: bytes/s
           dimensions:
-            - name: bytes/s
+            - name: received
+            - name: sent
         - name: hyperv.vm_interface_packets
           description: VM interface packets
-          unit: received, sent
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: received
+            - name: sent
         - name: hyperv.vm_interface_packets_dropped
           description: VM interface packets dropped
-          unit: incoming, outgoing
+          unit: drops/s
           dimensions:
-            - name: drops/s
+            - name: incoming
+            - name: outgoing
     - name: vswitch
       description: TBD
       labels:
-        - vswitch
+        - name: vswitch
+          description: TBD
       metrics:
         - name: hyperv.vswitch_bytes
           description: Virtual switch traffic
-          unit: received, sent
+          unit: bytes/s
           dimensions:
-            - name: bytes/s
+            - name: received
+            - name: sent
         - name: hyperv.vswitch_packets
           description: Virtual switch packets
-          unit: received, sent
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: received
+            - name: sent
         - name: hyperv.vswitch_directed_packets
           description: Virtual switch directed packets
-          unit: received, sent
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: received
+            - name: sent
         - name: hyperv.vswitch_broadcast_packets
           description: Virtual switch broadcast packets
-          unit: received, sent
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: received
+            - name: sent
         - name: hyperv.vswitch_multicast_packets
           description: Virtual switch multicast packets
-          unit: received, sent
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: received
+            - name: sent
         - name: hyperv.vswitch_dropped_packets
           description: Virtual switch dropped packets
-          unit: incoming, outgoing
+          unit: drops/s
           dimensions:
-            - name: drops/s
+            - name: incoming
+            - name: outgoing
         - name: hyperv.vswitch_extensions_dropped_packets
           description: Virtual switch extensions dropped packets
-          unit: incoming, outgoing
+          unit: drops/s
           dimensions:
-            - name: drops/s
+            - name: incoming
+            - name: outgoing
         - name: hyperv.vswitch_packets_flooded
           description: Virtual switch flooded packets
-          unit: flooded
+          unit: packets/s
           dimensions:
-            - name: packets/s
+            - name: flooded
         - name: hyperv.vswitch_learned_mac_addresses
           description: Virtual switch learned MAC addresses
-          unit: learned
+          unit: mac addresses/s
           dimensions:
-            - name: mac addresses/s
+            - name: learned
         - name: hyperv.vswitch_purged_mac_addresses
           description: Virtual switch purged MAC addresses
-          unit: purged
+          unit: mac addresses/s
           dimensions:
-            - name: mac addresses/s
+            - name: purged

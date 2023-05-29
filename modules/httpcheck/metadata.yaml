@@ -7,7 +7,8 @@ metrics:
     - name: global
       description: TBD
       labels:
-        - url
+        - name: url
+          description: TBD
       metrics:
         - name: httpcheck.response_time
           description: HTTP Response Time

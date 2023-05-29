@@ -38,8 +38,10 @@ metrics:
     - name: container
       description: TBD
       labels:
-        - container_name
-        - image
+        - name: container_name
+          description: TBD
+        - name: image
+          description: TBD
       metrics:
         - name: docker.container_state
           description: Docker container state

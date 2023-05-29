@@ -1,3 +1,133 @@
+name: cassandra
+title: Cassandra collector
+overview:
+  application:
+    description: |
+      [Cassandra](https://cassandra.apache.org/_/index.html) is an open-source NoSQL database management system.
+  collector:
+    description: |
+      This module will monitor one or more Cassandra servers, depending on your configuration.
+setup:
+  prerequisites:
+    list:
+      - title: Cassandra with [Prometheus JMX Exporter](https://github.com/prometheus/jmx_exporter).
+        text: |
+          To configure Cassandra with the JMX Exporter:
+
+          > **Note**: paths can differ depends on your setup.
+
+          - Download latest [jmx_exporter](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/) jar file
+            and install it in a directory where Cassandra can access it.
+          - Add
+            the [jmx_exporter.yaml](https://raw.githubusercontent.com/netdata/go.d.plugin/master/modules/cassandra/jmx_exporter.yaml)
+            file to `/etc/cassandra`.
+          - Add the following line to `/etc/cassandra/cassandra-env.sh`
+            ```
+            JVM_OPTS="$JVM_OPTS $JVM_EXTRA_OPTS -javaagent:/opt/jmx_exporter/jmx_exporter.jar=7072:/etc/cassandra/jmx_exporter.yaml
+            ```
+          - Restart cassandra service.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`http://127.0.0.1:7072/metrics`"
+          required: yes
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_url
+          description: The Proxie's URL.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: timeout
+          description: HTTP request timeout.
+          default: 2
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: job1
+                url: http://127.0.0.1:7072/metrics
+
+        - name: Basic HTTP authentication
+          description: TBD
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: basicauth
+                url: http://127.0.0.1:7072/metrics
+                username: foo
+                password: bar
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                http://127.0.0.1:7072/metrics
+
+              - name: remote
+                http://192.0.2.0:7072/metrics
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
@@ -151,7 +281,8 @@ metrics:
     - name: thread pool
       description: TBD
       labels:
-        - thread_pool
+        - name: thread_pool
+          description: TBD
       metrics:
         - name: cassandra.thread_pool_active_tasks_count
           description: Active tasks

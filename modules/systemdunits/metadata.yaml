@@ -7,7 +7,8 @@ metrics:
     - name: unit
       description: TBD
       labels:
-        - unit_name
+        - name: unit_name
+          description: TBD
       metrics:
         - name: systemd.service_unit_state
           description: Service Unit State

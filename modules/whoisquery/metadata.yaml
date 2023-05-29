@@ -7,7 +7,8 @@ metrics:
     - name: global
       description: TBD
       labels:
-        - domain
+        - name: domain
+          description: TBD
       metrics:
         - name: whoisquery.time_until_expiration
           description: Time Until Domain Expiration

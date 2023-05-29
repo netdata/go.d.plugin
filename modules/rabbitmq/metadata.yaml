@@ -94,7 +94,8 @@ metrics:
     - name: vhost
       description: TBD
       labels:
-        - vhost
+        - name: vhost
+          description: TBD
       metrics:
         - name: rabbitmq.vhost_messages_count
           description: Vhost messages
@@ -121,8 +122,10 @@ metrics:
     - name: queue
       description: TBD
       labels:
-        - vhost
-        - queue
+        - name: vhost
+          description: TBD
+        - name: queue
+          description: TBD
       metrics:
         - name: rabbitmq.queue_messages_count
           description: Queue messages

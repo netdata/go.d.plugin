@@ -22,7 +22,8 @@ metrics:
     - name: user
       description: TBD
       labels:
-        - username
+        - name: username
+          description: TBD
       metrics:
         - name: openvpn.user_traffic
           description: User Traffic

@@ -7,10 +7,14 @@ metrics:
     - name: node
       description: TBD
       labels:
-        - k8s_kind
-        - k8s_cluster_id
-        - k8s_cluster_name
-        - k8s_node_name
+        - name: k8s_kind
+          description: TBD
+        - name: k8s_cluster_id
+          description: TBD
+        - name: k8s_cluster_name
+          description: TBD
+        - name: k8s_node_name
+          description: TBD
       metrics:
         - name: k8s_state.node_allocatable_cpu_requests_utilization
           description: CPU requests utilization
@@ -129,16 +133,26 @@ metrics:
     - name: pod
       description: TBD
       labels:
-        - k8s_kind
-        - k8s_cluster_id
-        - k8s_cluster_name
-        - k8s_node_name
-        - k8s_namespace
-        - k8s_controller_kind
-        - k8s_controller_name
-        - k8s_pod_uid
-        - k8s_pod_name
-        - k8s_qos_class
+        - name: k8s_kind
+          description: TBD
+        - name: k8s_cluster_id
+          description: TBD
+        - name: k8s_cluster_name
+          description: TBD
+        - name: k8s_node_name
+          description: TBD
+        - name: k8s_namespace
+          description: TBD
+        - name: k8s_controller_kind
+          description: TBD
+        - name: k8s_controller_name
+          description: TBD
+        - name: k8s_pod_uid
+          description: TBD
+        - name: k8s_pod_name
+          description: TBD
+        - name: k8s_qos_class
+          description: TBD
       metrics:
         - name: k8s_state.pod_cpu_requests_used
           description: CPU requests used
@@ -204,18 +218,30 @@ metrics:
     - name: container
       description: TBD
       labels:
-        - k8s_kind
-        - k8s_cluster_id
-        - k8s_cluster_name
-        - k8s_node_name
-        - k8s_namespace
-        - k8s_controller_kind
-        - k8s_controller_name
-        - k8s_pod_uid
-        - k8s_pod_name
-        - k8s_qos_class
-        - k8s_container_id
-        - k8s_container_name
+        - name: k8s_kind
+          description: TBD
+        - name: k8s_cluster_id
+          description: TBD
+        - name: k8s_cluster_name
+          description: TBD
+        - name: k8s_node_name
+          description: TBD
+        - name: k8s_namespace
+          description: TBD
+        - name: k8s_controller_kind
+          description: TBD
+        - name: k8s_controller_name
+          description: TBD
+        - name: k8s_pod_uid
+          description: TBD
+        - name: k8s_pod_name
+          description: TBD
+        - name: k8s_qos_class
+          description: TBD
+        - name: k8s_container_id
+          description: TBD
+        - name: k8s_container_name
+          description: TBD
       metrics:
         - name: k8s_state.pod_container_readiness_state
           description: Readiness state

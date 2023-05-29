@@ -159,7 +159,8 @@ metrics:
     - name: repl application
       description: TBD
       labels:
-        - application
+        - name: application
+          description: TBD
       metrics:
         - name: postgres.replication_app_wal_lag_size
           description: Standby application WAL lag size
@@ -179,7 +180,8 @@ metrics:
     - name: repl slot
       description: TBD
       labels:
-        - slot
+        - name: slot
+          description: TBD
       metrics:
         - name: postgres.replication_slot_files_count
           description: Replication slot files
@@ -190,7 +192,8 @@ metrics:
     - name: database
       description: TBD
       labels:
-        - database
+        - name: database
+          description: TBD
       metrics:
         - name: postgres.db_transactions_ratio
           description: Database transactions ratio
@@ -304,9 +307,12 @@ metrics:
     - name: table
       description: TBD
       labels:
-        - database
-        - schema
-        - table
+        - name: database
+          description: TBD
+        - name: schema
+          description: TBD
+        - name: table
+          description: TBD
       metrics:
         - name: postgres.table_rows_dead_ratio
           description: Table dead rows
@@ -435,10 +441,14 @@ metrics:
     - name: index
       description: TBD
       labels:
-        - database
-        - schema
-        - table
-        - index
+        - name: database
+          description: TBD
+        - name: schema
+          description: TBD
+        - name: table
+          description: TBD
+        - name: index
+          description: TBD
       metrics:
         - name: postgres.index_size
           description: Index size

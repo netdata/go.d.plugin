@@ -16,8 +16,10 @@ metrics:
     - name: database
       description: TBD
       labels:
-        - database
-        - postgres_database
+        - name: database
+          description: TBD
+        - name: postgres_database
+          description: TBD
       metrics:
         - name: pgbouncer.db_client_connections
           description: Database client connections
