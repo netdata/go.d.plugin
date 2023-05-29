@@ -3,7 +3,7 @@ title: ActiveMQ collector
 overview:
   application:
     description: |
-      [`ActiveMQ`](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
+      [ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
   collector:
     description: |
       This plugin collects queues and topics metrics using ActiveMQ Console API.
@@ -37,7 +37,7 @@ setup:
         - name: webadmin
           description: Webadmin root path.
           default: "`admin`"
-          required: no
+          required: yes
         - name: max_queues
           description: Queues processing/charting limit.
           default: 50
@@ -134,7 +134,7 @@ setup:
                 username: foo
                 password: bar
         - name: Multi-instance
-          description: TBD
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
           folding:
             title: Example
             enabled: true
