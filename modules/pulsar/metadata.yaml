@@ -74,7 +74,7 @@ metrics:
             - name: '>1MB'
         - name: pulsar.subscription_delayed
           description: Subscriptions Delayed for Dispatching
-          unit: message bacthes
+          unit: message batches
           dimensions:
             - name: delayed
         - name: pulsar.subscription_msg_rate_redeliver
@@ -173,7 +173,7 @@ metrics:
             - name: '>1MB'
         - name: pulsar.namespace_subscription_delayed
           description: Subscriptions Delayed for Dispatching
-          unit: message bacthes
+          unit: message batches
           dimensions:
             - name: delayed
         - name: pulsar.namespace_subscription_msg_rate_redeliver

@@ -240,7 +240,8 @@ metrics:
     - name: lock type
       description: TBD
       labels:
-        - lock_type
+        - name: lock_type
+          description: TBD
       metrics:
         - name: mongodb.lock_acquisitions_rate
           description: Lock acquisitions
@@ -253,7 +254,8 @@ metrics:
     - name: commit type
       description: TBD
       labels:
-        - commit_type
+        - name: commit_type
+          description: TBD
       metrics:
         - name: mongodb.transactions_commits_rate
           description: Transactions commits
@@ -269,7 +271,8 @@ metrics:
     - name: database
       description: TBD
       labels:
-        - database
+        - name: database
+          description: TBD
       metrics:
         - name: mongodb.database_collection_count
           description: Database collections
@@ -309,7 +312,8 @@ metrics:
     - name: replica set member
       description: TBD
       labels:
-        - repl_set_member
+        - name: repl_set_member
+          description: TBD
       metrics:
         - name: mongodb.repl_set_member_state
           description: Replica Set member state
@@ -354,7 +358,8 @@ metrics:
     - name: shard
       description: TBD
       labels:
-        - shard_id
+        - name: shard_id
+          description: TBD
       metrics:
         - name: mongodb.sharding_shard_chunks_count
           description: Shard chunks

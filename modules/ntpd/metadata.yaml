@@ -58,7 +58,8 @@ metrics:
     - name: peer
       description: TBD
       labels:
-        - peer_address
+        - name: peer_address
+          description: TBD
       metrics:
         - name: ntpd.peer_offset
           description: Peer offset

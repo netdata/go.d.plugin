@@ -7,8 +7,10 @@ metrics:
     - name: global
       description: TBD
       labels:
-        - host
-        - port
+        - name: host
+          description: TBD
+        - name: port
+          description: TBD
       metrics:
         - name: portcheck.status
           description: TCP Check Status

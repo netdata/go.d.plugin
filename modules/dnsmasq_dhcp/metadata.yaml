@@ -23,7 +23,8 @@ metrics:
     - name: dhcp range
       description: TBD
       labels:
-        - dhcp_range
+        - name: dhcp_range
+          description: TBD
       metrics:
         - name: dnsmasq_dhcp.dhcp_range_utilization
           description: DHCP Range utilization

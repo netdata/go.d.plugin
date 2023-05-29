@@ -7,9 +7,12 @@ metrics:
     - name: server
       description: TBD
       labels:
-        - server
-        - network
-        - record_type
+        - name: server
+          description: TBD
+        - name: network
+          description: TBD
+        - name: record_type
+          description: TBD
       metrics:
         - name: dns_query.query_status
           description: DNS Query Status

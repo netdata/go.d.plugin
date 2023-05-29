@@ -93,7 +93,8 @@ metrics:
     - name: server
       description: TBD
       labels:
-        - server_name
+        - name: server_name
+          description: TBD
       metrics:
         - name: coredns.server_dns_request_count_total
           description: Number Of DNS Requests
@@ -170,7 +171,8 @@ metrics:
     - name: zone
       description: TBD
       labels:
-        - zone_name
+        - name: zone_name
+          description: TBD
       metrics:
         - name: coredns.zone_dns_request_count_total
           description: Number Of DNS Requests

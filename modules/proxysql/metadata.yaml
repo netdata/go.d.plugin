@@ -197,7 +197,8 @@ metrics:
     - name: command
       description: TBD
       labels:
-        - command
+        - name: command
+          description: TBD
       metrics:
         - name: proxysql.mysql_command_execution_rate
           description: MySQL command execution
@@ -228,7 +229,8 @@ metrics:
     - name: user
       description: TBD
       labels:
-        - user
+        - name: user
+          description: TBD
       metrics:
         - name: proxysql.mysql_user_connections_utilization
           description: MySQL user connections utilization
@@ -243,8 +245,10 @@ metrics:
     - name: backend
       description: TBD
       labels:
-        - host
-        - port
+        - name: host
+          description: TBD
+        - name: port
+          description: TBD
       metrics:
         - name: proxysql.backend_status
           description: Backend status

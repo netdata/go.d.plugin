@@ -7,9 +7,12 @@ metrics:
     - name: node check
       description: TBD
       labels:
-        - datacenter
-        - node_name
-        - check_name
+        - name: datacenter
+          description: TBD
+        - name: node_name
+          description: TBD
+        - name: check_name
+          description: TBD
       metrics:
         - name: consul.node_health_check_status
           description: Node health check status
@@ -22,10 +25,14 @@ metrics:
     - name: service check
       description: TBD
       labels:
-        - datacenter
-        - node_name
-        - check_name
-        - service_name
+        - name: datacenter
+          description: TBD
+        - name: node_name
+          description: TBD
+        - name: check_name
+          description: TBD
+        - name: service_name
+          description: TBD
       metrics:
         - name: consul.service_health_check_status
           description: Service health check status

@@ -32,7 +32,7 @@ setup:
           required: no
         - name: url
           description: Server URL.
-          default: "`url: http://localhost:8161`"
+          default: "`http://localhost:8161`"
           required: yes
         - name: webadmin
           description: Webadmin root path.
@@ -109,7 +109,7 @@ setup:
     examples:
       list:
         - name: Basic
-          description: TBD
+          description: An example configuration.
           folding:
             title: Example
             enabled: true
@@ -123,7 +123,7 @@ setup:
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
         - name: Basic HTTP authentication
-          description: TBD
+          description: Local server with basic HTTP authentication.
           folding:
             title: Example
             enabled: true

@@ -66,7 +66,8 @@ metrics:
     - name: http server zone
       description: TBD
       labels:
-        - http_server_zone
+        - name: http_server_zone
+          description: TBD
       metrics:
         - name: nginxplus.http_server_zone_requests_rate
           description: HTTP Server Zone requests rate
@@ -101,7 +102,8 @@ metrics:
     - name: http location zone
       description: TBD
       labels:
-        - http_location_zone
+        - name: http_location_zone
+          description: TBD
       metrics:
         - name: nginxplus.http_location_zone_requests_rate
           description: HTTP Location Zone requests rate
@@ -131,8 +133,10 @@ metrics:
     - name: http upstream
       description: TBD
       labels:
-        - http_upstream_name
-        - http_upstream_zone
+        - name: http_upstream_name
+          description: TBD
+        - name: http_upstream_zone
+          description: TBD
       metrics:
         - name: nginxplus.http_upstream_peers_count
           description: HTTP Upstream peers
@@ -152,10 +156,14 @@ metrics:
     - name: http upstream server
       description: TBD
       labels:
-        - http_upstream_name
-        - http_upstream_zone
-        - http_upstream_server_address
-        - http_upstream_server_name
+        - name: http_upstream_name
+          description: TBD
+        - name: http_upstream_zone
+          description: TBD
+        - name: http_upstream_server_address
+          description: TBD
+        - name: http_upstream_server_name
+          description: TBD
       metrics:
         - name: nginxplus.http_upstream_server_requests_rate
           description: HTTP Upstream Server requests
@@ -210,7 +218,8 @@ metrics:
     - name: http cache
       description: TBD
       labels:
-        - http_cache
+        - name: http_cache
+          description: TBD
       metrics:
         - name: nginxplus.http_cache_state
           description: HTTP Cache state
@@ -240,7 +249,8 @@ metrics:
     - name: stream server zone
       description: TBD
       labels:
-        - stream_server_zone
+        - name: stream_server_zone
+          description: TBD
       metrics:
         - name: nginxplus.stream_server_zone_connections_rate
           description: Stream Server Zone connections rate
@@ -273,8 +283,10 @@ metrics:
     - name: stream upstream
       description: TBD
       labels:
-        - stream_upstream_name
-        - stream_upstream_zone
+        - name: stream_upstream_name
+          description: TBD
+        - name: stream_upstream_zone
+          description: TBD
       metrics:
         - name: nginxplus.stream_upstream_peers_count
           description: Stream Upstream peers
@@ -289,10 +301,14 @@ metrics:
     - name: stream upstream server
       description: TBD
       labels:
-        - stream_upstream_name
-        - stream_upstream_zone
-        - stream_upstream_server_address
-        - stream_upstream_server_name
+        - name: stream_upstream_name
+          description: TBD
+        - name: stream_upstream_zone
+          description: TBD
+        - name: stream_upstream_server_address
+          description: TBD
+        - name: stream_upstream_server_name
+          description: TBD
       metrics:
         - name: nginxplus.stream_upstream_server_connections_rate
           description: Stream Upstream Server connections
@@ -327,7 +343,8 @@ metrics:
     - name: resolver zone
       description: TBD
       labels:
-        - resolver_zone
+        - name: resolver_zone
+          description: TBD
       metrics:
         - name: nginxplus.resolver_zone_requests_rate
           description: Resolver requests rate

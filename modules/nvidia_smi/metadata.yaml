@@ -7,8 +7,10 @@ metrics:
     - name: gpu
       description: TBD
       labels:
-        - uuid
-        - product_name
+        - name: uuid
+          description: TBD
+        - name: product_name
+          description: TBD
       metrics:
         - name: nvidia_smi.gpu_pcie_bandwidth_usage
           description: PCI Express Bandwidth Usage
@@ -102,9 +104,12 @@ metrics:
     - name: mig
       description: TBD
       labels:
-        - gpu_uuid
-        - gpu_product_name
-        - gpu_instance_id
+        - name: gpu_uuid
+          description: TBD
+        - name: gpu_product_name
+          description: TBD
+        - name: gpu_instance_id
+          description: TBD
       metrics:
         - name: nvidia_smi.gpu_mig_frame_buffer_memory_usage
           description: Frame buffer memory usage

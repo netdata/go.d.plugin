@@ -80,7 +80,8 @@ metrics:
     - name: pipeline
       description: TBD
       labels:
-        - pipeline
+        - name: pipeline
+          description: TBD
       metrics:
         - name: logstash.pipeline_event
           description: Pipeline Events

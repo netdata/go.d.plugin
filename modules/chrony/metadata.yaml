@@ -50,7 +50,7 @@ metrics:
             - name: residual_frequency
         - name: chrony.skew
           description: Skew
-          unit: frequency
+          unit: ppm
           dimensions:
             - name: skew
         - name: chrony.update_interval

@@ -292,7 +292,8 @@ metrics:
     - name: index
       description: TBD
       labels:
-        - index
+        - name: index
+          description: TBD
       metrics:
         - name: elasticsearch.node_index_health
           description: Index Health

@@ -7,7 +7,8 @@ metrics:
     - name: host
       description: TBD
       labels:
-        - host
+        - name: host
+          description: TBD
       metrics:
         - name: ping.host_rtt
           description: Ping round-trip time
