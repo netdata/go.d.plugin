@@ -1,3 +1,158 @@
+name: activemq
+title: ActiveMQ collector
+overview:
+  application:
+    description: |
+      [ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
+  collector:
+    description: |
+      This plugin collects queues and topics metrics using ActiveMQ Console API.
+setup:
+  prerequisites:
+    list:
+      - title: TBD
+        text: |
+          TBD
+      
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`url: http://localhost:8161`"
+          required: yes
+        - name: webadmin
+          description: Webadmin root path.
+          default: "`admin`"
+          required: yes
+        - name: max_queues
+          description: Queues processing/charting limit.
+          default: 50
+          required: no
+        - name: max_topics
+          description: Topics processing/charting limit.
+          default: 50
+          required: no
+        - name: queues_filter
+          description: Queues processing/charting filter. Uses simple patterns.
+          default: "-"
+          required: no
+        - name: topics_filter
+          description: Topics processing/charting filter. Uses simple patterns.
+          default: "-"
+          required: no
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: no
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: no
+        - name: body
+          description: HTTP request body.
+          default: "-"
+          required: no
+        - name: headers
+          description: HTTP request headers.
+          default: "-"
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: TBD
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: job1
+                url: http://127.0.0.1:8161
+                webadmin: admin
+                max_queues: 100
+                max_topics: 100
+                queues_filter: '!sandr* *'
+                topics_filter: '!sandr* *'
+        - name: Basic HTTP authentication
+          description: TBD
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: basicauth
+                url: http://127.0.0.1:8161
+                username: foo
+                password: bar
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: job1
+                url: http://127.0.0.1:8161
+                webadmin: admin
+                max_queues: 100
+                max_topics: 100
+              - name: job2
+                url: http://127.0.0.2:8161
+                webadmin: admin
+                max_queues: 200
+                max_topics: 200
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
