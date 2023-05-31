@@ -1,8 +1,158 @@
+name: consul
+title: Consul collector
+overview:
+  application:
+    description: |
+      [Consul](https://www.consul.io/) is a service networking solution to connect and secure services across any runtime platform and public or private cloud.
+  collector:
+    description: |
+      This module collects the [Key Metrics](https://developer.hashicorp.com/consul/docs/agent/telemetry#key-metrics) of the Consul Agent.
+setup:
+  prerequisites:
+    list:
+      - title: Enable Prometheus telemetry
+        text: |
+          - You should [enable](https://developer.hashicorp.com/consul/docs/agent/config/config-files#telemetry-prometheus_retention_time) telemetry on your Consul agent, by increasing the value of `prometheus_retention_time` from `0`.
+      - title: Authentication (optional)
+        text: |
+          - When authentication is enabled, the following ACLs are required:
+            - `operator:read` (for querying autopilot [health status](https://developer.hashicorp.com/consul/api-docs/operator/autopilot#read-health)).
+            - `node:read`, `service:read` (for querying [checks](https://developer.hashicorp.com/consul/api-docs/agent/check#list-checks)).
+            - `agent:read` (for querying [configuration](https://developer.hashicorp.com/consul/api-docs/agent#read-configuration), [metrics](https://developer.hashicorp.com/consul/api-docs/agent#view-metrics), and [lan coordinates](https://developer.hashicorp.com/consul/api-docs/coordinate#read-lan-coordinates-for-all-nodes)).
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`http://localhost:8500`"
+          required: yes
+        - name: acl_token
+          description: ACL token used in every request.
+          default: "-"
+          required: no
+        - name: max_checks
+          description: Checks processing/charting limit.
+          default: "-"
+          required: no
+        - name: max_filter
+          description: Checks processing/charting filter. Uses [simple patterns](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md).
+          default: "-"
+          required: no
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_url
+          description: The Proxie's URL.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: no
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: no
+        - name: body
+          description: HTTP request body.
+          default: "-"
+          required: no
+        - name: headers
+          description: HTTP request headers.
+          default: "-"
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8500
+                acl_token: "ec15675e-2999-d789-832e-8c4794daa8d7"
+        - name: Basic HTTP auth
+          description: Local server with basic HTTP authentication.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8500
+                acl_token: "ec15675e-2999-d789-832e-8c4794daa8d7"
+                username: foo
+                password: bar
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8500
+                acl_token: "ec15675e-2999-d789-832e-8c4794daa8d7"
+
+              - name: remote
+                url: http://203.0.113.10:8500
+                acl_token: "ada7f751-f654-8872-7f93-498e799158b6"
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: Depending on the [mode](https://developer.hashicorp.com/consul/docs/install/glossary#agent), the collector collects a different number of metrics.
   scope:
     - name: node check
       description: TBD
