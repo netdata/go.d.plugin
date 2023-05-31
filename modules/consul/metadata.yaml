@@ -152,7 +152,7 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: Depending on the [mode](https://developer.hashicorp.com/consul/docs/install/glossary#agent), the collector collects a different number of metrics.
   scope:
     - name: node check
       description: TBD
