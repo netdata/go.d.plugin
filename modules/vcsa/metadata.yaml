@@ -1,3 +1,128 @@
+name: vcsa
+title: vCenter Server Appliance collector
+overview:
+  application:
+    description: |
+      The [vCenter Server Appliance](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
+      is a preconfigured Linux virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
+  collector:
+    description: |
+      This module collects [health statistics](https://developer.vmware.com/apis/vsphere-automation/latest/appliance/health/)
+      from one or more vCenter Server Appliance servers, depending on your configuration.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: ""
+          required: yes
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: no
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: yes
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: yes
+        - name: proxy_url
+          description: Proxy URL.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: no
+        - name: body
+          description: HTTP request body.
+          default: "-"
+          required: no
+        - name: headers
+          description: HTTP request headers.
+          default: "-"
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: vcsa1
+                url: https://203.0.113.0
+                username: admin@vsphere.local
+                password: password
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Two instances.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: vcsa1
+                url: https://203.0.113.0
+                username: admin@vsphere.local
+                password: password
+
+              - name: vcsa2
+                url: https://203.0.113.10
+                username: admin@vsphere.local
+                password: password
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
