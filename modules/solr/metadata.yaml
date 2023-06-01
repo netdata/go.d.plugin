@@ -1,3 +1,135 @@
+name: solr
+title: Solr collector
+overview:
+  application:
+    description: |
+      [Solr](https://lucene.apache.org/solr/) is an open-source enterprise-search platform, written in Java, from the Apache
+      Lucene project.
+  collector:
+    description: |
+      This module will monitor one or more Solr instances, depending on your configuration.
+setup:
+  prerequisites:
+    list:
+      - title: Solr version 6.4+
+        text: |
+          This collector does not work with Solr versions lower 6.4.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`http://127.0.0.1:8983`"
+          required: yes
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: no
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_url
+          description: Proxy URL.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: no
+        - name: body
+          description: HTTP request body.
+          default: "-"
+          required: no
+        - name: headers
+          description: HTTP request headers.
+          default: "-"
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+              url: http://localhost:8983
+        - name: Basic HTTP auth
+          description: Local Solr instance with basic HTTP authentication.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost:8983
+                username: foo
+                password: bar
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost:8983
+            
+              - name: remote
+                url: http://203.0.113.10:8983
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
