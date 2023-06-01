@@ -1,3 +1,85 @@
+name: supervisord
+title: Supervisord collector
+overview:
+  application:
+    description: |
+      [Supervisor](http://supervisord.org/) is a client/server system that allows its users to monitor and control a number of
+      processes on UNIX-like operating systems.
+  collector:
+    description: |
+      This module monitors one or more Supervisor instances, depending on your configuration.
+
+      It can collect metrics from
+      both [unix socket](http://supervisord.org/configuration.html?highlight=unix_http_server#unix-http-server-section-values)
+      and [internal http server](http://supervisord.org/configuration.html?highlight=unix_http_server#inet-http-server-section-settings)
+
+      Used methods:
+
+      - [`supervisor.getAllProcessInfo`](http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getAllProcessInfo)
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`http://127.0.0.1:9001/RPC2`"
+          required: yes
+        - name: timeout
+          description: System bus requests timeout.
+          default: 1
+          required: no
+    examples:
+      list:
+        - name: HTTP
+          description: Collect metrics via HTTP.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: 'http://127.0.0.1:9001/RPC2'
+        - name: Socket
+          description: Collect metrics via Unix socket.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            - name: local
+              url: 'unix:///run/supervisor.sock'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collect metrics from local and remote instances.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: 'http://127.0.0.1:9001/RPC2'
+
+              - name: remote
+                url: 'http://192.0.2.1:9001/RPC2'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
