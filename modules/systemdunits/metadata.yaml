@@ -1,3 +1,94 @@
+name: systemdunits
+title: Systemd units state collector
+overview:
+  application:
+    description: |
+      [Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
+  collector:
+    description: |
+      This module monitors Systemd units state. Works only on Linux systems.
+setup:
+  prerequisites:
+    list:
+      - title: Enable in `go.d.conf`.
+        text: |
+          This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: include
+          description: Systemd units filter. Pattern syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
+          default: "*.service"
+          required: no
+        - name: timeout
+          description: System bus requests timeout.
+          default: 1
+          required: no
+    examples:
+      list:
+        - name: Service units
+          description: Collect state of all service type units.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: service
+                include:
+                  - '*.service'
+        - name: One specific unit
+          description: Collect state of one specific unit.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: my-specific-service
+                include:
+                  - 'my-specific.service'
+        - name: All unit types
+          description: Collect state of all units.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: my-specific-service-unit
+                include:
+                  - '*'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collect state of all service and socket type units.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: service
+                include:
+                  - '*.service'
+
+              - name: socket
+                include:
+                  - '*.socket'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
