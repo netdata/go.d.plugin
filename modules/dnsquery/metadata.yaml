@@ -1,3 +1,78 @@
+name: dnsquery
+title: DNS query collector
+overview:
+  application:
+    description: |
+      TBD
+  collector:
+    description: |
+      This module provides DNS query round-trip time (RTT).
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: domains
+          description: Domain or subdomains to query. The collector will choose a random domain from the list on every iteration.
+          default: "-"
+          required: yes
+        - name: servers
+          description: Servers to query.
+          default: "-"
+          required: yes
+        - name: port
+          description: DNS server port.
+          default: 53
+          required: no
+        - name: network
+          description: "Network protocol name. Vailable options: udp, tcp, tcp-tls."
+          default: "udp"
+          required: no
+        - name: record_types
+          description: "Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV."
+          default: "A"
+          required: no
+        - name: timeout
+          description: "Query read timeout."
+          default: 2
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: job1
+                record_types:
+                  - A
+                  - AAAA
+                domains:
+                  - google.com
+                  - github.com
+                  - reddit.com
+                servers:
+                  - 8.8.8.8
+                  - 8.8.4.4
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
