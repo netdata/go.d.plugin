@@ -65,6 +65,7 @@ setup:
             jobs:
               - name: local
                 address: '127.0.0.1:53'
+        # TODO: should use non-default protocol (not `udp`)
         - name: Basic example with `protocol` option
           description: Local server with defined DNS query transport protocol.
           folding:
