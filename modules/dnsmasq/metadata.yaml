@@ -1,3 +1,95 @@
+name: dnsmasq
+title: Dnsmasq collector
+overview:
+  application:
+    description: |
+      [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+  collector:
+    description: |
+      This collector monitors one or more Dnsmasq instances, depending on your configuration.
+
+      It collects DNS cache statistics by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
+
+      ```cmd
+      ;; opcode: QUERY, status: NOERROR, id: 37862
+      ;; flags: rd; QUERY: 7, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+
+      ;; QUESTION SECTION:
+      ;cachesize.bind.   CH	 TXT
+      ;insertions.bind.  CH	 TXT
+      ;evictions.bind.   CH	 TXT
+      ;hits.bind.        CH	 TXT
+      ;misses.bind.      CH	 TXT
+      ;servers.bind.     CH	 TXT
+      ```
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: address
+          description: Server's address. Format is 'ip_address:port'.
+          default: "`127.0.0.1:53`"
+          required: yes
+        - name: protocol
+          description: "DNS query transport protocol. Valid options: udp, tcp, tcp-tls."
+          default: "-"
+          required: no
+        - name: timeout
+          description: "DNS query timeout (dial, write and read) in seconds."
+          default: 1
+          required: no
+
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                address: '127.0.0.1:53'
+        - name: Basic example with `protocol` option
+          description: Local server with defined DNS query transport protocol.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                address: '127.0.0.1:53'
+                protocol: udp
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                address: '127.0.0.1:53'
+
+              - name: remote
+                address: '203.0.113.0:53'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
