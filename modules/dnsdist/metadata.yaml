@@ -1,3 +1,146 @@
+name: dnsdist
+title: DNSdist collector
+overview:
+  application:
+    description: |
+      [DNSdist](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer.
+  collector:
+    description: |
+      This collector monitors load-balancer performance and health metrics.  
+      
+      It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).  
+      
+      Used endpoints:
+
+      - [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).
+setup:
+  prerequisites:
+    list: 
+      - title: Enable DNSdist's built-in Webserver
+        text: |
+          For collecting metrics via HTTP, you need to [enable the built-in webserver](https://dnsdist.org/guides/webserver.html).
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+
+        A `url` and a `password` or _apikey_ are needed to access the webserver.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: url
+          description: Server URL.
+          default: "`http://127.0.0.1:8083`"
+          required: yes
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_url
+          description: The Proxie's URL.
+          default: "-"
+          required: no
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: "-"
+          required: no
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: no
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: no
+        - name: body
+          description: HTTP request body.
+          default: "-"
+          required: no
+        - name: headers
+          description: HTTP request headers.
+          default: "-"
+          required: no
+        - name: not_follow_redirects
+          description: Whether to not follow redirects from the server.
+          default: no
+          required: no
+        - name: tls_skip_verify
+          description: Whether to skip verifying server's certificate chain and hostname.
+          default: no
+          required: no
+        - name: tls_ca
+          description: Certificate authority that client use when verifying server certificates.
+          default: "-"
+          required: no
+        - name: tls_cert
+          description: Client tls certificate.
+          default: "-"
+          required: no
+        - name: tls_key
+          description: Client tls key.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8083
+                headers:
+                  X-API-Key: your-api-key # static pre-shared authentication key for access to the REST API (api-key).
+        #TODO:
+        # - name: Basic HTTP auth
+        #   description: Local server with basic HTTP authentication.
+        #   folding:
+        #     title: Example
+        #     enabled: true
+        #   data: |
+        #     jobs:
+        #       - name: local
+        #         url: http://127.0.0.1:8083
+        #         username: foo
+        #         password: bar
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                url: 'http://127.0.0.1:8083'
+                headers:
+                  X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
+
+              - name: remote
+                url: 'http://203.0.113.0:8083'
+                headers:
+                  X-API-Key: 'your-api-key'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
