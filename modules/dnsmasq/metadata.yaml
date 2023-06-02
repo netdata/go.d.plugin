@@ -6,7 +6,7 @@ overview:
       [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
   collector:
     description: |
-      This collector monitors one or more Dnsmasq instances, depending on your configuration.
+      This collector monitors one or more Dnsmasq DNS Forwarder instances, depending on your configuration.
 
       It collects DNS cache statistics by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
 

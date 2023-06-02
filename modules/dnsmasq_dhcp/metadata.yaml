@@ -1,3 +1,81 @@
+name: dnsmasq_dhcp
+title: Dnsmasq DHCP collector
+overview:
+  application:
+    description: |
+      [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+  collector:
+    description: |
+      This collector monitors one or more Dnsmasq DHCP leases databases, depending on your configuration.
+
+      By default, all configured dhcp-ranges reading `dnsmasq` configuration files are auto-detected, and the following are used:
+
+      - `/var/lib/misc/dnsmasq.leases` to read leases.
+      - `/etc/dnsmasq.conf` to detect dhcp-ranges.
+      - `/etc/dnsmasq.d` to find additional configurations.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: leases_path
+          description: Path to dnsmasq dhcp leases file.
+          default: "-"
+          required: no
+        - name: conf_path
+          description: Path to dnsmasq configuration file.
+          default: "-"
+          required: no
+        - name: conf_dir
+          description: Path to dnsmasq configuration directory.
+          default: "-"
+          required: no
+    examples:
+      list:
+        - name: Basic
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: dnsmasq_dhcp
+                leases_path: /var/lib/misc/dnsmasq.leases
+                conf_path: /etc/dnsmasq.conf
+                conf_dir: /etc/dnsmasq.d
+        - name: Multi-instance
+          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: dnsmasq_dhcp
+                leases_path: /var/lib/misc/dnsmasq.leases
+                conf_path: /etc/dnsmasq.conf
+                conf_dir: /etc/dnsmasq.d
+
+              - name: pihole_dnsmasq_dhcp
+                leases_path: /etc/pihole/dhcp.leases
+                conf_path: /etc/dnsmasq.conf
+                conf_dir: /etc/dnsmasq.d
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
