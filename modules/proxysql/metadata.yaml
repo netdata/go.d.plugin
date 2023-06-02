@@ -1,3 +1,81 @@
+name: proxysql
+title: ProxySQL collector
+overview:
+  application:
+    description: |
+      [ProxySQL](https://www.proxysql.com/) is an open-source proxy for mySQL.
+  collector:
+    description: |
+      This module monitors one or more ProxySQL servers, depending on your configuration.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: All options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: no
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: no
+        - name: dsn
+          description: Data Source Name. See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
+          default: "stats:stats@tcp(127.0.0.1:6032)/"
+          required: yes
+        - name: my.cnf
+          description: Specifies my.cnf file to read connection parameters from under the [client] section.
+          default: ""
+          required: no
+        - name: timeout
+          description: Query timeout in seconds.
+          default: 1
+          required: no
+    examples:
+      list:
+        - name: TCP socket
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                dsn: stats:stats@tcp(127.0.0.1:6032)/
+        - name: my.cnf
+          description: An example configuration.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                my.cnf: '/etc/my.cnf'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          folding:
+            title: Example
+            enabled: true
+          data: |
+            jobs:
+              - name: local
+                dsn: stats:stats@tcp(127.0.0.1:6032)/
+
+              - name: remote
+                dsn: stats:stats@tcp(203.0.113.0:6032)/
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
