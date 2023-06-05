@@ -3,6 +3,7 @@ package prometheus
 import (
 	"errors"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -80,6 +81,8 @@ func (p *promTextParser) parseToSeries(text []byte) (Series, error) {
 	return p.series, nil
 }
 
+var reSpace = regexp.MustCompile(`\s+`)
+
 func (p *promTextParser) parseToMetricFamilies(text []byte) (MetricFamilies, error) {
 	p.reset()
 
@@ -101,6 +104,10 @@ func (p *promTextParser) parseToMetricFamilies(text []byte) (MetricFamilies, err
 			name, help := parser.Help()
 			p.setMetricFamilyByName(string(name))
 			p.currMF.help = string(help)
+			if strings.IndexByte(p.currMF.help, '\n') != -1 {
+				// convert multiline to one line because HELP is used as the chart title.
+				p.currMF.help = reSpace.ReplaceAllString(strings.TrimSpace(p.currMF.help), " ")
+			}
 		case textparse.EntryType:
 			name, typ := parser.Type()
 			p.setMetricFamilyByName(string(name))
