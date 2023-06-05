@@ -16,6 +16,8 @@ import (
 )
 
 var (
+	dataMultilineHelp, _ = os.ReadFile("testdata/multiline-help.txt")
+
 	dataGaugeMeta, _       = os.ReadFile("testdata/gauge-meta.txt")
 	dataGaugeNoMeta, _     = os.ReadFile("testdata/gauge-no-meta.txt")
 	dataCounterMeta, _     = os.ReadFile("testdata/counter-meta.txt")
@@ -32,6 +34,7 @@ var (
 
 func Test_testParseDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
+		"dataMultilineHelp":   dataMultilineHelp,
 		"dataGaugeMeta":       dataGaugeMeta,
 		"dataGaugeNoMeta":     dataGaugeNoMeta,
 		"dataCounterMeta":     dataCounterMeta,
@@ -51,6 +54,22 @@ func TestPromTextParser_parseToMetricFamilies(t *testing.T) {
 		input []byte
 		want  MetricFamilies
 	}{
+		"Gauge with multiline HELP": {
+			input: dataMultilineHelp,
+			want: MetricFamilies{
+				"test_gauge_metric_1": {
+					name: "test_gauge_metric_1",
+					help: "First line. Second line.",
+					typ:  textparse.MetricTypeGauge,
+					metrics: []Metric{
+						{
+							labels: labels.Labels{{Name: "label1", Value: "value1"}},
+							gauge:  &Gauge{value: 11},
+						},
+					},
+				},
+			},
+		},
 		"Gauge with meta parsed as Gauge": {
 			input: dataGaugeMeta,
 			want: MetricFamilies{
