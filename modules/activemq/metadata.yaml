@@ -15,7 +15,7 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
@@ -28,26 +28,26 @@ setup:
           required: false
         - name: url
           description: Server URL.
-          default: "`http://localhost:8161`"
+          default: http://localhost:8161
           required: true
         - name: webadmin
           description: Webadmin root path.
-          default: "`admin`"
+          default: admin
           required: true
         - name: max_queues
-          description: Queues processing/charting limit.
+          description: Maximum number of concurrently collected queues.
           default: 50
           required: false
         - name: max_topics
-          description: Topics processing/charting limit.
+          description: Maximum number of concurrently collected topics.
           default: 50
           required: false
         - name: queues_filter
-          description: Queues processing/charting filter. Uses simple patterns.
+          description: Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
           default: ""
           required: false
         - name: topics_filter
-          description: Topics processing/charting filter. Uses simple patterns.
+          description: Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
           default: ""
           required: false
         - name: username
@@ -83,69 +83,71 @@ setup:
           default: ""
           required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
           required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
           required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
+          description: Certification authority that the client uses when verifying the server's certificates.
           default: ""
           required: false
         - name: tls_cert
-          description: Client tls certificate.
+          description: Client TLS certificate.
           default: ""
           required: false
         - name: tls_key
-          description: Client tls key.
+          description: Client TLS key.
           default: ""
           required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
-          description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
+          description: A basic example configuration.
           data: |
             jobs:
-              - name: job1
+              - name: local
+                url: http://127.0.0.1:8161
+                webadmin: admin
+        - name: HTTP authentication
+          description: Basic HTTP authentication.
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8161
+                webadmin: admin
+                username: foo
+                password: bar
+        - name: Filters and limits
+          description: Using filters and limits for queues and topics.
+          data: |
+            jobs:
+              - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
                 max_queues: 100
                 max_topics: 100
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
-        - name: Basic HTTP authentication
-          description: Local server with basic HTTP authentication.
-          folding:
-            title: Example
-            enabled: true
-          data: |
-            jobs:
-              - name: basicauth
-                url: http://127.0.0.1:8161
-                username: foo
-                password: bar
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
-          folding:
-            title: Example
-            enabled: true
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           data: |
             jobs:
-              - name: job1
+              - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
-                max_queues: 100
-                max_topics: 100
-              - name: job2
-                url: http://127.0.0.2:8161
+
+              - name: remote
+                url: http://192.0.2.1:8161
                 webadmin: admin
-                max_queues: 200
-                max_topics: 200
 troubleshooting:
   problems:
     list: []
@@ -159,8 +161,7 @@ metrics:
     The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
   scope:
     - name: global
-      description: |
-        Global scope means that the metrics apply to the entire monitored application.
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages
