@@ -105,9 +105,19 @@ setup:
     examples:
       list:
         - name: Basic
-          description: An example configuration.
+          description: A basic example configuration.
           folding:
-            title: Example
+            title: Configuration
+            enabled: true
+          data: |
+            jobs:
+              - name: job1
+                url: http://127.0.0.1:8161
+                webadmin: admin
+        - name: Using filters and limits
+          description: An example using filters and limits for queries and topics.
+          folding:
+            title: Configuration
             enabled: true
           data: |
             jobs:
@@ -121,7 +131,7 @@ setup:
         - name: Basic HTTP authentication
           description: Local server with basic HTTP authentication.
           folding:
-            title: Example
+            title: Configuration
             enabled: true
           data: |
             jobs:
@@ -132,7 +142,7 @@ setup:
         - name: Multi-instance
           description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
           folding:
-            title: Example
+            title: Configuration
             enabled: true
           data: |
             jobs:
