@@ -153,10 +153,14 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: The following sections are presented *by scope*, each scope indicates that there will be a metric for every scope (e.g database, interface etc). Global scope means that the metrics are collector-wide.
+  description: |
+    Metrics grouped by *scope*.
+    
+    The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
   scope:
     - name: global
-      description: ""
+      description: |
+        Global scope means that the metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages
