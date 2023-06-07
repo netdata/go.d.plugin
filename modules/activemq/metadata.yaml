@@ -9,11 +9,7 @@ overview:
       This plugin collects queues and topics metrics using ActiveMQ Console API.
 setup:
   prerequisites:
-    list:
-      - title: TBD
-        text: |
-          TBD
-      
+    list: []
   configuration:
     options:
       description: |
@@ -25,87 +21,87 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
           default: "`http://localhost:8161`"
-          required: yes
+          required: true
         - name: webadmin
           description: Webadmin root path.
           default: "`admin`"
-          required: yes
+          required: true
         - name: max_queues
           description: Queues processing/charting limit.
           default: 50
-          required: no
+          required: false
         - name: max_topics
           description: Topics processing/charting limit.
           default: 50
-          required: no
+          required: false
         - name: queues_filter
           description: Queues processing/charting filter. Uses simple patterns.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: topics_filter
           description: Topics processing/charting filter. Uses simple patterns.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: method
           description: HTTP request method.
           default: "GET"
-          required: no
+          required: false
         - name: timeout
           description: HTTP request timeout.
           default: 1
-          required: no
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
           default: no
-          required: no
+          required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          default: ""
+          required: false
     examples:
       list:
         - name: Basic
@@ -157,10 +153,14 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: |
+    Metrics grouped by *scope*.
+    
+    The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
   scope:
     - name: global
-      description: TBD
+      description: |
+        Global scope means that the metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages
