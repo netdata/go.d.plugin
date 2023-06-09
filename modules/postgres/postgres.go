@@ -29,6 +29,10 @@ func New() *Postgres {
 			DSN:                "postgres://postgres:postgres@127.0.0.1:5432/postgres",
 			XactTimeHistogram:  []float64{.1, .5, 1, 2.5, 5, 10},
 			QueryTimeHistogram: []float64{.1, .5, 1, 2.5, 5, 10},
+			// charts: 20 x table, 4 x index.
+			// https://discord.com/channels/847502280503590932/1022693928874549368
+			MaxDBTables:  50,
+			MaxDBIndexes: 250,
 		},
 		charts:  baseCharts.Copy(),
 		dbConns: make(map[string]*dbConn),
@@ -52,6 +56,8 @@ type Config struct {
 	DBSelector         string       `yaml:"collect_databases_matching"`
 	XactTimeHistogram  []float64    `yaml:"transaction_time_histogram"`
 	QueryTimeHistogram []float64    `yaml:"query_time_histogram"`
+	MaxDBTables        int64        `yaml:"max_db_tables"`
+	MaxDBIndexes       int64        `yaml:"max_db_indexes"`
 }
 
 type (
