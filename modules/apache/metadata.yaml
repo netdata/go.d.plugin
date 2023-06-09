@@ -10,10 +10,10 @@ overview:
 setup:
   prerequisites:
     list:
-      - title: Enable Apache server-status support
+      - title: Enable Apache status support
         text: |
           - Enable and configure [status_module](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
-          - Ensure that you have `ExtendedStatus` set on (enabled by default since Apache v2.3.6).
+          - Ensure that you have [ExtendedStatus](https://httpd.apache.org/docs/2.4/mod/mod_status.html#troubleshoot) set on (enabled by default since Apache v2.3.6).
   configuration:
     options:
       description: |
