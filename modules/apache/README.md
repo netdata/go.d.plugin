@@ -1,52 +1,158 @@
-<!--
-title: "Apache monitoring with Netdata"
-description: "Monitor the health and performance of Apache web servers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/apache/README.md"
-sidebar_label: "Apache"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Webapps"
--->
-
 # Apache collector
 
-[`Apache`](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and
+## Overview
+
+[Apache](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and
 Windows.
 
-This module will monitor one or more `Apache` servers, depending on your configuration.
+This module will monitor one or more Apache servers, depending on your configuration.
 
-## Requirements
+## Collected metrics
 
-- `Apache` with enabled [`mod_status`](https://httpd.apache.org/docs/2.4/mod/mod_status.html)
+Metrics grouped by *scope*.
 
-## Metrics
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-All metrics have "apache." prefix.
+All metrics available only if [ExtendedStatus](https://httpd.apache.org/docs/2.4/mod/core.html#extendedstatus) is on.
 
-| Metric      | Scope  |                                                 Dimensions                                                  |    Units    |
-|-------------|:------:|:-----------------------------------------------------------------------------------------------------------:|:-----------:|
-| connections | global |                                                 connections                                                 | connections |
-| conns_async | global |                                         keepalive, closing, writing                                         | connections |
-| workers     | global |                                                 idle, busy                                                  |   workers   |
-| scoreboard  | global | waiting, starting, reading, sending, keepalive, dns_lookup, closing, logging, finishing, idle_cleanup, open | connections |
-| requests    | global |                                                  requests                                                   | requests/s  |
-| net         | global |                                                    sent                                                     |  kilobit/s  |
-| reqpersec   | global |                                                  requests                                                   | requests/s  |
-| bytespersec | global |                                                   served                                                    |    KiB/s    |
-| bytesperreq | global |                                                    size                                                     |     KiB     |
-| uptime      | global |                                                   uptime                                                    |   seconds   |
+### global
 
-## Configuration
+The metrics apply to the entire monitored application.
 
-Edit the `go.d/apache.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+This scope has no labels.
+
+Metrics:
+
+| Metric             |                                                 Dimensions                                                  |    Unit     | Basic/Extended |
+|--------------------|:-----------------------------------------------------------------------------------------------------------:|:-----------:|:--------------:|
+| apache.connections |                                                 connections                                                 | connections |      + +       |
+| apache.conns_async |                                         keepalive, closing, writing                                         | connections |      + +       |
+| apache.workers     |                                                 idle, busy                                                  |   workers   |      + +       |
+| apache.scoreboard  | waiting, starting, reading, sending, keepalive, dns_lookup, closing, logging, finishing, idle_cleanup, open | connections |      + +       |
+| apache.requests    |                                                  requests                                                   | requests/s  |      - +       |
+| apache.net         |                                                    sent                                                     |  kilobit/s  |      - +       |
+| apache.reqpersec   |                                                  requests                                                   | requests/s  |      - +       |
+| apache.bytespersec |                                                   served                                                    |    KiB/s    |      - +       |
+| apache.bytesperreq |                                                    size                                                     |     KiB     |      - +       |
+| apache.uptime      |                                                   uptime                                                    |   seconds   |      - +       |
+
+## Setup
+
+### Prerequisites
+
+#### Enable Apache server-status support
+
+- Enable and configure [status_module](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
+- Ensure that you have `ExtendedStatus` set on (enabled by default since Apache v2.3.6).
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/apache.conf`.
+
+The file format is YAML. Generally the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/apache.conf
 ```
 
-Needs only `url` to server's `server-status?auto`. Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>All options</summary>
+
+|         Name         | Description                                                                                               |               Default               | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:-----------------------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |                  1                  |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |                  0                  |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1/server-status?auto |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |                  1                  |          |
+|       username       | Username for basic HTTP authentication.                                                                   |                                     |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                                     |          |
+|      proxy_url       | Proxy URL.                                                                                                |                                     |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                                     |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                                     |          |
+|        method        | HTTP request method.                                                                                      |                 GET                 |          |
+|         body         | HTTP request body.                                                                                        |                                     |          |
+|       headers        | HTTP request headers.                                                                                     |                                     |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |                 no                  |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |                 no                  |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                                     |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                                     |          |
+|       tls_key        | Client TLS key.                                                                                           |                                     |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+A basic example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1/server-status?auto
+```
+
+</details>
+
+##### HTTP authentication
+
+Basic HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1/server-status?auto
+    username: username
+    password: password
+```
+
+</details>
+
+##### HTTPS with self-signed certificate
+
+Apache with enabled HTTP and self-signed certificate.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: https://127.0.0.1/server-status?auto
+    tls_skip_verify: yes
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collecting metrics from local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -54,13 +160,14 @@ jobs:
     url: http://127.0.0.1/server-status?auto
 
   - name: remote
-    url: http://203.0.113.10/server-status?auto
+    url: http://192.0.2.1/server-status?auto
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/apache.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `apache` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
@@ -83,3 +190,4 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m apache
   ```
+
