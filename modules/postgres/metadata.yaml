@@ -313,6 +313,8 @@ metrics:
           description: TBD
         - name: table
           description: TBD
+        - name: parent_table
+          description: TBD
       metrics:
         - name: postgres.table_rows_dead_ratio
           description: Table dead rows
@@ -446,6 +448,8 @@ metrics:
         - name: schema
           description: TBD
         - name: table
+          description: TBD
+        - name: parent_table
           description: TBD
         - name: index
           description: TBD

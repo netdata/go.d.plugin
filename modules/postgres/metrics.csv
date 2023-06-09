@@ -42,30 +42,30 @@ postgres.db_locks_awaited_count,database,"access_share, row_share, row_exclusive
 postgres.db_temp_files_created_rate,database,created,files/s,"Database created temporary files",line,database,go.d.plugin,postgres
 postgres.db_temp_files_io_rate,database,written,B/s,"Database temporary files data written to disk",line,database,go.d.plugin,postgres
 postgres.db_size,database,size,B,"Database size",line,database,go.d.plugin,postgres
-postgres.table_rows_dead_ratio,table,dead,percentage,"Table dead rows",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_rows_count,table,"live, dead",rows,"Table total rows",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_ops_rows_rate,table,"inserted, deleted, updated",rows/s,"Table throughput",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_ops_rows_hot_ratio,table,hot,percentage,"Table HOT updates ratio",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_ops_rows_hot_rate,table,hot,rows/s,"Table HOT updates",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_cache_io_ratio,table,miss,percentage,"Table I/O cache miss ratio",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_io_rate,table,"memory, disk",B/s,"Table I/O",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_index_cache_io_ratio,table,miss,percentage,"Table index I/O cache miss ratio",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_index_io_rate,table,"memory, disk",B/s,"Table index I/O",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_toast_cache_io_ratio,table,miss,percentage,"Table TOAST I/O cache miss ratio",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_toast_io_rate,table,"memory, disk",B/s,"Table TOAST I/O",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_toast_index_cache_io_ratio,table,miss,percentage,"Table TOAST index I/O cache miss ratio",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_toast_index_io_rate,table,"memory, disk",B/s,"Table TOAST index I/O",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_scans_rate,table,"index, sequential",scans/s,"Table scans",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_scans_rows_rate,table,"index, sequential",rows/s,"Table live rows fetched by scans",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_autovacuum_since_time,table,time,seconds,"Table time since last auto VACUUM",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_vacuum_since_time,table,time,seconds,"Table time since last manual VACUUM",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_autoanalyze_since_time,table,time,seconds,"Table time since last auto ANALYZE",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_analyze_since_time,table,time,seconds,"Table time since last manual ANALYZE",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_null_columns,table,null,columns,"Table null columns",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_size,table,size,B,"Table total size",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_bloat_size_perc,table,bloat,percentage,"Table bloat size percentage",line,"database, schema, table",go.d.plugin,postgres
-postgres.table_bloat_size,table,bloat,B,"Table bloat size",line,"database, schema, table",go.d.plugin,postgres
-postgres.index_size,index,size,B,"Index size",line,"database, schema, table, index",go.d.plugin,postgres
-postgres.index_bloat_size_perc,index,bloat,percentage,"Index bloat size percentage",line,"database, schema, table, index",go.d.plugin,postgres
-postgres.index_bloat_size,index,bloat,B,"Index bloat size",line,"database, schema, table, index",go.d.plugin,postgres
-postgres.index_usage_status,index,"used, unused",status,"Index usage status",line,"database, schema, table, index",go.d.plugin,postgres
+postgres.table_rows_dead_ratio,table,dead,percentage,"Table dead rows",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_rows_count,table,"live, dead",rows,"Table total rows",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_ops_rows_rate,table,"inserted, deleted, updated",rows/s,"Table throughput",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_ops_rows_hot_ratio,table,hot,percentage,"Table HOT updates ratio",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_ops_rows_hot_rate,table,hot,rows/s,"Table HOT updates",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_cache_io_ratio,table,miss,percentage,"Table I/O cache miss ratio",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_io_rate,table,"memory, disk",B/s,"Table I/O",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_index_cache_io_ratio,table,miss,percentage,"Table index I/O cache miss ratio",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_index_io_rate,table,"memory, disk",B/s,"Table index I/O",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_toast_cache_io_ratio,table,miss,percentage,"Table TOAST I/O cache miss ratio",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_toast_io_rate,table,"memory, disk",B/s,"Table TOAST I/O",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_toast_index_cache_io_ratio,table,miss,percentage,"Table TOAST index I/O cache miss ratio",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_toast_index_io_rate,table,"memory, disk",B/s,"Table TOAST index I/O",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_scans_rate,table,"index, sequential",scans/s,"Table scans",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_scans_rows_rate,table,"index, sequential",rows/s,"Table live rows fetched by scans",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_autovacuum_since_time,table,time,seconds,"Table time since last auto VACUUM",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_vacuum_since_time,table,time,seconds,"Table time since last manual VACUUM",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_autoanalyze_since_time,table,time,seconds,"Table time since last auto ANALYZE",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_analyze_since_time,table,time,seconds,"Table time since last manual ANALYZE",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_null_columns,table,null,columns,"Table null columns",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_size,table,size,B,"Table total size",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_bloat_size_perc,table,bloat,percentage,"Table bloat size percentage",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.table_bloat_size,table,bloat,B,"Table bloat size",line,"database, schema, table, parent_table",go.d.plugin,postgres
+postgres.index_size,index,size,B,"Index size",line,"database, schema, table, parent_table, index",go.d.plugin,postgres
+postgres.index_bloat_size_perc,index,bloat,percentage,"Index bloat size percentage",line,"database, schema, tablep, parent_table, index",go.d.plugin,postgres
+postgres.index_bloat_size,index,bloat,B,"Index bloat size",line,"database, schema, table, parent_table, index",go.d.plugin,postgres
+postgres.index_usage_status,index,"used, unused",status,"Index usage status",line,"database, schema, table, parent_table, index",go.d.plugin,postgres
