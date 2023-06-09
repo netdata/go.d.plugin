@@ -40,10 +40,11 @@ Metrics:
 
 ### Prerequisites
 
-#### Enable Apache server-status support
+#### Enable Apache status support
 
 - Enable and configure [status_module](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
-- Ensure that you have `ExtendedStatus` set on (enabled by default since Apache v2.3.6).
+- Ensure that you have [ExtendedStatus](https://httpd.apache.org/docs/2.4/mod/mod_status.html#troubleshoot) set on (
+  enabled by default since Apache v2.3.6).
 
 ### Configuration
 
