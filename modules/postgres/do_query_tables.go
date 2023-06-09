@@ -64,6 +64,8 @@ func (p *Postgres) doDBQueryStatUserTables(db *sql.DB) error {
 		case "relname":
 			name = value
 			p.getTableMetrics(name, dbname, schema).updated = true
+		case "parent_relname":
+			p.getTableMetrics(name, dbname, schema).parentName = value
 		case "seq_scan":
 			p.getTableMetrics(name, dbname, schema).seqScan = parseInt(value)
 		case "seq_tup_read":
@@ -122,6 +124,8 @@ func (p *Postgres) doDBQueryStatIOUserTables(db *sql.DB) error {
 		case "relname":
 			name = value
 			p.getTableMetrics(name, dbname, schema).updated = true
+		case "parent_relname":
+			p.getTableMetrics(name, dbname, schema).parentName = value
 		case "heap_blks_read_bytes":
 			p.getTableMetrics(name, dbname, schema).heapBlksRead.last = parseInt(value)
 		case "heap_blks_hit_bytes":

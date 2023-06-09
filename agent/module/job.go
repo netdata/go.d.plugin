@@ -442,7 +442,7 @@ func (j *Job) createChart(chart *Chart) {
 
 	seen := make(map[string]bool)
 	for _, l := range chart.Labels {
-		if l.Key != "" && l.Value != "" {
+		if l.Key != "" {
 			seen[l.Key] = true
 			ls := l.Source
 			// the default should be auto

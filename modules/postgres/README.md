@@ -49,8 +49,8 @@ Labels per scope:
 - repl application: application.
 - repl slot: slot.
 - database: database.
-- table: database, schema, table.
-- index: database, schema, table, index.
+- table: database, schema, table, parent_table.
+- index: database, schema, table, parent_table, index.
 
 | Metric                                  |      Scope       |                                                                 Dimensions                                                                 |     Units      |
 |-----------------------------------------|:----------------:|:------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|

@@ -1198,6 +1198,7 @@ func newTableChart(chart *module.Chart, tbl *tableMetrics) *module.Chart {
 		{Key: "database", Value: tbl.db},
 		{Key: "schema", Value: tbl.schema},
 		{Key: "table", Value: tbl.name},
+		{Key: "parent_table", Value: tbl.parentName},
 	}
 	for _, d := range chart.Dims {
 		d.ID = fmt.Sprintf(d.ID, tbl.name, tbl.db, tbl.schema)
@@ -1372,6 +1373,7 @@ func (p *Postgres) addNewIndexCharts(idx *indexMetrics) {
 			{Key: "database", Value: idx.db},
 			{Key: "schema", Value: idx.schema},
 			{Key: "table", Value: idx.table},
+			{Key: "parent_table", Value: idx.parentTable},
 			{Key: "index", Value: idx.name},
 		}
 		for _, d := range chart.Dims {
