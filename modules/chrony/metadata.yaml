@@ -1,11 +1,73 @@
+name: chrony
+title: Chrony collector
+overview:
+  application:
+    description: |
+      [Chrony](https://chrony.tuxfamily.org/) is a versatile implementation of the Network Time Protocol (NTP).
+  collector:
+    description: |
+      This collector monitors the system's clock performance and peers activity status using Chrony communication protocol v6.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: address
+          description: Server address. The format is IP:PORT.
+          default: 127.0.0.1:323
+          required: true
+        - name: timeout
+          description: Connection timeout. Zero means no timeout.
+          default: 1
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: Basic
+          description: A basic example configuration.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:323
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:323
+
+              - name: remote
+                address: 192.0.2.1:323
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: chrony.stratum
