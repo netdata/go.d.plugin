@@ -1,24 +1,78 @@
-<!--
-title: "Cassandra monitoring with Netdata"
-description: "Monitor the health and performance of Cassandra database servers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: https://github.com/netdata/go.d.plugin/edit/master/modules/cassandra/README.md
-sidebar_label: "Cassandra"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Databases"
--->
-
 # Cassandra collector
+
+## Overview
 
 [Cassandra](https://cassandra.apache.org/_/index.html) is an open-source NoSQL database management system.
 
-This module will monitor one or more Cassandra servers, depending on your configuration.
+This collector gathers metrics from one or more Cassandra servers, depending on your configuration.
 
-## Requirements
+## Collected metrics
 
-- Cassandra with [Prometheus JMX Exporter](https://github.com/prometheus/jmx_exporter).
+Metrics grouped by *scope*.
 
-To configure Cassandra with the JMX Exporter:
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### global
+
+The metrics apply to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                           |          Dimensions           |     Unit     |
+|--------------------------------------------------|:-----------------------------:|:------------:|
+| cassandra.client_requests_rate                   |          read, write          |  requests/s  |
+| cassandra.client_request_read_latency_histogram  | p50, p75, p95, p98, p99, p999 |   seconds    |
+| cassandra.client_request_write_latency_histogram | p50, p75, p95, p98, p99, p999 |   seconds    |
+| cassandra.client_requests_latency                |          read, write          |   seconds    |
+| cassandra.row_cache_hit_ratio                    |           hit_ratio           |  percentage  |
+| cassandra.row_cache_hit_rate                     |         hits, misses          |   events/s   |
+| cassandra.row_cache_utilization                  |             used              |  percentage  |
+| cassandra.row_cache_size                         |             size              |    bytes     |
+| cassandra.key_cache_hit_ratio                    |           hit_ratio           |  percentage  |
+| cassandra.key_cache_hit_rate                     |         hits, misses          |   events/s   |
+| cassandra.key_cache_utilization                  |             used              |  percentage  |
+| cassandra.key_cache_size                         |             size              |    bytes     |
+| cassandra.storage_live_disk_space_used           |             used              |    bytes     |
+| cassandra.compaction_completed_tasks_rate        |           completed           |   tasks/s    |
+| cassandra.compaction_pending_tasks_count         |            pending            |    tasks     |
+| cassandra.compaction_compacted_rate              |           compacted           |   bytes/s    |
+| cassandra.jvm_memory_used                        |         heap, nonheap         |    bytes     |
+| cassandra.jvm_gc_rate                            |          parnew, cms          |     gc/s     |
+| cassandra.jvm_gc_time                            |          parnew, cms          |   seconds    |
+| cassandra.dropped_messages_rate                  |            dropped            |  messages/s  |
+| cassandra.client_requests_timeouts_rate          |          read, write          |  timeout/s   |
+| cassandra.client_requests_unavailables_rate      |          read, write          | exceptions/s |
+| cassandra.client_requests_failures_rate          |          read, write          |  failures/s  |
+| cassandra.storage_exceptions_rate                |            storage            | exceptions/s |
+
+### thread pool
+
+Metrics related to Cassandra's thread pools. Each thread pool provides its own set of the following metrics.
+
+Labels:
+
+| Label       | Description      |
+|-------------|------------------|
+| thread_pool | thread pool name |
+
+Metrics:
+
+| Metric                                    | Dimensions |  Unit   |
+|-------------------------------------------|:----------:|:-------:|
+| cassandra.thread_pool_active_tasks_count  |   active   |  tasks  |
+| cassandra.thread_pool_pending_tasks_count |  pending   |  tasks  |
+| cassandra.thread_pool_blocked_tasks_count |  blocked   |  tasks  |
+| cassandra.thread_pool_blocked_tasks_rate  |  blocked   | tasks/s |
+
+## Setup
+
+### Prerequisites
+
+#### Configure Cassandra with Prometheus JMX Exporter
+
+To configure Cassandra with the [JMX Exporter](https://github.com/prometheus/jmx_exporter):
 
 > **Note**: paths can differ depends on your setup.
 
@@ -33,57 +87,111 @@ To configure Cassandra with the JMX Exporter:
   ```
 - Restart cassandra service.
 
-## Metrics
+### Configuration
 
-All metrics have "cassandra." prefix.
+#### File
 
-Labels per scope:
+The configuration file name is `go.d/cassandra.conf`.
 
-- global: no labels.
-- thread pool: thread_pool.
+The file format is YAML. Generally the format is:
 
-| Metric                                 |    Scope    |          Dimensions           |    Units     |
-|----------------------------------------|:-----------:|:-----------------------------:|:------------:|
-| client_requests_rate                   |   global    |          read, write          |  requests/s  |
-| client_request_read_latency_histogram  |   global    | p50, p75, p95, p98, p99, p999 |   seconds    |
-| client_request_write_latency_histogram |   global    | p50, p75, p95, p98, p99, p999 |   seconds    |
-| client_requests_latency                |   global    |          read, write          |   seconds    |
-| row_cache_hit_ratio                    |   global    |           hit_ratio           |  percentage  |
-| row_cache_hit_rate                     |   global    |         hits, misses          |   events/s   |
-| row_cache_utilization                  |   global    |             used              |  percentage  |
-| row_cache_size                         |   global    |             size              |    bytes     |
-| key_cache_hit_ratio                    |   global    |           hit_ratio           |  percentage  |
-| key_cache_hit_rate                     |   global    |         hits, misses          |   events/s   |
-| key_cache_utilization                  |   global    |             used              |  percentage  |
-| key_cache_size                         |   global    |             size              |    bytes     |
-| storage_live_disk_space_used           |   global    |             used              |    bytes     |
-| compaction_completed_tasks_rate        |   global    |           completed           |   tasks/s    |
-| compaction_pending_tasks_count         |   global    |            pending            |    tasks     |
-| compaction_compacted_rate              |   global    |           compacted           |   bytes/s    |
-| thread_pool_active_tasks_count         | thread pool |            active             |    tasks     |
-| thread_pool_pending_tasks_count        | thread pool |            pending            |    tasks     |
-| thread_pool_blocked_tasks_count        | thread pool |            blocked            |    tasks     |
-| thread_pool_blocked_tasks_rate         | thread pool |            blocked            |   tasks/s    |
-| jvm_memory_used                        |   global    |         heap, nonheap         |    bytes     |
-| jvm_gc_rate                            |   global    |          parnew, cms          |     gc/s     |
-| jvm_gc_time                            |   global    |          parnew, cms          |   seconds    |
-| dropped_messages_rate                  |   global    |            dropped            |  messages/s  |
-| client_requests_timeouts_rate          |   global    |          read, write          |  timeout/s   |
-| client_requests_unavailables_rate      |   global    |          read, write          | exceptions/s |
-| client_requests_failures_rate          |   global    |          read, write          |  failures/s  |
-| storage_exceptions_rate                |   global    |            storage            | exceptions/s |
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
 
-## Configuration
-
-Edit the `go.d/cassandra.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/cassandra.conf
 ```
 
-Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               |            Default            | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:-----------------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |               5               |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |               0               |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1:7072/metrics |   yes    |
+|       username       | Username for basic HTTP authentication.                                                                   |                               |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                               |          |
+|      proxy_url       | Proxy URL.                                                                                                |                               |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                               |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                               |          |
+|       timeout        | HTTP request timeout.                                                                                     |               2               |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |              no               |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |              no               |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                               |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                               |          |
+|       tls_key        | Client TLS key.                                                                                           |                               |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+A basic example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:7072/metrics
+```
+
+</details>
+
+##### HTTP authentication
+
+Local server with basic HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:7072/metrics
+    username: foo
+    password: bar
+```
+
+</details>
+
+##### HTTPS with self-signed certificate
+
+Local server with enabled HTTPS and self-signed certificate.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: https://127.0.0.1:7072/metrics
+    tls_skip_verify: yes
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collecting metrics from local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -91,13 +199,14 @@ jobs:
     url: http://127.0.0.1:7072/metrics
 
   - name: remote
-    url: http://203.0.113.10:7072/metrics
+    url: http://192.0.2.1:7072/metrics
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/cassandra.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `cassandra` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
@@ -120,3 +229,4 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m cassandra
   ```
+

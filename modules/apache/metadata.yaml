@@ -6,7 +6,7 @@ overview:
       [Apache](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.
   collector:
     description: |
-      This module will monitor one or more Apache servers, depending on your configuration.
+      This collector gathers metrics from one or more Apache servers, depending on your configuration.
 setup:
   prerequisites:
     list:
@@ -19,7 +19,7 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
@@ -110,7 +110,7 @@ setup:
                 username: username
                 password: password
         - name: HTTPS with self-signed certificate
-          description: Apache with enabled HTTP and self-signed certificate.
+          description: Apache with enabled HTTPS and self-signed certificate.
           data: |
             jobs:
               - name: local
