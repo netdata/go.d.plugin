@@ -37,66 +37,66 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 5
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
           default: "`http://127.0.0.1:7072/metrics`"
-          required: yes
+          required: true
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_url
           description: The Proxie's URL.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: timeout
           description: HTTP request timeout.
           default: 2
-          required: no
+          required: false
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
           default: no
-          required: no
+          required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: job1
@@ -104,9 +104,6 @@ setup:
 
         - name: Basic HTTP authentication
           description:  Local server with basic HTTP authentication.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: basicauth
@@ -115,9 +112,6 @@ setup:
                 password: bar
         - name: Multi-instance
           description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -132,10 +126,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: cassandra.client_requests_rate
@@ -279,10 +273,10 @@ metrics:
           dimensions:
             - name: storage
     - name: thread pool
-      description: TBD
+      description: Metrics related to Cassandra's thread pools. Each thread pool provides it's own set of the following metrics.
       labels:
         - name: thread_pool
-          description: TBD
+          description: a label indicating the thread pool the metric comes from
       metrics:
         - name: cassandra.thread_pool_active_tasks_count
           description: Active tasks
