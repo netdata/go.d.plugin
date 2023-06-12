@@ -6,7 +6,7 @@ overview:
       [Cassandra](https://cassandra.apache.org/_/index.html) is an open-source NoSQL database management system.
   collector:
     description: |
-      This module will monitor one or more Cassandra servers, depending on your configuration.
+      This collector gathers metrics from one or more Cassandra servers, depending on your configuration.
 setup:
   prerequisites:
     list:
