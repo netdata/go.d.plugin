@@ -110,7 +110,7 @@ setup:
                 username: username
                 password: password
         - name: HTTPS with self-signed certificate
-          description: Apache with enabled HTTP and self-signed certificate.
+          description: Apache with enabled HTTPS and self-signed certificate.
           data: |
             jobs:
               - name: local
