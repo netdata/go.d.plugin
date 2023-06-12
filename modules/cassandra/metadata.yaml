@@ -10,7 +10,7 @@ overview:
 setup:
   prerequisites:
     list:
-      - title: Configure Cassandra with Prometheus JMX Exporter.
+      - title: Configure Cassandra with Prometheus JMX Exporter
         text: |
           To configure Cassandra with the [JMX Exporter](https://github.com/prometheus/jmx_exporter):
 
