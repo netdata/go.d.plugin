@@ -99,13 +99,13 @@ setup:
           description: A basic example configuration.
           data: |
             jobs:
-              - name: job1
+              - name: local
                 url: http://127.0.0.1:7072/metrics
         - name: HTTP authentication
           description: Local server with basic HTTP authentication.
           data: |
             jobs:
-              - name: basicauth
+              - name: local
                 url: http://127.0.0.1:7072/metrics
                 username: foo
                 password: bar
