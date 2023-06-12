@@ -282,7 +282,7 @@ metrics:
           dimensions:
             - name: storage
     - name: thread pool
-      description: Metrics related to Cassandra's thread pools. Each thread pool provides it's own set of the following metrics.
+      description: Metrics related to Cassandra's thread pools. Each thread pool provides its own set of the following metrics.
       labels:
         - name: thread_pool
           description: thread pool name
