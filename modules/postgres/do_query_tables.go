@@ -113,7 +113,7 @@ func (p *Postgres) doDBQueryStatIOUserTables(db *sql.DB) error {
 
 	var dbname, schema, name string
 	return p.doDBQuery(db, q, func(column, value string, rowEnd bool) {
-		if value == "" {
+		if value == "" && column != "parent_relname" {
 			value = "-1"
 		}
 		switch column {
