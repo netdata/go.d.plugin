@@ -1,63 +1,121 @@
-<!--
-title: "Whois domain expiry monitoring with Netdata"
-description: "Monitor the health and performance of domain expiry with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/whoisquery/README.md"
-sidebar_label: "Whois domain expiry"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Webapps"
--->
+# Domain name expiry collector
 
-# Whois domain expiry collector
+## Overview
 
-This collector module checks the remaining time until a domain is expired.
+A domain name (often simply called a domain) is an easy-to-remember name
+that's associated with a physical IP address on the Internet.
 
-## Metrics
+This collector monitors the remaining time before the domain expires.
 
-All metrics have "whoisquery." prefix.
+## Collected metrics
 
-Labels per scope:
+Metrics grouped by *scope*.
 
-- global: domain.
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-| Metric                | Scope  | Dimensions |  Units  |
-|-----------------------|:------:|:----------:|:-------:|
-| time_until_expiration | global |   expiry   | seconds |
+### domain
 
-## Configuration
+These metrics refer to the configured source.
 
-Edit the `go.d/whoisquery.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Labels:
+
+| Label  | Description       |
+|--------|-------------------|
+| domain | Configured source |
+
+Metrics:
+
+| Metric                           | Dimensions |  Unit   |
+|----------------------------------|:----------:|:-------:|
+| whoisquery.time_until_expiration |   expiry   | seconds |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/whoisquery.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/whoisquery.conf
 ```
 
-Needs only `source`.
+#### Options
 
-Use `days_until_expiration_warning` and `days_until_expiration_critical` for each job to indicate the expiry warning and
-critical days. The default values are 90 for warning, and 30 days for critical.
+The following options can be defined globally: update_every, autodetection_retry.
 
-Here is an example:
+<details>
+<summary>Config options</summary>
+
+|              Name              | Description                                                        | Default | Required |
+|:------------------------------:|--------------------------------------------------------------------|:-------:|:--------:|
+|          update_every          | Data collection frequency.                                         |    1    |          |
+|      autodetection_retry       | Re-check interval in seconds. Zero means not to schedule re-check. |    0    |          |
+|             source             | Domain address.                                                    |         |   yes    |
+| days_until_expiration_warning  | Number of days before the alarm status is warning.                 |   30    |          |
+| days_until_expiration_critical | Number of days before the alarm status is critical.                |   15    |          |
+|            timeout             | The query timeout in seconds.                                      |    5    |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+Basic configuration example
+<details>
+<summary>Config</summary>
 
 ```yaml
-update_every: 60
-
 jobs:
   - name: my_site
     source: my_site.com
-
-  - name: my_another_site
-    source: my_another_site.com
-    days_until_expiration_critical: 20
-
 ```
 
-For all available options and defaults please, see the
-module's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/whoisquery.conf).
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define more than one job, their names must be unique.
+
+Check the expiration status of the multiple domains.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: my_site1
+    source: my_site1.com
+
+  - name: my_site2
+    source: my_site2.com
+```
+
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `whoisquery` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
