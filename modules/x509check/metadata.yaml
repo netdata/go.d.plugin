@@ -7,90 +7,83 @@ overview:
 
   collector:
     description: |
-      This module checks the time until an x509 certificate expires and its revocation status.
+      This module checks the time until a x509 certificate expires and its revocation status.
 
       Information about X509 certificates can be collected through a local file, TCP, UDP, HTTPS or SMTP protocols.
 setup:
   prerequisites:
     list: []
-
   configuration:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: source
           description: "Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file."
           default: ""
-          required: yes
+          required: false
         - name: days_until_expiration_warning
           description: Number of days before the alarm status is warning.
           default: 30
-          required: no
+          required: false
         - name: days_until_expiration_critical
           description: Number of days before the alarm status is critical.
           default: 15
-          required: no
+          required: false
         - name: check_revocation_status
           description: Whether to check the revocation status of the certificate.
           default: no
-          required: no
+          required: false
         - name: timeout
           description: SSL connection timeout.
           default: 2
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
-          required: no
+          description: Client TLS certificate.
+          default: ""
+          required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
-          required: no
+          description: Client TLS key.
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Website certificate
           description: Website certificate.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my_site_cert
                 source: https://my_site.org:443
         - name: Local file certificate
           description: Local file certificate.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my_file_cert
                 source: file:///home/me/cert.pem
         - name: SMTP certificate
           description: SMTP certificate.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my_smtp_cert
@@ -100,9 +93,6 @@ setup:
             > **Note**: When you define more than one job, their names must be unique.
 
             Check the expiration status of the multiple websites' certificates.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my_site_cert1
@@ -120,13 +110,13 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
-    - name: global
-      description: TBD
+    - name: source
+      description: These metrics apply to the configured source.
       labels:
         - name: source
-          description: TBD
+          description: Configured source.
       metrics:
         - name: x509check.time_until_expiration
           description: Time Until Certificate Expiration
