@@ -7,7 +7,7 @@ overview:
       providing distributed synchronization, and providing group services.
   collector:
     description: |
-      This module monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
+      This collector monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
       by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
 setup:
   prerequisites:

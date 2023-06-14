@@ -5,7 +5,7 @@
 An X.509 certificate is a digital certificate based on the widely accepted International Telecommunications Union (ITU)
 X.509 standard.
 
-This module checks the time until a x509 certificate expires and its revocation status.
+This collector monitors the time until a x509 certificate expires and its revocation status.
 
 Information about X509 certificates can be collected through a local file, TCP, UDP, HTTPS or SMTP protocols.
 

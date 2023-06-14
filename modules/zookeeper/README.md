@@ -5,8 +5,8 @@
 [ZooKeeper](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
 providing distributed synchronization, and providing group services.
 
-This module monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
-by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
+This collector monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from
+ZooKeeper by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
 
 ## Collected metrics
 
@@ -164,3 +164,4 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m zookeeper
   ```
+
