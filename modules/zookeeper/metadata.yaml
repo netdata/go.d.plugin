@@ -15,67 +15,63 @@ setup:
       - title: Whitelist `mntr` command
         text: |
           Add `mntr` to Zookeeper's [4lw.commands.whitelist](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_4lw).
-
   configuration:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: address
-          description: Server address.
-          default: "`127.0.0.1:2181`"
-          required: yes
+          description: Server address. The format is IP:PORT.
+          default: 127.0.0.1:2181
+          required: true
         - name: timeout
           description: Connection/read/write/ssl handshake timeout.
           default: 1
-          required: no
+          required: false
         - name: use_tls
           description: Whether to use TLS or not.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
-          required: no
+          description: Client TLS certificate.
+          default: ""
+          required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
-          required: no
+          description: Client TLS key.
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: Local server.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 address: 127.0.0.1:2181
-        - name: Basic with TLS
-          description: Local server with TLS.
-          folding:
-            title: Example
-            enabled: true
+        - name: TLS with self-signed certificate
+          description: Zookeeper with TLS and self-signed certificate.
           data: |
             jobs:
               - name: local
@@ -84,10 +80,9 @@ setup:
                 tls_skip_verify: yes
         - name: Multi-instance
           description: |
-            Local and remote Zookeeper instance. When you define more than one job, their names must be unique.
-          folding:
-            title: Example
-            enabled: true
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           data: |
             jobs:
               - name: local
@@ -102,10 +97,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: zookeeper.requests
