@@ -155,10 +155,7 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: |
-    Metrics grouped by *scope*.
-    
-    The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+  description: ""
   scope:
     - name: global
       description: The metrics apply to the entire monitored application.
