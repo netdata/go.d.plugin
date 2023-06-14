@@ -17,7 +17,7 @@ All metrics available only if [ExtendedStatus](https://httpd.apache.org/docs/2.4
 
 ### global
 
-The metrics apply to the entire monitored application.
+These metrics refer to the entire monitored application.
 
 This scope has no labels.
 

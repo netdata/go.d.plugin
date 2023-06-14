@@ -67,7 +67,7 @@ metrics:
   description: ""
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: chrony.stratum

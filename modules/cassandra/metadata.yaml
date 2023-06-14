@@ -138,7 +138,7 @@ metrics:
   description: ""
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: cassandra.client_requests_rate

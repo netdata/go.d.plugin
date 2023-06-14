@@ -8,50 +8,49 @@ overview:
 
   collector:
     description: |
-      This module checks the remaining time before the domain expires.
+      This collector monitors the remaining time before the domain expires.
 setup:
   prerequisites:
     list: []
-
   configuration:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: source
           description: Domain address.
           default: ""
-          required: yes
+          required: true
         - name: days_until_expiration_warning
           description: Number of days before the alarm status is warning.
           default: 30
-          required: no
+          required: false
         - name: days_until_expiration_critical
           description: Number of days before the alarm status is critical.
           default: 15
-          required: no
+          required: false
         - name: timeout
           description: The query timeout in seconds.
           default: 5
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
-          description: TBD
-          folding:
-            title: Example
-            enabled: true
+          description: Basic configuration example
           data: |
             jobs:
               - name: my_site
@@ -61,9 +60,6 @@ setup:
             > **Note**: When you define more than one job, their names must be unique.
 
             Check the expiration status of the multiple domains.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my_site1
@@ -78,13 +74,13 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
-    - name: global
-      description: TBD
+    - name: domain
+      description: These metrics refer to the configured source.
       labels:
         - name: domain
-          description: TBD
+          description: Configured source
       metrics:
         - name: whoisquery.time_until_expiration
           description: Time Until Domain Expiration

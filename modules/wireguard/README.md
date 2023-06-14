@@ -1,49 +1,67 @@
-<!--
-title: "WireGuard monitoring with Netdata"
-description: "Monitor WireGuard VPN network interfaces and peers traffic."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/wireguard/README.md"
-sidebar_label: "WireGuard"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Networking"
--->
-
 # WireGuard collector
+
+## Overview
 
 [WireGuard](https://www.wireguard.com/) is an extremely simple yet fast and modern VPN that utilizes state-of-the-art
 cryptography.
 
-This module monitors WireGuard VPN network interfaces and peers traffic.
+This collector monitors WireGuard VPN network interfaces and peers traffic.
+CAP_NET_ADMIN capability is required. It is set automatically during installation.
 
-## Requirements
+## Collected metrics
 
-- Grant `CAP_NET_ADMIN` capability to `go.d.plugin`.
+Metrics grouped by *scope*.
 
-  ```bash
-  sudo setcap CAP_NET_ADMIN+epi <INSTALL_PREFIX>/usr/libexec/netdata/plugins.d/go.d.plugin
-  ```
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-## Metrics
+### device
 
-All metrics have "wireguard." prefix.
+These metrics refer to the VPN network interface.
 
-Labels per scope:
+Labels:
 
-- device: device.
-- peer: device, public_key.
+| Label  | Description           |
+|--------|-----------------------|
+| device | VPN network interface |
 
-| Metric                    | Scope  |    Dimensions     |  Units  |
-|---------------------------|:------:|:-----------------:|:-------:|
-| device_peers              | device |       peers       |  peers  |
-| device_network_io         | device | receive, transmit |   B/s   |
-| peer_network_io           |  peer  | receive, transmit |   B/s   |
-| peer_latest_handshake_ago |  peer  |       time        | seconds |
+Metrics:
 
-## Configuration
+| Metric                      |    Dimensions     | Unit  |
+|-----------------------------|:-----------------:|:-----:|
+| wireguard.device_network_io | receive, transmit |  B/s  |
+| wireguard.device_peers      |       peers       | peers |
 
-No configuration needed.
+### peer
+
+These metrics refer to the VPN peer.
+
+Labels:
+
+| Label      | Description           |
+|------------|-----------------------|
+| device     | VPN network interface |
+| public_key | Public key of a peer  |
+
+Metrics:
+
+| Metric                              |    Dimensions     |  Unit   |
+|-------------------------------------|:-----------------:|:-------:|
+| wireguard.peer_network_io           | receive, transmit |   B/s   |
+| wireguard.peer_latest_handshake_ago |       time        | seconds |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+No configuration required.
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `wireguard` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.

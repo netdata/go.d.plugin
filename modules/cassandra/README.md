@@ -14,7 +14,7 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 ### global
 
-The metrics apply to the entire monitored application.
+These metrics refer to the entire monitored application.
 
 This scope has no labels.
 
