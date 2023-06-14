@@ -17,7 +17,7 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 ### source
 
-These metrics apply to the configured source.
+These metrics refer to the configured source.
 
 Labels:
 

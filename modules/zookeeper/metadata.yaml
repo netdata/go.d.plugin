@@ -100,7 +100,7 @@ metrics:
   description: ""
   scope:
     - name: global
-      description: These metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: zookeeper.requests

@@ -44,7 +44,7 @@ metrics:
   description: ""
   scope:
     - name: device
-      description: These metrics apply to the VPN network interface.
+      description: These metrics refer to the VPN network interface.
       labels:
         - name: device
           description: VPN network interface
@@ -61,7 +61,7 @@ metrics:
           dimensions:
             - name: peers
     - name: peer
-      description: These metrics apply to the VPN peer.
+      description: These metrics refer to the VPN peer.
       labels:
         - name: device
           description: VPN network interface

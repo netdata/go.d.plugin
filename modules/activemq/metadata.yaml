@@ -161,7 +161,7 @@ metrics:
     The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages

@@ -113,7 +113,7 @@ metrics:
   description: ""
   scope:
     - name: source
-      description: These metrics apply to the configured source.
+      description: These metrics refer to the configured source.
       labels:
         - name: source
           description: Configured source.

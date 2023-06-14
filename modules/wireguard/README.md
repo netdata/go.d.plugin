@@ -16,7 +16,7 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 ### device
 
-These metrics apply to the VPN network interface.
+These metrics refer to the VPN network interface.
 
 Labels:
 
@@ -33,7 +33,7 @@ Metrics:
 
 ### peer
 
-These metrics apply to the VPN peer.
+These metrics refer to the VPN peer.
 
 Labels:
 
