@@ -15,7 +15,7 @@ overview:
       - [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).
 setup:
   prerequisites:
-    list: 
+    list:
       - title: Enable DNSdist's built-in Webserver
         text: |
           For collecting metrics via HTTP, you need to [enable the built-in webserver](https://dnsdist.org/guides/webserver.html).
@@ -23,10 +23,8 @@ setup:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
-
-        A `url` and a `password` or _apikey_ are needed to access the webserver.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
@@ -39,27 +37,27 @@ setup:
           required: false
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:8083`"
+          default: http://127.0.0.1:8083
           required: true
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
+          default: ""
           required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
+          default: ""
           required: false
         - name: proxy_url
-          description: The Proxie's URL.
-          default: "-"
+          description: Proxy URL.
+          default: ""
           required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
+          default: ""
           required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
+          default: ""
           required: false
         - name: timeout
           description: HTTP request timeout.
@@ -75,35 +73,35 @@ setup:
           required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
+          default: ""
           required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
           required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
           required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
           required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
+          description: Client TLS certificate.
+          default: ""
           required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
+          description: Client TLS key.
+          default: ""
           required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -123,19 +121,19 @@ setup:
         #         username: foo
         #         password: bar
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
-          folding:
-            title: Example
-            enabled: true
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           data: |
             jobs:
               - name: local
-                url: 'http://127.0.0.1:8083'
+                url: http://127.0.0.1:8083
                 headers:
                   X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 
               - name: remote
-                url: 'http://203.0.113.0:8083'
+                url: http://203.0.113.0:8083
                 headers:
                   X-API-Key: 'your-api-key'
 troubleshooting:
@@ -148,7 +146,7 @@ metrics:
   description: ""
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: dnsdist.queries

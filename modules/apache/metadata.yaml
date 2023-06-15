@@ -6,7 +6,7 @@ overview:
       [Apache](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.
   collector:
     description: |
-      This collector gathers metrics from one or more Apache servers, depending on your configuration.
+      This collector monitors metrics from one or more Apache servers, depending on your configuration.
 setup:
   prerequisites:
     list:
@@ -142,7 +142,7 @@ metrics:
     - Extended
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: apache.connections

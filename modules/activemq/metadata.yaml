@@ -6,7 +6,7 @@ overview:
       [ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
   collector:
     description: |
-      This collector gathers queues and topics metrics using ActiveMQ Console API.
+      This collector monitors queues and topics metrics using ActiveMQ Console API.
 setup:
   prerequisites:
     list: []
@@ -158,7 +158,7 @@ metrics:
   description: ""
   scope:
     - name: global
-      description: The metrics apply to the entire monitored application.
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages

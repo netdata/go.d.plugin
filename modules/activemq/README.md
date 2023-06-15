@@ -2,9 +2,10 @@
 
 ## Overview
 
-[ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
+[ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java
+Message Service client.
 
-This collector gathers queues and topics metrics using ActiveMQ Console API.
+This collector monitors queues and topics metrics using ActiveMQ Console API.
 
 ## Collected metrics
 
@@ -14,14 +15,14 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 ### global
 
-The metrics apply to the entire monitored application.
+These metrics refer to the entire monitored application.
 
 This scope has no labels.
 
 Metrics:
 
-|            Metric             |     Dimensions     |    Unit    |
-| ----------------------------- | :----------------: | :--------: |
+| Metric                        |     Dimensions     |    Unit    |
+|-------------------------------|:------------------:|:----------:|
 | activemq.messages             | enqueued, dequeued | messages/s |
 | activemq.unprocessed_messages |    unprocessed     |  messages  |
 | activemq.consumers            |     consumers      | consumers  |
@@ -63,29 +64,29 @@ The following options can be defined globally: update_every, autodetection_retry
 <details>
 <summary>Config options</summary>
 
-|         Name         |                                                              Description                                                              |         Default         | Required |
-| :------------------: | ------------------------------------------------------------------------------------------------------------------------------------- | :---------------------: | :------: |
-|     update_every     | Data collection frequency.                                                                                                            |            1            |          |
-| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                                                    |            0            |          |
-|         url          | Server URL.                                                                                                                           | <http://localhost:8161> |   yes    |
-|       webadmin       | Webadmin root path.                                                                                                                   |          admin          |   yes    |
-|      max_queues      | Maximum number of concurrently collected queues.                                                                                      |           50            |          |
-|      max_topics      | Maximum number of concurrently collected topics.                                                                                      |           50            |          |
-|    queues_filter     | Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |                         |          |
-|    topics_filter     | Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |                         |          |
-|       username       | Username for basic HTTP authentication.                                                                                               |                         |          |
-|       password       | Password for basic HTTP authentication.                                                                                               |                         |          |
-|    proxy_username    | Username for proxy basic HTTP authentication.                                                                                         |                         |          |
-|    proxy_password    | Password for proxy basic HTTP authentication.                                                                                         |                         |          |
-|        method        | HTTP request method.                                                                                                                  |           GET           |          |
-|       timeout        | HTTP request timeout.                                                                                                                 |            1            |          |
-|         body         | HTTP request body.                                                                                                                    |                         |          |
-|       headers        | HTTP request headers.                                                                                                                 |                         |          |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                                              |           no            |          |
-|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check.                             |           no            |          |
-|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                                                |                         |          |
-|       tls_cert       | Client TLS certificate.                                                                                                               |                         |          |
-|       tls_key        | Client TLS key.                                                                                                                       |                         |          |
+|         Name         | Description                                                                                                                           |        Default        | Required |
+|:--------------------:|---------------------------------------------------------------------------------------------------------------------------------------|:---------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                                            |           1           |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                                                    |           0           |          |
+|         url          | Server URL.                                                                                                                           | http://localhost:8161 |   yes    |
+|       webadmin       | Webadmin root path.                                                                                                                   |         admin         |   yes    |
+|      max_queues      | Maximum number of concurrently collected queues.                                                                                      |          50           |          |
+|      max_topics      | Maximum number of concurrently collected topics.                                                                                      |          50           |          |
+|    queues_filter     | Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |                       |          |
+|    topics_filter     | Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |                       |          |
+|       username       | Username for basic HTTP authentication.                                                                                               |                       |          |
+|       password       | Password for basic HTTP authentication.                                                                                               |                       |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                                                         |                       |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                                                         |                       |          |
+|        method        | HTTP request method.                                                                                                                  |          GET          |          |
+|       timeout        | HTTP request timeout.                                                                                                                 |           1           |          |
+|         body         | HTTP request body.                                                                                                                    |                       |          |
+|       headers        | HTTP request headers.                                                                                                                 |                       |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                                              |          no           |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check.                             |          no           |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                                                |                       |          |
+|       tls_cert       | Client TLS certificate.                                                                                                               |                       |          |
+|       tls_key        | Client TLS key.                                                                                                                       |                       |          |
 
 </details>
 

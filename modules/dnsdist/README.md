@@ -4,9 +4,9 @@
 
 [DNSdist](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer.
 
-This collector monitors load-balancer performance and health metrics.  
+This collector monitors load-balancer performance and health metrics.
 
-It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).  
+It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).
 
 Used endpoints:
 
@@ -20,14 +20,14 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 ### global
 
-The metrics apply to the entire monitored application.
+These metrics refer to the entire monitored application.
 
 This scope has no labels.
 
 Metrics:
 
-|           Metric           |                     Dimensions                     |     Unit     |
-| -------------------------- | :------------------------------------------------: | :----------: |
+| Metric                     |                     Dimensions                     |     Unit     |
+|----------------------------|:--------------------------------------------------:|:------------:|
 | dnsdist.queries            |               all, recursive, empty                |  queries/s   |
 | dnsdist.queries_dropped    | rule_drop, dynamic_blocked, no_policy, non_queries |  queries/s   |
 | dnsdist.packets_dropped    |                        acl                         |  packets/s   |
@@ -77,30 +77,28 @@ sudo ./edit-config go.d/dnsdist.conf
 
 The following options can be defined globally: update_every, autodetection_retry.
 
-A `url` and a `password` or *apikey* are needed to access the webserver.
-
 <details>
-<summary>All options</summary>
+<summary>Config options</summary>
 
-|         Name         |                                Description                                |         Default         | Required |
-| :------------------: | ------------------------------------------------------------------------- | :---------------------: | :------: |
-|     update_every     | Data collection frequency.                                                |            1            |          |
-| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.        |            0            |          |
-|         url          | Server URL.                                                               | `http://127.0.0.1:8083` |   yes    |
-|       username       | Username for basic HTTP authentication.                                   |            -            |          |
-|       password       | Password for basic HTTP authentication.                                   |            -            |          |
-|      proxy_url       | The Proxie's URL.                                                         |            -            |          |
-|    proxy_username    | Username for proxy basic HTTP authentication.                             |            -            |          |
-|    proxy_password    | Password for proxy basic HTTP authentication.                             |            -            |          |
-|       timeout        | HTTP request timeout.                                                     |            1            |          |
-|        method        | HTTP request method.                                                      |           GET           |          |
-|         body         | HTTP request body.                                                        |            -            |          |
-|       headers        | HTTP request headers.                                                     |            -            |          |
-| not_follow_redirects | Whether to not follow redirects from the server.                          |           no            |          |
-|   tls_skip_verify    | Whether to skip verifying server's certificate chain and hostname.        |           no            |          |
-|        tls_ca        | Certificate authority that client use when verifying server certificates. |            -            |          |
-|       tls_cert       | Client tls certificate.                                                   |            -            |          |
-|       tls_key        | Client tls key.                                                           |            -            |          |
+|         Name         | Description                                                                                               |        Default        | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:---------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |           1           |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |           0           |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1:8083 |   yes    |
+|       username       | Username for basic HTTP authentication.                                                                   |                       |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                       |          |
+|      proxy_url       | Proxy URL.                                                                                                |                       |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                       |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                       |          |
+|       timeout        | HTTP request timeout.                                                                                     |           1           |          |
+|        method        | HTTP request method.                                                                                      |          GET          |          |
+|         body         | HTTP request body.                                                                                        |           -           |          |
+|       headers        | HTTP request headers.                                                                                     |                       |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |          no           |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |          no           |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                       |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                       |          |
+|       tls_key        | Client TLS key.                                                                                           |                       |          |
 
 </details>
 
@@ -109,6 +107,8 @@ A `url` and a `password` or *apikey* are needed to access the webserver.
 ##### Basic
 
 An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -118,22 +118,31 @@ jobs:
       X-API-Key: your-api-key # static pre-shared authentication key for access to the REST API (api-key).
 ```
 
+</details>
+
 ##### Multi-instance
 
-When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collecting metrics from local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
-    url: 'http://127.0.0.1:8083'
+    url: http://127.0.0.1:8083
     headers:
       X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
 
   - name: remote
-    url: 'http://203.0.113.0:8083'
+    url: http://203.0.113.0:8083
     headers:
       X-API-Key: 'your-api-key'
 ```
+
+</details>
 
 ## Troubleshooting
 
