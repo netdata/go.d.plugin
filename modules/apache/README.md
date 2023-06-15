@@ -5,7 +5,7 @@
 [Apache](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and
 Windows.
 
-This module will monitor one or more Apache servers, depending on your configuration.
+This collector monitors metrics from one or more Apache servers, depending on your configuration.
 
 ## Collected metrics
 
@@ -52,7 +52,7 @@ Metrics:
 
 The configuration file name is `go.d/apache.conf`.
 
-The file format is YAML. Generally the format is:
+The file format is YAML. Generally, the format is:
 
 ```yaml
 update_every: 1
@@ -75,7 +75,7 @@ sudo ./edit-config go.d/apache.conf
 The following options can be defined globally: update_every, autodetection_retry.
 
 <details>
-<summary>All options</summary>
+<summary>Config options</summary>
 
 |         Name         | Description                                                                                               |               Default               | Required |
 |:--------------------:|-----------------------------------------------------------------------------------------------------------|:-----------------------------------:|:--------:|
@@ -133,7 +133,7 @@ jobs:
 
 ##### HTTPS with self-signed certificate
 
-Apache with enabled HTTP and self-signed certificate.
+Apache with enabled HTTPS and self-signed certificate.
 <details>
 <summary>Config</summary>
 
@@ -191,4 +191,3 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m apache
   ```
-

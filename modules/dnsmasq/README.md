@@ -1,58 +1,120 @@
-<!--
-title: "Dnsmasq DNS Forwarder"
-description: "Monitor the health and performance of Dnsmasq DNS forwarders with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/dnsmasq/README.md"
-sidebar_label: "Dnsmasq DNS Forwarder"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Networking"
--->
+# Dnsmasq collector
 
-# Dnsmasq DNS Forwarder
+## Overview
 
-[`Dnsmasq`](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed
-to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+[Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
 
-This module monitors one or more `Dnsmasq DNS Forwarder` instances, depending on your configuration.
+This collector monitors one or more Dnsmasq DNS Forwarder instances, depending on your configuration.
 
-It collects DNS cache statistics
-by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
+It collects DNS cache statistics by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
 
 ```cmd
 ;; opcode: QUERY, status: NOERROR, id: 37862
 ;; flags: rd; QUERY: 7, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
 
 ;; QUESTION SECTION:
-;cachesize.bind.   CH	 TXT
-;insertions.bind.  CH	 TXT
-;evictions.bind.   CH	 TXT
-;hits.bind.        CH	 TXT
-;misses.bind.      CH	 TXT
-;servers.bind.     CH	 TXT
+;cachesize.bind.   CH  TXT
+;insertions.bind.  CH  TXT
+;evictions.bind.   CH  TXT
+;hits.bind.        CH  TXT
+;misses.bind.      CH  TXT
+;servers.bind.     CH  TXT
 ```
 
-## Metrics
+## Collected metrics
 
-All metrics have "dnsmasq." prefix.
+Metrics grouped by *scope*.
 
-| Metric            | Scope  |      Dimensions       |    Units     |
-|-------------------|:------:|:---------------------:|:------------:|
-| servers_queries   | global |    success, failed    |  queries/s   |
-| cache_size        | global |         size          |   entries    |
-| cache_operations  | global | insertions, evictions | operations/s |
-| cache_performance | global |     hist, misses      |   events/s   |
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-## Configuration
+### global
 
-Edit the `go.d/dnsmasq.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+The metrics apply to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+|          Metric           |      Dimensions       |     Unit     |
+| ------------------------- | :-------------------: | :----------: |
+| dnsmasq.servers_queries   |    success, failed    |  queries/s   |
+| dnsmasq.cache_performance |     hist, misses      |   events/s   |
+| dnsmasq.cache_operations  | insertions, evictions | operations/s |
+| dnsmasq.cache_size        |         size          |   entries    |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/dnsmasq.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/dnsmasq.conf
 ```
 
-Needs only `address`, here is an example with two jobs:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>All options</summary>
+
+|        Name         |                            Description                             |    Default     | Required |
+| :-----------------: | ------------------------------------------------------------------ | :------------: | :------: |
+|    update_every     | Data collection frequency.                                         |       1        |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check. |       0        |          |
+|       address       | Server's address. Format is 'ip_address:port'.                     | `127.0.0.1:53` |   yes    |
+|      protocol       | DNS query transport protocol. Valid options: udp, tcp, tcp-tls.    |       -        |          |
+|       timeout       | DNS query timeout (dial, write and read) in seconds.               |       1        |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+
+```yaml
+jobs:
+  - name: local
+    address: '127.0.0.1:53'
+```
+
+##### Basic example with `protocol` option
+
+Local server with defined DNS query transport protocol.
+
+```yaml
+jobs:
+  - name: local
+    address: '127.0.0.1:53'
+    protocol: udp
+```
+
+##### Multi-instance
+
+When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
 
 ```yaml
 jobs:
@@ -63,10 +125,9 @@ jobs:
     address: '203.0.113.0:53'
 ```
 
-For all available options, see the `dnsmasq`
-collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/dnsmasq.conf).
-
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `dnsmasq` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.

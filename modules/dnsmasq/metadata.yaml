@@ -3,7 +3,7 @@ title: Dnsmasq collector
 overview:
   application:
     description: |
-      [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+      [Dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
   collector:
     description: |
       This collector monitors one or more Dnsmasq DNS Forwarder instances, depending on your configuration.
@@ -30,64 +30,59 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: address
           description: Server's address. Format is 'ip_address:port'.
-          default: "`127.0.0.1:53`"
-          required: yes
+          default: 127.0.0.1:53
+          required: true
         - name: protocol
-          description: "DNS query transport protocol. Valid options: udp, tcp, tcp-tls."
-          default: "-"
-          required: no
+          description: "DNS query transport protocol. Supported protocols: udp, tcp, tcp-tls."
+          default: udp
+          required: false
         - name: timeout
           description: "DNS query timeout (dial, write and read) in seconds."
           default: 1
-          required: no
-
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
-                address: '127.0.0.1:53'
-        # TODO: should use non-default protocol (not `udp`)
-        - name: Basic example with `protocol` option
-          description: Local server with defined DNS query transport protocol.
-          folding:
-            title: Example
-            enabled: true
+                address: 127.0.0.1:53
+        - name: Using TCP protocol
+          description: Local server with specific DNS query transport protocol.
           data: |
             jobs:
               - name: local
-                address: '127.0.0.1:53'
-                protocol: udp
+                address: 127.0.0.1:53
+                protocol: tcp
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
-          folding:
-            title: Example
-            enabled: true
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           data: |
             jobs:
               - name: local
-                address: '127.0.0.1:53'
+                address: 127.0.0.1:53
 
               - name: remote
-                address: '203.0.113.0:53'
+                address: 203.0.113.0:53
 troubleshooting:
   problems:
     list: []
@@ -95,10 +90,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: dnsmasq.servers_queries

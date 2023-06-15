@@ -5,7 +5,7 @@
 [ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java
 Message Service client.
 
-This plugin collects queues and topics metrics using ActiveMQ Console API.
+This collector monitors queues and topics metrics using ActiveMQ Console API.
 
 ## Collected metrics
 
@@ -39,7 +39,7 @@ No action required.
 
 The configuration file name is `go.d/activemq.conf`.
 
-The file format is YAML. Generally the format is:
+The file format is YAML. Generally, the format is:
 
 ```yaml
 update_every: 1
@@ -190,4 +190,3 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m activemq
   ```
-
