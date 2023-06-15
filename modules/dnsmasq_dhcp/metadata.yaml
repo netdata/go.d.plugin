@@ -80,10 +80,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: dnsmasq_dhcp.dhcp_ranges
@@ -99,10 +99,10 @@ metrics:
             - name: ipv4
             - name: ipv6
     - name: dhcp range
-      description: TBD
+      description: This scope provides a group of metrics for every dhcp range
       labels:
         - name: dhcp_range
-          description: TBD
+          description: indicates the DHCP range in format `START_IP:END_IP`
       metrics:
         - name: dnsmasq_dhcp.dhcp_range_utilization
           description: DHCP Range utilization

@@ -36,23 +36,23 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: address
           description: Server's address. Format is 'ip_address:port'.
           default: "`127.0.0.1:53`"
-          required: yes
+          required: true
         - name: protocol
           description: "DNS query transport protocol. Valid options: udp, tcp, tcp-tls."
           default: "-"
-          required: no
+          required: false
         - name: timeout
           description: "DNS query timeout (dial, write and read) in seconds."
           default: 1
-          required: no
+          required: false
 
     examples:
       list:
@@ -95,10 +95,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: The metrics apply to the entire monitored application.
       labels: []
       metrics:
         - name: dnsmasq.servers_queries
