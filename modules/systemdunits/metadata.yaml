@@ -6,11 +6,11 @@ overview:
       [Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
   collector:
     description: |
-      This module monitors Systemd units state. Works only on Linux systems.
+      This collector monitors Systemd units state. Works only on Linux systems.
 setup:
   prerequisites:
     list:
-      - title: Enable in `go.d.conf`.
+      - title: Enable in go.d.conf.
         text: |
           This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
   configuration:
@@ -18,32 +18,32 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: include
           description: Systemd units filter. Pattern syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
           default: "*.service"
-          required: no
+          required: false
         - name: timeout
           description: System bus requests timeout.
           default: 1
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Service units
           description: Collect state of all service type units.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: service
@@ -51,9 +51,6 @@ setup:
                   - '*.service'
         - name: One specific unit
           description: Collect state of one specific unit.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my-specific-service
@@ -61,9 +58,6 @@ setup:
                   - 'my-specific.service'
         - name: All unit types
           description: Collect state of all units.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: my-specific-service-unit
@@ -74,9 +68,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
 
             Collect state of all service and socket type units.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: service
@@ -93,13 +84,13 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: unit
-      description: TBD
+      description: These metrics refer to the systemd unit.
       labels:
         - name: unit_name
-          description: TBD
+          description: systemd unit name
       metrics:
         - name: systemd.service_unit_state
           description: Service Unit State
