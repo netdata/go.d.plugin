@@ -33,40 +33,40 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 5
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: hosts
           description: Network hosts.
           default: ""
-          required: yes
+          required: true
         - name: privileged
           description: Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping.
           default: yes
-          required: no
+          required: false
         - name: packets
           description: Number of ping packets to send.
           default: 5
-          required: no
+          required: false
         - name: interval
           description: Timeout between sending ping packets.
           default: 100ms
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: IPv4 hosts
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: example
@@ -75,9 +75,6 @@ setup:
                   - 192.0.2.1
         - name: Unprivileged mode
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: example
@@ -90,9 +87,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Multiple instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: example1
@@ -112,13 +106,13 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: host
-      description: TBD
+      description: These metrics refer to the remote host.
       labels:
         - name: host
-          description: TBD
+          description: remote host
       metrics:
         - name: ping.host_rtt
           description: Ping round-trip time
