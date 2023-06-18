@@ -1,24 +1,87 @@
-<!--
-title: "Unbound monitoring with Netdata"
-description: "Monitor the health and performance of Unbound DNS resolvers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/unbound/README.md"
-sidebar_label: "Unbound"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Networking"
--->
-
 # Unbound collector
 
-[`Unbound`](https://nlnetlabs.nl/projects/unbound/about/) is a validating, recursive, and caching DNS resolver product
+## Overview
+
+[Unbound](https://nlnetlabs.nl/projects/unbound/about/) is a validating, recursive, and caching DNS resolver product
 from NLnet Labs.
 
-This module monitors one or more `Unbound` servers, depending on your configuration.
+This collector monitors one or more Unbound servers, depending on your configuration.
 
-## Requirements
+## Collected metrics
 
-- `Unbound` with enabled `remote-control` interface (
-  see [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf))
+Metrics grouped by *scope*.
+
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### global
+
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                             |                       Dimensions                       |     Unit     |
+|------------------------------------|:------------------------------------------------------:|:------------:|
+| unbound.queries                    |                        queries                         |   queries    |
+| unbound.queries_ip_ratelimited     |                      ratelimited                       |   queries    |
+| unbound.dnscrypt_queries           |          crypted, cert, cleartext, malformed           |   queries    |
+| unbound.cache                      |                       hits, miss                       |    events    |
+| unbound.cache_percentage           |                       hits, miss                       |  percentage  |
+| unbound.prefetch                   |                       prefetches                       |  prefetches  |
+| unbound.expired                    |                        expired                         |   replies    |
+| unbound.zero_ttl_replies           |                        zero_ttl                        |   replies    |
+| unbound.recursive_replies          |                       recursive                        |   replies    |
+| unbound.recursion_time             |                      avg, median                       | milliseconds |
+| unbound.request_list_usage         |                        avg, max                        |   queries    |
+| unbound.current_request_list_usage |                       all, users                       |   queries    |
+| unbound.request_list_jostle_list   |                  overwritten, dropped                  |   queries    |
+| unbound.tcpusage                   |                         usage                          |   buffers    |
+| unbound.uptime                     |                          time                          |   seconds    |
+| unbound.cache_memory               | message, rrset, dnscrypt_nonce, dnscrypt_shared_secret |      KB      |
+| unbound.mod_memory                 |       iterator, respip, validator, subnet, ipsec       |      KB      |
+| unbound.mem_streamwait             |                       streamwait                       |      KB      |
+| unbound.cache_count                | infra, key, msg, rrset, dnscrypt_nonce, shared_secret  |    items     |
+| unbound.type_queries               |               a dimension per query type               |   queries    |
+| unbound.class_queries              |              a dimension per query class               |   queries    |
+| unbound.opcode_queries             |              a dimension per query opcode              |   queries    |
+| unbound.flag_queries               |             qr, aa, tc, rd, ra, z, ad, cd              |   queries    |
+| unbound.rcode_answers              |              a dimension per reply rcode               |   replies    |
+
+### thread
+
+These metrics refer to threads.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                    |             Dimensions              |     Unit     |
+|-------------------------------------------|:-----------------------------------:|:------------:|
+| unbound.thread_queries                    |               queries               |   queries    |
+| unbound.thread_queries_ip_ratelimited     |             ratelimited             |   queries    |
+| unbound.thread_dnscrypt_queries           | crypted, cert, cleartext, malformed |   queries    |
+| unbound.thread_cache                      |             hits, miss              |    events    |
+| unbound.thread_cache_percentage           |             hits, miss              |  percentage  |
+| unbound.thread_prefetch                   |             prefetches              |  prefetches  |
+| unbound.thread_expired                    |               expired               |   replies    |
+| unbound.thread_zero_ttl_replies           |              zero_ttl               |   replies    |
+| unbound.thread_recursive_replies          |              recursive              |   replies    |
+| unbound.thread_recursion_time             |             avg, median             | milliseconds |
+| unbound.thread_request_list_usage         |              avg, max               |   queries    |
+| unbound.thread_current_request_list_usage |             all, users              |   queries    |
+| unbound.thread_request_list_jostle_list   |        overwritten, dropped         |   queries    |
+| unbound.thread_tcpusage                   |                usage                |   buffers    |
+
+## Setup
+
+### Prerequisites
+
+#### Enable remote control interface
+
+Set `control-enable` to yes in [unbound.conf](https://nlnetlabs.nl/documentation/unbound/unbound.conf).
+
+#### Check permissions and adjust if necessary
 
 If using unix socket:
 
@@ -38,113 +101,106 @@ For auto-detection parameters from `unbound.conf`:
 - `unbound.conf` should be readable by `netdata` user
 - if you have several configuration files (include feature) all of them should be readable by `netdata` user
 
-## Metrics
+### Configuration
 
-All metrics have "vcsa." prefix.
+#### File
 
-| Metric                            | Scope  |                       Dimensions                       |    Units     |
-|-----------------------------------|:------:|:------------------------------------------------------:|:------------:|
-| queries                           | global |                        queries                         |   queries    |
-| queries_ip_ratelimited            | global |                      ratelimited                       |   queries    |
-| dnscrypt_queries                  | global |          crypted, cert, cleartext, malformed           |   queries    |
-| cache                             | global |                       hits, miss                       |    events    |
-| cache_percentage                  | global |                       hits, miss                       |  percentage  |
-| prefetch                          | global |                       prefetches                       |  prefetches  |
-| expired                           | global |                        expired                         |   replies    |
-| zero_ttl_replies                  | global |                        zero_ttl                        |   replies    |
-| recursive_replies                 | global |                       recursive                        |   replies    |
-| recursion_time                    | global |                      avg, median                       | milliseconds |
-| request_list_usage                | global |                        avg, max                        |   queries    |
-| current_request_list_usage        | global |                       all, users                       |   queries    |
-| request_list_jostle_list          | global |                  overwritten, dropped                  |   queries    |
-| tcpusage                          | global |                         usage                          |   buffers    |
-| uptime                            | global |                          time                          |   seconds    |
-| thread_cache                      | thread |                       hits, miss                       |    events    |
-| thread_cache_percentage           | thread |                       hits, miss                       |  percentage  |
-| thread_prefetch                   | thread |                       prefetches                       |  prefetches  |
-| thread_expired                    | thread |                        expired                         |   replies    |
-| thread_zero_ttl_replies           | thread |                        zero_ttl                        |   replies    |
-| thread_recursive_replies          | thread |                       recursive                        |   replies    |
-| thread_recursion_time             | thread |                      avg, median                       | milliseconds |
-| thread_request_list_usage         | thread |                        avg, max                        |   queries    |
-| thread_current_request_list_usage | thread |                       all, users                       |   queries    |
-| thread_request_list_jostle_list   | thread |                  overwritten, dropped                  |   queries    |
-| thread_tcpusage                   | thread |                         usage                          |   buffers    |
-| cache_memory                      | global | message, rrset, dnscrypt_nonce, dnscrypt_shared_secret |      KB      |
-| mod_memory                        | global |       iterator, respip, validator, subnet, ipsec       |      KB      |
-| mem_streamwait                    | global |                       streamwait                       |      KB      |
-| cache_count                       | global | infra, key, msg, rrset, dnscrypt_nonce, shared_secret  |    items     |
-| type_queries                      | global |           <i>a dimension per query type</i>            |   queries    |
-| class_queries                     | global |           <i>a dimension per query class</i>           |   queries    |
-| opcode_queries                    | global |          <i>a dimension per query opcode</i>           |   queries    |
-| flag_queries                      | global |             qr, aa, tc, rd, ra, z, ad, cd              |   queries    |
-| rcode_answers                     | global |           <i>a dimension per reply rcode</i>           |   replies    |
-| thread_queries                    | global |                        queries                         |   queries    |
-| thread_queries_ip_ratelimited     | global |                      ratelimited                       |   queries    |
-| thread_dnscrypt_queries           | global |          crypted, cert, cleartext, malformed           |   queries    |
+The configuration file name is `go.d/unbound.conf`.
 
-## Configuration
+The file format is YAML. Generally, the format is:
 
-Edit the `go.d/unbound.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/unbound.conf
 ```
 
-This Unbound collector only needs the `address` to a server's `remote-control` interface if TLS is disabled or `address`
-of unix socket. Otherwise, you need to set path to the `control-key-file` and `control-cert-file` files.
+#### Options
 
-The module tries to auto-detect following parameters reading `unbound.conf`:
+The following options can be defined globally: update_every, autodetection_retry.
 
-- address
-- cumulative_stats
-- use_tls
-- tls_cert
-- tls_key
+<details>
+<summary>Config options</summary>
 
-Module supports both cumulative and non-cumulative modes. Default is non-cumulative. If your server has enabled
-`statistics-cumulative`, but the module fails to auto-detect it (`unbound.conf` is not readable, or it is a remote
-server), you need to set it manually in the configuration file.
+|        Name         | Description                                                                                                                        |             Default              | Required |
+|:-------------------:|------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                                         |                5                 |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                                                 |                0                 |          |
+|       address       | Server address in IP:PORT format.                                                                                                  |          127.0.0.1:8953          |   yes    |
+|       timeout       | Connection/read/write/ssl handshake timeout.                                                                                       |                1                 |          |
+|      conf_path      | Absolute path to the unbound configuration file.                                                                                   |    /etc/unbound/unbound.conf     |          |
+|  cumulative_stats   | Statistics collection mode. Should have the same value as the `statistics-cumulative` parameter in the unbound configuration file. |    /etc/unbound/unbound.conf     |          |
+|       use_tls       | Whether to use TLS or not.                                                                                                         |               yes                |          |
+|   tls_skip_verify   | Server certificate chain and hostname validation policy. Controls whether the client performs this check.                          |               yes                |          |
+|       tls_ca        | Certificate authority that client use when verifying server certificates.                                                          |                                  |          |
+|      tls_cert       | Client tls certificate.                                                                                                            | /etc/unbound/unbound_control.pem |          |
+|       tls_key       | Client tls key.                                                                                                                    | /etc/unbound/unbound_control.key |          |
 
-Here is an example for several servers:
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
     address: 127.0.0.1:8953
-    use_tls: yes
-    tls_skip_verify: yes
-    tls_cert: /etc/unbound/unbound_control.pem
-    tls_key: /etc/unbound/unbound_control.key
+```
 
-  - name: remote
-    address: 203.0.113.10:8953
-    use_tls: no
+</details>
 
-  - name: remote_cumulative
-    address: 203.0.113.11:8953
-    use_tls: no
-    cumulative_stats: yes
+##### Unix socket
 
+Connecting through Unix socket.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
   - name: socket
     address: /var/run/unbound.sock
 ```
 
-For all available options, please see the
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/unbound.conf).
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    address: 127.0.0.1:8953
+
+  - name: remote
+    address: 203.0.113.11:8953
+```
+
+</details>
 
 ## Troubleshooting
 
-Ensure that the control protocol is actually configured correctly. Run following command as `root` user:
-
-```bash
-unbound-control stats_noreset
-```
-
-It should print out a bunch of info about the internal statistics of the server. If this returns an error, you don't
-have the control protocol set up correctly.
+### Debug mode
 
 To troubleshoot issues with the `unbound` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.

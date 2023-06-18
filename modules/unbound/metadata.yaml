@@ -7,7 +7,7 @@ overview:
       from NLnet Labs.
   collector:
     description: |
-      This module monitors one or more Unbound servers, depending on your configuration.
+      This collector monitors one or more Unbound servers, depending on your configuration.
 setup:
   prerequisites:
     list:
@@ -38,69 +38,66 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 5
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: address
-          description: Server address.
-          default: "127.0.0.1:8953"
-          required: yes
+          description: "Server address in IP:PORT format."
+          default: 127.0.0.1:8953
+          required: true
         - name: timeout
           description: Connection/read/write/ssl handshake timeout.
           default: 1
-          required: no
+          required: false
         - name: conf_path
           description: Absolute path to the unbound configuration file.
           default: "/etc/unbound/unbound.conf"
-          required: no
+          required: false
         - name: cumulative_stats
           description: Statistics collection mode. Should have the same value as the `statistics-cumulative` parameter in the unbound configuration file.
           default: "/etc/unbound/unbound.conf"
-          required: no
+          required: false
         - name: use_tls
           description: Whether to use TLS or not.
           default: yes
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: yes
-          required: no
+          required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: tls_cert
           description: Client tls certificate.
           default: "/etc/unbound/unbound_control.pem"
-          required: no
+          required: false
         - name: tls_key
           description: Client tls key.
           default: "/etc/unbound/unbound_control.key"
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 address: 127.0.0.1:8953
         - name: Unix socket
           description: Connecting through Unix socket.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: socket
@@ -110,9 +107,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -127,10 +121,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: unbound.queries
@@ -282,7 +276,7 @@ metrics:
           dimensions:
             - name: a dimension per reply rcode
     - name: thread
-      description: TBD
+      description: These metrics refer to threads.
       labels: []
       metrics:
         - name: unbound.thread_queries
