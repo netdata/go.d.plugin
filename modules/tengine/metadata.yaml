@@ -6,120 +6,121 @@ overview:
       [Tengine](https://tengine.taobao.org/) is a web server originated by Taobao and is based on the [NGINX](https://nginx.org/en/).
   collector:
     description: |
-      This module monitors one or more Tengine instances, depending on your configuration.
+      This collector monitors one or more Tengine instances, depending on your configuration.
 setup:
   prerequisites:
     list:
-      - title: Enable `ngx_http_reqstat_module` module.
+      - title: Enable ngx_http_reqstat_module module.
         text: |
-          To enable see [ngx_http_reqstat_module](https://tengine.taobao.org/document/http_reqstat.html) documentation.
+          See [ngx_http_reqstat_module](https://tengine.taobao.org/document/http_reqstat.html) documentation.
           The default line format is the only supported format.
   configuration:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "http://127.0.0.1/us"
-          required: yes
+          default: http://127.0.0.1/us
+          required: true
         - name: timeout
           description: HTTP request timeout.
           default: 2
-          required: no
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_url
-          description: The Proxie's URL.
-          default: "-"
-          required: no
+          description: Proxy URL.
+          default: ""
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: method
           description: HTTP request method.
           default: "GET"
-          required: no
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
-          required: no
+          description: Client TLS certificate.
+          default: ""
+          required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
-          required: no
+          description: Client TLS key.
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 url: http://127.0.0.1/us
-        - name: Basic HTTP auth
+        - name: HTTP authentication
           description: Local server with basic HTTP authentication.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 url: http://127.0.0.1/us
                 username: foo
                 password: bar
+        - name: HTTPS with self-signed certificate
+          description: Tengine with enabled HTTPS and self-signed certificate.
+          data: |
+            jobs:
+              - name: local
+                url: https://127.0.0.1/us
+                tls_skip_verify: yes
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
             Local and remote instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
              - name: local
@@ -134,10 +135,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: tengine.bandwidth_total
