@@ -1,18 +1,10 @@
-<!--
-title: "RabbitMQ monitoring with Netdata"
-description: "Monitor the health and performance of RabbitMQ message brokers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/rabbitmq/README.md"
-sidebar_label: "rabbitmq-go.d.plugin (Recommended)"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Message brokers"
--->
-
 # RabbitMQ collector
+
+## Overview
 
 [RabbitMQ](https://www.rabbitmq.com/) is an open-source message broker.
 
-This module monitors one or more RabbitMQ instances, depending on your configuration.
+This collector monitors one or more RabbitMQ instances, depending on your configuration.
 
 It collects data using an HTTP-based API provided by the [management plugin](https://www.rabbitmq.com/management.html).
 The following endpoints are used:
@@ -22,70 +14,188 @@ The following endpoints are used:
 - `/api/vhosts`
 - `/api/queues` (disabled by default)
 
-## Requirements
+## Collected metrics
 
-RabbitMQ with [enabled](https://www.rabbitmq.com/management.html#getting-started) management plugin.
+Metrics grouped by *scope*.
 
-## Metrics
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-All metrics have "rabbitmq." prefix.
+### global
 
-Labels per scope:
+These metrics refer to the entire monitored application.
 
-- global: no labels.
-- vhost: vhost.
-- queue: vhost, queue.
+This scope has no labels.
 
-| Metric                           | Scope  |                                                             Dimensions                                                              |    Units     |
-|----------------------------------|:------:|:-----------------------------------------------------------------------------------------------------------------------------------:|:------------:|
-| messages_count                   | global |                                                        ready, unacknowledged                                                        |   messages   |
-| messages_rate                    | global | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
-| objects_count                    | global |                                         channels, consumers, connections, queues, exchanges                                         |   messages   |
-| connection_churn_rate            | global |                                                           created, closed                                                           | operations/s |
-| channel_churn_rate               | global |                                                           created, closed                                                           | operations/s |
-| queue_churn_rate                 | global |                                                     created, deleted, declared                                                      | operations/s |
-| file_descriptors_count           | global |                                                           available, used                                                           |      fd      |
-| sockets_count                    | global |                                                           available, used                                                           |   sockets    |
-| erlang_processes_count           | global |                                                           available, used                                                           |  processes   |
-| erlang_run_queue_processes_count | global |                                                               length                                                                |  processes   |
-| memory_usage                     | global |                                                                used                                                                 |    bytes     |
-| disk_space_free_size             | global |                                                                free                                                                 |    bytes     |
-| vhost_messages_count             | vhost  |                                                        ready, unacknowledged                                                        |   messages   |
-| vhost_messages_rate              | vhost  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
-| queue_messages_count             | queue  |                                            ready, unacknowledged, paged_out, persistent                                             |   messages   |
-| queue_messages_rate              | queue  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
+Metrics:
 
-## Configuration
+| Metric                                    |                                                             Dimensions                                                              |     Unit     |
+|-------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------:|:------------:|
+| rabbitmq.messages_count                   |                                                        ready, unacknowledged                                                        |   messages   |
+| rabbitmq.messages_rate                    | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable |  messages/s  |
+| rabbitmq.objects_count                    |                                         channels, consumers, connections, queues, exchanges                                         |   messages   |
+| rabbitmq.connection_churn_rate            |                                                           created, closed                                                           | operations/s |
+| rabbitmq.channel_churn_rate               |                                                           created, closed                                                           | operations/s |
+| rabbitmq.queue_churn_rate                 |                                                     created, deleted, declared                                                      | operations/s |
+| rabbitmq.file_descriptors_count           |                                                           available, used                                                           |      fd      |
+| rabbitmq.sockets_count                    |                                                           available, used                                                           |   sockets    |
+| rabbitmq.erlang_processes_count           |                                                           available, used                                                           |  processes   |
+| rabbitmq.erlang_run_queue_processes_count |                                                               length                                                                |  processes   |
+| rabbitmq.memory_usage                     |                                                                used                                                                 |    bytes     |
+| rabbitmq.disk_space_free_size             |                                                                free                                                                 |    bytes     |
 
-Edit the `go.d/rabbitmq.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+### vhost
+
+These metrics refer to the virtual host.
+
+Labels:
+
+| Label | Description       |
+|-------|-------------------|
+| vhost | virtual host name |
+
+Metrics:
+
+| Metric                        |                                                             Dimensions                                                              |    Unit    |
+|-------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------:|:----------:|
+| rabbitmq.vhost_messages_count |                                                        ready, unacknowledged                                                        |  messages  |
+| rabbitmq.vhost_messages_rate  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable | messages/s |
+
+### queue
+
+These metrics refer to the virtual host queue.
+
+Labels:
+
+| Label | Description       |
+|-------|-------------------|
+| vhost | virtual host name |
+| queue | queue name        |
+
+Metrics:
+
+| Metric                        |                                                             Dimensions                                                              |    Unit    |
+|-------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------:|:----------:|
+| rabbitmq.queue_messages_count |                                            ready, unacknowledged, paged_out, persistent                                             |  messages  |
+| rabbitmq.queue_messages_rate  | ack, publish, publish_in, publish_out, confirm, deliver, deliver_no_ack, get, get_no_ack, deliver_get, redeliver, return_unroutable | messages/s |
+
+## Setup
+
+### Prerequisites
+
+#### Enable management plugin.
+
+The management plugin is included in the RabbitMQ distribution, but disabled.
+To enable see [Management Plugin](https://www.rabbitmq.com/management.html#getting-started) documentation.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/rabbitmq.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/rabbitmq.conf
 ```
 
-Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|          Name          | Description                                                                                                                                           |        Default         | Required |
+|:----------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------:|:--------:|
+|      update_every      | Data collection frequency.                                                                                                                            |           1            |          |
+|  autodetection_retry   | Re-check interval in seconds. Zero means not to schedule re-check.                                                                                    |           0            |          |
+|          url           | Server URL.                                                                                                                                           | http://localhost:15672 |   yes    |
+| collect_queues_metrics | Collect stats per vhost per queues. Enabling this can introduce serious overhead on both Netdata and RabbitMQ if many queues are configured and used. |           no           |          |
+|        timeout         | HTTP request timeout.                                                                                                                                 |           1            |          |
+|        username        | Username for basic HTTP authentication.                                                                                                               |                        |          |
+|        password        | Password for basic HTTP authentication.                                                                                                               |                        |          |
+|       proxy_url        | Proxy URL.                                                                                                                                            |                        |          |
+|     proxy_username     | Username for proxy basic HTTP authentication.                                                                                                         |                        |          |
+|     proxy_password     | Password for proxy basic HTTP authentication.                                                                                                         |                        |          |
+|         method         | HTTP request method.                                                                                                                                  |          GET           |          |
+|          body          | HTTP request body.                                                                                                                                    |                        |          |
+|        headers         | HTTP request headers.                                                                                                                                 |                        |          |
+|  not_follow_redirects  | Redirect handling policy. Controls whether the client follows redirects.                                                                              |           no           |          |
+|    tls_skip_verify     | Server certificate chain and hostname validation policy. Controls whether the client performs this check.                                             |           no           |          |
+|         tls_ca         | Certification authority that the client uses when verifying the server's certificates.                                                                |                        |          |
+|        tls_cert        | Client TLS certificate.                                                                                                                               |                        |          |
+|        tls_key         | Client TLS key.                                                                                                                                       |                        |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
-    url: http://localhost:15672
-    collect_queues_metrics: no
-
-  - name: remote
-    url: http://203.0.113.10:15672
-    collect_queues_metrics: no
+    url: http://127.0.0.1:15672
 ```
 
-This collector can also collect per-vhost per-queue metrics, which is disabled by
-default (`collect_queues_metrics`). Enabling this can introduce serious overhead on both netdata and rabbitmq if many
-queues are configured and used.
+</details>
 
-For all available options, see the
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/rabbitmq.conf).
+##### Basic HTTP auth
+
+Local server with basic HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:15672
+    username: admin
+    password: password
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:15672
+
+  - name: remote
+    url: http://192.0.2.0:15672
+```
+
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `rabbitmq` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
