@@ -7,114 +7,111 @@ overview:
       large number of backends.
   collector:
     description: |
-       This module monitors one or more PowerDNS Authoritative Server instances, depending on your configuration.
-
-       It collects metrics from [the internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
-
-       Used endpoints:
-
-       - [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)
+      This collector monitors one or more PowerDNS Authoritative Server instances, depending on your configuration.
+      
+      It collects metrics from [the internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
+      
+      Used endpoints:
+      
+      - [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)
 setup:
   prerequisites:
     list:
       - title: Enable webserver
         text: |
-          Follow [webserver documentation](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
+          Follow [webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver) documentation.
       - title: Enable HTTP API
         text: |
-          Follow [HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api).
+          Follow [HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api) documentation.
   configuration:
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:8081`"
-          required: yes
+          default: http://127.0.0.1:8081
+          required: true
         - name: timeout
           description: HTTP request timeout.
           default: 1
-          required: no
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
           default: ""
-          required: no
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
           default: ""
-          required: no
+          required: false
         - name: proxy_url
           description: Proxy URL.
           default: ""
-          required: no
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
           default: ""
-          required: no
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
           default: ""
-          required: no
+          required: false
         - name: method
           description: HTTP request method.
           default: "GET"
-          required: no
+          required: false
         - name: body
           description: HTTP request body.
           default: ""
-          required: no
+          required: false
         - name: headers
           description: HTTP request headers.
           default: ""
-          required: no
+          required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
+          description: Certification authority that the client uses when verifying the server's certificates.
           default: ""
-          required: no
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
+          description: Client TLS certificate.
           default: ""
-          required: no
+          required: false
         - name: tls_key
-          description: Client tls key.
+          description: Client TLS key.
           default: ""
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8081
-        - name: Basic with HTTP auth
-          description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
+        - name: HTTP authentication
+          description: Basic HTTP authentication.
           data: |
             jobs:
               - name: local
@@ -126,9 +123,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -143,10 +137,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: powerdns.questions_in
