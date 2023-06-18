@@ -105,6 +105,13 @@ The following options can be defined globally: update_every, autodetection_retry
 
 </details>
 
+##### address
+
+There are two connection types: by tcp socket and by unix socket.
+
+- Tcp connection: `redis://<user>:<password>@<host>:<port>/<db_number>`
+- Unix connection: `unix://<user>:<password>@</path/to/redis.sock>?db=<db_number>`
+
 #### Examples
 
 ##### TCP socket

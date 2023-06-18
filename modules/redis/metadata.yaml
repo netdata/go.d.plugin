@@ -35,6 +35,11 @@ setup:
           description: Redis server address.
           default: redis://@localhost:6379
           required: true
+          details: |
+            There are two connection types: by tcp socket and by unix socket.
+
+            - Tcp connection: `redis://<user>:<password>@<host>:<port>/<db_number>`
+            - Unix connection: `unix://<user>:<password>@</path/to/redis.sock>?db=<db_number>`
         - name: timeout
           description: Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds.
           default: 1
