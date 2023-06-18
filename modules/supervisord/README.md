@@ -1,19 +1,11 @@
-<!--
-title: "Supervisord monitoring with Netdata"
-description: "Monitor the processes running by Supervisor with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/supervisord/README.md"
-sidebar_label: "Supervisord"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Virtualized environments/Virtualize hosts"
--->
-
 # Supervisord collector
+
+## Overview
 
 [Supervisor](http://supervisord.org/) is a client/server system that allows its users to monitor and control a number of
 processes on UNIX-like operating systems.
 
-This module monitors one or more Supervisor instances, depending on your configuration.
+This collector monitors one or more Supervisor instances, depending on your configuration.
 
 It can collect metrics from
 both [unix socket](http://supervisord.org/configuration.html?highlight=unix_http_server#unix-http-server-section-values)
@@ -23,48 +15,138 @@ Used methods:
 
 - [`supervisor.getAllProcessInfo`](http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getAllProcessInfo)
 
-## Metrics
+## Collected metrics
 
-All metrics have "supervisord." prefix.
+Metrics grouped by *scope*.
 
-| Metric              |     Scope     |           Dimensions           |    Units    |
-|---------------------|:-------------:|:------------------------------:|:-----------:|
-| summary_processes   |    global     |      running, non-running      |  processes  |
-| processes           | process group |      running, non-running      |  processes  |
-| process_state_code  | process group | <i>a dimension per process</i> |    code     |
-| process_exit_status | process group | <i>a dimension per process</i> | exit status |
-| process_uptime      | process group | <i>a dimension per process</i> |   seconds   |
-| process_downtime    | process group | <i>a dimension per process</i> |   seconds   |
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-## Configuration
+### global
 
-Edit the `go.d/supervisord.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                        |      Dimensions      |   Unit    |
+|-------------------------------|:--------------------:|:---------:|
+| supervisord.summary_processes | running, non-running | processes |
+
+### process group
+
+These metrics refer to the process group.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                          |       Dimensions        |    Unit     |
+|---------------------------------|:-----------------------:|:-----------:|
+| supervisord.processes           |  running, non-running   |  processes  |
+| supervisord.process_state_code  | a dimension per process |    code     |
+| supervisord.process_exit_status | a dimension per process | exit status |
+| supervisord.process_uptime      | a dimension per process |   seconds   |
+| supervisord.process_downtime    | a dimension per process |   seconds   |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/supervisord.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/supervisord.conf
 ```
 
-Endpoints can be both local or remote as long as they expose their metrics on the provided URL.
+#### Options
 
-Here is an example with two endpoints:
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                        |          Default           | Required |
+|:-------------------:|--------------------------------------------------------------------|:--------------------------:|:--------:|
+|    update_every     | Data collection frequency.                                         |             1              |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check. |             0              |          |
+|         url         | Server URL.                                                        | http://127.0.0.1:9001/RPC2 |   yes    |
+|       timeout       | System bus requests timeout.                                       |             1              |          |
+
+</details>
+
+#### Examples
+
+##### HTTP
+
+Collect metrics via HTTP.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
-  # via [unix_http_server]
-  - name: local
-    url: 'unix:///run/supervisor.sock'
-
-  # via [inet_http_server]
   - name: local
     url: 'http://127.0.0.1:9001/RPC2'
 ```
 
-For all available options, see the `supervisord`
-collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/supervisord.conf).
+</details>
+
+##### Socket
+
+Collect metrics via Unix socket.
+<details>
+<summary>Config</summary>
+
+```yaml
+- name: local
+  url: 'unix:///run/supervisor.sock'
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collect metrics from local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: 'http://127.0.0.1:9001/RPC2'
+
+  - name: remote
+    url: 'http://192.0.2.1:9001/RPC2'
+```
+
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `supervisord` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
