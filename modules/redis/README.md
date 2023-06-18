@@ -1,104 +1,177 @@
-<!--
-title: "Redis monitoring with Netdata"
-description: "Monitor the health and performance of Redis storage services with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/redis/README.md"
-sidebar_label: "Redis"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Databases"
--->
-
 # Redis collector
 
-[`Redis`](https://redis.io/) is an open source (BSD licensed), in-memory data structure store, used as a database, cache
+## Overview
+
+[Redis](https://redis.io/) is an open source (BSD licensed), in-memory data structure store, used as a database, cache
 and message broker.
 
----
-
-This module monitors one or more `Redis` instances, depending on your configuration.
+This collector monitors one or more Redis instances, depending on your configuration.
 
 It collects information and statistics about the server executing the following commands:
 
 - [`INFO ALL`](https://redis.io/commands/info)
 
-## Metrics
+## Collected metrics
 
-All metrics have "redis." prefix.
+Metrics grouped by *scope*.
 
-| Metric                          | Scope  |                   Dimensions                   |     Units      |
-|---------------------------------|:------:|:----------------------------------------------:|:--------------:|
-| connections                     | global |               accepted, rejected               | connections/s  |
-| clients                         | global | connected, blocked, tracking, in_timeout_table |    clients     |
-| ping_latency                    | global |                 min, max, avg                  |    seconds     |
-| commands                        | global |                   processes                    |   commands/s   |
-| keyspace_lookup_hit_rate        | global |                lookup_hit_rate                 |   percentage   |
-| memory                          | global |  max, used, rss, peak, dataset, lua, scripts   |     bytes      |
-| mem_fragmentation_ratio         | global |               mem_fragmentation                |     ratio      |
-| key_eviction_events             | global |                    evicted                     |     keys/s     |
-| net                             | global |                 received, sent                 |   kilobits/s   |
-| rdb_changes                     | global |                    changes                     |   operations   |
-| bgsave_now                      | global |              current_bgsave_time               |    seconds     |
-| bgsave_health                   | global |                  last_bgsave                   |     status     |
-| bgsave_last_rdb_save_since_time | global |                last_bgsave_time                |    seconds     |
-| aof_file_size                   | global |                 current, base                  |     bytes      |
-| commands_calls                  | global |         <i>a dimension per command</i>         |     calls      |
-| commands_usec                   | global |         <i>a dimension per command</i>         |  microseconds  |
-| commands_usec_per_sec           | global |         <i>a dimension per command</i>         | microseconds/s |
-| key_expiration_events           | global |                    expired                     |     keys/s     |
-| database_keys                   | global |        <i>a dimension per database</i>         |      keys      |
-| database_expires_keys           | global |        <i>a dimension per database</i>         |      keys      |
-| connected_replicas              | global |                   connected                    |    replicas    |
-| master_link_status              | global |                    up, down                    |     status     |
-| master_last_io_since_time       | global |                      time                      |    seconds     |
-| master_link_down_since_time     | global |                      time                      |    seconds     |
-| uptime                          | global |                     uptime                     |    seconds     |
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-## Configuration
+### global
 
-Edit the `go.d/redis.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                |                   Dimensions                   |      Unit      |
+|---------------------------------------|:----------------------------------------------:|:--------------:|
+| redis.connections                     |               accepted, rejected               | connections/s  |
+| redis.clients                         | connected, blocked, tracking, in_timeout_table |    clients     |
+| redis.ping_latency                    |                 min, max, avg                  |    seconds     |
+| redis.commands                        |                   processes                    |   commands/s   |
+| redis.keyspace_lookup_hit_rate        |                lookup_hit_rate                 |   percentage   |
+| redis.memory                          |  max, used, rss, peak, dataset, lua, scripts   |     bytes      |
+| redis.mem_fragmentation_ratio         |               mem_fragmentation                |     ratio      |
+| redis.key_eviction_events             |                    evicted                     |     keys/s     |
+| redis.net                             |                 received, sent                 |   kilobits/s   |
+| redis.rdb_changes                     |                    changes                     |   operations   |
+| redis.bgsave_now                      |              current_bgsave_time               |    seconds     |
+| redis.bgsave_health                   |                  last_bgsave                   |     status     |
+| redis.bgsave_last_rdb_save_since_time |                last_bgsave_time                |    seconds     |
+| redis.aof_file_size                   |                 current, base                  |     bytes      |
+| redis.commands_calls                  |            a dimension per command             |     calls      |
+| redis.commands_usec                   |            a dimension per command             |  microseconds  |
+| redis.commands_usec_per_sec           |            a dimension per command             | microseconds/s |
+| redis.key_expiration_events           |                    expired                     |     keys/s     |
+| redis.database_keys                   |            a dimension per database            |      keys      |
+| redis.database_expires_keys           |            a dimension per database            |      keys      |
+| redis.connected_replicas              |                   connected                    |    replicas    |
+| redis.master_link_status              |                    up, down                    |     status     |
+| redis.master_last_io_since_time       |                      time                      |    seconds     |
+| redis.master_link_down_since_time     |                      time                      |    seconds     |
+| redis.uptime                          |                     uptime                     |    seconds     |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/redis.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/redis.conf
 ```
 
-There are two connection types: by tcp socket and by unix socket.
+#### Options
 
-> **Note**: If the Redis server is password protected via the `requirepass` option, make sure you have a colon before
-> the password.
+The following options can be defined globally: update_every, autodetection_retry.
 
-```cmd
-# by tcp socket
-redis://<user>:<password>@<host>:<port>
+<details>
+<summary>Config options</summary>
 
-# by unix socket
-unix://<user>:<password>@</path/to/redis.sock
-```
+|        Name         | Description                                                                                               |         Default         | Required |
+|:-------------------:|-----------------------------------------------------------------------------------------------------------|:-----------------------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                |            5            |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                        |            0            |          |
+|       address       | Redis server address.                                                                                     | redis://@localhost:6379 |   yes    |
+|       timeout       | Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds.    |            1            |          |
+|      username       | Username used for authentication.                                                                         |                         |          |
+|      password       | Password used for authentication.                                                                         |                         |          |
+|   tls_skip_verify   | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |           no            |          |
+|       tls_ca        | Certificate authority that client use when verifying server certificates.                                 |                         |          |
+|      tls_cert       | Client tls certificate.                                                                                   |                         |          |
+|       tls_key       | Client tls key.                                                                                           |                         |          |
 
-Needs only `address`, here is an example with two jobs:
+</details>
+
+#### Examples
+
+##### TCP socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
     address: 'redis://@127.0.0.1:6379'
+```
 
+</details>
+
+##### Unix socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    address: 'unix://@/tmp/redis.sock'
+```
+
+</details>
+
+##### TCP socket with password
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
   - name: local
     address: 'redis://:password@127.0.0.1:6379'
+```
 
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
   - name: local
-    address: 'redis://127.0.0.1:6379'
-    username: 'user'
-    password: 'password'
+    address: 'redis://:password@127.0.0.1:6379'
 
   - name: remote
     address: 'redis://user:password@203.0.113.0:6379'
 ```
 
-For all available options, see the `redis`
-collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/redis.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `redis` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
