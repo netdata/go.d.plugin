@@ -1,91 +1,167 @@
-<!--
-title: "Systemd units state monitoring with Netdata"
-description: "Monitor the health and performance of Systemd units states with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/systemdunits/README.md"
-sidebar_label: "Systemd units"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/System metrics"
--->
-
 # Systemd units state collector
+
+## Overview
 
 [Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
 
-This module monitors Systemd units state.
+This collector monitors Systemd units state. Works only on Linux systems.
 
-## Requirements
+## Collected metrics
 
-- Works only on Linux systems.
-- Disabled by default. Should be explicitly enabled in the `go.d.conf`:
+Metrics grouped by *scope*.
+
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### unit
+
+These metrics refer to the systemd unit.
+
+Labels:
+
+| Label     | Description       |
+|-----------|-------------------|
+| unit_name | systemd unit name |
+
+Metrics:
+
+| Metric                       |                     Dimensions                     | Unit  |
+|------------------------------|:--------------------------------------------------:|:-----:|
+| systemd.service_unit_state   | active, inactive, activating, deactivating, failed | state |
+| systemd.socket_unit_state    | active, inactive, activating, deactivating, failed | state |
+| systemd.target_unit_state    | active, inactive, activating, deactivating, failed | state |
+| systemd.path_unit_state      | active, inactive, activating, deactivating, failed | state |
+| systemd.device_unit_state    | active, inactive, activating, deactivating, failed | state |
+| systemd.mount_unit_state     | active, inactive, activating, deactivating, failed | state |
+| systemd.automount_unit_state | active, inactive, activating, deactivating, failed | state |
+| systemd.swap_unit_state      | active, inactive, activating, deactivating, failed | state |
+| systemd.timer_unit_state     | active, inactive, activating, deactivating, failed | state |
+| systemd.scope_unit_state     | active, inactive, activating, deactivating, failed | state |
+| systemd.slice_unit_state     | active, inactive, activating, deactivating, failed | state |
+
+## Setup
+
+### Prerequisites
+
+#### Enable in go.d.conf.
+
+This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/systemdunits.conf`.
+
+The file format is YAML. Generally, the format is:
 
 ```yaml
-# go.d.conf
-modules:
-  systemdunits: yes
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
 ```
 
-## Metrics
-
-The unit types and states description can be found in
-the [official documentation](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts).
-
-All metrics have "systemd." prefix.
-
-Labels per scope:
-
-- unit: unit_name.
-
-| Metric               | Scope |                     Dimensions                     | Units |
-|----------------------|:-----:|:--------------------------------------------------:|:-----:|
-| service_unit_state   | unit  | active, inactive, activating, deactivating, failed | state |
-| socket_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
-| target_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
-| path_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
-| device_unit_state    | unit  | active, inactive, activating, deactivating, failed | state |
-| mount_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
-| automount_unit_state | unit  | active, inactive, activating, deactivating, failed | state |
-| swap_unit_state      | unit  | active, inactive, activating, deactivating, failed | state |
-| timer_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
-| scope_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
-| slice_unit_state     | unit  | active, inactive, activating, deactivating, failed | state |
-
-## Configuration
-
-Edit the `go.d/systemdunits.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/systemdunits.conf
 ```
 
-Needs only `include` option. Syntax is the [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
+#### Options
 
-Here are some examples:
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                                                                     |  Default  | Required |
+|:-------------------:|-----------------------------------------------------------------------------------------------------------------|:---------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                      |     1     |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                              |     0     |          |
+|       include       | Systemd units filter. Pattern syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match). | *.service |          |
+|       timeout       | System bus requests timeout.                                                                                    |     1     |          |
+
+</details>
+
+#### Examples
+
+##### Service units
+
+Collect state of all service type units.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: service
+    include:
+      - '*.service'
+```
+
+</details>
+
+##### One specific unit
+
+Collect state of one specific unit.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: my-specific-service
+    include:
+      - 'my-specific.service'
+```
+
+</details>
+
+##### All unit types
+
+Collect state of all units.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: my-specific-service-unit
     include:
-      - 'my-specific.service'
+      - '*'
+```
 
-  - name: service-units
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collect state of all service and socket type units.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: service
     include:
       - '*.service'
 
-  - name: socket-units
+  - name: socket
     include:
       - '*.socket'
 ```
 
-For all available options, see the Systemdunits
-collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/systemdunits.conf).
+</details>
 
 ## Troubleshooting
 
+### Debug mode
+
 To troubleshoot issues with the `systemdunits` collector, run the `go.d.plugin` with the debug option enabled. The
-output should give you clues as to why the collector isn't working.
+output
+should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.

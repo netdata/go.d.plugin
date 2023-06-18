@@ -8,7 +8,7 @@ overview:
       server storage using existing customer hardware or EMC servers.
   collector:
     description: |
-      This module monitors one or more ScaleIO (VxFlex OS) instances via VxFlex OS Gateway API.
+      This collector monitors one or more ScaleIO (VxFlex OS) instances via VxFlex OS Gateway API.
 
       It collects metrics for the following ScaleIO components:
 
@@ -23,84 +23,84 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 5
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "https://127.0.0.1:80"
-          required: yes
+          default: https://127.0.0.1:80
+          required: true
         - name: timeout
           description: HTTP request timeout.
           default: 1
-          required: no
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: yes
+          default: ""
+          required: true
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: yes
+          default: ""
+          required: true
         - name: proxy_url
           description: Proxy URL.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: method
           description: HTTP request method.
           default: "GET"
-          required: no
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
-          required: no
+          description: Client TLS certificate.
+          default: ""
+          required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
-          required: no
+          description: Client TLS key.
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -112,10 +112,7 @@ setup:
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
             
-            Two instances.
-          folding:
-            title: Example
-            enabled: true
+            Local and remote instance.
           data: |
             jobs:
               - name: local
@@ -136,10 +133,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: scaleio.system_capacity_total
@@ -257,7 +254,7 @@ metrics:
             - name: mapped
             - name: unmapped
     - name: storage pool
-      description: TBD
+      description: These metrics refer to the storage pool.
       labels: []
       metrics:
         - name: scaleio.storage_pool_capacity_total
@@ -308,7 +305,7 @@ metrics:
             - name: volumes
             - name: vtrees
     - name: sdc
-      description: TBD
+      description: These metrics refer to the SDC (ScaleIO Data Client).
       labels: []
       metrics:
         - name: scaleio.sdc_mdm_connection_state

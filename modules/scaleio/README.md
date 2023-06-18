@@ -1,80 +1,174 @@
-<!--
-title: "ScaleIO monitoring with Netdata"
-description: "Monitor the health and performance of ScaleIO storage with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/scaleio/README.md"
-sidebar_label: "ScaleIO"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Storage"
--->
-
 # ScaleIO collector
 
-[`Dell EMC ScaleIO`](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a
+## Overview
+
+[Dell EMC ScaleIO](https://www.dellemc.com/en-us/storage/data-storage/software-defined-storage.htm) is a
 software-defined storage product from Dell EMC that creates a server-based storage area network from local application
 server storage using existing customer hardware or EMC servers.
 
-This module monitors one or more `ScaleIO (VxFlex OS)` instances via VxFlex OS Gateway API.
+This collector monitors one or more ScaleIO (VxFlex OS) instances via VxFlex OS Gateway API.
 
-It collects metrics for following `ScaleIO` components:
+It collects metrics for the following ScaleIO components:
 
 - System
 - Storage Pool
 - Sdc
 
-`ScaleIO` module is tested on:
+## Collected metrics
 
-- VxFlex OS v2.6.1.1_113, REST API v2.5
-- VxFlex OS v3.0.0.1_134, REST API v3.0
+Metrics grouped by *scope*.
 
-## Metrics
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-All metrics have "scaleio." prefix.
+### global
 
-| Metric                                            |    Scope     |                                                  Dimensions                                                   |   Units    |
-|---------------------------------------------------|:------------:|:-------------------------------------------------------------------------------------------------------------:|:----------:|
-| system_capacity_total                             |    global    |                                                     total                                                     |    KiB     |
-| system_capacity_in_use                            |    global    |                                                    in_use                                                     |    KiB     |
-| system_capacity_usage                             |    global    |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
-| system_capacity_available_volume_allocation       |    global    |                                                   available                                                   |    KiB     |
-| system_capacity_health_state                      |    global    |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
-| system_workload_primary_bandwidth_total           |    global    |                                                     total                                                     |   KiB/s    |
-| system_workload_primary_bandwidth                 |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_workload_primary_iops_total                |    global    |                                                     total                                                     |   iops/s   |
-| system_workload_primary_iops                      |    global    |                                                  read, write                                                  |   iops/s   |
-| system_workload_primary_io_size_total             |    global    |                                                    io_size                                                    |    KiB     |
-| system_rebalance                                  |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_rebalance_left                             |    global    |                                                     left                                                      |    KiB     |
-| system_rebalance_time_until_finish                |    global    |                                                     time                                                      |  seconds   |
-| system_rebuild                                    |    global    |                                                  read, write                                                  |   KiB/s    |
-| system_rebuild_left                               |    global    |                                                     left                                                      |    KiB     |
-| system_defined_components                         |    global    | devices, fault_sets, protection_domains, rfcache_devices, sdc, sds, snapshots, storage_pools, volumes, vtrees | components |
-| system_components_volumes_by_type                 |    global    |                                                  thick, thin                                                  |  volumes   |
-| system_components_volumes_by_mapping              |    global    |                                               mapped, unmapped                                                |  volumes   |
-| storage_pool_capacity_total                       | storage pool |                                                     total                                                     |    KiB     |
-| storage_pool_capacity_in_use                      | storage pool |                                                    in_use                                                     |    KiB     |
-| storage_pool_capacity_usage                       | storage pool |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
-| storage_pool_capacity_utilization                 | storage pool |                                                     used                                                      | percentage |
-| storage_pool_capacity_available_volume_allocation | storage pool |                                                   available                                                   |    KiB     |
-| storage_pool_capacity_health_state                | storage pool |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
-| storage_pool_components                           | storage pool |                                      devices, snapshots, volumes, vtrees                                      | components |
-| sdc_mdm_connection_state                          |     sdc      |                                                   connected                                                   |  boolean   |
-| sdc_bandwidth                                     |     sdc      |                                                  read, write                                                  |   KiB/s    |
-| sdc_iops                                          |     sdc      |                                                  read, write                                                  |   iops/s   |
-| sdc_io_size                                       |     sdc      |                                                  read, write                                                  |    KiB     |
-| sdc_num_of_mapped_volumed                         |     sdc      |                                                    mapped                                                     |  volumes   |
+These metrics refer to the entire monitored application.
 
-## Configuration
+This scope has no labels.
 
-Edit the `go.d/scaleio.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Metrics:
+
+| Metric                                              |                                                  Dimensions                                                   |    Unit    |
+|-----------------------------------------------------|:-------------------------------------------------------------------------------------------------------------:|:----------:|
+| scaleio.system_capacity_total                       |                                                     total                                                     |    KiB     |
+| scaleio.system_capacity_in_use                      |                                                    in_use                                                     |    KiB     |
+| scaleio.system_capacity_usage                       |                                thick, decreased, thin, snapshot, spare, unused                                |    KiB     |
+| scaleio.system_capacity_available_volume_allocation |                                                   available                                                   |    KiB     |
+| scaleio.system_capacity_health_state                |                           protected, degraded, in_maintenance, failed, unavailable                            |    KiB     |
+| scaleio.system_workload_primary_bandwidth_total     |                                                     total                                                     |   KiB/s    |
+| scaleio.system_workload_primary_bandwidth           |                                                  read, write                                                  |   KiB/s    |
+| scaleio.system_workload_primary_iops_total          |                                                     total                                                     |   iops/s   |
+| scaleio.system_workload_primary_iops                |                                                  read, write                                                  |   iops/s   |
+| scaleio.system_workload_primary_io_size_total       |                                                    io_size                                                    |    KiB     |
+| scaleio.system_rebalance                            |                                                  read, write                                                  |   KiB/s    |
+| scaleio.system_rebalance_left                       |                                                     left                                                      |    KiB     |
+| scaleio.system_rebalance_time_until_finish          |                                                     time                                                      |  seconds   |
+| scaleio.system_rebuild                              |                                                  read, write                                                  |   KiB/s    |
+| scaleio.system_rebuild_left                         |                                                     left                                                      |    KiB     |
+| scaleio.system_defined_components                   | devices, fault_sets, protection_domains, rfcache_devices, sdc, sds, snapshots, storage_pools, volumes, vtrees | components |
+| scaleio.system_components_volumes_by_type           |                                                  thick, thin                                                  |  volumes   |
+| scaleio.system_components_volumes_by_mapping        |                                               mapped, unmapped                                                |  volumes   |
+
+### storage pool
+
+These metrics refer to the storage pool.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                                    |                        Dimensions                        |    Unit    |
+|-----------------------------------------------------------|:--------------------------------------------------------:|:----------:|
+| scaleio.storage_pool_capacity_total                       |                          total                           |    KiB     |
+| scaleio.storage_pool_capacity_in_use                      |                          in_use                          |    KiB     |
+| scaleio.storage_pool_capacity_usage                       |     thick, decreased, thin, snapshot, spare, unused      |    KiB     |
+| scaleio.storage_pool_capacity_utilization                 |                           used                           | percentage |
+| scaleio.storage_pool_capacity_available_volume_allocation |                        available                         |    KiB     |
+| scaleio.storage_pool_capacity_health_state                | protected, degraded, in_maintenance, failed, unavailable |    KiB     |
+| scaleio.storage_pool_components                           |           devices, snapshots, volumes, vtrees            | components |
+
+### sdc
+
+These metrics refer to the SDC (ScaleIO Data Client).
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                            | Dimensions  |  Unit   |
+|-----------------------------------|:-----------:|:-------:|
+| scaleio.sdc_mdm_connection_state  |  connected  | boolean |
+| scaleio.sdc_bandwidth             | read, write |  KiB/s  |
+| scaleio.sdc_iops                  | read, write | iops/s  |
+| scaleio.sdc_io_size               | read, write |   KiB   |
+| scaleio.sdc_num_of_mapped_volumed |   mapped    | volumes |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/scaleio.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/scaleio.conf
 ```
 
-Needs only `url` of VxFlex OS Gateway API, MDM `username` and `password`. Here is an example for 2 instances:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               |       Default        | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:--------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |          5           |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |          0           |          |
+|         url          | Server URL.                                                                                               | https://127.0.0.1:80 |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |          1           |          |
+|       username       | Username for basic HTTP authentication.                                                                   |                      |   yes    |
+|       password       | Password for basic HTTP authentication.                                                                   |                      |   yes    |
+|      proxy_url       | Proxy URL.                                                                                                |                      |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                      |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                      |          |
+|        method        | HTTP request method.                                                                                      |         GET          |          |
+|         body         | HTTP request body.                                                                                        |                      |          |
+|       headers        | HTTP request headers.                                                                                     |                      |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |          no          |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |          no          |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                      |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                      |          |
+|       tls_key        | Client TLS key.                                                                                           |                      |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: https://127.0.0.1
+    username: admin
+    password: password
+    tls_skip_verify: yes  # self-signed certificate
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instance.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -88,12 +182,14 @@ jobs:
     url: https://203.0.113.10
     username: admin
     password: password
+    tls_skip_verify: yes
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/scaleio.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `scaleio` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
@@ -116,4 +212,3 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m scaleio
   ```
-
