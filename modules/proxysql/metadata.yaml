@@ -15,45 +15,42 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 5
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: dsn
           description: Data Source Name. See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
           default: "stats:stats@tcp(127.0.0.1:6032)/"
-          required: yes
+          required: true
         - name: my.cnf
           description: Specifies my.cnf file to read connection parameters from under the [client] section.
           default: ""
-          required: no
+          required: false
         - name: timeout
           description: Query timeout in seconds.
           default: 1
-          required: no
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: TCP socket
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 dsn: stats:stats@tcp(127.0.0.1:6032)/
         - name: my.cnf
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -63,9 +60,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -80,10 +74,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: proxysql.client_connections_count
@@ -273,10 +267,10 @@ metrics:
           dimensions:
             - name: uptime
     - name: command
-      description: TBD
+      description: These metrics refer to the SQL command.
       labels:
         - name: command
-          description: TBD
+          description: SQL command.
       metrics:
         - name: proxysql.mysql_command_execution_rate
           description: MySQL command execution
@@ -305,10 +299,10 @@ metrics:
             - name: 10s
             - name: +Inf
     - name: user
-      description: TBD
+      description: These metrics refer to the user.
       labels:
         - name: user
-          description: TBD
+          description: username from the mysql_users table
       metrics:
         - name: proxysql.mysql_user_connections_utilization
           description: MySQL user connections utilization
@@ -321,12 +315,12 @@ metrics:
           dimensions:
             - name: used
     - name: backend
-      description: TBD
+      description: These metrics refer to the backend server.
       labels:
         - name: host
-          description: TBD
+          description: backend server host
         - name: port
-          description: TBD
+          description: backend server port
       metrics:
         - name: proxysql.backend_status
           description: Backend status
