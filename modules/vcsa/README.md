@@ -1,38 +1,26 @@
-<!--
-title: "vCenter Server Appliance monitoring with Netdata"
-description: "Monitor the health and performance of vCenter appliances with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/blob/master/modules/vcsa/README.md"
-sidebar_label: "vCenter Server Appliance"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Virtualized environments/Virtualize hosts"
--->
-
 # vCenter Server Appliance collector
 
-The [`vCenter Server Appliance`](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
-using [`Health API`](https://code.vmware.com/apis/60/vcenter-server-appliance-management) is a preconfigured Linux
-virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
+## Overview
 
-This module collects health statistics from one or more `vCenter Server Appliance` servers, depending on your
-configuration.
+The [vCenter Server Appliance](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
+is a preconfigured Linux virtual machine, which is optimized for running VMware vCenter Server® and the associated
+services on Linux.
 
-## Requirements
+This collector
+monitors [health statistics](https://developer.vmware.com/apis/vsphere-automation/latest/appliance/health/) from one or
+more vCenter Server Appliance servers, depending on your configuration.
 
-- `vSphere` 6.5+
+## Collected metrics
 
-## Metrics
+Metrics grouped by *scope*.
 
-All metrics have "vcsa." prefix.
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-| Metric                  | Scope  |                   Dimensions                   | Units  |
-|-------------------------|:------:|:----------------------------------------------:|:------:|
-| system_health           | global |                     system                     | status |
-| components_health       | global | applmgmt, database_storage, mem, storage, swap | status |
-| software_updates_health | global |               software_packages                | status |
+### global
 
-## Health statuses
-
+These metrics refer to the entire monitored application.
+<details>
+<summary>See health statuses</summary>
 Overall System Health:
 
 | Numeric |   Text    | Description                                                                                                              |
@@ -65,38 +53,126 @@ Software Updates Health:
 |   `3`   |   `red`   | Security patches might be available.                 |
 |   `4`   |  `gray`   | An error retrieving information on software updates. |
 
-## Configuration
+</details>
 
-Edit the `go.d/vcsa.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                       |                   Dimensions                   |  Unit  |
+|------------------------------|:----------------------------------------------:|:------:|
+| vcsa.system_health           |                     system                     | status |
+| vcsa.components_health       | applmgmt, database_storage, mem, storage, swap | status |
+| vcsa.software_updates_health |               software_packages                | status |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/vcsa.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/vcsa.conf
 ```
 
-Needs only `url`, `username` and `password`. Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               | Default | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:-------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |    5    |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |    0    |          |
+|         url          | Server URL.                                                                                               |         |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |    1    |          |
+|       username       | Username for basic HTTP authentication.                                                                   |         |   yes    |
+|       password       | Password for basic HTTP authentication.                                                                   |         |   yes    |
+|      proxy_url       | Proxy URL.                                                                                                |         |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |         |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |         |          |
+|        method        | HTTP request method.                                                                                      |   GET   |          |
+|         body         | HTTP request body.                                                                                        |         |          |
+|       headers        | HTTP request headers.                                                                                     |         |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |   no    |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |   no    |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |         |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |         |          |
+|       tls_key        | Client TLS key.                                                                                           |         |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: vcsa1
-    url: https://203.0.113.0
+    url: https://203.0.113.1
     username: admin@vsphere.local
-    password: somepassword
+    password: password
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Two instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: vcsa1
+    url: https://203.0.113.1
+    username: admin@vsphere.local
+    password: password
 
   - name: vcsa2
     url: https://203.0.113.10
     username: admin@vsphere.local
-    password: somepassword
+    password: password
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vcsa.conf).
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `vcsa` collector, run the `go.d.plugin` with the debug option enabled. The output should
-give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `vcsa` collector, run the `go.d.plugin` with the debug option enabled. The output
+should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
@@ -116,3 +192,4 @@ give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m vcsa
   ```
+

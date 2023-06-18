@@ -1,51 +1,154 @@
-<!--
-title: "Tengine monitoring with Netdata"
-description: "Monitor the health and performance of Tengine web servers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/tengine/README.md"
-sidebar_label: "Tengine"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Webapps"
--->
-
 # Tengine collector
 
-[`Tengine`](https://tengine.taobao.org/) is a web server originated by Taobao, the largest e-commerce website in Asia.
-It is based on the Nginx HTTP server and has many advanced features.
+## Overview
 
-This module monitors one or more `Tengine` instances, depending on your configuration.
+[Tengine](https://tengine.taobao.org/) is a web server originated by Taobao and is based on
+the [NGINX](https://nginx.org/en/).
 
-## Requirements
+This collector monitors one or more Tengine instances, depending on your configuration.
 
-- `tengine` with configured [`ngx_http_reqstat_module`](http://tengine.taobao.org/document/http_reqstat.html).
-- collector expects [default line format](http://tengine.taobao.org/document/http_reqstat.html).
+## Collected metrics
 
-## Metrics
+Metrics grouped by *scope*.
 
-All metrics have "tengine." prefix.
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-| Metric                                           | Scope  |                               Dimensions                               |     Units     |
-|--------------------------------------------------|:------:|:----------------------------------------------------------------------:|:-------------:|
-| bandwidth_total                                  | global |                                in, out                                 |      B/s      |
-| connections_total                                | global |                                accepted                                | connections/s |
-| requests_total                                   | global |                               processed                                |  requests/s   |
-| requests_per_response_code_family_total          | global |                       2xx, 3xx, 4xx, 5xx, other                        |  requests/s   |
-| requests_per_response_code_detailed_total        | global | 200, 206, 302, 304, 403, 404, 419, 499, 500, 502, 503, 504, 508, other |  requests/s   |
-| requests_upstream_total                          | global |                                requests                                |  requests/s   |
-| tries_upstream_total                             | global |                                 calls                                  |    calls/s    |
-| requests_upstream_per_response_code_family_total | global |                                4xx, 5xx                                |  requests/s   |
+### global
 
-## Configuration
+These metrics refer to the entire monitored application.
 
-Edit the `go.d/tengine.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+This scope has no labels.
+
+Metrics:
+
+| Metric                                                   |                               Dimensions                               |     Unit      |
+|----------------------------------------------------------|:----------------------------------------------------------------------:|:-------------:|
+| tengine.bandwidth_total                                  |                                in, out                                 |      B/s      |
+| tengine.connections_total                                |                                accepted                                | connections/s |
+| tengine.requests_total                                   |                               processed                                |  requests/s   |
+| tengine.requests_per_response_code_family_total          |                       2xx, 3xx, 4xx, 5xx, other                        |  requests/s   |
+| tengine.requests_per_response_code_detailed_total        | 200, 206, 302, 304, 403, 404, 419, 499, 500, 502, 503, 504, 508, other |  requests/s   |
+| tengine.requests_upstream_total                          |                                requests                                |  requests/s   |
+| tengine.tries_upstream_total                             |                                 calls                                  |    calls/s    |
+| tengine.requests_upstream_per_response_code_family_total |                                4xx, 5xx                                |  requests/s   |
+
+## Setup
+
+### Prerequisites
+
+#### Enable ngx_http_reqstat_module module.
+
+See [ngx_http_reqstat_module](https://tengine.taobao.org/document/http_reqstat.html) documentation.
+The default line format is the only supported format.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/tengine.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/tengine.conf
 ```
 
-Needs only `url` to server's `/us`. Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               |       Default       | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:-------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |          1          |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |          0          |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1/us |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |          2          |          |
+|       username       | Username for basic HTTP authentication.                                                                   |                     |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                     |          |
+|      proxy_url       | Proxy URL.                                                                                                |                     |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                     |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                     |          |
+|        method        | HTTP request method.                                                                                      |         GET         |          |
+|         body         | HTTP request body.                                                                                        |                     |          |
+|       headers        | HTTP request headers.                                                                                     |                     |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |         no          |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |         no          |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                     |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                     |          |
+|       tls_key        | Client TLS key.                                                                                           |                     |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1/us
+```
+
+</details>
+
+##### HTTP authentication
+
+Local server with basic HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1/us
+    username: foo
+    password: bar
+```
+
+</details>
+
+##### HTTPS with self-signed certificate
+
+Tengine with enabled HTTPS and self-signed certificate.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: https://127.0.0.1/us
+    tls_skip_verify: yes
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -56,10 +159,11 @@ jobs:
     url: http://203.0.113.10/us
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/tengine.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `tengine` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.

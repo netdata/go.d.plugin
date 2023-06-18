@@ -1,104 +1,190 @@
-<!--
-title: "VerneMQ monitoring with Netdata"
-description: "Monitor the health and performance of VerneMQ MQTT brokers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/vernemq/README.md"
-sidebar_label: "VerneMQ"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Message brokers"
--->
-
 # VerneMQ collector
 
-[`VerneMQ`](https://vernemq.com/) is a scalable and open source MQTT broker that connects IoT, M2M, Mobile, and web
-applications.
+## Overview
 
-This module will monitor one or more `VerneMQ` instances, depending on your configuration.
+[VerneMQ](https://vernemq.com) is a high-performance, distributed MQTT broker.
 
-`vernemq` module is tested on the following versions:
+This collector monitors one or more VerneMQ instances, depending on your configuration.
 
-- v1.10.1
+## Collected metrics
 
-## Metrics
+Metrics grouped by *scope*.
 
-All metrics have "vernemq." prefix.
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-| Metric                          | Scope  |            Dimensions            |       Units       |
-|---------------------------------|:------:|:--------------------------------:|:-----------------:|
-| sockets                         | global |           open, close            |     events/s      |
-| client_keepalive_expired        | global |              closed              |     sockets/s     |
-| socket_close_timeout            | global |              closed              |     sockets/s     |
-| socket_errors                   | global |              errors              |     errors/s      |
-| queue_processes                 | global |         queue_processes          |  queue processes  |
-| queue_processes_operations      | global |         setup, teardown          |     events/s      |
-| queue_process_init_from_storage | global |         queue_processes          | queue processes/s |
-| queue_messages                  | global |          received, sent          |    messages/s     |
-| queue_undelivered_messages      | global |   dropped, expired, unhandled    |    messages/s     |
-| router_subscriptions            | global |          subscriptions           |   subscriptions   |
-| router_matched_subscriptions    | global |          local, remote           |  subscriptions/s  |
-| router_memory                   | global |               used               |        KiB        |
-| average_scheduler_utilization   | global |           utilization            |    percentage     |
-| system_utilization_scheduler    | global | <i>a dimension per scheduler</i> |    percentage     |
-| system_processes                | global |            processes             |     processes     |
-| system_reductions               | global |            reductions            |       ops/s       |
-| system_context_switches         | global |         context_switches         |       ops/s       |
-| system_io                       | global |          received, sent          |    kilobits/s     |
-| system_run_queue                | global |              ready               |     processes     |
-| system_gc_count                 | global |                gc                |       ops/s       |
-| system_gc_words_reclaimed       | global |         words_reclaimed          |       ops/s       |
-| system_allocated_memory         | global |        processes, system         |        KiB        |
-| bandwidth                       | global |          received, sent          |    kilobits/s     |
-| retain_messages                 | global |             messages             |     messages      |
-| retain_memory                   | global |               used               |        KiB        |
-| cluster_bandwidth               | global |          received, sent          |    kilobits/s     |
-| cluster_dropped                 | global |             dropped              |    kilobits/s     |
-| netsplit_unresolved             | global |            unresolved            |     netsplits     |
-| netsplits                       | global |        resolved, detected        |    netsplits/s    |
-| mqtt_auth                       | global |          received, sent          |     packets/s     |
-| mqtt_auth_received_reason       | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_auth_sent_reason           | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_connect                    | global |         connect, connack         |     packets/s     |
-| mqtt_connack_sent_reason        | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_disconnect                 | global |          received, sent          |     packets/s     |
-| mqtt_disconnect_received_reason | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_disconnect_sent_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_subscribe                  | global |        subscribe, suback         |     packets/s     |
-| mqtt_subscribe_error            | global |              failed              |       ops/s       |
-| mqtt_subscribe_auth_error       | global |              unauth              |    attempts/s     |
-| mqtt_unsubscribe                | global |      unsubscribe, unsuback       |     packets/s     |
-| mqtt_unsubscribe                | global |      mqtt_unsubscribe_error      |       ops/s       |
-| mqtt_publish                    | global |          received, sent          |     packets/s     |
-| mqtt_publish_errors             | global |              failed              |       ops/s       |
-| mqtt_publish_auth_errors        | global |              unauth              |    attempts/s     |
-| mqtt_puback                     | global |          received, sent          |     packets/s     |
-| mqtt_puback_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_puback_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_puback_invalid_error       | global |            unexpected            |    messages/s     |
-| mqtt_pubrec                     | global |          received, sent          |     packets/s     |
-| mqtt_pubrec_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubrec_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubrec_invalid_error       | global |            unexpected            |    messages/s     |
-| mqtt_pubrel                     | global |          received, sent          |     packets/s     |
-| mqtt_pubrel_received_reason     | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubrel_sent_reason         | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubcom                     | global |          received, sent          |     packets/s     |
-| mqtt_pubcomp_received_reason    | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubcomp_sent_reason        | global |  <i>a dimensions per reason</i>  |     packets/s     |
-| mqtt_pubcomp_invalid_error      | global |            unexpected            |    messages/s     |
-| mqtt_ping                       | global |        pingreq, pingresp         |     packets/s     |
-| node_uptime                     | global |        pingreq, pingresp         |     packets/s     |
+### global
 
-## Configuration
+These metrics refer to the entire monitored application.
 
-Edit the `go.d/vernemq.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+This scope has no labels.
+
+Metrics:
+
+| Metric                                  |         Dimensions          |       Unit        |
+|-----------------------------------------|:---------------------------:|:-----------------:|
+| vernemq.sockets                         |            open             |      sockets      |
+| vernemq.socket_operations               |         open, close         |     sockets/s     |
+| vernemq.client_keepalive_expired        |           closed            |     sockets/s     |
+| vernemq.socket_close_timeout            |           closed            |     sockets/s     |
+| vernemq.socket_errors                   |           errors            |     errors/s      |
+| vernemq.queue_processes                 |       queue_processes       |  queue processes  |
+| vernemq.queue_processes_operations      |       setup, teardown       |     events/s      |
+| vernemq.queue_process_init_from_storage |       queue_processes       | queue processes/s |
+| vernemq.queue_messages                  |       received, sent        |    messages/s     |
+| vernemq.queue_undelivered_messages      | dropped, expired, unhandled |    messages/s     |
+| vernemq.router_subscriptions            |        subscriptions        |   subscriptions   |
+| vernemq.router_matched_subscriptions    |        local, remote        |  subscriptions/s  |
+| vernemq.router_memory                   |            used             |        KiB        |
+| vernemq.average_scheduler_utilization   |         utilization         |    percentage     |
+| vernemq.system_utilization_scheduler    |  a dimension per scheduler  |    percentage     |
+| vernemq.system_processes                |          processes          |     processes     |
+| vernemq.system_reductions               |         reductions          |       ops/s       |
+| vernemq.system_context_switches         |      context_switches       |       ops/s       |
+| vernemq.system_io                       |       received, sent        |    kilobits/s     |
+| vernemq.system_run_queue                |            ready            |     processes     |
+| vernemq.system_gc_count                 |             gc              |       ops/s       |
+| vernemq.system_gc_words_reclaimed       |       words_reclaimed       |       ops/s       |
+| vernemq.system_allocated_memory         |      processes, system      |        KiB        |
+| vernemq.bandwidth                       |       received, sent        |    kilobits/s     |
+| vernemq.retain_messages                 |          messages           |     messages      |
+| vernemq.retain_memory                   |            used             |        KiB        |
+| vernemq.cluster_bandwidth               |       received, sent        |    kilobits/s     |
+| vernemq.cluster_dropped                 |           dropped           |    kilobits/s     |
+| vernemq.netsplit_unresolved             |         unresolved          |     netsplits     |
+| vernemq.netsplits                       |     resolved, detected      |    netsplits/s    |
+| vernemq.mqtt_auth                       |       received, sent        |     packets/s     |
+| vernemq.mqtt_auth_received_reason       |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_auth_sent_reason           |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_connect                    |      connect, connack       |     packets/s     |
+| vernemq.mqtt_connack_sent_reason        |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_disconnect                 |       received, sent        |     packets/s     |
+| vernemq.mqtt_disconnect_received_reason |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_disconnect_sent_reason     |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_subscribe                  |      subscribe, suback      |     packets/s     |
+| vernemq.mqtt_subscribe_error            |           failed            |       ops/s       |
+| vernemq.mqtt_subscribe_auth_error       |           unauth            |    attempts/s     |
+| vernemq.mqtt_unsubscribe                |    unsubscribe, unsuback    |     packets/s     |
+| vernemq.mqtt_unsubscribe                |   mqtt_unsubscribe_error    |       ops/s       |
+| vernemq.mqtt_publish                    |       received, sent        |     packets/s     |
+| vernemq.mqtt_publish_errors             |           failed            |       ops/s       |
+| vernemq.mqtt_publish_auth_errors        |           unauth            |    attempts/s     |
+| vernemq.mqtt_puback                     |       received, sent        |     packets/s     |
+| vernemq.mqtt_puback_received_reason     |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_puback_sent_reason         |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_puback_invalid_error       |         unexpected          |    messages/s     |
+| vernemq.mqtt_pubrec                     |       received, sent        |     packets/s     |
+| vernemq.mqtt_pubrec_received_reason     |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubrec_sent_reason         |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubrec_invalid_error       |         unexpected          |    messages/s     |
+| vernemq.mqtt_pubrel                     |       received, sent        |     packets/s     |
+| vernemq.mqtt_pubrel_received_reason     |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubrel_sent_reason         |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubcom                     |       received, sent        |     packets/s     |
+| vernemq.mqtt_pubcomp_received_reason    |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubcomp_sent_reason        |   a dimensions per reason   |     packets/s     |
+| vernemq.mqtt_pubcomp_invalid_error      |         unexpected          |    messages/s     |
+| vernemq.mqtt_ping                       |      pingreq, pingresp      |     packets/s     |
+| vernemq.node_uptime                     |            time             |      seconds      |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/vernemq.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/vernemq.conf
 ```
 
-Needs only `url` to server's `/metrics` endpoint. Here is an example for 2 servers:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               |            Default            | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:-----------------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |               1               |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |               0               |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1:8888/metrics |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |               1               |          |
+|       username       | Username for basic HTTP authentication.                                                                   |                               |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                               |          |
+|      proxy_url       | Proxy URL.                                                                                                |                               |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                               |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                               |          |
+|        method        | HTTP request method.                                                                                      |              GET              |          |
+|         body         | HTTP request body.                                                                                        |                               |          |
+|       headers        | HTTP request headers.                                                                                     |                               |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |              no               |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |              no               |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                               |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                               |          |
+|       tls_key        | Client TLS key.                                                                                           |                               |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8888/metrics
+```
+
+</details>
+
+##### HTTP authentication
+
+Local instance with basic HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8888/metrics
+    username: username
+    password: password
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
@@ -109,10 +195,11 @@ jobs:
     url: http://203.0.113.10:8888/metrics
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/vernemq.conf).
+</details>
 
 ## Troubleshooting
+
+### Debug mode
 
 To troubleshoot issues with the `vernemq` collector, run the `go.d.plugin` with the debug option enabled. The output
 should give you clues as to why the collector isn't working.
