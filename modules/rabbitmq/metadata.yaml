@@ -6,7 +6,7 @@ overview:
       [RabbitMQ](https://www.rabbitmq.com/) is an open-source message broker.
   collector:
     description: |
-      This module monitors one or more RabbitMQ instances, depending on your configuration.
+      This collector monitors one or more RabbitMQ instances, depending on your configuration.
   
       It collects data using an HTTP-based API provided by the [management plugin](https://www.rabbitmq.com/management.html).
       The following endpoints are used:
@@ -27,97 +27,94 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: All options
+        title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "`http://localhost:15672`"
-          required: yes
+          default: http://localhost:15672
+          required: true
         - name: collect_queues_metrics
           description: Collect stats per vhost per queues. Enabling this can introduce serious overhead on both Netdata and RabbitMQ if many queues are configured and used.
           default: no
-          required: no
+          required: false
         - name: timeout
           description: HTTP request timeout.
           default: 1
-          required: no
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "guest"
-          required: no
+          default: ""
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "guest"
-          required: no
+          default: ""
+          required: false
         - name: proxy_url
           description: Proxy URL.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: method
           description: HTTP request method.
           default: "GET"
-          required: no
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: ""
+          required: false
         - name: not_follow_redirects
-          description: Whether to not follow redirects from the server.
+          description: Redirect handling policy. Controls whether the client follows redirects.
           default: no
-          required: no
+          required: false
         - name: tls_skip_verify
-          description: Whether to skip verifying server's certificate chain and hostname.
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
           default: no
-          required: no
+          required: false
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
         - name: tls_cert
-          description: Client tls certificate.
-          default: "-"
-          required: no
+          description: Client TLS certificate.
+          default: ""
+          required: false
         - name: tls_key
-          description: Client tls key.
-          default: "-"
-          required: no
+          description: Client TLS key.
+          default: ""
+          required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           description: An example configuration.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
                 url: http://127.0.0.1:15672
         - name: Basic HTTP auth
           description: Local server with basic HTTP authentication.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -129,9 +126,6 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
 
             Local and remote instances.
-          folding:
-            title: Example
-            enabled: true
           data: |
             jobs:
               - name: local
@@ -146,10 +140,10 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: rabbitmq.messages_count
@@ -236,10 +230,10 @@ metrics:
           dimensions:
             - name: free
     - name: vhost
-      description: TBD
+      description: These metrics refer to the virtual host.
       labels:
         - name: vhost
-          description: TBD
+          description: virtual host name
       metrics:
         - name: rabbitmq.vhost_messages_count
           description: Vhost messages
@@ -264,12 +258,12 @@ metrics:
             - name: redeliver
             - name: return_unroutable
     - name: queue
-      description: TBD
+      description: These metrics refer to the virtual host queue.
       labels:
         - name: vhost
-          description: TBD
+          description: virtual host name
         - name: queue
-          description: TBD
+          description: queue name
       metrics:
         - name: rabbitmq.queue_messages_count
           description: Queue messages
