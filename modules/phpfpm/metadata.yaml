@@ -1,11 +1,153 @@
+name: phpfpm
+title: PHP-FPM collector
+overview:
+  application:
+    description: |
+      [PHP-FPM](https://php-fpm.org/) is an alternative PHP FastCGI implementation with some additional features useful for
+      sites of any size, especially busier sites.
+  collector:
+    description: |
+      This collector monitors one or more PHP-FPM instances, depending on your configuration..
+setup:
+  prerequisites:
+    list:
+      - title: Enable status page
+        text: |
+          Uncomment the `pm.status_path = /status` variable in the `php-fpm` config file.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: url
+          description: Server URL.
+          default: http://127.0.0.1/status?full&json
+          required: true
+        - name: socket
+          description: Server Unix socket.
+          default: ""
+          required: false
+        - name: address
+          description: Server address in IP:PORT format.
+          default: ""
+          required: false
+        - name: fcgi_path
+          description: Status path.
+          default: /status
+          required: false
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: false
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_url
+          description: Proxy URL.
+          default: ""
+          required: false
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: false
+        - name: body
+          description: HTTP request body.
+          default: ""
+          required: false
+        - name: headers
+          description: HTTP request headers.
+          default: ""
+          required: false
+        - name: not_follow_redirects
+          description: Redirect handling policy. Controls whether the client follows redirects.
+          default: no
+          required: false
+        - name: tls_skip_verify
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
+          default: no
+          required: false
+        - name: tls_ca
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
+        - name: tls_cert
+          description: Client TLS certificate.
+          default: ""
+          required: false
+        - name: tls_key
+          description: Client TLS key.
+          default: ""
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: HTTP
+          description: Collecting data from a local instance over HTTP.
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost/status?full&json
+        - name: Unix socket
+          description: Collecting data from a local instance over Unix socket.
+          data: |
+            jobs:
+              - name: local
+                socket: '/tmp/php-fpm.sock'
+        - name: TCP socket
+          description: Collecting data from a local instance over TCP socket.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:9000
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+                - name: local
+                  url: http://localhost/status?full&json
+            
+                - name: remote
+                  url: http://203.0.113.10/status?full&json
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: phpfpm.connections
