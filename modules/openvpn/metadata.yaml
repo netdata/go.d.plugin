@@ -1,11 +1,104 @@
+name: openvpn
+title: OpenVPN collector
+overview:
+  application:
+    description: |
+      [OpenVPN](https://openvpn.net/) is an open-source commercial software that implements virtual private network
+      techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote
+      access facilities.
+  collector:
+    description: |
+      This collector monitors one or more OpenVPN servers, depending on your configuration.
+
+      It uses OpenVPN [Management Interface](https://openvpn.net/community-resources/management-interface/) to collect metrics.
+setup:
+  prerequisites:
+    list:
+      - title: Enable in go.d.conf.
+        text: |
+          This collector is disabled by default. You need to explicitly enable it in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
+          
+          From the documentation for the OpenVPN Management Interface:
+          > Currently, the OpenVPN daemon can at most support a single management client any one time.
+
+          It is disabled to not break other tools which use `Management Interface`.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: address
+          description: Server address in IP:PORT format.
+          default: 127.0.0.1:7505
+          required: true
+        - name: per_user_stats
+          description: Determines whether user metrics will be collected.
+          default: no
+          required: false
+        - name: connect_timeout
+          description: Connection timeout in seconds. The timeout includes name resolution, if required.
+          default: 2
+          required: false
+        - name: read_timeout
+          description: Read timeout in seconds. Sets deadline for read calls.
+          default: 2
+          required: false
+        - name: write_timeout
+          description: Write timeout in seconds. Sets deadline for write calls.
+          default: 2
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: Basic
+          description: A basic example configuration.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:7505
+        - name: With user metrics
+          description: Collect user metrics.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:7505
+                per_user_stats: yes
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:7505
+            
+              - name: remote
+                address: 203.0.113.0:7505
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: openvpn.active_clients
@@ -20,10 +113,10 @@ metrics:
             - name: in
             - name: out
     - name: user
-      description: TBD
+      description: These metrics refer to the VPN user.
       labels:
         - name: username
-          description: TBD
+          description: VPN username
       metrics:
         - name: openvpn.user_traffic
           description: User Traffic
