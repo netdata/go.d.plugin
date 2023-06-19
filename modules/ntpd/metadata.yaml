@@ -1,11 +1,87 @@
+name: ntpd
+title: NTP daemon collector
+overview:
+  application:
+    description: |
+      The NTPd (Network Time Protocol daemon) is an operating system program that maintains the system time in synchronization
+      with time-servers using the Network Time Protocol.
+  collector:
+    description: |
+      This collector monitors the system variables of the local `ntpd` daemon (optional incl. variables of the polled peers)
+      using the NTP Control Message Protocol via UDP socket, similar to `ntpq`,
+      the [standard NTP query program](https://doc.ntp.org/current-stable/ntpq.html).
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: address
+          description: Server address in IP:PORT format.
+          default: 127.0.0.1:123
+          required: true
+        - name: timeout
+          description: Connection/read/write timeout.
+          default: 3
+          required: false
+        - name: collect_peers
+          description: Determines whether peer metrics will be collected.
+          default: no
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: Basic
+          description: A basic example configuration.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:123
+        - name: With peers metrics
+          description: Collect peers metrics.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:123
+                collect_peers: yes
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                address: 127.0.0.1:123
+            
+              - name: remote
+                address: 203.0.113.0:123
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: ntpd.sys_offset
@@ -56,10 +132,10 @@ metrics:
           dimensions:
             - name: precision
     - name: peer
-      description: TBD
+      description: These metrics refer to the NTPd peer.
       labels:
         - name: peer_address
-          description: TBD
+          description: "peer's source IP address"
       metrics:
         - name: ntpd.peer_offset
           description: Peer offset
