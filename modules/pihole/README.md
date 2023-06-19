@@ -15,8 +15,8 @@ acts as a DNS sinkhole, intended for use on a private network.
 
 This module will monitor one or more `Pi-hole` instances using [PHP API](https://github.com/pi-hole/AdminLTE).
 
-The API exposed data time frame is `for the last 24 hr`. All collected values are for that time frame, not for the
-module collection interval.
+The data provided by the API is for the last 24 hours. All collected values refer to this time period and not to the
+module's collection interval.
 
 ## Metrics
 
@@ -37,7 +37,8 @@ All metrics have "pihole." prefix.
 ## Configuration
 
 Edit the `go.d/pihole.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
