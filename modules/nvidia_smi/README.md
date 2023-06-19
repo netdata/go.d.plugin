@@ -1,73 +1,162 @@
-<!--
-title: "Nvidia GPU monitoring with Netdata"
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/nvidia_smi/README.md"
-description: "Monitors performance metrics using the nvidia-smi CLI tool."
-sidebar_label: "nvidia_smi-go.d.plugin (Recommended)"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Devices"
--->
-
 # Nvidia GPU collector
 
-Monitors performance metrics (memory usage, fan speed, pcie bandwidth utilization, temperature, etc.)
-using the [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface) CLI tool.
+## Overview
 
-> **Warning**: under development, collects fewer metrics then python version.
+This collector monitors GPUs performance metrics using
+the [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface) CLI tool.
 
-## Metrics
+> **Warning**: under development, [loop mode](https://github.com/netdata/netdata/issues/14522) not implemented yet.
 
-All metrics have "nvidia_smi." prefix.
+## Collected metrics
 
-Labels per scope:
+Metrics grouped by *scope*.
 
-- gpu: uuid, product_name.
-- mig: gpu_uuid, gpu_product_name, gpu_instance_id
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-| Metric                            | Scope |        Dimensions        |  Units  | XML | CSV |
-|-----------------------------------|:-----:|:------------------------:|:-------:|:---:|:---:|
-| gpu_pcie_bandwidth_usage          |  gpu  |          rx, tx          |   B/s   | yes | no  |
-| gpu_pcie_bandwidth_utilization    |  gpu  |          rx, tx          |    %    | yes | no  |
-| gpu_fan_speed_perc                |  gpu  |        fan_speed         |    %    | yes | yes |
-| gpu_utilization                   |  gpu  |           gpu            |    %    | yes | yes |
-| gpu_memory_utilization            |  gpu  |          memory          |    %    | yes | yes |
-| gpu_decoder_utilization           |  gpu  |         decoder          |    %    | yes | no  |
-| gpu_encoder_utilization           |  gpu  |         encoder          |    %    | yes | no  |
-| gpu_frame_buffer_memory_usage     |  gpu  |   free, used, reserved   |    B    | yes | yes |
-| gpu_bar1_memory_usage             |  gpu  |        free, used        |    B    | yes | no  |
-| gpu_temperature                   |  gpu  |       temperature        | Celsius | yes | yes |
-| gpu_voltage                       |  gpu  |         voltage          |    V    | yes | no  |
-| gpu_clock_freq                    |  gpu  | graphics, video, sm, mem |   MHz   | yes | yes |
-| gpu_power_draw                    |  gpu  |        power_draw        |  Watts  | yes | yes |
-| gpu_performance_state             |  gpu  |          P0-P15          |  state  | yes | yes |
-| gpu_mig_mode_current_status       |  gpu  |    enabled, disabled     | status  | yes | no  |
-| gpu_mig_devices_count             |  gpu  |           mig            | devices | yes | no  |
-| gpu_mig_frame_buffer_memory_usage |  mig  |   free, used, reserved   |    B    | yes | no  |
-| gpu_mig_bar1_memory_usage         |  mig  |        free, used        |    B    | yes | no  |
+### gpu
 
-## Configuration
+These metrics refer to the GPU.
+
+Labels:
+
+| Label        | Description                                   |
+|--------------|-----------------------------------------------|
+| uuid         | GPU id (e.g. 00000000:00:04.0)                |
+| product_name | GPU product name (e.g. NVIDIA A100-SXM4-40GB) |
+
+Metrics:
+
+| Metric                                    |        Dimensions        |  Unit   | XML/CSV |
+|-------------------------------------------|:------------------------:|:-------:|:-------:|
+| nvidia_smi.gpu_pcie_bandwidth_usage       |          rx, tx          |   B/s   |   + -   |
+| nvidia_smi.gpu_pcie_bandwidth_utilization |          rx, tx          |    %    |   + -   |
+| nvidia_smi.gpu_fan_speed_perc             |        fan_speed         |    %    |   + +   |
+| nvidia_smi.gpu_utilization                |           gpu            |    %    |   + +   |
+| nvidia_smi.gpu_memory_utilization         |          memory          |    %    |   + +   |
+| nvidia_smi.gpu_decoder_utilization        |         decoder          |    %    |   + -   |
+| nvidia_smi.gpu_encoder_utilization        |         encoder          |    %    |   + -   |
+| nvidia_smi.gpu_frame_buffer_memory_usage  |   free, used, reserved   |    B    |   + +   |
+| nvidia_smi.gpu_bar1_memory_usage          |        free, used        |    B    |   + -   |
+| nvidia_smi.gpu_temperature                |       temperature        | Celsius |   + +   |
+| nvidia_smi.gpu_voltage                    |         voltage          |    V    |   + -   |
+| nvidia_smi.gpu_clock_freq                 | graphics, video, sm, mem |   MHz   |   + +   |
+| nvidia_smi.gpu_power_draw                 |        power_draw        |  Watts  |   + +   |
+| nvidia_smi.gpu_performance_state          |          P0-P15          |  state  |   + +   |
+| nvidia_smi.gpu_mig_mode_current_status    |    enabled, disabled     | status  |   + -   |
+| nvidia_smi.gpu_mig_devices_count          |           mig            | devices |   + -   |
+
+### mig
+
+These metrics refer to the Multi-Instance GPU (MIG).
+
+Labels:
+
+| Label           | Description                                   |
+|-----------------|-----------------------------------------------|
+| uuid            | GPU id (e.g. 00000000:00:04.0)                |
+| product_name    | GPU product name (e.g. NVIDIA A100-SXM4-40GB) |
+| gpu_instance_id | GPU instance id (e.g. 1)                      |
+
+Metrics:
+
+| Metric                                       |      Dimensions      | Unit | XML/CSV |
+|----------------------------------------------|:--------------------:|:----:|:-------:|
+| nvidia_smi.gpu_mig_frame_buffer_memory_usage | free, used, reserved |  B   |   + -   |
+| nvidia_smi.gpu_mig_bar1_memory_usage         |      free, used      |  B   |   + -   |
+
+## Setup
+
+### Prerequisites
+
+#### Enable in go.d.conf.
+
+This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/nvidia_smi.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+
+```bash
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
+sudo ./edit-config go.d/nvidia_smi.conf
+```
+
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                                                                                                            |  Default   | Required |
+|:-------------------:|--------------------------------------------------------------------------------------------------------------------------------------------------------|:----------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                                                             |     10     |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                                                                     |     0      |          |
+|     binary_path     | Path to nvidia_smi binary. The default is "nvidia_smi" and the executable is looked for in the directories specified in the PATH environment variable. | nvidia_smi |          |
+|       timeout       | nvidia_smi binary execution timeout.                                                                                                                   |     2      |          |
+|   use_csv_format    | Used format when requesting GPU information. XML is used if set to 'no'.                                                                               |    yes     |          |
+
+</details>
+
+##### use_csv_format
 
 This module supports data collection in CSV and XML formats. The default is CSV.
 
-- XML provides more metrics, but requesting GPU information consumes more CPU, especially if there are multiple GPU
-  cards in the system.
+- XML provides more metrics, but requesting GPU information consumes more CPU, especially if there are multiple GPUs
+  in the system.
 - CSV provides fewer metrics, but is much lighter than XML in terms of CPU usage.
 
-The format can be changed in the configuration file.
+#### Examples
 
-Edit the `go.d/nvidia_smi.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+##### XML format
+
+Use XML format when requesting GPU information.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: nvidia_smi
-    use_csv_format: no # set to 'no' to use the XML format.
+    use_csv_format: no
 ```
+
+</details>
+
+##### Custom binary path
+
+The executable is not in the directories specified in the PATH environment variable.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: nvidia_smi
+    binary_path: /usr/local/sbin/nvidia_smi
+```
+
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `nvidia_smi` collector, run the `go.d.plugin` with the debug option enabled. The
-output should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `nvidia_smi` collector, run the `go.d.plugin` with the debug option enabled. The output
+should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
