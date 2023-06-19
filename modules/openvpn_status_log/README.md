@@ -1,65 +1,136 @@
-<!--
-title: "OpenVPN monitoring with Netdata(based on status log)"
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/openvpn_status_log/README.md"
-sidebar_label: "OpenVPN(StatusLog)"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Networking"
--->
-
 # OpenVPN collector
 
-Parses server log files and provides summary (client, traffic) metrics. Please *note* that this collector is similar to
-another OpenVPN collector. However, this collector requires status logs from OpenVPN in contrast to another collector
-that requires Management Interface enabled.
+## Overview
 
-## Requirements
+[OpenVPN](https://openvpn.net/) is an open-source commercial software that implements virtual private network
+techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote
+access facilities.
 
-- make sure `netdata` user can read `openvpn-status.log`.
+This collector parses server log files and provides summary and per user metrics.
 
-- `update_every` interval must match the interval on which OpenVPN writes the operational status to the log file.
+## Collected metrics
 
-## Metrics
+Metrics grouped by *scope*.
 
-All metrics have "openvpn." prefix.
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-> user_* stats are disabled by default, see `per_user_stats` in the module config file.
+### global
 
-| Metric               | Scope  | Dimensions |   Units    |
-|----------------------|:------:|:----------:|:----------:|
-| active_clients       | global |  clients   |  clients   |
-| total_traffic        | global |  in, out   | kilobits/s |
-| user_traffic         |  user  |  in, out   | kilobits/s |
-| user_connection_time |  user  |    time    |  seconds   |
+These metrics refer to the entire monitored application.
 
-## Configuration
+This scope has no labels.
 
-Edit the `go.d/openvpn_status_log.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Metrics:
+
+| Metric                 | Dimensions |    Unit    |
+|------------------------|:----------:|:----------:|
+| openvpn.active_clients |  clients   |  clients   |
+| openvpn.total_traffic  |  in, out   | kilobits/s |
+
+### user
+
+These metrics refer to the VPN user.
+
+Labels:
+
+| Label    | Description  |
+|----------|--------------|
+| username | VPN username |
+
+Metrics:
+
+| Metric                       | Dimensions |    Unit    |
+|------------------------------|:----------:|:----------:|
+| openvpn.user_traffic         |  in, out   | kilobits/s |
+| openvpn.user_connection_time |    time    |  seconds   |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/openvpn_status_log.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata   # Replace this path with your Netdata config directory, if different
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/openvpn_status_log.conf
 ```
 
-Configuration example:
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                        |           Default           | Required |
+|:-------------------:|--------------------------------------------------------------------|:---------------------------:|:--------:|
+|    update_every     | Data collection frequency.                                         |              1              |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check. |              0              |          |
+|      log_path       | Path to status log.                                                | /var/log/openvpn/status.log |   yes    |
+|   per_user_stats    | User selector. Determines which user metrics will be collected.    |                             |          |
+
+</details>
+
+##### per_user_stats
+
+Metrics of users matching the selector will be collected.
+
+- Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+- Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+- Syntax:
+  ```yaml
+  per_user_stats:
+    includes:
+      - pattern1
+      - pattern2
+    excludes:
+      - pattern3
+      - pattern4
+  ```
+
+#### Examples
+
+##### With user metrics
+
+Collect metrics of all users.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
-    log_path: '/var/log/openvpn/status.log'
     per_user_stats:
       includes:
         - "* *"
 ```
 
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/openvpn_status_log.conf).
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `openvpn_status_log` collector, run the `go.d.plugin` with the debug option enabled. The
-output should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `openvpn_status_log` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
@@ -79,3 +150,4 @@ output should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m openvpn_status_log
   ```
+

@@ -97,12 +97,29 @@ The following options can be defined globally: update_every, autodetection_retry
 |    update_every     | Data collection frequency.                                                        |       1        |          |
 | autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                |       0        |          |
 |       address       | Server address in IP:PORT format.                                                 | 127.0.0.1:7505 |   yes    |
-|   per_user_stats    | Determines whether user metrics will be collected.                                |       no       |          |
+|   per_user_stats    | User selector. Determines which user metrics will be collected.                   |                |          |
 |   connect_timeout   | Connection timeout in seconds. The timeout includes name resolution, if required. |       2        |          |
 |    read_timeout     | Read timeout in seconds. Sets deadline for read calls.                            |       2        |          |
 |    write_timeout    | Write timeout in seconds. Sets deadline for write calls.                          |       2        |          |
 
 </details>
+
+##### per_user_stats
+
+Metrics of users matching the selector will be collected.
+
+- Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+- Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+- Syntax:
+  ```yaml
+  per_user_stats:
+    includes:
+      - pattern1
+      - pattern2
+    excludes:
+      - pattern3
+      - pattern4
+  ```
 
 #### Examples
 
@@ -122,7 +139,7 @@ jobs:
 
 ##### With user metrics
 
-Collect user metrics.
+Collect metrics of all users.
 <details>
 <summary>Config</summary>
 
@@ -130,7 +147,9 @@ Collect user metrics.
 jobs:
   - name: local
     address: 127.0.0.1:7505
-    per_user_stats: yes
+    per_user_stats:
+      includes:
+        - "* *"
 ```
 
 </details>

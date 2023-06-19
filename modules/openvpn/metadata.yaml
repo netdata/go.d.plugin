@@ -43,9 +43,23 @@ setup:
           default: 127.0.0.1:7505
           required: true
         - name: per_user_stats
-          description: Determines whether user metrics will be collected.
-          default: no
+          description: User selector. Determines which user metrics will be collected.
+          default: ""
           required: false
+          details: |
+            Metrics of users matching the selector will be collected.
+            - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+            - Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+            - Syntax:
+              ```yaml
+              per_user_stats:
+                includes:
+                  - pattern1
+                  - pattern2
+                excludes:
+                  - pattern3
+                  - pattern4
+              ```
         - name: connect_timeout
           description: Connection timeout in seconds. The timeout includes name resolution, if required.
           default: 2
@@ -70,12 +84,14 @@ setup:
               - name: local
                 address: 127.0.0.1:7505
         - name: With user metrics
-          description: Collect user metrics.
+          description: Collect metrics of all users.
           data: |
             jobs:
               - name: local
                 address: 127.0.0.1:7505
-                per_user_stats: yes
+                per_user_stats:
+                  includes:
+                    - "* *"
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.

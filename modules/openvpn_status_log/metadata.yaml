@@ -1,11 +1,79 @@
+name: openvpn_status_log
+title: OpenVPN collector
+overview:
+  application:
+    description: |
+      [OpenVPN](https://openvpn.net/) is an open-source commercial software that implements virtual private network
+      techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote
+      access facilities.
+  collector:
+    description: |
+      This collector parses server log files and provides summary and per user metrics.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: log_path
+          description: Path to status log.
+          default: /var/log/openvpn/status.log
+          required: true
+        - name: per_user_stats
+          description: User selector. Determines which user metrics will be collected.
+          default: ""
+          required: false
+          details: |
+            Metrics of users matching the selector will be collected.
+            - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+            - Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+            - Syntax:
+              ```yaml
+              per_user_stats:
+                includes:
+                  - pattern1
+                  - pattern2
+                excludes:
+                  - pattern3
+                  - pattern4
+              ```
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: With user metrics
+          description: Collect metrics of all users.
+          data: |
+            jobs:
+              - name: local
+                per_user_stats:
+                  includes:
+                    - "* *"
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: openvpn.active_clients
@@ -20,10 +88,10 @@ metrics:
             - name: in
             - name: out
     - name: user
-      description: TBD
+      description: These metrics refer to the VPN user.
       labels:
         - name: username
-          description: TBD
+          description: VPN username
       metrics:
         - name: openvpn.user_traffic
           description: User Traffic
