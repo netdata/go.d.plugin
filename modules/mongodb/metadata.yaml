@@ -1,11 +1,134 @@
+name: mongodb
+title: MongoDB collector
+overview:
+  application:
+    description: |
+      [MongoDB](https://www.mongodb.com/) is a source-available cross-platform document-oriented database program.
+  collector:
+    description: |
+      This collector monitors one or more MongoDB instances, depending on your configuration.
+      
+      Executed queries:
+      
+      - [serverStatus](https://docs.mongodb.com/manual/reference/command/serverStatus/)
+      - [dbStats](https://docs.mongodb.com/manual/reference/command/dbStats/)
+      - [replSetGetStatus](https://www.mongodb.com/docs/manual/reference/command/replSetGetStatus/)
+setup:
+  prerequisites:
+    list:
+      - title: Create a read-only user
+        text: |
+          Create a read-only user for Netdata in the admin database.
+          
+          - Authenticate as the admin user:
+
+            ```bash
+            use admin
+            db.auth("admin", "<MONGODB_ADMIN_PASSWORD>")
+            ```
+
+          - Create a user:
+
+            ```bash
+            db.createUser({
+              "user":"netdata",
+              "pwd": "<UNIQUE_PASSWORD>",
+              "roles" : [
+                {role: 'read', db: 'admin' },
+                {role: 'clusterMonitor', db: 'admin'},
+                {role: 'read', db: 'local' }
+              ]
+            })
+            ```
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: uri
+          description: MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/).
+          default: mongodb://localhost:27017
+          required: true
+        - name: timeout
+          description: Query timeout in seconds.
+          default: 2
+          required: false
+        - name: databases
+          description: Databases selector. Determines which database metrics will be collected.
+          default: ""
+          required: false
+          details: |
+            Metrics of databases matching the selector will be collected.
+            - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+            - Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
+            - Syntax:
+              ```yaml
+              per_user_stats:
+                includes:
+                  - pattern1
+                  - pattern2
+                excludes:
+                  - pattern3
+                  - pattern4
+              ```
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: TCP socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                uri: mongodb://netdata:password@localhost:27017
+        - name: With databases metrics
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                uri: mongodb://netdata:password@localhost:27017
+                databases:
+                  includes:
+                    - "* *"
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                uri: mongodb://netdata:password@localhost:27017
+
+              - name: remote
+                uri: mongodb://netdata:password@203.0.113.0:27017
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: |
+    - WireTiger metrics are available only if [WiredTiger](https://docs.mongodb.com/v6.0/core/wiredtiger/) is used as the
+      storage engine.
+    - Sharding metrics are available on shards only
+      for [mongos](https://www.mongodb.com/docs/manual/reference/program/mongos/).
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: mongodb.operations_rate
@@ -238,10 +361,10 @@ metrics:
             - name: partitioned
             - name: unpartitioned
     - name: lock type
-      description: TBD
+      description: These metrics refer to the lock type.
       labels:
         - name: lock_type
-          description: TBD
+          description: lock type (e.g. global, database, collection, mutex)
       metrics:
         - name: mongodb.lock_acquisitions_rate
           description: Lock acquisitions
@@ -252,10 +375,10 @@ metrics:
             - name: intent_shared
             - name: intent_exclusive
     - name: commit type
-      description: TBD
+      description: These metrics refer to the commit type.
       labels:
         - name: commit_type
-          description: TBD
+          description: commit type (e.g. noShards, singleShard, singleWriteShard)
       metrics:
         - name: mongodb.transactions_commits_rate
           description: Transactions commits
@@ -269,10 +392,10 @@ metrics:
           dimensions:
             - name: commits
     - name: database
-      description: TBD
+      description: These metrics refer to the database.
       labels:
         - name: database
-          description: TBD
+          description: database name
       metrics:
         - name: mongodb.database_collection_count
           description: Database collections
@@ -310,10 +433,10 @@ metrics:
           dimensions:
             - name: index_size
     - name: replica set member
-      description: TBD
+      description: These metrics refer to the replica set member.
       labels:
         - name: repl_set_member
-          description: TBD
+          description: replica set member name
       metrics:
         - name: mongodb.repl_set_member_state
           description: Replica Set member state
@@ -356,10 +479,10 @@ metrics:
           dimensions:
             - name: uptime
     - name: shard
-      description: TBD
+      description: These metrics refer to the shard.
       labels:
         - name: shard_id
-          description: TBD
+          description: shard id
       metrics:
         - name: mongodb.sharding_shard_chunks_count
           description: Shard chunks
