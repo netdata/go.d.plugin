@@ -1,20 +1,10 @@
-<!--
-title: "MySQL monitoring with Netdata"
-description: "Monitor connections, slow queries, InnoDB memory and disk utilization, locks, and more with zero configuration and per-second metric granularity."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/mysql/README.md"
-sidebar_label: "MySQL"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Databases"
--->
-
 # MySQL collector
+
+## Overview
 
 [MySQL](https://www.mysql.com/) is an open-source relational database management system.
 
-This module monitors one or more MySQL servers, depending on your configuration.
-
-## Requirements
+This collector monitors one or more MySQL servers, depending on your configuration.
 
 Executed queries:
 
@@ -25,7 +15,126 @@ Executed queries:
 - `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
 - `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
 
-[User Statistics](https://mariadb.com/kb/en/user-statistics/) query is [MariaDB](https://mariadb.com/) specific.
+## Collected metrics
+
+Metrics grouped by *scope*.
+
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### global
+
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                    |                                                                     Dimensions                                                                      |      Unit      |
+|-------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
+| mysql.net                                 |                                                                       in, out                                                                       |   kilobits/s   |
+| mysql.queries                             |                                                          queries, questions, slow_queries                                                           |   queries/s    |
+| mysql.queries_type                        |                                                       select, delete, update, insert, replace                                                       |   queries/s    |
+| mysql.handlers                            | commit, delete, prepare, read_first, read_key, read_next, read_prev, read_rnd, read_rnd_next, rollback, savepoint, savepointrollback, update, write |   handlers/s   |
+| mysql.table_open_cache_overflows          |                                                                     open_cache                                                                      |  overflows/s   |
+| mysql.table_locks                         |                                                                  immediate, waited                                                                  |    locks/s     |
+| mysql.join_issues                         |                                                full_join, full_range_join, range, range_check, scan                                                 |    joins/s     |
+| mysql.sort_issues                         |                                                              merge_passes, range, scan                                                              |    issues/s    |
+| mysql.tmp                                 |                                                             disk_tables, files, tables                                                              |    events/s    |
+| mysql.connections                         |                                                                    all, aborted                                                                     | connections/s  |
+| mysql.connections_active                  |                                                              active, limit, max_active                                                              |  connections   |
+| mysql.threads                             |                                                             connected, cached, running                                                              |    threads     |
+| mysql.threads_created                     |                                                                       created                                                                       |   threads/s    |
+| mysql.thread_cache_misses                 |                                                                       misses                                                                        |     misses     |
+| mysql.innodb_io                           |                                                                     read, write                                                                     |     KiB/s      |
+| mysql.innodb_io_ops                       |                                                                reads, writes, fsyncs                                                                |  operations/s  |
+| mysql.innodb_io_pending_ops               |                                                                reads, writes, fsyncs                                                                |   operations   |
+| mysql.innodb_log                          |                                                            waits, write_requests, writes                                                            |  operations/s  |
+| mysql.innodb_cur_row_lock                 |                                                                    current waits                                                                    |   operations   |
+| mysql.innodb_rows                         |                                                          inserted, read, updated, deleted                                                           |  operations/s  |
+| mysql.innodb_buffer_pool_pages            |                                                           data, dirty, free, misc, total                                                            |     pages      |
+| mysql.innodb_buffer_pool_pages_flushed    |                                                                     flush_pages                                                                     |   requests/s   |
+| mysql.innodb_buffer_pool_bytes            |                                                                     data, dirty                                                                     |      MiB       |
+| mysql.innodb_buffer_pool_read_ahead       |                                                                    all, evicted                                                                     |    pages/s     |
+| mysql.innodb_buffer_pool_read_ahead_rnd   |                                                                     read-ahead                                                                      |  operations/s  |
+| mysql.innodb_buffer_pool_ops              |                                                                disk_reads, wait_free                                                                |  operations/s  |
+| mysql.innodb_os_log                       |                                                                   fsyncs, writes                                                                    |   operations   |
+| mysql.innodb_os_log_fsync_writes          |                                                                       fsyncs                                                                        |  operations/s  |
+| mysql.innodb_os_log_io                    |                                                                        write                                                                        |     KiB/s      |
+| mysql.innodb_deadlocks                    |                                                                      deadlocks                                                                      |  operations/s  |
+| mysql.files                               |                                                                        files                                                                        |     files      |
+| mysql.files_rate                          |                                                                        files                                                                        |    files/s     |
+| mysql.connection_errors                   |                                                  accept, internal, max, peer_addr, select, tcpwrap                                                  |    errors/s    |
+| mysql.opened_tables                       |                                                                       tables                                                                        |    tables/s    |
+| mysql.open_tables                         |                                                                    cache, tables                                                                    |     tables     |
+| mysql.process_list_fetch_query_duration   |                                                                      duration                                                                       |  milliseconds  |
+| mysql.process_list_queries_count          |                                                                    system, user                                                                     |    queries     |
+| mysql.process_list_longest_query_duration |                                                                      duration                                                                       |    seconds     |
+| mysql.qcache_ops                          |                                                      hits, lowmem_prunes, inserts, not_cached                                                       |   queries/s    |
+| mysql.qcache                              |                                                                       queries                                                                       |    queries     |
+| mysql.qcache_freemem                      |                                                                        free                                                                         |      MiB       |
+| mysql.qcache_memblocks                    |                                                                     free, total                                                                     |     blocks     |
+| mysql.galera_writesets                    |                                                                       rx, tx                                                                        |  writesets/s   |
+| mysql.galera_bytes                        |                                                                       rx, tx                                                                        |     KiB/s      |
+| mysql.galera_queue                        |                                                                       rx, tx                                                                        |   writesets    |
+| mysql.galera_conflicts                    |                                                                bf_aborts, cert_fails                                                                |  transactions  |
+| mysql.galera_flow_control                 |                                                                       paused                                                                        |       ms       |
+| mysql.galera_cluster_status               |                                                         primary, non_primary, disconnected                                                          |     status     |
+| mysql.galera_cluster_state                |                                                  undefined, joining, donor, joined, synced, error                                                   |     state      |
+| mysql.galera_cluster_size                 |                                                                        nodes                                                                        |     nodes      |
+| mysql.galera_cluster_weight               |                                                                       weight                                                                        |     weight     |
+| mysql.galera_connected                    |                                                                      connected                                                                      |    boolean     |
+| mysql.galera_ready                        |                                                                        ready                                                                        |    boolean     |
+| mysql.galera_open_transactions            |                                                                        open                                                                         |  transactions  |
+| mysql.galera_thread_count                 |                                                                       threads                                                                       |    threads     |
+| mysql.key_blocks                          |                                                              unused, used, not_flushed                                                              |     blocks     |
+| mysql.key_requests                        |                                                                    reads, writes                                                                    |   requests/s   |
+| mysql.key_disk_ops                        |                                                                    reads, writes                                                                    |  operations/s  |
+| mysql.binlog_cache                        |                                                                      disk, all                                                                      | transactions/s |
+| mysql.binlog_stmt_cache                   |                                                                      disk, all                                                                      |  statements/s  |
+
+### connection
+
+These metrics refer to the replication connection.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric             |       Dimensions        |  Unit   |
+|--------------------|:-----------------------:|:-------:|
+| mysql.slave_behind |         seconds         | seconds |
+| mysql.slave_status | sql_running, io_running | boolean |
+
+### user
+
+These metrics refer to the MySQL user.
+
+Labels:
+
+| Label | Description |
+|-------|-------------|
+| user  | username    |
+
+Metrics:
+
+| Metric                               |               Dimensions               |      Unit      |
+|--------------------------------------|:--------------------------------------:|:--------------:|
+| mysql.userstats_cpu                  |                  used                  |   percentage   |
+| mysql.userstats_rows                 | read, sent, updated, inserted, deleted |  operations/s  |
+| mysql.userstats_commands             |         select, update, other          |   commands/s   |
+| mysql.userstats_denied_commands      |                 denied                 |   commands/s   |
+| mysql.userstats_created_transactions |            commit, rollback            | transactions/s |
+| mysql.userstats_binlog_written       |                written                 |      B/s       |
+| mysql.userstats_empty_queries        |                 empty                  |   queries/s    |
+| mysql.userstats_connections          |                created                 | connections/s  |
+| mysql.userstats_lost_connections     |                  lost                  | connections/s  |
+| mysql.userstats_denied_connections   |                 denied                 | connections/s  |
+
+## Setup
+
+### Prerequisites
+
+#### Create netdata user
 
 A user account should have the
 following [permissions](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html):
@@ -45,126 +154,131 @@ FLUSH PRIVILEGES;
 The `netdata` user will have the ability to connect to the MySQL server on localhost without a password. It will only
 be able to gather statistics without being able to alter or affect operations in any way.
 
-## Metrics
+### Configuration
 
-All metrics have "mysql." prefix.
+#### File
 
-- userstats_* metrics need [User Statistics](https://mariadb.com/kb/en/user-statistics/#enabling-the-plugin) plugin
-  enabled. MariaDB and Percona MySQL only.
+The configuration file name is `go.d/mysql.conf`.
 
-Labels per scope:
+The file format is YAML. Generally, the format is:
 
-- global: no labels.
-- connection: no labels.
-- user: user.
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
 
-| Metric                              |   Scope    |                                                                     Dimensions                                                                      |     Units      |
-|-------------------------------------|:----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
-| net                                 |   global   |                                                                       in, out                                                                       |   kilobits/s   |
-| queries                             |   global   |                                                          queries, questions, slow_queries                                                           |   queries/s    |
-| queries_type                        |   global   |                                                       select, delete, update, insert, replace                                                       |   queries/s    |
-| handlers                            |   global   | commit, delete, prepare, read_first, read_key, read_next, read_prev, read_rnd, read_rnd_next, rollback, savepoint, savepointrollback, update, write |   handlers/s   |
-| table_open_cache_overflows          |   global   |                                                                     open_cache                                                                      |  overflows/s   |
-| table_locks                         |   global   |                                                                  immediate, waited                                                                  |    locks/s     |
-| join_issues                         |   global   |                                                full_join, full_range_join, range, range_check, scan                                                 |    joins/s     |
-| sort_issues                         |   global   |                                                              merge_passes, range, scan                                                              |    issues/s    |
-| tmp                                 |   global   |                                                             disk_tables, files, tables                                                              |    events/s    |
-| connections                         |   global   |                                                                    all, aborted                                                                     | connections/s  |
-| connections_active                  |   global   |                                                              active, limit, max_active                                                              |  connections   |
-| threads                             |   global   |                                                             connected, cached, running                                                              |    threads     |
-| threads_created                     |   global   |                                                                       created                                                                       |   threads/s    |
-| thread_cache_misses                 |   global   |                                                                       misses                                                                        |     misses     |
-| innodb_io                           |   global   |                                                                     read, write                                                                     |     KiB/s      |
-| innodb_io_ops                       |   global   |                                                                reads, writes, fsyncs                                                                |  operations/s  |
-| innodb_io_pending_ops               |   global   |                                                                reads, writes, fsyncs                                                                |   operations   |
-| innodb_log                          |   global   |                                                            waits, write_requests, writes                                                            |  operations/s  |
-| innodb_cur_row_lock                 |   global   |                                                                    current waits                                                                    |   operations   |
-| innodb_rows                         |   global   |                                                          inserted, read, updated, deleted                                                           |  operations/s  |
-| innodb_buffer_pool_pages            |   global   |                                                           data, dirty, free, misc, total                                                            |     pages      |
-| innodb_buffer_pool_pages_flushed    |   global   |                                                                     flush_pages                                                                     |   requests/s   |
-| innodb_buffer_pool_bytes            |   global   |                                                                     data, dirty                                                                     |      MiB       |
-| innodb_buffer_pool_read_ahead       |   global   |                                                                    all, evicted                                                                     |    pages/s     |
-| innodb_buffer_pool_read_ahead_rnd   |   global   |                                                                     read-ahead                                                                      |  operations/s  |
-| innodb_buffer_pool_ops              |   global   |                                                                disk_reads, wait_free                                                                |  operations/s  |
-| innodb_os_log                       |   global   |                                                                   fsyncs, writes                                                                    |   operations   |
-| innodb_os_log_fsync_writes          |   global   |                                                                       fsyncs                                                                        |  operations/s  |
-| innodb_os_log_io                    |   global   |                                                                        write                                                                        |     KiB/s      |
-| innodb_deadlocks                    |   global   |                                                                      deadlocks                                                                      |  operations/s  |
-| files                               |   global   |                                                                        files                                                                        |     files      |
-| files_rate                          |   global   |                                                                        files                                                                        |    files/s     |
-| connection_errors                   |   global   |                                                  accept, internal, max, peer_addr, select, tcpwrap                                                  |    errors/s    |
-| opened_tables                       |   global   |                                                                       tables                                                                        |    tables/s    |
-| open_tables                         |   global   |                                                                    cache, tables                                                                    |     tables     |
-| process_list_fetch_query_duration   |   global   |                                                                      duration                                                                       |  milliseconds  |
-| process_list_queries_count          |   global   |                                                                    system, user                                                                     |    queries     |
-| process_list_longest_query_duration |   global   |                                                                      duration                                                                       |    seconds     |
-| qcache_ops                          |   global   |                                                      hits, lowmem_prunes, inserts, not_cached                                                       |   queries/s    |
-| qcache                              |   global   |                                                                       queries                                                                       |    queries     |
-| qcache_freemem                      |   global   |                                                                        free                                                                         |      MiB       |
-| qcache_memblocks                    |   global   |                                                                     free, total                                                                     |     blocks     |
-| galera_writesets                    |   global   |                                                                       rx, tx                                                                        |  writesets/s   |
-| galera_bytes                        |   global   |                                                                       rx, tx                                                                        |     KiB/s      |
-| galera_queue                        |   global   |                                                                       rx, tx                                                                        |   writesets    |
-| galera_conflicts                    |   global   |                                                                bf_aborts, cert_fails                                                                |  transactions  |
-| galera_flow_control                 |   global   |                                                                       paused                                                                        |       ms       |
-| galera_cluster_status               |   global   |                                                         primary, non_primary, disconnected                                                          |     status     |
-| galera_cluster_state                |   global   |                                                  undefined, joining, donor, joined, synced, error                                                   |     state      |
-| galera_cluster_size                 |   global   |                                                                        nodes                                                                        |     nodes      |
-| galera_cluster_weight               |   global   |                                                                       weight                                                                        |     weight     |
-| galera_connected                    |   global   |                                                                      connected                                                                      |    boolean     |
-| galera_ready                        |   global   |                                                                        ready                                                                        |    boolean     |
-| galera_open_transactions            |   global   |                                                                        open                                                                         |  transactions  |
-| galera_thread_count                 |   global   |                                                                       threads                                                                       |    threads     |
-| key_blocks                          |   global   |                                                              unused, used, not_flushed                                                              |     blocks     |
-| key_requests                        |   global   |                                                                    reads, writes                                                                    |   requests/s   |
-| key_disk_ops                        |   global   |                                                                    reads, writes                                                                    |  operations/s  |
-| binlog_cache                        |   global   |                                                                      disk, all                                                                      | transactions/s |
-| binlog_stmt_cache                   |   global   |                                                                      disk, all                                                                      |  statements/s  |
-| slave_behind                        | connection |                                                                       seconds                                                                       |    seconds     |
-| slave_status                        | connection |                                                               sql_running, io_running                                                               |    boolean     |
-| userstats_cpu                       |    user    |                                                                        used                                                                         |   percentage   |
-| userstats_rows                      |    user    |                                                       read, sent, updated, inserted, deleted                                                        |  operations/s  |
-| userstats_commands                  |    user    |                                                                select, update, other                                                                |   commands/s   |
-| userstats_denied_commands           |    user    |                                                                       denied                                                                        |   commands/s   |
-| userstats_created_transactions      |    user    |                                                                  commit, rollback                                                                   | transactions/s |
-| userstats_binlog_written            |    user    |                                                                       written                                                                       |      B/s       |
-| userstats_empty_queries             |    user    |                                                                        empty                                                                        |   queries/s    |
-| userstats_connections               |    user    |                                                                       created                                                                       | connections/s  |
-| userstats_lost_connections          |    user    |                                                                        lost                                                                         | connections/s  |
-| userstats_denied_connections        |    user    |                                                                       denied                                                                        | connections/s  |
-
-## Configuration
-
-Edit the `go.d/mysql.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
 sudo ./edit-config go.d/mysql.conf
 ```
 
-[DSN syntax in details](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                                                                         |          Default          | Required |
+|:-------------------:|---------------------------------------------------------------------------------------------------------------------|:-------------------------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                          |             5             |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                                  |             0             |          |
+|         dsn         | MySQL server DSN (Data Source Name). See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name). | root@tcp(localhost:3306)/ |   yes    |
+|       my.cnf        | Specifies the my.cnf file to read the connection settings from the [client] section.                                |                           |          |
+|       timeout       | Query timeout in seconds.                                                                                           |             1             |          |
+
+</details>
+
+#### Examples
+
+##### TCP socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
-    dsn: '[username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]'
-    # username:password@protocol(address)/dbname?param=value
-    # user:password@/dbname
-    # Examples:
-    # - name: local
-    #   dsn: user:pass@unix(/usr/local/var/mysql/mysql.sock)/
-    # - name: remote
-    #   dsn: user:pass5@localhost/mydb?charset=utf8
+    dsn: netdata@tcp(127.0.0.1:3306)/
 ```
 
-For all available options see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/mysql.conf).
+</details>
+
+##### Unix socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: netdata@unix(/var/lib/mysql/mysql.sock)/
+```
+
+</details>
+
+##### Connection with password
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: netdata:password@tcp(127.0.0.1:3306)/
+```
+
+</details>
+
+##### my.cnf
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    my.cnf: '/etc/my.cnf'
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: netdata@tcp(127.0.0.1:3306)/
+
+  - name: remote
+    dsn: netdata:password@tcp(203.0.113.0:3306)/
+```
+
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `mysql` collector, run the `go.d.plugin` with the debug option enabled. The output
-should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `mysql` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
@@ -184,4 +298,3 @@ should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m mysql
   ```
-

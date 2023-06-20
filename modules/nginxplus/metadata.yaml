@@ -1,11 +1,144 @@
+name: nginxplus
+title: NGINX Plus collector
+overview:
+  application:
+    description: |
+      [NGINX Plus](https://www.nginx.com/products/nginx/) is a software load balancer, API gateway, and reverse proxy built on
+      top of NGINX.
+  collector:
+    description: |
+      This collector will monitor one or more NGINX Plus servers, depending on your configuration.
+setup:
+  prerequisites:
+    list:
+      - title: Enable API
+        text: |
+          See [Configure the API](https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/#configuring-the-api).
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: url
+          description: Server URL.
+          default: http://127.0.0.1
+          required: true
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: false
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_url
+          description: Proxy URL.
+          default: ""
+          required: false
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: false
+        - name: body
+          description: HTTP request body.
+          default: ""
+          required: false
+        - name: headers
+          description: HTTP request headers.
+          default: ""
+          required: false
+        - name: not_follow_redirects
+          description: Redirect handling policy. Controls whether the client follows redirects.
+          default: no
+          required: false
+        - name: tls_skip_verify
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
+          default: no
+          required: false
+        - name: tls_ca
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
+        - name: tls_cert
+          description: Client TLS certificate.
+          default: ""
+          required: false
+        - name: tls_key
+          description: Client TLS key.
+          default: ""
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: Basic
+          description: A basic example configuration.
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1
+        - name: HTTP authentication
+          description: Basic HTTP authentication.
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1
+                username: username
+                password: password
+        - name: HTTPS with self-signed certificate
+          description: NGINX Plus with enabled HTTPS and self-signed certificate.
+          data: |
+            jobs:
+              - name: local
+                url: https://127.0.0.1
+                tls_skip_verify: yes
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1
+            
+              - name: remote
+                url: http://192.0.2.1
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: nginxplus.client_connections_rate
@@ -64,10 +197,10 @@ metrics:
           dimensions:
             - name: uptime
     - name: http server zone
-      description: TBD
+      description: These metrics refer to the HTTP server zone.
       labels:
         - name: http_server_zone
-          description: TBD
+          description: HTTP server zone name
       metrics:
         - name: nginxplus.http_server_zone_requests_rate
           description: HTTP Server Zone requests rate
@@ -100,10 +233,10 @@ metrics:
           dimensions:
             - name: discarded
     - name: http location zone
-      description: TBD
+      description: These metrics refer to the HTTP location zone.
       labels:
         - name: http_location_zone
-          description: TBD
+          description: HTTP location zone name
       metrics:
         - name: nginxplus.http_location_zone_requests_rate
           description: HTTP Location Zone requests rate
@@ -131,12 +264,12 @@ metrics:
           dimensions:
             - name: discarded
     - name: http upstream
-      description: TBD
+      description: These metrics refer to the HTTP upstream.
       labels:
         - name: http_upstream_name
-          description: TBD
+          description: HTTP upstream name
         - name: http_upstream_zone
-          description: TBD
+          description: HTTP upstream zone name
       metrics:
         - name: nginxplus.http_upstream_peers_count
           description: HTTP Upstream peers
@@ -154,16 +287,16 @@ metrics:
           dimensions:
             - name: keepalive
     - name: http upstream server
-      description: TBD
+      description: These metrics refer to the HTTP upstream server.
       labels:
         - name: http_upstream_name
-          description: TBD
+          description: HTTP upstream name
         - name: http_upstream_zone
-          description: TBD
+          description: HTTP upstream zone name
         - name: http_upstream_server_address
-          description: TBD
+          description: HTTP upstream server address (e.g. 127.0.0.1:81)
         - name: http_upstream_server_name
-          description: TBD
+          description: HTTP upstream server name
       metrics:
         - name: nginxplus.http_upstream_server_requests_rate
           description: HTTP Upstream Server requests
@@ -216,10 +349,10 @@ metrics:
           dimensions:
             - name: downtime
     - name: http cache
-      description: TBD
+      description: These metrics refer to the HTTP cache.
       labels:
         - name: http_cache
-          description: TBD
+          description: HTTP cache name
       metrics:
         - name: nginxplus.http_cache_state
           description: HTTP Cache state
@@ -247,10 +380,10 @@ metrics:
           dimensions:
             - name: size
     - name: stream server zone
-      description: TBD
+      description: These metrics refer to the Stream server zone.
       labels:
         - name: stream_server_zone
-          description: TBD
+          description: Stream server zone name
       metrics:
         - name: nginxplus.stream_server_zone_connections_rate
           description: Stream Server Zone connections rate
@@ -281,12 +414,12 @@ metrics:
           dimensions:
             - name: discarded
     - name: stream upstream
-      description: TBD
+      description: These metrics refer to the Stream upstream.
       labels:
         - name: stream_upstream_name
-          description: TBD
+          description: Stream upstream name
         - name: stream_upstream_zone
-          description: TBD
+          description: Stream upstream zone name
       metrics:
         - name: nginxplus.stream_upstream_peers_count
           description: Stream Upstream peers
@@ -299,16 +432,16 @@ metrics:
           dimensions:
             - name: zombie
     - name: stream upstream server
-      description: TBD
+      description: These metrics refer to the Stream upstream server.
       labels:
         - name: stream_upstream_name
-          description: TBD
+          description: Stream upstream name
         - name: stream_upstream_zone
-          description: TBD
+          description: Stream upstream zone name
         - name: stream_upstream_server_address
-          description: TBD
+          description: Stream upstream server address (e.g. 127.0.0.1:12346)
         - name: stream_upstream_server_name
-          description: TBD
+          description: Stream upstream server name
       metrics:
         - name: nginxplus.stream_upstream_server_connections_rate
           description: Stream Upstream Server connections
@@ -341,10 +474,10 @@ metrics:
           dimensions:
             - name: active
     - name: resolver zone
-      description: TBD
+      description: These metrics refer to the resolver zone.
       labels:
         - name: resolver_zone
-          description: TBD
+          description: resolver zone name
       metrics:
         - name: nginxplus.resolver_zone_requests_rate
           description: Resolver requests rate
