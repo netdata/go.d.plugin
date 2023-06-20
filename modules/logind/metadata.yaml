@@ -1,11 +1,40 @@
+name: logind
+title: systemd-logind collector
+overview:
+  application:
+    description: |
+      [systemd-logind](https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html) is a system service that
+      manages user logins.
+  collector:
+    description: |
+      This collector monitors number of sessions and users as reported by the `org.freedesktop.login1` DBus API.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list: []
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list: []
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: logind.sessions

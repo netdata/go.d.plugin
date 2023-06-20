@@ -1,43 +1,49 @@
-<!--
-title: "systemd-logind monitoring with Netdata"
-description: "Monitors number of sessions and users with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/logind/README.md"
-sidebar_label: "logind-go.d.plugin (Recommended)"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/System metrics"
--->
-
 # systemd-logind collector
+
+## Overview
 
 [systemd-logind](https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html) is a system service that
 manages user logins.
 
-Monitors number of sessions and users as reported by the `org.freedesktop.login1` DBus API.
+This collector monitors number of sessions and users as reported by the `org.freedesktop.login1` DBus API.
 
-## Requirements
+## Collected metrics
 
-- Works only on Linux systems.
+Metrics grouped by *scope*.
 
-## Metrics
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-All metrics have "logind." prefix.
+### global
 
-| Metric         | Scope  |                 Dimensions                  |  Units   |
-|----------------|:------:|:-------------------------------------------:|:--------:|
-| sessions       | global |                remote, local                | sessions |
-| sessions_type  | global |          console, graphical, other          | sessions |
-| sessions_state | global |           online, closing, active           | sessions |
-| users_state    | global | offline, closing, online, lingering, active |  users   |
+These metrics refer to the entire monitored application.
 
-## Configuration
+This scope has no labels.
+
+Metrics:
+
+| Metric                |                 Dimensions                  |   Unit   |
+|-----------------------|:-------------------------------------------:|:--------:|
+| logind.sessions       |                remote, local                | sessions |
+| logind.sessions_type  |          console, graphical, other          | sessions |
+| logind.sessions_state |           online, closing, active           | sessions |
+| logind.users_state    | offline, closing, online, lingering, active |  users   |
+
+## Setup
+
+### Prerequisites
+
+No action required.
+
+### Configuration
 
 No configuration required.
 
 ## Troubleshooting
 
-To troubleshoot issues with the `logind` collector, run the `go.d.plugin` with the debug option enabled. The
-output should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `logind` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
