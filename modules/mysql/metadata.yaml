@@ -1,11 +1,123 @@
+name: mysql
+title: MySQL collector
+overview:
+  application:
+    description: |
+      [MySQL](https://www.mysql.com/) is an open-source relational database management system.
+  collector:
+    description: |
+      This collector monitors one or more MySQL servers, depending on your configuration.
+      
+      Executed queries:
+
+      - `SELECT VERSION();`
+      - `SHOW GLOBAL STATUS;`
+      - `SHOW GLOBAL VARIABLES;`
+      - `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+)
+      - `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
+      - `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
+setup:
+  prerequisites:
+    list:
+      - title: Create netdata user
+        text: |
+          A user account should have the
+          following [permissions](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html):
+
+          - [`USAGE`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_usage)
+          - [`REPLICATION CLIENT`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_replication-client)
+          - [`PROCESS`](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_process)
+          
+          To create the `netdata` user with these permissions, execute the following in the MySQL shell:
+
+          ```mysql
+          CREATE USER 'netdata'@'localhost';
+          GRANT USAGE, REPLICATION CLIENT, PROCESS ON *.* TO 'netdata'@'localhost';
+          FLUSH PRIVILEGES;
+          ```
+          
+          The `netdata` user will have the ability to connect to the MySQL server on localhost without a password. It will only
+          be able to gather statistics without being able to alter or affect operations in any way.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: dsn
+          description: MySQL server DSN (Data Source Name). See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
+          default: root@tcp(localhost:3306)/
+          required: true
+        - name: my.cnf
+          description: Specifies the my.cnf file to read the connection settings from the [client] section.
+          default: ""
+          required: false
+        - name: timeout
+          description: Query timeout in seconds.
+          default: 1
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: TCP socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: netdata@tcp(127.0.0.1:3306)/
+        - name: Unix socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: netdata@unix(/var/lib/mysql/mysql.sock)/
+        - name: Connection with password
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: netdata:password@tcp(127.0.0.1:3306)/
+        - name: my.cnf
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                my.cnf: '/etc/my.cnf'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                dsn: netdata@tcp(127.0.0.1:3306)/
+
+              - name: remote
+                dsn: netdata:password@tcp(203.0.113.0:3306)/
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: mysql.net
@@ -389,7 +501,7 @@ metrics:
             - name: disk
             - name: all
     - name: connection
-      description: TBD
+      description: These metrics refer to the replication connection.
       labels: []
       metrics:
         - name: mysql.slave_behind
@@ -404,10 +516,10 @@ metrics:
             - name: sql_running
             - name: io_running
     - name: user
-      description: TBD
+      description: These metrics refer to the MySQL user.
       labels:
         - name: user
-          description: TBD
+          description: username
       metrics:
         - name: mysql.userstats_cpu
           description: User CPU Time
