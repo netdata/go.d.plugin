@@ -1,11 +1,115 @@
+name: postgresql
+title: PostgreSQL collector
+overview:
+  application:
+    description: |
+      [PgBouncer](https://www.pgbouncer.org/) is an open-source connection pooler
+      for [PostgreSQL](https://www.postgresql.org/).
+  collector:
+    description: |
+      This collector monitors one or more PgBouncer servers, depending on your configuration.
+
+      Executed queries:
+
+      - `SHOW VERSION;`
+      - `SHOW CONFIG;`
+      - `SHOW DATABASES;`
+      - `SHOW STATS;`
+      - `SHOW POOLS;`
+
+      Information about the queries can be found in the [PgBouncer Documentation](http://pgbouncer.org/usage.html).
+setup:
+  prerequisites:
+    list:
+      - title: Create netdata user
+        text: |
+          Create a user with `stats_users` permissions to query your PgBouncer instance.
+          
+          To create the `netdata` user:
+          
+          - Add `netdata` user to the `pgbouncer.ini` file:
+          
+            ```text
+            stats_users = netdata
+            ```
+          
+          - Add a password for the `netdata` user to the `userlist.txt` file:
+          
+            ```text
+            "netdata" "<PASSWORD>"
+            ```
+          
+          - To verify the credentials, run the following command
+          
+            ```bash
+            psql -h localhost -U netdata -p 6432 pgbouncer -c "SHOW VERSION;" >/dev/null 2>&1 && echo OK || echo FAIL
+            ```
+          
+            When it prompts for a password, enter the password you added to `userlist.txt`.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: dsn
+          description: PgBouncer server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
+          default: postgres://postgres:postgres@127.0.0.1:6432/pgbouncer
+          required: true
+        - name: timeout
+          description: Query timeout in seconds.
+          default: 1
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: TCP socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
+        - name: Unix socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'host=/tmp dbname=pgbouncer user=postgres port=6432'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
+
+              - name: remote
+                dsn: 'postgres://postgres:postgres@203.0.113.10:6432/pgbouncer'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: pgbouncer.client_connections_utilization
@@ -14,12 +118,12 @@ metrics:
           dimensions:
             - name: used
     - name: database
-      description: TBD
+      description: These metrics refer to the database.
       labels:
         - name: database
-          description: TBD
+          description: database name
         - name: postgres_database
-          description: TBD
+          description: Postgres database name
       metrics:
         - name: pgbouncer.db_client_connections
           description: Database client connections

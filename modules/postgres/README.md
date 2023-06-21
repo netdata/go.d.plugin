@@ -1,182 +1,301 @@
-<!--
-title: "PostgreSQL monitoring with Netdata"
-description: "Monitor connections, replication, databases, locks, and more with zero configuration and per-second metric granularity."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/postgres/README.md"
-sidebar_label: "PostgresSQL"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Databases"
--->
-
 # PostgreSQL collector
+
+## Overview
 
 [PostgreSQL](https://www.postgresql.org/), also known as Postgres, is a free and open-source relational database
 management system emphasizing extensibility and SQL compliance.
 
-This module monitors one or more Postgres servers, depending on your configuration.
+This collector monitors one or more Postgres servers, depending on your configuration.
 
-To find out more about these metrics and why they are important to monitor, read our blog post on [PostgreSQL monitoring with Netdata](https://www.netdata.cloud/blog/postgresql-monitoring)
+## Collected metrics
 
-## Requirements
+Metrics grouped by *scope*.
 
-- PostgreSQL v9.4+
-- User with granted `pg_monitor`
-  or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-Without additional configuration Netdata will attempt to use the default postgres user - but a separate netdata user can be created for this purpose. If you have PostgreSQL 10+ and want to use Netdata to monitor statistics normally reserved for superusers grant the netdata user pg_monitor permissions. Some of the advanced metrics also require additional permissions as mentioned in [metrics](#metrics).
+### global
 
-To create the `netdata` user with these permissions, execute the following in the psql session, as a user with CREATEROLE priviliges:
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                           |                                                                 Dimensions                                                                 |      Unit      |
+|--------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
+| postgres.connections_utilization                 |                                                                    used                                                                    |   percentage   |
+| postgres.connections_usage                       |                                                              available, used                                                               |  connections   |
+| postgres.connections_state_count                 |                                  active, idle, idle_in_transaction, idle_in_transaction_aborted, disabled                                  |  connections   |
+| postgres.transactions_duration                   |                                                           a dimension per bucket                                                           | transactions/s |
+| postgres.queries_duration                        |                                                           a dimension per bucket                                                           |   queries/s    |
+| postgres.locks_utilization                       |                                                                    used                                                                    |   percentage   |
+| postgres.checkpoints_rate                        |                                                            scheduled, requested                                                            | checkpoints/s  |
+| postgres.checkpoints_time                        |                                                                write, sync                                                                 |  milliseconds  |
+| postgres.bgwriter_halts_rate                     |                                                                 maxwritten                                                                 |    events/s    |
+| postgres.buffers_io_rate                         |                                                       checkpoint, backend, bgwriter                                                        |      B/s       |
+| postgres.buffers_backend_fsync_rate              |                                                                   fsync                                                                    |    calls/s     |
+| postgres.buffers_allocated_rate                  |                                                                 allocated                                                                  |      B/s       |
+| postgres.wal_io_rate                             |                                                                   write                                                                    |      B/s       |
+| postgres.wal_files_count                         |                                                             written, recycled                                                              |     files      |
+| postgres.wal_archiving_files_count               |                                                                ready, done                                                                 |    files/s     |
+| postgres.autovacuum_workers_count                |                                       analyze, vacuum_analyze, vacuum, vacuum_freeze, brin_summarize                                       |    workers     |
+| postgres.txid_exhaustion_towards_autovacuum_perc |                                                            emergency_autovacuum                                                            |   percentage   |
+| postgres.txid_exhaustion_perc                    |                                                              txid_exhaustion                                                               |   percentage   |
+| postgres.txid_exhaustion_oldest_txid_num         |                                                                    xid                                                                     |      xid       |
+| postgres.catalog_relations_count                 | ordinary_table, index, sequence, toast_table, view, materialized_view, composite_type, foreign_table, partitioned_table, partitioned_index |   relations    |
+| postgres.catalog_relations_size                  | ordinary_table, index, sequence, toast_table, view, materialized_view, composite_type, foreign_table, partitioned_table, partitioned_index |       B        |
+| postgres.uptime                                  |                                                                   uptime                                                                   |    seconds     |
+| postgres.databases_count                         |                                                                 databases                                                                  |   databases    |
+
+### repl application
+
+These metrics refer to the replication application.
+
+Labels:
+
+| Label       | Description      |
+|-------------|------------------|
+| application | application name |
+
+Metrics:
+
+| Metric                                |                 Dimensions                 |  Unit   |
+|---------------------------------------|:------------------------------------------:|:-------:|
+| postgres.replication_app_wal_lag_size | sent_lag, write_lag, flush_lag, replay_lag |    B    |
+| postgres.replication_app_wal_lag_time |      write_lag, flush_lag, replay_lag      | seconds |
+
+### repl slot
+
+These metrics refer to the replication slot.
+
+Labels:
+
+| Label | Description           |
+|-------|-----------------------|
+| slot  | replication slot name |
+
+Metrics:
+
+| Metric                                |         Dimensions          | Unit  |
+|---------------------------------------|:---------------------------:|:-----:|
+| postgres.replication_slot_files_count | wal_keep, pg_replslot_files | files |
+
+### database
+
+These metrics refer to the database.
+
+Labels:
+
+| Label    | Description   |
+|----------|---------------|
+| database | database name |
+
+Metrics:
+
+| Metric                              |                                                  Dimensions                                                   |      Unit      |
+|-------------------------------------|:-------------------------------------------------------------------------------------------------------------:|:--------------:|
+| postgres.db_transactions_ratio      |                                              committed, rollback                                              |   percentage   |
+| postgres.db_transactions_rate       |                                              committed, rollback                                              | transactions/s |
+| postgres.db_connections_utilization |                                                     used                                                      |   percentage   |
+| postgres.db_connections_count       |                                                  connections                                                  |  connections   |
+| postgres.db_cache_io_ratio          |                                                     miss                                                      |   percentage   |
+| postgres.db_io_rate                 |                                                 memory, disk                                                  |      B/s       |
+| postgres.db_ops_fetched_rows_ratio  |                                                    fetched                                                    |   percentage   |
+| postgres.db_ops_read_rows_rate      |                                               returned, fetched                                               |     rows/s     |
+| postgres.db_ops_write_rows_rate     |                                          inserted, deleted, updated                                           |     rows/s     |
+| postgres.db_conflicts_rate          |                                                   conflicts                                                   |   queries/s    |
+| postgres.db_conflicts_reason_rate   |                                tablespace, lock, snapshot, bufferpin, deadlock                                |   queries/s    |
+| postgres.db_deadlocks_rate          |                                                   deadlocks                                                   |  deadlocks/s   |
+| postgres.db_locks_held_count        | access_share, row_share, row_exclusive, share_update, share, share_row_exclusive, exclusive, access_exclusive |     locks      |
+| postgres.db_locks_awaited_count     | access_share, row_share, row_exclusive, share_update, share, share_row_exclusive, exclusive, access_exclusive |     locks      |
+| postgres.db_temp_files_created_rate |                                                    created                                                    |    files/s     |
+| postgres.db_temp_files_io_rate      |                                                    written                                                    |      B/s       |
+| postgres.db_size                    |                                                     size                                                      |       B        |
+
+### table
+
+These metrics refer to the database table.
+
+Labels:
+
+| Label        | Description       |
+|--------------|-------------------|
+| database     | database name     |
+| schema       | schema name       |
+| table        | table name        |
+| parent_table | parent table name |
+
+Metrics:
+
+| Metric                                    |         Dimensions         |    Unit    |
+|-------------------------------------------|:--------------------------:|:----------:|
+| postgres.table_rows_dead_ratio            |            dead            | percentage |
+| postgres.table_rows_count                 |         live, dead         |    rows    |
+| postgres.table_ops_rows_rate              | inserted, deleted, updated |   rows/s   |
+| postgres.table_ops_rows_hot_ratio         |            hot             | percentage |
+| postgres.table_ops_rows_hot_rate          |            hot             |   rows/s   |
+| postgres.table_cache_io_ratio             |            miss            | percentage |
+| postgres.table_io_rate                    |        memory, disk        |    B/s     |
+| postgres.table_index_cache_io_ratio       |            miss            | percentage |
+| postgres.table_index_io_rate              |        memory, disk        |    B/s     |
+| postgres.table_toast_cache_io_ratio       |            miss            | percentage |
+| postgres.table_toast_io_rate              |        memory, disk        |    B/s     |
+| postgres.table_toast_index_cache_io_ratio |            miss            | percentage |
+| postgres.table_toast_index_io_rate        |        memory, disk        |    B/s     |
+| postgres.table_scans_rate                 |     index, sequential      |  scans/s   |
+| postgres.table_scans_rows_rate            |     index, sequential      |   rows/s   |
+| postgres.table_autovacuum_since_time      |            time            |  seconds   |
+| postgres.table_vacuum_since_time          |            time            |  seconds   |
+| postgres.table_autoanalyze_since_time     |            time            |  seconds   |
+| postgres.table_analyze_since_time         |            time            |  seconds   |
+| postgres.table_null_columns               |            null            |  columns   |
+| postgres.table_size                       |            size            |     B      |
+| postgres.table_bloat_size_perc            |           bloat            | percentage |
+| postgres.table_bloat_size                 |           bloat            |     B      |
+
+### index
+
+These metrics refer to the table index.
+
+Labels:
+
+| Label        | Description       |
+|--------------|-------------------|
+| database     | database name     |
+| schema       | schema name       |
+| table        | table name        |
+| parent_table | parent table name |
+| index        | index name        |
+
+Metrics:
+
+| Metric                         |  Dimensions  |    Unit    |
+|--------------------------------|:------------:|:----------:|
+| postgres.index_size            |     size     |     B      |
+| postgres.index_bloat_size_perc |    bloat     | percentage |
+| postgres.index_bloat_size      |    bloat     |     B      |
+| postgres.index_usage_status    | used, unused |   status   |
+
+## Setup
+
+### Prerequisites
+
+#### Create netdata user
+
+Create a user with granted `pg_monitor`
+or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
+
+To create the `netdata` user with these permissions, execute the following in the psql session, as a user with
+CREATEROLE privileges:
 
 ```postgresql
 CREATE USER netdata;
 GRANT pg_monitor TO netdata;
 ```
 
-After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your system
+After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or
+the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your
+system.
 
-## Metrics
+### Configuration
 
-- all metrics have "postgres." prefix.
-- db_size need CONNECT privilege to the database.
-- table_* and index_* metrics need [additional configuration](#database-detailed-metrics).
-- table_bloat* and index_bloat* metrics need read (SELECT) permission to the table.
-- wal_files_count, wal_archiving_files_count and replication_slot_files_count
-  need [superuser](https://www.postgresql.org/docs/current/role-attributes.html) status.
+#### File
 
-Labels per scope:
+The configuration file name is `go.d/postgresql.conf`.
 
-- global: no labels.
-- repl application: application.
-- repl slot: slot.
-- database: database.
-- table: database, schema, table, parent_table.
-- index: database, schema, table, parent_table, index.
+The file format is YAML. Generally, the format is:
 
-| Metric                                  |      Scope       |                                                                 Dimensions                                                                 |     Units      |
-|-----------------------------------------|:----------------:|:------------------------------------------------------------------------------------------------------------------------------------------:|:--------------:|
-| connections_utilization                 |      global      |                                                                    used                                                                    |   percentage   |
-| connections_usage                       |      global      |                                                              available, used                                                               |  connections   |
-| connections_state_count                 |      global      |                                  active, idle, idle_in_transaction, idle_in_transaction_aborted, disabled                                  |  connections   |
-| transactions_duration                   |      global      |                                                       <i>a dimension per bucket</i>                                                        | transactions/s |
-| queries_duration                        |      global      |                                                       <i>a dimension per bucket</i>                                                        |   queries/s    |
-| locks_utilization                       |      global      |                                                                    used                                                                    |   percentage   |
-| checkpoints_rate                        |      global      |                                                            scheduled, requested                                                            | checkpoints/s  |
-| checkpoints_time                        |      global      |                                                                write, sync                                                                 |  milliseconds  |
-| bgwriter_halts_rate                     |      global      |                                                                 maxwritten                                                                 |    events/s    |
-| buffers_io_rate                         |      global      |                                                       checkpoint, backend, bgwriter                                                        |      B/s       |
-| buffers_backend_fsync_rate              |      global      |                                                                   fsync                                                                    |    calls/s     |
-| buffers_allocated_rate                  |      global      |                                                                 allocated                                                                  |      B/s       |
-| wal_io_rate                             |      global      |                                                                   write                                                                    |      B/s       |
-| wal_files_count                         |      global      |                                                             written, recycled                                                              |     files      |
-| wal_archiving_files_count               |      global      |                                                                ready, done                                                                 |    files/s     |
-| autovacuum_workers_count                |      global      |                                       analyze, vacuum_analyze, vacuum, vacuum_freeze, brin_summarize                                       |    workers     |
-| txid_exhaustion_towards_autovacuum_perc |      global      |                                                            emergency_autovacuum                                                            |   percentage   |
-| txid_exhaustion_perc                    |      global      |                                                              txid_exhaustion                                                               |   percentage   |
-| txid_exhaustion_oldest_txid_num         |      global      |                                                                    xid                                                                     |      xid       |
-| catalog_relations_count                 |      global      | ordinary_table, index, sequence, toast_table, view, materialized_view, composite_type, foreign_table, partitioned_table, partitioned_index |   relations    |
-| catalog_relations_size                  |      global      | ordinary_table, index, sequence, toast_table, view, materialized_view, composite_type, foreign_table, partitioned_table, partitioned_index |       B        |
-| uptime                                  |      global      |                                                                   uptime                                                                   |    seconds     |
-| databases_count                         |      global      |                                                                 databases                                                                  |   databases    |
-| replication_app_wal_lag_size            | repl application |                                                 sent_lag, write_lag, flush_lag, replay_lag                                                 |       B        |
-| replication_app_wal_lag_time            | repl application |                                                      write_lag, flush_lag, replay_lag                                                      |    seconds     |
-| replication_slot_files_count            |    repl slot     |                                                        wal_keep, pg_replslot_files                                                         |     files      |
-| db_transactions_ratio                   |     database     |                                                            committed, rollback                                                             |   percentage   |
-| db_transactions_rate                    |     database     |                                                            committed, rollback                                                             | transactions/s |
-| db_connections_utilization              |     database     |                                                                    used                                                                    |   percentage   |
-| db_connections_count                    |     database     |                                                                connections                                                                 |  connections   |
-| db_cache_io_ratio                       |     database     |                                                                    miss                                                                    |   percentage   |
-| db_io_rate                              |     database     |                                                                memory, disk                                                                |      B/s       |
-| db_ops_fetched_rows_ratio               |     database     |                                                                  fetched                                                                   |   percentage   |
-| db_ops_read_rows_rate                   |     database     |                                                             returned, fetched                                                              |     rows/s     |
-| db_ops_write_rows_rate                  |     database     |                                                         inserted, deleted, updated                                                         |     rows/s     |
-| db_conflicts_rate                       |     database     |                                                                 conflicts                                                                  |   queries/s    |
-| db_conflicts_reason_rate                |     database     |                                              tablespace, lock, snapshot, bufferpin, deadlock                                               |   queries/s    |
-| db_deadlocks_rate                       |     database     |                                                                 deadlocks                                                                  |  deadlocks/s   |
-| db_locks_held_count                     |     database     |               access_share, row_share, row_exclusive, share_update, share, share_row_exclusive, exclusive, access_exclusive                |     locks      |
-| db_locks_awaited_count                  |     database     |               access_share, row_share, row_exclusive, share_update, share, share_row_exclusive, exclusive, access_exclusive                |     locks      |
-| db_temp_files_created_rate              |     database     |                                                                  created                                                                   |    files/s     |
-| db_temp_files_io_rate                   |     database     |                                                                  written                                                                   |      B/s       |
-| db_size                                 |     database     |                                                                    size                                                                    |       B        |
-| table_rows_dead_ratio                   |      table       |                                                                    dead                                                                    |   percentage   |
-| table_rows_count                        |      table       |                                                                 live, dead                                                                 |      rows      |
-| table_ops_rows_rate                     |      table       |                                                         inserted, deleted, updated                                                         |     rows/s     |
-| table_ops_rows_hot_ratio                |      table       |                                                                    hot                                                                     |   percentage   |
-| table_ops_rows_hot_rate                 |      table       |                                                                    hot                                                                     |     rows/s     |
-| table_cache_io_ratio                    |      table       |                                                                    miss                                                                    |   percentage   |
-| table_io_rate                           |      table       |                                                                memory, disk                                                                |      B/s       |
-| table_index_cache_io_ratio              |      table       |                                                                    miss                                                                    |   percentage   |
-| table_index_io_rate                     |      table       |                                                                memory, disk                                                                |      B/s       |
-| table_toast_cache_io_ratio              |      table       |                                                                    miss                                                                    |   percentage   |
-| table_toast_io_rate                     |      table       |                                                                memory, disk                                                                |      B/s       |
-| table_toast_index_cache_io_ratio        |      table       |                                                                    miss                                                                    |   percentage   |
-| table_toast_index_io_rate               |      table       |                                                                memory, disk                                                                |      B/s       |
-| table_scans_rate                        |      table       |                                                             index, sequential                                                              |    scans/s     |
-| table_scans_rows_rate                   |      table       |                                                             index, sequential                                                              |     rows/s     |
-| table_autovacuum_since_time             |      table       |                                                                    time                                                                    |    seconds     |
-| table_vacuum_since_time                 |      table       |                                                                    time                                                                    |    seconds     |
-| table_autoanalyze_since_time            |      table       |                                                                    time                                                                    |    seconds     |
-| table_analyze_since_time                |      table       |                                                                    time                                                                    |    seconds     |
-| table_null_columns                      |      table       |                                                                    null                                                                    |    columns     |
-| table_size                              |      table       |                                                                    size                                                                    |       B        |
-| table_bloat_size_perc                   |      table       |                                                                   bloat                                                                    |   percentage   |
-| table_bloat_size                        |      table       |                                                                   bloat                                                                    |       B        |
-| index_size                              |      index       |                                                                    size                                                                    |       B        |
-| index_bloat_size_perc                   |      index       |                                                                   bloat                                                                    |   percentage   |
-| index_bloat_size                        |      index       |                                                                   bloat                                                                    |       B        |
-| index_usage_status                      |      index       |                                                                used, unused                                                                |     status     |
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
 
-## Configuration
-
-Edit the `go.d/postgres.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
 
 ```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/postgres.conf
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
+sudo ./edit-config go.d/postgresql.conf
 ```
 
-DSN (Data Source Name) may either be in URL format or key=word format.
-See [Connection Strings](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) for details.
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|            Name            | Description                                                                                                                                                                                   |                       Default                        | Required |
+|:--------------------------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------:|:--------:|
+|        update_every        | Data collection frequency.                                                                                                                                                                    |                          5                           |          |
+|    autodetection_retry     | Re-check interval in seconds. Zero means not to schedule re-check.                                                                                                                            |                          0                           |          |
+|            dsn             | Postgres server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).                                                        | postgres://postgres:postgres@127.0.0.1:5432/postgres |   yes    |
+|          timeout           | Query timeout in seconds.                                                                                                                                                                     |                          2                           |          |
+| collect_databases_matching | Databases selector. Determines which database metrics will be collected. Syntax is [simple patterns](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#simple-patterns-matcher). |                                                      |          |
+|       max_db_tables        | Maximum number of tables in the database. Table metrics will not be collected for databases that have more tables than max_db_tables. 0 means no limit.                                       |                          50                          |          |
+|       max_db_indexes       | Maximum number of indexes in the database. Index metrics will not be collected for databases that have more indexes than max_db_indexes. 0 means no limit.                                    |                         250                          |          |
+
+</details>
+
+#### Examples
+
+##### TCP socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
-    dsn: 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
+    dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
+```
 
+</details>
+
+##### Unix socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
   - name: local
-    dsn: 'host=/var/run/postgresql dbname=postgres user=postgres'
+    dsn: 'host=/var/run/postgresql dbname=postgres user=netdata'
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
 
   - name: remote
-    dsn: 'postgresql://postgres:postgres@203.0.113.10:5432/postgres'
+    dsn: 'postgresql://netdata@203.0.113.0:5432/postgres'
 ```
 
-### Database detailed metrics
-
-Detailed metrics include table_* and index_*.
-
-By default, this module only collects detailed metrics for the database it is connected to. Collection from all
-databases on a database server is disabled because each database requires an additional connection.
-
-Use the `collect_databases_matching` configuration option to select the databases from which you want to collect
-detailed metrics. The value
-supports [Netdata simple patterns](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md).
-
-```yaml
-jobs:
-  - name: local
-    dsn: 'postgresql://postgres:postgres@127.0.0.1:5432/postgres'
-    collect_databases_matching: 'mydb1 mydb2 !mydb3 mydb4'
-```
-
----
-
-For all available options see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/postgres.conf).
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `postgres` collector, run the `go.d.plugin` with the debug option enabled. The output
-should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `postgresql` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
@@ -194,5 +313,5 @@ should give you clues as to why the collector isn't working.
 - Run the `go.d.plugin` to debug the collector:
 
   ```bash
-  ./go.d.plugin -d -m postgres
+  ./go.d.plugin -d -m postgresql
   ```
