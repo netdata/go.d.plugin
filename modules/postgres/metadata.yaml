@@ -1,11 +1,107 @@
+name: postgresql
+title: PostgreSQL collector
+overview:
+  application:
+    description: |
+      [PostgreSQL](https://www.postgresql.org/), also known as Postgres, is a free and open-source relational database
+      management system emphasizing extensibility and SQL compliance.
+  collector:
+    description: |
+      This collector monitors one or more Postgres servers, depending on your configuration.
+setup:
+  prerequisites:
+    list:
+      - title: Create netdata user
+        text: |
+          Create a user with granted `pg_monitor`
+          or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
+          
+          To create the `netdata` user with these permissions, execute the following in the psql session, as a user with CREATEROLE privileges:
+          
+          ```postgresql
+          CREATE USER netdata;
+          GRANT pg_monitor TO netdata;
+          ```
+
+          After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or
+          the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your
+          system.
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 5
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: dsn
+          description: Postgres server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
+          default: postgres://postgres:postgres@127.0.0.1:5432/postgres
+          required: true
+        - name: timeout
+          description: Query timeout in seconds.
+          default: 2
+          required: false
+        - name: collect_databases_matching
+          description: Databases selector. Determines which database metrics will be collected. Syntax is [simple patterns](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#simple-patterns-matcher).
+          default: ""
+          required: false
+        - name: max_db_tables
+          description: Maximum number of tables in the database. Table metrics will not be collected for databases that have more tables than max_db_tables. 0 means no limit.
+          default: 50
+          required: false
+        - name: max_db_indexes
+          description: Maximum number of indexes in the database. Index metrics will not be collected for databases that have more indexes than max_db_indexes. 0 means no limit.
+          default: 250
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: TCP socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
+        - name: Unix socket
+          description: An example configuration.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'host=/var/run/postgresql dbname=postgres user=netdata'
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+            
+            Local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
+
+              - name: remote
+                dsn: 'postgresql://netdata@203.0.113.0:5432/postgres'
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: postgres.connections_utilization
@@ -157,10 +253,10 @@ metrics:
           dimensions:
             - name: databases
     - name: repl application
-      description: TBD
+      description: These metrics refer to the replication application.
       labels:
         - name: application
-          description: TBD
+          description: application name
       metrics:
         - name: postgres.replication_app_wal_lag_size
           description: Standby application WAL lag size
@@ -178,10 +274,10 @@ metrics:
             - name: flush_lag
             - name: replay_lag
     - name: repl slot
-      description: TBD
+      description: These metrics refer to the replication slot.
       labels:
         - name: slot
-          description: TBD
+          description: replication slot name
       metrics:
         - name: postgres.replication_slot_files_count
           description: Replication slot files
@@ -190,10 +286,10 @@ metrics:
             - name: wal_keep
             - name: pg_replslot_files
     - name: database
-      description: TBD
+      description: These metrics refer to the database.
       labels:
         - name: database
-          description: TBD
+          description: database name
       metrics:
         - name: postgres.db_transactions_ratio
           description: Database transactions ratio
@@ -305,16 +401,16 @@ metrics:
           dimensions:
             - name: size
     - name: table
-      description: TBD
+      description: These metrics refer to the database table.
       labels:
         - name: database
-          description: TBD
+          description: database name
         - name: schema
-          description: TBD
+          description: schema name
         - name: table
-          description: TBD
+          description: table name
         - name: parent_table
-          description: TBD
+          description: parent table name
       metrics:
         - name: postgres.table_rows_dead_ratio
           description: Table dead rows
@@ -441,18 +537,18 @@ metrics:
           dimensions:
             - name: bloat
     - name: index
-      description: TBD
+      description: These metrics refer to the table index.
       labels:
         - name: database
-          description: TBD
+          description: database name
         - name: schema
-          description: TBD
+          description: schema name
         - name: table
-          description: TBD
+          description: table name
         - name: parent_table
-          description: TBD
+          description: parent table name
         - name: index
-          description: TBD
+          description: index name
       metrics:
         - name: postgres.index_size
           description: Index size
