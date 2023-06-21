@@ -1,19 +1,11 @@
-<!--
-title: "PgBouncer monitoring with Netdata"
-description: "Monitor client and server connections and databases statistics."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/pgbouncer/README.md"
-sidebar_label: "PgBouncer"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Databases"
--->
+# PostgreSQL collector
 
-# PgBouncer collector
+## Overview
 
 [PgBouncer](https://www.pgbouncer.org/) is an open-source connection pooler
 for [PostgreSQL](https://www.postgresql.org/).
 
-This module monitors one or more PgBouncer servers, depending on your configuration.
+This collector monitors one or more PgBouncer servers, depending on your configuration.
 
 Executed queries:
 
@@ -25,10 +17,59 @@ Executed queries:
 
 Information about the queries can be found in the [PgBouncer Documentation](http://pgbouncer.org/usage.html).
 
-## Requirements
+## Collected metrics
 
-- PgBouncer v1.8.0+.
-- A user with `stats_users` permissions to query your PgBouncer instance.
+Metrics grouped by *scope*.
+
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### global
+
+These metrics refer to the entire monitored application.
+
+This scope has no labels.
+
+Metrics:
+
+| Metric                                   | Dimensions |    Unit    |
+|------------------------------------------|:----------:|:----------:|
+| pgbouncer.client_connections_utilization |    used    | percentage |
+
+### database
+
+These metrics refer to the database.
+
+Labels:
+
+| Label             | Description            |
+|-------------------|------------------------|
+| database          | database name          |
+| postgres_database | Postgres database name |
+
+Metrics:
+
+| Metric                                      |            Dimensions             |      Unit      |
+|---------------------------------------------|:---------------------------------:|:--------------:|
+| pgbouncer.db_client_connections             |    active, waiting, cancel_req    |  connections   |
+| pgbouncer.db_server_connections             | active, idle, used, tested, login |  connections   |
+| pgbouncer.db_server_connections_utilization |               used                |   percentage   |
+| pgbouncer.db_clients_wait_time              |               time                |    seconds     |
+| pgbouncer.db_client_max_wait_time           |               time                |    seconds     |
+| pgbouncer.db_transactions                   |           transactions            | transactions/s |
+| pgbouncer.db_transactions_time              |               time                |    seconds     |
+| pgbouncer.db_transaction_avg_time           |               time                |    seconds     |
+| pgbouncer.db_queries                        |              queries              |   queries/s    |
+| pgbouncer.db_queries_time                   |               time                |    seconds     |
+| pgbouncer.db_query_avg_time                 |               time                |    seconds     |
+| pgbouncer.db_network_io                     |          received, sent           |      B/s       |
+
+## Setup
+
+### Prerequisites
+
+#### Create netdata user
+
+Create a user with `stats_users` permissions to query your PgBouncer instance.
 
 To create the `netdata` user:
 
@@ -52,63 +93,102 @@ To create the `netdata` user:
 
   When it prompts for a password, enter the password you added to `userlist.txt`.
 
-## Metrics
+### Configuration
 
-All metrics have "pgbouncer." prefix.
+#### File
 
-Labels per scope:
+The configuration file name is `go.d/postgresql.conf`.
 
-- global: no labels.
-- database: database, postgres_database.
+The file format is YAML. Generally, the format is:
 
-| Metric                            |  Scope   |            Dimensions             |     Units      |
-|-----------------------------------|:--------:|:---------------------------------:|:--------------:|
-| client_connections_utilization    |  global  |               used                |   percentage   |
-| db_client_connections             | database |    active, waiting, cancel_req    |  connections   |
-| db_server_connections             | database | active, idle, used, tested, login |  connections   |
-| db_server_connections_utilization | database |               used                |   percentage   |
-| db_clients_wait_time              | database |               time                |    seconds     |
-| db_client_max_wait_time           | database |               time                |    seconds     |
-| db_transactions                   | database |           transactions            | transactions/s |
-| db_transactions_time              | database |               time                |    seconds     |
-| db_transaction_avg_time           | database |               time                |    seconds     |
-| db_queries                        | database |              queries              |   queries/s    |
-| db_queries_time                   | database |               time                |    seconds     |
-| db_query_avg_time                 | database |               time                |    seconds     |
-| db_network_io                     | database |          received, sent           |      B/s       |
-
-## Configuration
-
-Edit the `go.d/pgbouncer.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
-
-```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/pgbouncer.conf
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
 ```
 
-DSN (Data Source Name) may either be in URL format or key=word format.
-See [Connection Strings](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) for details.
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+
+```bash
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
+sudo ./edit-config go.d/postgresql.conf
+```
+
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|        Name         | Description                                                                                                                             |                        Default                        | Required |
+|:-------------------:|-----------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                                              |                           5                           |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                                                      |                           0                           |          |
+|         dsn         | PgBouncer server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). | postgres://postgres:postgres@127.0.0.1:6432/pgbouncer |   yes    |
+|       timeout       | Query timeout in seconds.                                                                                                               |                           1                           |          |
+
+</details>
+
+#### Examples
+
+##### TCP socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
+```
+
+</details>
+
+##### Unix socket
+
+An example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    dsn: 'host=/tmp dbname=pgbouncer user=postgres port=6432'
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Local and remote instances.
+
+<details>
+<summary>Config</summary>
 
 ```yaml
 jobs:
   - name: local
     dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
 
-  - name: local
-    dsn: 'host=/tmp dbname=pgbouncer user=postgres port=6432'
-
   - name: remote
     dsn: 'postgres://postgres:postgres@203.0.113.10:6432/pgbouncer'
 ```
 
-For all available options see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/pgbouncer.conf).
+</details>
 
 ## Troubleshooting
 
-To troubleshoot issues with the `pgbouncer` collector, run the `go.d.plugin` with the debug option enabled. The output
-should give you clues as to why the collector isn't working.
+### Debug mode
+
+To troubleshoot issues with the `postgresql` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
@@ -126,5 +206,5 @@ should give you clues as to why the collector isn't working.
 - Run the `go.d.plugin` to debug the collector:
 
   ```bash
-  ./go.d.plugin -d -m pgbouncer
+  ./go.d.plugin -d -m postgresql
   ```
