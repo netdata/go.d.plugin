@@ -1,72 +1,45 @@
-<!--
-title: "phpDaemon monitoring with Netdata"
-description: "Monitor the health and performance of phpDaemon workers with zero configuration, per-second metric granularity, and interactive visualizations."
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/phpdaemon/README.md"
-sidebar_label: "phpDaemon"
-learn_status: "Published"
-learn_topic_type: "References"
-learn_rel_path: "Integrations/Monitor/Apm"
--->
-
 # phpDaemon collector
 
-[`phpDaemon`](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network
+## Overview
+
+[phpDaemon](https://github.com/kakserpom/phpdaemon) is an asynchronous server-side framework for Web and network
 applications implemented in PHP using libevent.
 
-This module collects `phpdaemon` workers statistics via http.
+This collector monitors metrics from one or more phpDaemon instances, depending on your configuration.
 
-## Requirements
+## Collected metrics
 
-- `phpdaemon` with enabled `http` server.
-- statistics should be reported in `json` format.
+Metrics grouped by *scope*.
 
-## Metrics
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
 
-All metrics have "phpdaemon." prefix.
+### global
 
-| Metric        | Scope  |         Dimensions         |  Units  |
-|---------------|:------:|:--------------------------:|:-------:|
-| workers       | global |      alive, shutdown       | workers |
-| alive_workers | global |   idle, busy, reloading    | workers |
-| idle_workers  | global | preinit, init, initialized | workers |
-| uptime        | global |            time            | seconds |
+These metrics refer to the entire monitored application.
 
-## Charts
+This scope has no labels.
 
-It produces the following charts:
+Metrics:
 
-- Workers in `workers`
-- Alive Workers State in `workers`
-- Idle Workers State in `workers`
-- Uptime in `seconds`
+| Metric                  |         Dimensions         |  Unit   |
+|-------------------------|:--------------------------:|:-------:|
+| phpdaemon.workers       |      alive, shutdown       | workers |
+| phpdaemon.alive_workers |   idle, busy, reloading    | workers |
+| phpdaemon.idle_workers  | preinit, init, initialized | workers |
+| phpdaemon.uptime        |            time            | seconds |
 
-## Configuration
+## Setup
 
-Edit the `go.d/phpdaemon.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+### Prerequisites
 
-```bash
-cd /etc/netdata # Replace this path with your Netdata config directory
-sudo ./edit-config go.d/phpdaemon.conf
-```
+#### Enable phpDaemon's HTTP server
 
-Here is an example for 2 instances:
+Statistics expected to be in JSON format.
 
-```yaml
-jobs:
-  - name: local
-    url: http://127.0.0.1:8509/FullStatus
+<details>
+<summary>phpDaemon configuration</summary>
 
-  - name: remote
-    url: http://10.0.0.1:8509/FullStatus
-```
-
-For all available options please see
-module [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/phpdaemon.conf).
-
-## phpdaemon configuration
-
-Instruction from [@METAJIJI](https://github.com/METAJIJI)
+Instruction from [@METAJIJI](https://github.com/METAJIJI).
 
 For enable `phpd` statistics on http, you must enable the http server and write an application.
 
@@ -74,9 +47,9 @@ Application is important, because standalone
 application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php)
 provides statistics in html format and unusable for `netdata`.
 
-> /opt/phpdaemon/conf/phpd.conf
-
 ```php
+// /opt/phpdaemon/conf/phpd.conf
+
 path /opt/phpdaemon/conf/AppResolver.php;
 Pool:HTTPServer {
     privileged;
@@ -85,9 +58,9 @@ Pool:HTTPServer {
 }
 ```
 
-> /opt/phpdaemon/conf/AppResolver.php
-
 ```php
+// /opt/phpdaemon/conf/AppResolver.php
+
 <?php
 
 class MyAppResolver extends \PHPDaemon\Core\AppResolver {
@@ -101,9 +74,9 @@ class MyAppResolver extends \PHPDaemon\Core\AppResolver {
 return new MyAppResolver;
 ```
 
-> /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatus.php
-
 ```php
+/opt/phpdaemon/conf/PHPDaemon/Applications/FullStatus.php
+
 <?php
 namespace PHPDaemon\Applications;
 
@@ -114,9 +87,9 @@ class FullStatus extends \PHPDaemon\Core\AppInstance {
 }
 ```
 
-> /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatusRequest.php
-
 ```php
+// /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatusRequest.php
+
 <?php
 namespace PHPDaemon\Applications;
 
@@ -135,22 +108,150 @@ class FullStatusRequest extends Generic {
 }
 ```
 
+</details>
+
+### Configuration
+
+#### File
+
+The configuration file name is `go.d/phpdaemon.conf`.
+
+The file format is YAML. Generally, the format is:
+
+```yaml
+update_every: 1
+autodetection_retry: 0
+jobs:
+  - name: some_name1
+  - name: some_name1
+```
+
+You can edit the configuration file using the `edit-config` script from the
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+
+```bash
+cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
+sudo ./edit-config go.d/phpdaemon.conf
+```
+
+#### Options
+
+The following options can be defined globally: update_every, autodetection_retry.
+
+<details>
+<summary>Config options</summary>
+
+|         Name         | Description                                                                                               |             Default              | Required |
+|:--------------------:|-----------------------------------------------------------------------------------------------------------|:--------------------------------:|:--------:|
+|     update_every     | Data collection frequency.                                                                                |                1                 |          |
+| autodetection_retry  | Re-check interval in seconds. Zero means not to schedule re-check.                                        |                0                 |          |
+|         url          | Server URL.                                                                                               | http://127.0.0.1:8509/FullStatus |   yes    |
+|       timeout        | HTTP request timeout.                                                                                     |                2                 |          |
+|       username       | Username for basic HTTP authentication.                                                                   |                                  |          |
+|       password       | Password for basic HTTP authentication.                                                                   |                                  |          |
+|      proxy_url       | Proxy URL.                                                                                                |                                  |          |
+|    proxy_username    | Username for proxy basic HTTP authentication.                                                             |                                  |          |
+|    proxy_password    | Password for proxy basic HTTP authentication.                                                             |                                  |          |
+|        method        | HTTP request method.                                                                                      |               GET                |          |
+|         body         | HTTP request body.                                                                                        |                                  |          |
+|       headers        | HTTP request headers.                                                                                     |                                  |          |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects.                                  |                no                |          |
+|   tls_skip_verify    | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |                no                |          |
+|        tls_ca        | Certification authority that the client uses when verifying the server's certificates.                    |                                  |          |
+|       tls_cert       | Client TLS certificate.                                                                                   |                                  |          |
+|       tls_key        | Client TLS key.                                                                                           |                                  |          |
+
+</details>
+
+#### Examples
+
+##### Basic
+
+A basic example configuration.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8509/FullStatus
+```
+
+</details>
+
+##### HTTP authentication
+
+HTTP authentication.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8509/FullStatus
+    username: username
+    password: password
+```
+
+</details>
+
+##### HTTPS with self-signed certificate
+
+HTTPS with self-signed certificate.
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8509/FullStatus
+    tls_skip_verify: yes
+```
+
+</details>
+
+##### Multi-instance
+
+> **Note**: When you define multiple jobs, their names must be unique.
+
+Collecting metrics from local and remote instances.
+
+<details>
+<summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8509/FullStatus
+
+  - name: remote
+    url: http://192.0.2.1:8509/FullStatus
+```
+
+</details>
+
 ## Troubleshooting
 
-To troubleshoot issues with the `phpdaemon` collector, run the `go.d.plugin` with the debug option enabled. The output
-should give you clues as to why the collector isn't working.
+### Debug mode
 
-First, navigate to your plugins' directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on your
-system, open `netdata.conf` and look for the setting `plugins directory`. Once you're in the plugin's directory, switch
-to the `netdata` user.
+To troubleshoot issues with the `phpdaemon` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
-```bash
-cd /usr/libexec/netdata/plugins.d/
-sudo -u netdata -s
-```
+- Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
+  your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
 
-You can now run the `go.d.plugin` to debug the collector:
+  ```bash
+  cd /usr/libexec/netdata/plugins.d/
+  ```
 
-```bash
-./go.d.plugin -d -m phpdaemon
-```
+- Switch to the `netdata` user.
+
+  ```bash
+  sudo -u netdata -s
+  ```
+
+- Run the `go.d.plugin` to debug the collector:
+
+  ```bash
+  ./go.d.plugin -d -m phpdaemon
+  ```
