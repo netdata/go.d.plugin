@@ -201,7 +201,7 @@ system.
 
 #### File
 
-The configuration file name is `go.d/postgresql.conf`.
+The configuration file name is `go.d/postgres.conf`.
 
 The file format is YAML. Generally, the format is:
 
@@ -218,7 +218,7 @@ Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/c
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
-sudo ./edit-config go.d/postgresql.conf
+sudo ./edit-config go.d/postgres.conf
 ```
 
 #### Options
@@ -294,7 +294,7 @@ jobs:
 
 ### Debug mode
 
-To troubleshoot issues with the `postgresql` collector, run the `go.d.plugin` with the debug option enabled.
+To troubleshoot issues with the `postgres` collector, run the `go.d.plugin` with the debug option enabled.
 The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
@@ -313,5 +313,5 @@ The output should give you clues as to why the collector isn't working.
 - Run the `go.d.plugin` to debug the collector:
 
   ```bash
-  ./go.d.plugin -d -m postgresql
+  ./go.d.plugin -d -m postgres
   ```

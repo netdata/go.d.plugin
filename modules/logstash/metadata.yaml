@@ -1,11 +1,141 @@
+name: logstash
+title: Logstash collector
+overview:
+  application:
+    description: |
+      [Logstash](https://www.elastic.co/products/logstash) is an open-source data processing pipeline that allows you to
+      collect, process, and load data into Elasticsearch.
+  collector:
+    description: |
+      This collector monitors one or more Logstash instances, depending on your configuration.
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    options:
+      description: |
+        The following options can be defined globally: update_every, autodetection_retry.
+      folding:
+        title: Config options
+        enabled: true
+      list:
+        - name: update_every
+          description: Data collection frequency.
+          default: 1
+          required: false
+        - name: autodetection_retry
+          description: Re-check interval in seconds. Zero means not to schedule re-check.
+          default: 0
+          required: false
+        - name: url
+          description: Server URL.
+          default: http://localhost:9600
+          required: true
+        - name: timeout
+          description: HTTP request timeout.
+          default: 1
+          required: false
+        - name: username
+          description: Username for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: password
+          description: Password for basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_url
+          description: Proxy URL.
+          default: ""
+          required: false
+        - name: proxy_username
+          description: Username for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: proxy_password
+          description: Password for proxy basic HTTP authentication.
+          default: ""
+          required: false
+        - name: method
+          description: HTTP request method.
+          default: "GET"
+          required: false
+        - name: body
+          description: HTTP request body.
+          default: ""
+          required: false
+        - name: headers
+          description: HTTP request headers.
+          default: ""
+          required: false
+        - name: not_follow_redirects
+          description: Redirect handling policy. Controls whether the client follows redirects.
+          default: no
+          required: false
+        - name: tls_skip_verify
+          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
+          default: no
+          required: false
+        - name: tls_ca
+          description: Certification authority that the client uses when verifying the server's certificates.
+          default: ""
+          required: false
+        - name: tls_cert
+          description: Client TLS certificate.
+          default: ""
+          required: false
+        - name: tls_key
+          description: Client TLS key.
+          default: ""
+          required: false
+    examples:
+      folding:
+        title: Config
+        enabled: true
+      list:
+        - name: Basic
+          description: A basic example configuration.
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost:9600
+        - name: HTTP authentication
+          description: HTTP authentication.
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost:9600
+                username: username
+                password: password
+        - name: HTTPS with self-signed certificate
+          description: HTTPS and self-signed certificate.
+          data: |
+            jobs:
+              - name: local
+                url: https://localhost:9600
+                tls_skip_verify: yes
+        - name: Multi-instance
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
+          data: |
+            jobs:
+              - name: local
+                url: http://localhost:9600
+            
+              - name: remote
+                url: http://192.0.2.1:9600
+troubleshooting:
+  problems:
+    list: []
 metrics:
   folding:
     title: Metrics
     enabled: false
-  description: TBD
+  description: ""
   scope:
     - name: global
-      description: TBD
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: logstash.jvm_threads
@@ -78,10 +208,10 @@ metrics:
           dimensions:
             - name: uptime
     - name: pipeline
-      description: TBD
+      description: These metrics refer to the pipeline.
       labels:
         - name: pipeline
-          description: TBD
+          description: pipeline name
       metrics:
         - name: logstash.pipeline_event
           description: Pipeline Events
