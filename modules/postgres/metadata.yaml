@@ -1,4 +1,4 @@
-name: postgresql
+name: postgres
 title: PostgreSQL collector
 overview:
   application:
