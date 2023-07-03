@@ -160,7 +160,18 @@ func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFa
 		if m.Untyped() == nil || math.IsNaN(m.Untyped().Value()) {
 			continue
 		}
-		if strings.HasSuffix(mf.Name(), "_total") {
+
+		if p.isFallbackTypeGauge(mf.Name()) {
+			id := mf.Name() + p.joinLabels(m.Labels())
+
+			if !p.cache.hasP(id) {
+				p.addGaugeChart(id, mf.Name(), mf.Help(), m.Labels())
+			}
+
+			mx[id] = int64(m.Untyped().Value() * precision)
+		}
+
+		if p.isFallbackTypeCounter(mf.Name()) || strings.HasSuffix(mf.Name(), "_total") {
 			id := mf.Name() + p.joinLabels(m.Labels())
 
 			if !p.cache.hasP(id) {
@@ -170,6 +181,14 @@ func (p *Prometheus) collectUntyped(mx map[string]int64, mf *prometheus.MetricFa
 			mx[id] = int64(m.Untyped().Value() * precision)
 		}
 	}
+}
+
+func (p *Prometheus) isFallbackTypeGauge(name string) bool {
+	return p.fallbackType.gauge != nil && p.fallbackType.gauge.MatchString(name)
+}
+
+func (p *Prometheus) isFallbackTypeCounter(name string) bool {
+	return p.fallbackType.counter != nil && p.fallbackType.counter.MatchString(name)
 }
 
 func (p *Prometheus) joinLabels(labels labels.Labels) string {

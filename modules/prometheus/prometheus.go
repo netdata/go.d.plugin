@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -47,6 +48,10 @@ type Config struct {
 	ExpectedPrefix string `yaml:"expected_prefix"`
 	MaxTS          int    `yaml:"max_time_series"`
 	MaxTSPerMetric int    `yaml:"max_time_series_per_metric"`
+	FallbackType   struct {
+		Counter []string `yaml:"counter"`
+		Gauge   []string `yaml:"gauge"`
+	} `yaml:"fallback_type"`
 }
 
 type Prometheus struct {
@@ -57,6 +62,11 @@ type Prometheus struct {
 
 	prom  prometheus.Prometheus
 	cache *cache
+
+	fallbackType struct {
+		counter matcher.Matcher
+		gauge   matcher.Matcher
+	}
 }
 
 func (p *Prometheus) Init() bool {
@@ -71,6 +81,20 @@ func (p *Prometheus) Init() bool {
 		return false
 	}
 	p.prom = prom
+
+	m, err := p.initFallbackTypeMatcher(p.FallbackType.Counter)
+	if err != nil {
+		p.Errorf("init counter fallback type matcher: %v", err)
+		return false
+	}
+	p.fallbackType.counter = m
+
+	m, err = p.initFallbackTypeMatcher(p.FallbackType.Gauge)
+	if err != nil {
+		p.Errorf("init counter fallback type matcher: %v", err)
+		return false
+	}
+	p.fallbackType.gauge = m
 
 	return true
 }

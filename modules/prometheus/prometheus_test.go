@@ -490,6 +490,60 @@ test_histogram_no_meta_1_duration_seconds_count{label1="value1"} 6
 				},
 			},
 		},
+		"match Untyped as Gauge": {
+			prepare: func() *Prometheus {
+				prom := New()
+				prom.FallbackType.Gauge = []string{"test_gauge_no_meta*"}
+				return prom
+			},
+			steps: []testCaseStep{
+				{
+					desc: "Two first seen series, meta series processed as Gauge",
+					input: `
+# HELP test_gauge_metric_1 Test Untyped Metric 1
+# TYPE test_gauge_metric_1 gauge
+test_gauge_metric_1{label1="value1"} 11
+test_gauge_metric_1{label1="value2"} 12
+test_gauge_no_meta_metric_1{label1="value1"} 11
+test_gauge_no_meta_metric_1{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_gauge_metric_1-label1=value1":         11000,
+						"test_gauge_metric_1-label1=value2":         12000,
+						"test_gauge_no_meta_metric_1-label1=value1": 11000,
+						"test_gauge_no_meta_metric_1-label1=value2": 12000,
+					},
+					wantCharts: 4,
+				},
+			},
+		},
+		"match Untyped as Counter": {
+			prepare: func() *Prometheus {
+				prom := New()
+				prom.FallbackType.Counter = []string{"test_gauge_no_meta*"}
+				return prom
+			},
+			steps: []testCaseStep{
+				{
+					desc: "Two first seen series, meta series processed as Counter",
+					input: `
+# HELP test_gauge_metric_1 Test Untyped Metric 1
+# TYPE test_gauge_metric_1 gauge
+test_gauge_metric_1{label1="value1"} 11
+test_gauge_metric_1{label1="value2"} 12
+test_gauge_no_meta_metric_1{label1="value1"} 11
+test_gauge_no_meta_metric_1{label1="value2"} 12
+`,
+					wantCollected: map[string]int64{
+						"test_gauge_metric_1-label1=value1":         11000,
+						"test_gauge_metric_1-label1=value2":         12000,
+						"test_gauge_no_meta_metric_1-label1=value1": 11000,
+						"test_gauge_no_meta_metric_1-label1=value2": 12000,
+					},
+					wantCharts: 4,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
