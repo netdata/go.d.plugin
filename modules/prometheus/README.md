@@ -103,6 +103,7 @@ It has built-in grouping logic based on the [type of metrics](https://prometheus
 
 Untyped metrics (have no '# TYPE') processing:
 
+- As Counter or Gauge depending on pattern match when 'fallback_type' is used.
 - As Counter if it has suffix '_total'.
 - As Summary if it has 'quantile' label.
 - As Histogram if it has 'le' label.
