@@ -4,6 +4,7 @@ package elasticsearch
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -31,17 +32,25 @@ func New() *Elasticsearch {
 					Timeout: web.Duration{Duration: time.Second * 5},
 				},
 			},
+			ClusterMode: false,
+
 			DoNodeStats:     true,
 			DoClusterStats:  true,
 			DoClusterHealth: true,
 			DoIndicesStats:  false,
 		},
-		indices: make(map[string]bool),
+
+		charts:                     &module.Charts{},
+		addClusterHealthChartsOnce: &sync.Once{},
+		addClusterStatsChartsOnce:  &sync.Once{},
+		nodes:                      make(map[string]bool),
+		indices:                    make(map[string]bool),
 	}
 }
 
 type Config struct {
 	web.HTTP        `yaml:",inline"`
+	ClusterMode     bool `yaml:"cluster_mode"`
 	DoNodeStats     bool `yaml:"collect_node_stats"`
 	DoClusterHealth bool `yaml:"collect_cluster_health"`
 	DoClusterStats  bool `yaml:"collect_cluster_stats"`
@@ -55,6 +64,12 @@ type Elasticsearch struct {
 	httpClient *http.Client
 	charts     *module.Charts
 
+	clusterName string
+
+	addClusterHealthChartsOnce *sync.Once
+	addClusterStatsChartsOnce  *sync.Once
+
+	nodes   map[string]bool
 	indices map[string]bool
 }
 
@@ -72,21 +87,10 @@ func (es *Elasticsearch) Init() bool {
 	}
 	es.httpClient = httpClient
 
-	charts, err := es.initCharts()
-	if err != nil {
-		es.Errorf("init charts: %v", err)
-		return false
-	}
-	es.charts = charts
-
 	return true
 }
 
 func (es *Elasticsearch) Check() bool {
-	if err := es.pingElasticsearch(); err != nil {
-		es.Error(err)
-		return false
-	}
 	return len(es.Collect()) > 0
 }
 
