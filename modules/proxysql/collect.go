@@ -152,7 +152,7 @@ func (p *ProxySQL) collectStatsMySQLConnectionPool(mx map[string]int64) error {
 	var px string
 	return p.doQuery(q, func(column, value string, rowEnd bool) {
 		switch column {
-		case "hg":
+		case "hg", "hostgroup":
 			hg = value
 		case "srv_host":
 			host = value
