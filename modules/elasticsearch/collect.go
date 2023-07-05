@@ -4,6 +4,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -18,12 +19,21 @@ import (
 
 const (
 	urlPathLocalNodeStats = "/_nodes/_local/stats"
+	urlPathNodesStats     = "/_nodes/stats"
 	urlPathIndicesStats   = "/_cat/indices"
 	urlPathClusterHealth  = "/_cluster/health"
 	urlPathClusterStats   = "/_cluster/stats"
 )
 
 func (es *Elasticsearch) collect() (map[string]int64, error) {
+	if es.clusterName == "" {
+		name, err := es.getClusterName()
+		if err != nil {
+			return nil, err
+		}
+		es.clusterName = name
+	}
+
 	ms := es.scrapeElasticsearch()
 	if ms.empty() {
 		return nil, nil
@@ -31,7 +41,7 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 
 	mx := make(map[string]int64)
 
-	es.collectLocalNodeStats(mx, ms)
+	es.collectNodesStats(mx, ms)
 	es.collectClusterHealth(mx, ms)
 	es.collectClusterStats(mx, ms)
 	es.collectLocalIndicesStats(mx, ms)
@@ -39,18 +49,41 @@ func (es *Elasticsearch) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (es *Elasticsearch) collectLocalNodeStats(mx map[string]int64, ms *esMetrics) {
-	if !ms.hasLocalNodeStats() {
+func (es *Elasticsearch) collectNodesStats(mx map[string]int64, ms *esMetrics) {
+	if !ms.hasNodesStats() {
 		return
 	}
-	merge(mx, stm.ToMap(ms.LocalNodeStats), "node")
+
+	seen := make(map[string]bool)
+
+	for nodeID, node := range ms.NodesStats.Nodes {
+		seen[nodeID] = true
+
+		if !es.nodes[nodeID] {
+			es.nodes[nodeID] = true
+			es.addNodeCharts(nodeID, node)
+		}
+
+		merge(mx, stm.ToMap(node), "node_"+nodeID)
+	}
+
+	for nodeID := range es.nodes {
+		if !seen[nodeID] {
+			delete(es.nodes, nodeID)
+			es.removeNodeCharts(nodeID)
+		}
+	}
 }
 
 func (es *Elasticsearch) collectClusterHealth(mx map[string]int64, ms *esMetrics) {
 	if !ms.hasClusterHealth() {
 		return
 	}
+
+	es.addClusterHealthChartsOnce.Do(es.addClusterHealthCharts)
+
 	merge(mx, stm.ToMap(ms.ClusterHealth), "cluster")
+
 	mx["cluster_status_green"] = boolToInt(ms.ClusterHealth.Status == "green")
 	mx["cluster_status_yellow"] = boolToInt(ms.ClusterHealth.Status == "yellow")
 	mx["cluster_status_red"] = boolToInt(ms.ClusterHealth.Status == "red")
@@ -60,6 +93,9 @@ func (es *Elasticsearch) collectClusterStats(mx map[string]int64, ms *esMetrics)
 	if !ms.hasClusterStats() {
 		return
 	}
+
+	es.addClusterStatsChartsOnce.Do(es.addClusterStatsCharts)
+
 	merge(mx, stm.ToMap(ms.ClusterStats), "cluster")
 }
 
@@ -78,18 +114,20 @@ func (es *Elasticsearch) collectLocalIndicesStats(mx map[string]int64, ms *esMet
 			es.addIndexCharts(v.Index)
 		}
 
-		mx[indexDimID(v.Index, "health_green")] = boolToInt(v.Health == "green")
-		mx[indexDimID(v.Index, "health_yellow")] = boolToInt(v.Health == "yellow")
-		mx[indexDimID(v.Index, "health_red")] = boolToInt(v.Health == "red")
-		mx[indexDimID(v.Index, "shards_count")] = strToInt(v.Rep)
-		mx[indexDimID(v.Index, "docs_count")] = strToInt(v.DocsCount)
-		mx[indexDimID(v.Index, "store_size_in_bytes")] = convertIndexStoreSizeToBytes(v.StoreSize)
+		px := fmt.Sprintf("node_index_%s_stats_", v.Index)
+
+		mx[px+"health_green"] = boolToInt(v.Health == "green")
+		mx[px+"health_yellow"] = boolToInt(v.Health == "yellow")
+		mx[px+"health_red"] = boolToInt(v.Health == "red")
+		mx[px+"shards_count"] = strToInt(v.Rep)
+		mx[px+"docs_count"] = strToInt(v.DocsCount)
+		mx[px+"store_size_in_bytes"] = convertIndexStoreSizeToBytes(v.StoreSize)
 	}
 
-	for v := range es.indices {
-		if !seen[v] {
-			delete(es.indices, v)
-			es.removeIndexCharts(v)
+	for index := range es.indices {
+		if !seen[index] {
+			delete(es.indices, index)
+			es.removeIndexCharts(index)
 		}
 	}
 }
@@ -100,7 +138,7 @@ func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
 
 	if es.DoNodeStats {
 		wg.Add(1)
-		go func() { defer wg.Done(); es.scrapeLocalNodeStats(ms) }()
+		go func() { defer wg.Done(); es.scrapeNodesStats(ms) }()
 	}
 	if es.DoClusterHealth {
 		wg.Add(1)
@@ -110,7 +148,7 @@ func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
 		wg.Add(1)
 		go func() { defer wg.Done(); es.scrapeClusterStats(ms) }()
 	}
-	if es.DoIndicesStats {
+	if !es.ClusterMode && es.DoIndicesStats {
 		wg.Add(1)
 		go func() { defer wg.Done(); es.scrapeLocalIndicesStats(ms) }()
 	}
@@ -119,21 +157,21 @@ func (es *Elasticsearch) scrapeElasticsearch() *esMetrics {
 	return ms
 }
 
-func (es *Elasticsearch) scrapeLocalNodeStats(ms *esMetrics) {
+func (es *Elasticsearch) scrapeNodesStats(ms *esMetrics) {
 	req, _ := web.NewHTTPRequest(es.Request)
-	req.URL.Path = urlPathLocalNodeStats
-
-	var stats struct {
-		Nodes map[string]esNodeStats
+	if es.ClusterMode {
+		req.URL.Path = urlPathNodesStats
+	} else {
+		req.URL.Path = urlPathLocalNodeStats
 	}
+
+	var stats esNodesStats
 	if err := es.doOKDecode(req, &stats); err != nil {
 		es.Warning(err)
 		return
 	}
-	for _, node := range stats.Nodes {
-		ms.LocalNodeStats = &node
-		break
-	}
+
+	ms.NodesStats = &stats
 }
 
 func (es *Elasticsearch) scrapeClusterHealth(ms *esMetrics) {
@@ -145,6 +183,7 @@ func (es *Elasticsearch) scrapeClusterHealth(ms *esMetrics) {
 		es.Warning(err)
 		return
 	}
+
 	ms.ClusterHealth = &health
 }
 
@@ -157,6 +196,7 @@ func (es *Elasticsearch) scrapeClusterStats(ms *esMetrics) {
 		es.Warning(err)
 		return
 	}
+
 	ms.ClusterStats = &stats
 }
 
@@ -170,14 +210,26 @@ func (es *Elasticsearch) scrapeLocalIndicesStats(ms *esMetrics) {
 		es.Warning(err)
 		return
 	}
+
 	ms.LocalIndicesStats = removeSystemIndices(stats)
 }
 
-func (es *Elasticsearch) pingElasticsearch() error {
+func (es *Elasticsearch) getClusterName() (string, error) {
 	req, _ := web.NewHTTPRequest(es.Request)
 
-	var info struct{ Name string }
-	return es.doOKDecode(req, &info)
+	var info struct {
+		ClusterName string `json:"cluster_name"`
+	}
+
+	if err := es.doOKDecode(req, &info); err != nil {
+		return "", err
+	}
+
+	if info.ClusterName == "" {
+		return "", errors.New("empty cluster name")
+	}
+
+	return info.ClusterName, nil
 }
 
 func (es *Elasticsearch) doOKDecode(req *http.Request, in interface{}) error {
@@ -202,10 +254,6 @@ func closeBody(resp *http.Response) {
 		_, _ = io.Copy(io.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}
-}
-
-func indexDimID(name, metric string) string {
-	return fmt.Sprintf("node_index_%s_stats_%s", name, metric)
 }
 
 func convertIndexStoreSizeToBytes(size string) int64 {

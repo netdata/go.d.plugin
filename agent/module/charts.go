@@ -198,7 +198,7 @@ func (c *Charts) Add(charts ...*Chart) error {
 	for _, chart := range charts {
 		err := checkChart(chart)
 		if err != nil {
-			return fmt.Errorf("error on adding chart : %s", err)
+			return fmt.Errorf("error on adding chart '%s' : %s", chart.ID, err)
 		}
 		if chart := c.Get(chart.ID); chart != nil && !chart.remove {
 			return fmt.Errorf("error on adding chart : '%s' is already in charts", chart.ID)
