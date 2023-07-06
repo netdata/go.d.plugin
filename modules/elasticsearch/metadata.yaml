@@ -128,7 +128,7 @@ setup:
               - name: local
                 url: http://127.0.0.1:9200
         - name: Cluster mode
-          description: A basic example configuration.
+          description: Cluster mode example configuration.
           data: |
             jobs:
               - name: local
@@ -143,7 +143,7 @@ setup:
                 username: username
                 password: password
         - name: HTTPS with self-signed certificate
-          description: Apache with enabled HTTPS and self-signed certificate.
+          description: Elasticsearch with enabled HTTPS and self-signed certificate.
           data: |
             jobs:
               - name: local
