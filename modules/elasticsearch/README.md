@@ -198,7 +198,7 @@ jobs:
 
 ##### Cluster mode
 
-A basic example configuration.
+Cluster mode example configuration.
 <details>
 <summary>Config</summary>
 
@@ -229,7 +229,7 @@ jobs:
 
 ##### HTTPS with self-signed certificate
 
-Apache with enabled HTTPS and self-signed certificate.
+Elasticsearch with enabled HTTPS and self-signed certificate.
 <details>
 <summary>Config</summary>
 
@@ -287,3 +287,4 @@ The output should give you clues as to why the collector isn't working.
   ```bash
   ./go.d.plugin -d -m elasticsearch
   ```
+
