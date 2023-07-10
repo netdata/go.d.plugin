@@ -1,5 +1,5 @@
 module_name: apache
-plugin_name: go
+plugin_name: go.d.plugin
 monitored_instance:
   name: Apache
   link: https://httpd.apache.org/
