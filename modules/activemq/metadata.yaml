@@ -1,16 +1,36 @@
-name: activemq
-title: ActiveMQ collector
+module_name: activemq
+plugin_name: go
+monitored_instance:
+  name: ActiveMQ
+  link: https://activemq.apache.org/
+alternative_monitored_instances: []
+keywords:
+  - message broker
 overview:
-  application:
-    description: |
-      [ActiveMQ](https://activemq.apache.org/) is an open source message broker written in Java together with a full Java Message Service client.
-  collector:
-    description: |
-      This collector monitors queues and topics metrics using ActiveMQ Console API.
+  data_collection:
+    metrics_description: This collector monitors queues and topics.
+    method_description:  It collects metrics by using the ActiveMQ Console API.
+  additional_permissions:
+    description: ""
+  default_behavior:
+    auto_detection:
+      description: This collector will detect any instance running on `http://localhost:8161` with webadmin root path `admin`.
+    limits:
+      description: ""
+    performance_impact:
+      description: ""
+  multi-instance: true
+  supported_platforms:
+    include:
+      - ""
+    exclude:
+      - ""
 setup:
   prerequisites:
     list: []
   configuration:
+    file:
+      name: go.d/activemq.conf
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -20,112 +40,106 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
+          default_value: 0
           required: false
         - name: url
           description: Server URL.
-          default: http://localhost:8161
+          default_value: http://localhost:8161
           required: true
         - name: webadmin
           description: Webadmin root path.
-          default: admin
+          default_value: admin
           required: true
         - name: max_queues
           description: Maximum number of concurrently collected queues.
-          default: 50
+          default_value: 50
           required: false
         - name: max_topics
           description: Maximum number of concurrently collected topics.
-          default: 50
+          default_value: 50
           required: false
         - name: queues_filter
           description: Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
-          default: ""
+          default_value: ""
           required: false
         - name: topics_filter
           description: Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
-          default: ""
+          default_value: ""
           required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default_value: "GET"
           required: false
         - name: timeout
           description: HTTP request timeout.
-          default: 1
+          default_value: 1
           required: false
         - name: body
           description: HTTP request body.
-          default: ""
+          default_value: ""
           required: false
         - name: headers
           description: HTTP request headers.
-          default: ""
+          default_value: ""
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default_value: no
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default_value: no
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client TLS key.
-          default: ""
+          default_value: ""
           required: false
     examples:
-      folding:
-        title: Config
-        enabled: true
       list:
-        - name: Basic
+        - folding:
+            title: Config
+            enabled: false
+          name: Basic
           description: A basic example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
-        - name: HTTP authentication
-          description: Basic HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8161
-                webadmin: admin
-                username: foo
-                password: bar
-        - name: Filters and limits
+        - folding:
+            title: Config
+            enabled: true
+          name: Filters and limits
           description: Using filters and limits for queues and topics.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8161
@@ -134,12 +148,15 @@ setup:
                 max_topics: 100
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
-        - name: Multi-instance
+        - folding:
+            title: Config
+            enabled: true
+          name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
             Collecting metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8161
@@ -151,29 +168,42 @@ setup:
 troubleshooting:
   problems:
     list: []
+info_provided_to_referring_integrations:
+  description: ""
+related_resources:
+  integrations:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: activemq.messages
+          availability: []
           description: Messaged
           unit: messages/s
+          chart_type: line
           dimensions:
             - name: enqueued
             - name: dequeued
         - name: activemq.unprocessed_messages
+          availability: []
           description: Unprocessed Messages
           unit: messages
+          chart_type: line
           dimensions:
             - name: unprocessed
         - name: activemq.consumers
+          availability: []
           description: Consumers
           unit: consumers
+          chart_type: line
           dimensions:
             - name: consumers
