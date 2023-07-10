@@ -22,7 +22,11 @@ overview:
   default_behavior:
     auto_detection:
       description: |
-        By default, this collector will auto-detect instances exposing their metrics to `http://127.0.0.1:7072/metrics`.
+        This collector discovers instances running on the local host that provide metrics on port 7072.
+        
+        On startup, it tries to collect metrics from:
+        
+        - http://127.0.0.1:7072/metrics
     limits:
       description: ""
     performance_impact:
