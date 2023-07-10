@@ -136,6 +136,18 @@ setup:
               - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
+        - name: HTTP authentication
+          folding:
+            title: Config
+            enabled: true
+          description: Basic HTTP authentication.
+          config: |
+            jobs:
+              - name: local
+                url: http://127.0.0.1:8161
+                webadmin: admin
+                username: foo
+                password: bar
         - name: Filters and limits
           folding:
             title: Config
