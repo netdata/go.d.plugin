@@ -152,7 +152,6 @@ setup:
           folding:
             title: Config
             enabled: true
-
           description: Using filters and limits for queues and topics.
           config: |
             jobs:
