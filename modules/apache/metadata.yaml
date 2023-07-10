@@ -1,20 +1,47 @@
-name: apache
-title: Apache collector
+module_name: apache
+plugin_name: go.d.plugin
+monitored_instance:
+  name: Apache
+  link: https://httpd.apache.org/
+alternative_monitored_instances: []
+keywords:
+  - "webserver"
 overview:
-  application:
-    description: |
-      [Apache](https://httpd.apache.org/) is an open-source HTTP server for modern operating systems including UNIX and Windows.
-  collector:
-    description: |
-      This collector monitors metrics from one or more Apache servers, depending on your configuration.
+  data_collection:
+    metrics_description: |
+      This collector monitors the activity and performance of the Apache server: connections, workers, requests and more.
+    method_description: |
+      It collects metrics by sending HTTP requests to the Apache location [server-status](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
+  supported_platforms:
+    include:
+      - ""
+    exclude:
+      - ""
+  multi-instance: true
+  additional_permissions:
+    description: ""
+  default_behavior:
+    auto_detection:
+      description: |
+        This collector discovers instances running on the local host that provide metrics on port 80.
+        On startup, it tries to collect metrics from:
+        
+        - `http://localhost/server-status?auto`
+        - `http://127.0.0.1/server-status?auto`
+    limits:
+      description: ""
+    performance_impact:
+      description: ""
 setup:
   prerequisites:
     list:
       - title: Enable Apache status support
-        text: |
+        description: |
           - Enable and configure [status_module](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
           - Ensure that you have [ExtendedStatus](https://httpd.apache.org/docs/2.4/mod/mod_status.html#troubleshoot) set on (enabled by default since Apache v2.3.6).
   configuration:
+    file:
+      name: go.d/apache.conf
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -24,104 +51,113 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
+          default_value: 0
           required: false
         - name: url
           description: Server URL.
-          default: http://127.0.0.1/server-status?auto
+          default_value: http://127.0.0.1/server-status?auto
           required: true
         - name: timeout
           description: HTTP request timeout.
-          default: 1
+          default_value: 1
           required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_url
           description: Proxy URL.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default_value: "GET"
           required: false
         - name: body
           description: HTTP request body.
-          default: ""
+          default_value: ""
           required: false
         - name: headers
           description: HTTP request headers.
-          default: ""
+          default_value: ""
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default_value: no
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default_value: no
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client TLS key.
-          default: ""
+          default_value: ""
           required: false
     examples:
-      folding:
-        title: Config
-        enabled: true
       list:
         - name: Basic
+          folding:
+            title: Config
+            enabled: false
           description: A basic example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1/server-status?auto
         - name: HTTP authentication
+          folding:
+            title: Config
+            enabled: true
           description: Basic HTTP authentication.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1/server-status?auto
                 username: username
                 password: password
         - name: HTTPS with self-signed certificate
+          folding:
+            title: Config
+            enabled: true
           description: Apache with enabled HTTPS and self-signed certificate.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: https://127.0.0.1/server-status?auto
                 tls_skip_verify: yes
         - name: Multi-instance
+          folding:
+            title: Config
+            enabled: true
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
             Collecting metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://127.0.0.1/server-status?auto
@@ -131,6 +167,18 @@ setup:
 troubleshooting:
   problems:
     list: []
+related_resources:
+  integrations:
+    list:
+      - plugin_name: go.d.plugin
+        module_name: weblog
+      - plugin_name: go.d.plugin
+        module_name: httpcheck
+      - plugin_name: apps.plugin
+        module_name: apps
+info_provided_to_referring_integrations:
+  description: ""
+alerts: []
 metrics:
   folding:
     title: Metrics
@@ -140,7 +188,7 @@ metrics:
   availability:
     - Basic
     - Extended
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -151,6 +199,7 @@ metrics:
             - Extended
           description: Connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: connections
         - name: apache.conns_async
@@ -159,6 +208,7 @@ metrics:
             - Extended
           description: Active Connections
           unit: connections
+          chart_type: stacked
           dimensions:
             - name: keepalive
             - name: closing
@@ -169,6 +219,7 @@ metrics:
             - Extended
           description: Workers Threads
           unit: workers
+          chart_type: stacked
           dimensions:
             - name: idle
             - name: busy
@@ -178,6 +229,7 @@ metrics:
             - Extended
           description: Scoreboard
           unit: connections
+          chart_type: line
           dimensions:
             - name: waiting
             - name: starting
@@ -195,6 +247,7 @@ metrics:
             - Extended
           description: Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: apache.net
@@ -202,6 +255,7 @@ metrics:
             - Extended
           description: Bandwidth
           unit: kilobit/s
+          chart_type: area
           dimensions:
             - name: sent
         - name: apache.reqpersec
@@ -209,6 +263,7 @@ metrics:
             - Extended
           description: Lifetime Average Number Of Requests Per Second
           unit: requests/s
+          chart_type: area
           dimensions:
             - name: requests
         - name: apache.bytespersec
@@ -216,6 +271,7 @@ metrics:
             - Extended
           description: Lifetime Average Number Of Bytes Served Per Second
           unit: KiB/s
+          chart_type: area
           dimensions:
             - name: served
         - name: apache.bytesperreq
@@ -223,6 +279,7 @@ metrics:
             - Extended
           description: Lifetime Average Response Size
           unit: KiB
+          chart_type: area
           dimensions:
             - name: size
         - name: apache.uptime
@@ -230,5 +287,6 @@ metrics:
             - Extended
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime
