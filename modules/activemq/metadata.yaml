@@ -186,7 +186,13 @@ info_provided_to_referring_integrations:
   description: ""
 related_resources:
   integrations:
-    list: []
+    list:
+      - plugin_name: go
+        module_name: weblog
+      - plugin_name: go
+        module_name: httpcheck
+      - plugin_name: apps
+        module_name: apps
 alerts: []
 metrics:
   folding:
