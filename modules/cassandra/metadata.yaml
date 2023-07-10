@@ -1,5 +1,5 @@
 module_name: cassandra
-plugin_name: go.d.plugin
+plugin_name: go
 monitored_instance:
   name: Cassandra
   link: https://cassandra.apache.org/_/index.html
