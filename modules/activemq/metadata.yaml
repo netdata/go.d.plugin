@@ -9,7 +9,7 @@ keywords:
 overview:
   data_collection:
     metrics_description: This collector monitors queues and topics.
-    method_description:  It collects metrics by using the ActiveMQ Console API.
+    method_description: It collects metrics by using the ActiveMQ Console API.
   additional_permissions:
     description: ""
   default_behavior:
@@ -63,11 +63,13 @@ setup:
           default_value: 50
           required: false
         - name: queues_filter
-          description: Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
+          description: |
+            Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
           default_value: ""
           required: false
         - name: topics_filter
-          description: Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
+          description: |
+            Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
           default_value: ""
           required: false
         - name: username
@@ -124,20 +126,21 @@ setup:
           required: false
     examples:
       list:
-        - folding:
+        - name: Basic
+          folding:
             title: Config
             enabled: false
-          name: Basic
           description: A basic example configuration.
           config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
-        - folding:
+        - name: Filters and limits
+          folding:
             title: Config
             enabled: true
-          name: Filters and limits
+
           description: Using filters and limits for queues and topics.
           config: |
             jobs:
@@ -148,10 +151,10 @@ setup:
                 max_topics: 100
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
-        - folding:
+        - name: Multi-instance
+          folding:
             title: Config
             enabled: true
-          name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
