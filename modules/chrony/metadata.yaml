@@ -8,18 +8,20 @@ keywords: []
 overview:
   data_collection:
     metrics_description: This collector monitors the system's clock performance and peers activity status
-    method_description: It collects metrics using the Chrony communication protocol v6.
+    method_description: It collects metrics by sending UDP packets to chronyd using the Chrony communication protocol v6.
   supported_platforms:
-    include:
-      - ""
-    exclude:
-      - ""
+    include: []
+    exclude: []
   multi-instance: true
   additional_permissions:
     description: ""
   default_behavior:
     auto_detection:
-      description: "This collector will detect any instance running on `127.0.0.1:323`."
+      description: |
+        This collector discovers Chrony instance running on the local host and listening on port 323.
+        On startup, it tries to collect metrics from:
+
+        - 127.0.0.1:323
     limits:
       description: ""
     performance_impact:

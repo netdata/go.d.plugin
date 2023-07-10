@@ -8,8 +8,10 @@ keywords:
   - "webserver"
 overview:
   data_collection:
-    metrics_description: This collector monitors metrics about connections, workers, requests and more.
-    method_description: It collects metrics by using Apache's [status_module](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
+    metrics_description: |
+      This collector monitors the activity and performance of the Apache server: connections, workers, requests and more.
+    method_description: |
+      It collects metrics by sending HTTP requests to the Apache location [server-status](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
   supported_platforms:
     include:
       - ""
@@ -20,9 +22,12 @@ overview:
     description: ""
   default_behavior:
     auto_detection:
-      description:
-        "This collector will autodetect any instance running on localhost with metrics url `http://localhost/server-status?auto` or
-        `http://127.0.0.1/server-status?auto`"
+      description: |
+        This collector discovers instances running on the local host that provide metrics on port 80.
+        On startup, it tries to collect metrics from:
+        
+        - `http://localhost/server-status?auto`
+        - `http://127.0.0.1/server-status?auto`
     limits:
       description: ""
     performance_impact:
@@ -165,11 +170,11 @@ troubleshooting:
 related_resources:
   integrations:
     list:
-      - plugin_name: go
+      - plugin_name: go.d.plugin
         module_name: weblog
-      - plugin_name: go
+      - plugin_name: go.d.plugin
         module_name: httpcheck
-      - plugin_name: apps
+      - plugin_name: apps.plugin
         module_name: apps
 info_provided_to_referring_integrations:
   description: ""

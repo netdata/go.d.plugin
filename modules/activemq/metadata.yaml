@@ -8,23 +8,25 @@ keywords:
   - message broker
 overview:
   data_collection:
-    metrics_description: This collector monitors queues and topics.
-    method_description: It collects metrics by using the ActiveMQ Console API.
+    metrics_description: This collector monitors ActiveMQ queues and topics.
+    method_description: It collects metrics by sending HTTP requests to the Web Console API.
   additional_permissions:
     description: ""
   default_behavior:
     auto_detection:
-      description: This collector will detect any instance running on `http://localhost:8161` with webadmin root path `admin`.
+      description: |
+        This collector discovers instances running on the local host that provide metrics on port 8161.
+        On startup, it tries to collect metrics from:
+        
+        - http://localhost:8161
     limits:
       description: ""
     performance_impact:
       description: ""
   multi-instance: true
   supported_platforms:
-    include:
-      - ""
-    exclude:
-      - ""
+    include: []
+    exclude: []
 setup:
   prerequisites:
     list: []
@@ -187,11 +189,9 @@ info_provided_to_referring_integrations:
 related_resources:
   integrations:
     list:
-      - plugin_name: go
-        module_name: weblog
-      - plugin_name: go
+      - plugin_name: go.d.plugin
         module_name: httpcheck
-      - plugin_name: apps
+      - plugin_name: apps.plugin
         module_name: apps
 alerts: []
 metrics:
