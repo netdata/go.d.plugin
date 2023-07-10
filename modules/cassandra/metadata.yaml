@@ -176,7 +176,7 @@ metrics:
   availability: []
   scopes:
     - name: global
-      description: ''
+      description: These metrics refer to the entire monitored application.
       labels: []
       metrics:
         - name: cassandra.client_requests_rate
@@ -371,7 +371,7 @@ metrics:
       description: "Metrics related to Cassandra's thread pools. Each thread pool provides its own set of the following metrics."
       labels:
         - name: thread_pool
-          description: TBD
+          description: thread pool name
       metrics:
         - name: cassandra.thread_pool_active_tasks_count
           availability: []
