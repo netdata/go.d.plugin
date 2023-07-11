@@ -9,10 +9,7 @@ overview:
       This collector monitors Systemd units state. Works only on Linux systems.
 setup:
   prerequisites:
-    list:
-      - title: Enable in go.d.conf.
-        text: |
-          This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+    list: []
   configuration:
     options:
       description: |
