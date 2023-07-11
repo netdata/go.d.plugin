@@ -42,9 +42,7 @@ Metrics:
 
 ### Prerequisites
 
-#### Enable in go.d.conf.
-
-This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+No action required.
 
 ### Configuration
 
@@ -159,9 +157,8 @@ jobs:
 
 ### Debug mode
 
-To troubleshoot issues with the `systemdunits` collector, run the `go.d.plugin` with the debug option enabled. The
-output
-should give you clues as to why the collector isn't working.
+To troubleshoot issues with the `systemdunits` collector, run the `go.d.plugin` with the debug option enabled.
+The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
   your system, open `netdata.conf` and look for the `plugins` setting under `[directories]`.
