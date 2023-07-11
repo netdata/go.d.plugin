@@ -13,10 +13,8 @@ overview:
     method_description: |
       It collects metrics by sending HTTP requests to the Apache location [server-status](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
   supported_platforms:
-    include:
-      - ""
-    exclude:
-      - ""
+    include: []
+    exclude: []
   multi-instance: true
   additional_permissions:
     description: ""
