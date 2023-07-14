@@ -1,11 +1,25 @@
-module_name: activemq
-plugin_name: go.d.plugin
-monitored_instance:
-  name: ActiveMQ
-  link: https://activemq.apache.org/
-alternative_monitored_instances: []
-keywords:
-  - message broker
+meta:
+  module_name: activemq
+  plugin_name: go.d.plugin
+  monitored_instance:
+    categories:
+      - data-collection.message-brokers
+    icon_filename: activemq.png
+    name: ActiveMQ
+    link: https://activemq.apache.org/
+  alternative_monitored_instances: []
+  keywords:
+    - message broker
+  most_popular: false
+  info_provided_to_referring_integrations:
+    description: ""
+  related_resources:
+    integrations:
+      list:
+        - plugin_name: go.d.plugin
+          module_name: httpcheck
+        - plugin_name: apps.plugin
+          module_name: apps
 overview:
   data_collection:
     metrics_description: This collector monitors ActiveMQ queues and topics.
@@ -17,7 +31,7 @@ overview:
       description: |
         This collector discovers instances running on the local host that provide metrics on port 8161.
         On startup, it tries to collect metrics from:
-        
+
         - http://localhost:8161
     limits:
       description: ""
@@ -127,10 +141,12 @@ setup:
           default_value: ""
           required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           folding:
-            title: Config
             enabled: false
           description: A basic example configuration.
           config: |
@@ -139,9 +155,6 @@ setup:
                 url: http://127.0.0.1:8161
                 webadmin: admin
         - name: HTTP authentication
-          folding:
-            title: Config
-            enabled: true
           description: Basic HTTP authentication.
           config: |
             jobs:
@@ -151,9 +164,6 @@ setup:
                 username: foo
                 password: bar
         - name: Filters and limits
-          folding:
-            title: Config
-            enabled: true
           description: Using filters and limits for queues and topics.
           config: |
             jobs:
@@ -165,9 +175,6 @@ setup:
                 queues_filter: '!sandr* *'
                 topics_filter: '!sandr* *'
         - name: Multi-instance
-          folding:
-            title: Config
-            enabled: true
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
@@ -184,15 +191,6 @@ setup:
 troubleshooting:
   problems:
     list: []
-info_provided_to_referring_integrations:
-  description: ""
-related_resources:
-  integrations:
-    list:
-      - plugin_name: go.d.plugin
-        module_name: httpcheck
-      - plugin_name: apps.plugin
-        module_name: apps
 alerts: []
 metrics:
   folding:

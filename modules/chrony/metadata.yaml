@@ -1,10 +1,20 @@
-module_name: chrony
-plugin_name: go.d.plugin
-monitored_instance:
-  name: Chrony
-  link: https://chrony.tuxfamily.org/
-alternative_monitored_instances: []
-keywords: []
+meta:
+  module_name: chrony
+  plugin_name: go.d.plugin
+  monitored_instance:
+    categories:
+      - data-collection.system-clock-and-ntp
+    icon_filename: chrony.jpg
+    name: Chrony
+    link: https://chrony.tuxfamily.org/
+  alternative_monitored_instances: []
+  keywords: []
+  info_provided_to_referring_integrations:
+    description: ""
+  related_resources:
+    integrations:
+      list: []
+  most_popular: false
 overview:
   data_collection:
     metrics_description: This collector monitors the system's clock performance and peers activity status
@@ -56,10 +66,12 @@ setup:
           default_value: 1
           required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           folding:
-            title: Config
             enabled: false
           description: A basic example configuration.
           config: |
@@ -67,9 +79,6 @@ setup:
               - name: local
                 address: 127.0.0.1:323
         - name: Multi-instance
-          folding:
-            title: Config
-            enabled: true
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
@@ -83,11 +92,6 @@ setup:
                 address: 192.0.2.1:323
 troubleshooting:
   problems:
-    list: []
-info_provided_to_referring_integrations:
-  description: ""
-related_resources:
-  integrations:
     list: []
 alerts: []
 metrics:

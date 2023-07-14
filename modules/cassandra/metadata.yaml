@@ -1,12 +1,24 @@
-module_name: cassandra
-plugin_name: go
-monitored_instance:
-  name: Cassandra
-  link: https://cassandra.apache.org/_/index.html
-alternative_monitored_instances: []
-keywords:
-  - nosql
-  - dbms
+meta:
+  module_name: cassandra
+  plugin_name: go
+  monitored_instance:
+    categories:
+      - data-collection.database-servers
+    icon_filename: cassandra.png
+    name: Cassandra
+    link: https://cassandra.apache.org/_/index.html
+  alternative_monitored_instances: []
+  keywords:
+    - nosql
+    - dbms
+    - db
+    - database
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ""
+  most_popular: false
 overview:
   data_collection:
     metrics_description: |
@@ -117,10 +129,12 @@ setup:
           default_value: ""
           required: false
     examples:
+      folding:
+        title: Config
+        enabled: true
       list:
         - name: Basic
           folding:
-            title: Config
             enabled: false
           description: A basic example configuration.
           config: |
@@ -128,9 +142,6 @@ setup:
               - name: local
                 url: http://127.0.0.1:7072/metrics
         - name: HTTP authentication
-          folding:
-            title: Config
-            enabled: true
           description: Local server with basic HTTP authentication.
           config: |
             jobs:
@@ -139,9 +150,6 @@ setup:
                 username: foo
                 password: bar
         - name: HTTPS with self-signed certificate
-          folding:
-            title: Config
-            enabled: true
           description: Local server with enabled HTTPS and self-signed certificate.
           config: |
             jobs:
@@ -149,9 +157,6 @@ setup:
                 url: https://127.0.0.1:7072/metrics
                 tls_skip_verify: yes
         - name: Multi-instance
-          folding:
-            title: Config
-            enabled: true
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
 
@@ -166,11 +171,6 @@ setup:
 troubleshooting:
   problems:
     list: []
-related_resources:
-  integrations:
-    list: []
-info_provided_to_referring_integrations:
-  description: ""
 alerts: []
 metrics:
   folding:
