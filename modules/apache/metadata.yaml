@@ -25,9 +25,10 @@ meta:
 overview:
   data_collection:
     metrics_description: |
-      This collector monitors the activity and performance of the Apache server: connections, workers, requests and more.
+      This collector monitors the activity and performance of Apache servers, and collects metrics such as the number of connections, workers, requests and more.
     method_description: |
-      It collects metrics by sending HTTP requests to the Apache location [server-status](https://httpd.apache.org/docs/2.4/mod/mod_status.html).
+      It sends HTTP requests to the Apache location [server-status](https://httpd.apache.org/docs/2.4/mod/mod_status.html), 
+      which is a built-in location that provides metrics about the Apache server.
   supported_platforms:
     include: []
     exclude: []
@@ -37,11 +38,11 @@ overview:
   default_behavior:
     auto_detection:
       description: |
-        This collector discovers instances running on the local host that provide metrics on port 80.
+        By default, it detects Apache instances running on localhost that are listening on port 80.
         On startup, it tries to collect metrics from:
         
-        - `http://localhost/server-status?auto`
-        - `http://127.0.0.1/server-status?auto`
+        - http://localhost/server-status?auto
+        - http://127.0.0.1/server-status?auto
     limits:
       description: ""
     performance_impact:
