@@ -18,22 +18,29 @@ meta:
   most_popular: true
 overview:
   data_collection:
-    metrics_description: This collector monitors statistics from Docker Engine about container states, health statuses and more.
-    method_description: The [built-in](https://docs.docker.com/config/daemon/prometheus/) Prometheus exporter is used to fetch the metrics.
+    metrics_description: |
+      This collector monitors Docker containers state, health status and more.
+    method_description: |
+      It connects to the Docker instance via a TCP or UNIX socket and executes the following commands:
+      
+      - [System info](https://docs.docker.com/engine/api/v1.43/#tag/System/operation/SystemInfo).
+      - [List images](https://docs.docker.com/engine/api/v1.43/#tag/Image/operation/ImageList).
+      - [List containers](https://docs.docker.com/engine/api/v1.43/#tag/Container/operation/ContainerList).
   supported_platforms:
     include: []
     exclude: []
   multi-instance: true
   additional_permissions:
-    description: ""
+    description: Requires netdata user to be in the docker group.
   default_behavior:
     auto_detection:
-      description: The collector discovers instances that listen to the default socket `/var/run/docker.sock`.
+      description: |
+        It discovers instances running on localhost by attempting to connect to a known Docker UNIX socket: `/var/run/docker.sock`.
     limits:
       description: ""
     performance_impact:
       description: |
-        setting `collect_container_size: yes` provides the metric `container_writeable_layer_size`, but depending on the version of Docker Engine you are running, it might lead to high CPU usage.
+        Enabling `collect_container_size` may result in high CPU usage depending on the version of Docker Engine.
 setup:
   prerequisites:
     list: []
@@ -44,7 +51,7 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: "All options"
+        title: Config options
         enabled: true
       list:
         - name: update_every
@@ -56,8 +63,8 @@ setup:
           default_value: 0
           required: false
         - name: address
-          description: "Address the Docker daemon listens to. If TCP socket is used: `tcp://[ip]:[port]`."
-          default_value: "`unix:///var/run/docker.sock`"
+          description: "Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port]"
+          default_value: "unix:///var/run/docker.sock"
           required: true
         - name: timeout
           description: Request timeout in seconds.
@@ -70,7 +77,7 @@ setup:
     examples:
       folding:
         enabled: true
-        title: "Config"
+        title: Config
       list:
         - name: Basic
           description: An example configuration.
@@ -81,7 +88,10 @@ setup:
               - name: local
                 address: 'unix:///var/run/docker.sock'
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
@@ -94,9 +104,9 @@ troubleshooting:
     list: []
 alerts:
   - name: docker_container_unhealthy
-    link: https://github.com/netdata/netdata/blob/master/health/health.d/docker.conf
     metric: docker.container_health_status
     info: ${label:container_name} docker container health status is unhealthy
+    link: https://github.com/netdata/netdata/blob/master/health/health.d/docker.conf
 metrics:
   folding:
     title: Metrics
@@ -110,7 +120,7 @@ metrics:
       metrics:
         - name: docker.containers_state
           description: Total number of Docker containers in various states
-          unit: "containers"
+          unit: containers
           chart_type: stacked
           dimensions:
             - name: running
@@ -118,7 +128,7 @@ metrics:
             - name: stopped
         - name: docker.containers_health_status
           description: Total number of Docker containers in various health states
-          unit: "containers"
+          unit: containers
           chart_type: line
           dimensions:
             - name: healthy
@@ -128,14 +138,14 @@ metrics:
             - name: no_healthcheck
         - name: docker.images
           description: Total number of Docker images in various states
-          unit: "images"
+          unit: images
           chart_type: stacked
           dimensions:
             - name: active
             - name: dangling
         - name: docker.images_size
           description: Total size of all Docker images
-          unit: "bytes"
+          unit: bytes
           chart_type: line
           dimensions:
             - name: size
@@ -149,7 +159,7 @@ metrics:
       metrics:
         - name: docker.container_state
           description: Docker container state
-          unit: "state"
+          unit: state
           chart_type: line
           dimensions:
             - name: running
@@ -161,7 +171,7 @@ metrics:
             - name: dead
         - name: docker.container_health_status
           description: Docker container health status
-          unit: "status"
+          unit: status
           chart_type: line
           dimensions:
             - name: healthy
@@ -171,7 +181,7 @@ metrics:
             - name: no_healthcheck
         - name: docker.container_writeable_layer_size
           description: Docker container writable layer size
-          unit: "size"
+          unit: size
           chart_type: line
           dimensions:
             - name: writeable_layer
