@@ -146,7 +146,23 @@ setup:
 troubleshooting:
   problems:
     list: []
-alerts: []
+alerts:
+  - name: redis_connections_rejected
+    link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
+    metric: redis.connections
+    info: connections rejected because of maxclients limit in the last minute
+  - name: redis_bgsave_slow
+    link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
+    metric: redis.bgsave_now
+    info: duration of the on-going RDB save operation
+  - name: redis_bgsave_broken
+    link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
+    metric: redis.bgsave_health
+    info: 'status of the last RDB save operation (0: ok, 1: error)'
+  - name: redis_master_link_down
+    link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
+    metric: redis.master_link_down_since_time
+    info: time elapsed since the link between master and slave is down
 metrics:
   folding:
     title: Metrics
