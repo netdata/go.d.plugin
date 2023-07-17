@@ -167,7 +167,10 @@ setup:
                 username: foo
                 password: bar
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          description: |
+            > **Note**: When you define multiple jobs, their names must be unique.
+
+            Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
