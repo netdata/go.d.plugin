@@ -1,18 +1,60 @@
-name: postgres
-title: PostgreSQL collector
+meta:
+  plugin_name: go.d.plugin
+  module_name: postgres
+  monitored_instance:
+    name: PostgreSQL
+    link: https://www.postgresql.org/
+    categories:
+      - data-collection.database-servers
+    icon_filename: TODO
+  related_resources:
+    integrations:
+      list:
+        - plugin_name: apps.plugin
+          module_name: apps
+        - plugin_name: cgroups.plugin
+          module_name: cgroups
+  alternative_monitored_instances: []
+  info_provided_to_referring_integrations:
+    description: ""
+  keywords:
+    - "db"
+    - "database"
+    - "postgres"
+    - "postgresql"
+    - "sql"
+  most_popular: true
 overview:
-  application:
-    description: |
-      [PostgreSQL](https://www.postgresql.org/), also known as Postgres, is a free and open-source relational database
-      management system emphasizing extensibility and SQL compliance.
-  collector:
-    description: |
-      This collector monitors one or more Postgres servers, depending on your configuration.
+  multi-instance: true
+  data_collection:
+    metrics_description: |
+      This collector monitors the activity and performance of Postgres servers, collects replication statistics, metrics for each database, table and index, and more.
+    method_description: |
+      It establishes a connection to the Postgres instance via a TCP or UNIX socket.
+      To collect metrics for database tables and indexes, it establishes an additional connection for each discovered database.
+  default_behavior:
+    auto_detection:
+      description: |
+        By default, it detects instances running on localhost by trying to connect as root and netdata using known PostgreSQL TCP and UNIX sockets:
+
+        - 127.0.0.1:5432
+        - /var/run/postgresql/
+    limits:
+      description: |
+        Table and index metrics are not collected for databases with more than 50 tables or 250 indexes.
+        These limits can be changed in the configuration file.
+    performance_impact:
+      description: ""
+  additional_permissions:
+    description: ""
+  supported_platforms:
+    include: []
+    exclude: []
 setup:
   prerequisites:
     list:
       - title: Create netdata user
-        text: |
+        description: |
           Create a user with granted `pg_monitor`
           or `pg_read_all_stat` [built-in role](https://www.postgresql.org/docs/current/predefined-roles.html).
           
@@ -27,6 +69,8 @@ setup:
           the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your
           system.
   configuration:
+    file:
+      name: "go.d/postgres.conf"
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -36,31 +80,31 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
+          default_value: 0
           required: false
         - name: dsn
           description: Postgres server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
-          default: postgres://postgres:postgres@127.0.0.1:5432/postgres
+          default_value: postgres://postgres:postgres@127.0.0.1:5432/postgres
           required: true
         - name: timeout
           description: Query timeout in seconds.
-          default: 2
+          default_value: 2
           required: false
         - name: collect_databases_matching
           description: Databases selector. Determines which database metrics will be collected. Syntax is [simple patterns](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#simple-patterns-matcher).
-          default: ""
+          default_value: ""
           required: false
         - name: max_db_tables
           description: Maximum number of tables in the database. Table metrics will not be collected for databases that have more tables than max_db_tables. 0 means no limit.
-          default: 50
+          default_value: 50
           required: false
         - name: max_db_indexes
           description: Maximum number of indexes in the database. Index metrics will not be collected for databases that have more indexes than max_db_indexes. 0 means no limit.
-          default: 250
+          default_value: 250
           required: false
     examples:
       folding:
@@ -69,13 +113,15 @@ setup:
       list:
         - name: TCP socket
           description: An example configuration.
-          data: |
+          folding:
+            enabled: false
+          config: |
             jobs:
               - name: local
                 dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
         - name: Unix socket
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 dsn: 'host=/var/run/postgresql dbname=postgres user=netdata'
@@ -84,7 +130,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
@@ -94,12 +140,18 @@ setup:
 troubleshooting:
   problems:
     list: []
+alerts:
+  - name: ""
+    metric: ""
+    info: ""
+    link: ""
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -107,17 +159,20 @@ metrics:
         - name: postgres.connections_utilization
           description: Connections utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: postgres.connections_usage
           description: Connections usage
           unit: connections
+          chart_type: stacked
           dimensions:
             - name: available
             - name: used
         - name: postgres.connections_state_count
           description: Connections in each state
           unit: connections
+          chart_type: stacked
           dimensions:
             - name: active
             - name: idle
@@ -127,38 +182,45 @@ metrics:
         - name: postgres.transactions_duration
           description: Observed transactions time
           unit: transactions/s
+          chart_type: stacked
           dimensions:
             - name: a dimension per bucket
         - name: postgres.queries_duration
           description: Observed active queries time
           unit: queries/s
+          chart_type: stacked
           dimensions:
             - name: a dimension per bucket
         - name: postgres.locks_utilization
           description: Acquired locks utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: postgres.checkpoints_rate
           description: Checkpoints
           unit: checkpoints/s
+          chart_type: stacked
           dimensions:
             - name: scheduled
             - name: requested
         - name: postgres.checkpoints_time
           description: Checkpoint time
           unit: milliseconds
+          chart_type: stacked
           dimensions:
             - name: write
             - name: sync
         - name: postgres.bgwriter_halts_rate
           description: Background writer scan halts
           unit: events/s
+          chart_type: line
           dimensions:
             - name: maxwritten
         - name: postgres.buffers_io_rate
           description: Buffers written rate
           unit: B/s
+          chart_type: area
           dimensions:
             - name: checkpoint
             - name: backend
@@ -166,33 +228,39 @@ metrics:
         - name: postgres.buffers_backend_fsync_rate
           description: Backend fsync calls
           unit: calls/s
+          chart_type: line
           dimensions:
             - name: fsync
         - name: postgres.buffers_allocated_rate
           description: Buffers allocated
           unit: B/s
+          chart_type: line
           dimensions:
             - name: allocated
         - name: postgres.wal_io_rate
           description: Write-Ahead Log writes
           unit: B/s
+          chart_type: line
           dimensions:
             - name: write
         - name: postgres.wal_files_count
           description: Write-Ahead Log files
           unit: files
+          chart_type: stacked
           dimensions:
             - name: written
             - name: recycled
         - name: postgres.wal_archiving_files_count
           description: Write-Ahead Log archived files
           unit: files/s
+          chart_type: stacked
           dimensions:
             - name: ready
             - name: done
         - name: postgres.autovacuum_workers_count
           description: Autovacuum workers
           unit: workers
+          chart_type: line
           dimensions:
             - name: analyze
             - name: vacuum_analyze
@@ -202,21 +270,25 @@ metrics:
         - name: postgres.txid_exhaustion_towards_autovacuum_perc
           description: Percent towards emergency autovacuum
           unit: percentage
+          chart_type: line
           dimensions:
             - name: emergency_autovacuum
         - name: postgres.txid_exhaustion_perc
           description: Percent towards transaction ID wraparound
           unit: percentage
+          chart_type: line
           dimensions:
             - name: txid_exhaustion
         - name: postgres.txid_exhaustion_oldest_txid_num
           description: Oldest transaction XID
+          chart_type: line
           unit: xid
           dimensions:
             - name: xid
         - name: postgres.catalog_relations_count
           description: Relation count
           unit: relations
+          chart_type: stacked
           dimensions:
             - name: ordinary_table
             - name: index
@@ -231,6 +303,7 @@ metrics:
         - name: postgres.catalog_relations_size
           description: Relation size
           unit: B
+          chart_type: stacked
           dimensions:
             - name: ordinary_table
             - name: index
@@ -245,11 +318,13 @@ metrics:
         - name: postgres.uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime
         - name: postgres.databases_count
           description: Number of databases
           unit: databases
+          chart_type: line
           dimensions:
             - name: databases
     - name: repl application
@@ -261,6 +336,7 @@ metrics:
         - name: postgres.replication_app_wal_lag_size
           description: Standby application WAL lag size
           unit: B
+          chart_type: line
           dimensions:
             - name: sent_lag
             - name: write_lag
@@ -269,6 +345,7 @@ metrics:
         - name: postgres.replication_app_wal_lag_time
           description: Standby application WAL lag time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: write_lag
             - name: flush_lag
@@ -282,6 +359,7 @@ metrics:
         - name: postgres.replication_slot_files_count
           description: Replication slot files
           unit: files
+          chart_type: line
           dimensions:
             - name: wal_keep
             - name: pg_replslot_files
@@ -294,50 +372,59 @@ metrics:
         - name: postgres.db_transactions_ratio
           description: Database transactions ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: committed
             - name: rollback
         - name: postgres.db_transactions_rate
           description: Database transactions
           unit: transactions/s
+          chart_type: line
           dimensions:
             - name: committed
             - name: rollback
         - name: postgres.db_connections_utilization
           description: Database connections utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: postgres.db_connections_count
           description: Database connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: connections
         - name: postgres.db_cache_io_ratio
           description: Database buffer cache miss ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: miss
         - name: postgres.db_io_rate
           description: Database reads
           unit: B/s
+          chart_type: line
           dimensions:
             - name: memory
             - name: disk
         - name: postgres.db_ops_fetched_rows_ratio
           description: Database rows fetched ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: fetched
         - name: postgres.db_ops_read_rows_rate
           description: Database rows read
           unit: rows/s
+          chart_type: line
           dimensions:
             - name: returned
             - name: fetched
         - name: postgres.db_ops_write_rows_rate
           description: Database rows written
           unit: rows/s
+          chart_type: line
           dimensions:
             - name: inserted
             - name: deleted
@@ -345,11 +432,13 @@ metrics:
         - name: postgres.db_conflicts_rate
           description: Database canceled queries
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: conflicts
         - name: postgres.db_conflicts_reason_rate
           description: Database canceled queries by reason
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: tablespace
             - name: lock
@@ -359,11 +448,13 @@ metrics:
         - name: postgres.db_deadlocks_rate
           description: Database deadlocks
           unit: deadlocks/s
+          chart_type: line
           dimensions:
             - name: deadlocks
         - name: postgres.db_locks_held_count
           description: Database locks held
           unit: locks
+          chart_type: stacked
           dimensions:
             - name: access_share
             - name: row_share
@@ -376,6 +467,7 @@ metrics:
         - name: postgres.db_locks_awaited_count
           description: Database locks awaited
           unit: locks
+          chart_type: stacked
           dimensions:
             - name: access_share
             - name: row_share
@@ -388,16 +480,19 @@ metrics:
         - name: postgres.db_temp_files_created_rate
           description: Database created temporary files
           unit: files/s
+          chart_type: line
           dimensions:
             - name: created
         - name: postgres.db_temp_files_io_rate
           description: Database temporary files data written to disk
           unit: B/s
+          chart_type: line
           dimensions:
             - name: written
         - name: postgres.db_size
           description: Database size
           unit: B
+          chart_type: line
           dimensions:
             - name: size
     - name: table
@@ -415,17 +510,20 @@ metrics:
         - name: postgres.table_rows_dead_ratio
           description: Table dead rows
           unit: percentage
+          chart_type: line
           dimensions:
             - name: dead
         - name: postgres.table_rows_count
           description: Table total rows
           unit: rows
+          chart_type: line
           dimensions:
             - name: live
             - name: dead
         - name: postgres.table_ops_rows_rate
           description: Table throughput
           unit: rows/s
+          chart_type: line
           dimensions:
             - name: inserted
             - name: deleted
@@ -433,107 +531,127 @@ metrics:
         - name: postgres.table_ops_rows_hot_ratio
           description: Table HOT updates ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: hot
         - name: postgres.table_ops_rows_hot_rate
           description: Table HOT updates
           unit: rows/s
+          chart_type: line
           dimensions:
             - name: hot
         - name: postgres.table_cache_io_ratio
           description: Table I/O cache miss ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: miss
         - name: postgres.table_io_rate
           description: Table I/O
           unit: B/s
+          chart_type: line
           dimensions:
             - name: memory
             - name: disk
         - name: postgres.table_index_cache_io_ratio
           description: Table index I/O cache miss ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: miss
         - name: postgres.table_index_io_rate
           description: Table index I/O
           unit: B/s
+          chart_type: line
           dimensions:
             - name: memory
             - name: disk
         - name: postgres.table_toast_cache_io_ratio
           description: Table TOAST I/O cache miss ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: miss
         - name: postgres.table_toast_io_rate
           description: Table TOAST I/O
           unit: B/s
+          chart_type: line
           dimensions:
             - name: memory
             - name: disk
         - name: postgres.table_toast_index_cache_io_ratio
           description: Table TOAST index I/O cache miss ratio
           unit: percentage
+          chart_type: line
           dimensions:
             - name: miss
         - name: postgres.table_toast_index_io_rate
           description: Table TOAST index I/O
           unit: B/s
+          chart_type: line
           dimensions:
             - name: memory
             - name: disk
         - name: postgres.table_scans_rate
           description: Table scans
           unit: scans/s
+          chart_type: line
           dimensions:
             - name: index
             - name: sequential
         - name: postgres.table_scans_rows_rate
           description: Table live rows fetched by scans
           unit: rows/s
+          chart_type: line
           dimensions:
             - name: index
             - name: sequential
         - name: postgres.table_autovacuum_since_time
           description: Table time since last auto VACUUM
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: postgres.table_vacuum_since_time
           description: Table time since last manual VACUUM
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: postgres.table_autoanalyze_since_time
           description: Table time since last auto ANALYZE
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: postgres.table_analyze_since_time
           description: Table time since last manual ANALYZE
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: postgres.table_null_columns
           description: Table null columns
           unit: columns
+          chart_type: line
           dimensions:
-            - name: 'null'
+            - name: "null"
         - name: postgres.table_size
           description: Table total size
           unit: B
+          chart_type: line
           dimensions:
             - name: size
         - name: postgres.table_bloat_size_perc
           description: Table bloat size percentage
           unit: percentage
+          chart_type: line
           dimensions:
             - name: bloat
         - name: postgres.table_bloat_size
           description: Table bloat size
           unit: B
+          chart_type: line
           dimensions:
             - name: bloat
     - name: index
@@ -553,21 +671,25 @@ metrics:
         - name: postgres.index_size
           description: Index size
           unit: B
+          chart_type: line
           dimensions:
             - name: size
         - name: postgres.index_bloat_size_perc
           description: Index bloat size percentage
           unit: percentage
+          chart_type: line
           dimensions:
             - name: bloat
         - name: postgres.index_bloat_size
           description: Index bloat size
           unit: B
+          chart_type: line
           dimensions:
             - name: bloat
         - name: postgres.index_usage_status
           description: Index usage status
           unit: status
+          chart_type: line
           dimensions:
             - name: used
             - name: unused
