@@ -28,14 +28,14 @@ overview:
       This collector monitors the health and performance of Redis servers and collects general statistics, CPU and memory consumption, replication information, command statistics, and more.
     method_description: |
       It connects to the Redis instance via a TCP or UNIX socket and executes the following commands:
-      
+
       - [INFO ALL](https://redis.io/commands/info)
       - [PING](https://redis.io/commands/ping/)
   default_behavior:
     auto_detection:
       description: |
         By default, it detects instances running on localhost by attempting to connect using known Redis TCP and UNIX sockets:
-        
+
         - 127.0.0.1:6379
         - /tmp/redis.sock
         - /var/run/redis/redis.sock
@@ -134,7 +134,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-            
+
             Local and remote instances.
           config: |
             jobs:
@@ -158,7 +158,7 @@ alerts:
   - name: redis_bgsave_broken
     link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
     metric: redis.bgsave_health
-    info: 'status of the last RDB save operation (0: ok, 1: error)'
+    info: "status of the last RDB save operation (0: ok, 1: error)"
   - name: redis_master_link_down
     link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
     metric: redis.master_link_down_since_time
@@ -254,7 +254,7 @@ metrics:
           dimensions:
             - name: current_bgsave_time
         - name: redis.bgsave_health
-          description: 'Status of the last RDB save operation (0: ok, 1: err)'
+          description: "Status of the last RDB save operation (0: ok, 1: err)"
           unit: status
           chart_type: line
           dimensions:

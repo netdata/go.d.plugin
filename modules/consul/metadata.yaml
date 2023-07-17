@@ -244,7 +244,8 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: Depending on the [mode](https://developer.hashicorp.com/consul/docs/install/glossary#agent), the collector collects a different number of metrics.
+  description: |
+    Depending on the [mode](https://developer.hashicorp.com/consul/docs/install/glossary#agent), the collector collects a different number of metrics.
   availability: []
   scopes:
     - name: global
