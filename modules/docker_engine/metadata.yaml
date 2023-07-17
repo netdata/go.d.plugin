@@ -5,19 +5,24 @@ meta:
   monitored_instance:
     name: Docker Engine
     link: https://docs.docker.com/engine/
-    categories: []
+    categories:
+      - data-collection.containers-and-vms
     icon_filename: docker.png
   related_resources:
     integrations:
       list: []
   info_provided_to_referring_integrations:
     description: ""
-  keywords: []
+  keywords:
+    - docker
+    - container
   most_popular: false
 overview:
   data_collection:
-    metrics_description: This collector monitors statistics from Docker Engine about container states, health statuses and more.
-    method_description: The [built-in](https://docs.docker.com/config/daemon/prometheus/) Prometheus exporter is used to fetch the metrics.
+    metrics_description: |
+      This collector monitors the activity and health of Docker Engine and Docker Swarm.
+    method_description: |
+      The [built-in](https://docs.docker.com/config/daemon/prometheus/) Prometheus exporter is used to get the metrics.
   supported_platforms:
     include: []
     exclude: []
@@ -27,7 +32,7 @@ overview:
   default_behavior:
     auto_detection:
       description: |
-        The collector discovers Docker Engine instances that use the built-in Prometheus exporter, exposing their data on `http://127.0.0.1:9323/metrics`.
+        It discovers instances running on localhost by attempting to connect to a known Docker TCP socket: `http://127.0.0.1:9323/metrics`.
     limits:
       description: ""
     performance_impact:
@@ -35,19 +40,9 @@ overview:
 setup:
   prerequisites:
     list:
-      - title: Enabling the built-in Prometheus exporter on Docker
+      - title: Enable built-in Prometheus exporter
         description: |
-          You need to configure Docker to expose the metrics in a specific URL and Port, making it a Prometheus target.
-
-          Configuration may vary per Docker version, so you should check the [Docker documentation](https://docs.docker.com/config/daemon/prometheus/).
-
-          Essentially, you need to add a `metrics-addr` element to Docker's configuration file, with the IP and port of your choice:
-
-          ```json
-          {
-            "metrics-addr" : "127.0.0.1:9323"
-          }
-          ```
+          To enable built-in Prometheus exporter, follow the [official documentation](https://docs.docker.com/config/daemon/prometheus/#configure-docker).
   configuration:
     file:
       name: "go.d/docker_engine.conf"
@@ -55,7 +50,7 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: "All options"
+        title: Config options
         enabled: true
       list:
         - name: update_every
@@ -128,11 +123,13 @@ setup:
           required: false
     examples:
       folding:
+        title: Config
         enabled: true
-        title: ""
       list:
         - name: Basic
           description: A basic example configuration.
+          folding:
+            enabled: false
           config: |
             jobs:
               - name: local
@@ -181,7 +178,7 @@ metrics:
       metrics:
         - name: docker_engine.engine_daemon_container_actions
           description: Container Actions
-          unit: "actions/s"
+          unit: actions/s
           chart_type: stacked
           dimensions:
             - name: changes
@@ -191,7 +188,7 @@ metrics:
             - name: start
         - name: docker_engine.engine_daemon_container_states_containers
           description: Containers In Various States
-          unit: "containers"
+          unit: containers
           chart_type: stacked
           dimensions:
             - name: running
@@ -199,7 +196,7 @@ metrics:
             - name: stopped
         - name: docker_engine.builder_builds_failed_total
           description: Builder Builds Fails By Reason
-          unit: "fails/s"
+          unit: fails/s
           chart_type: stacked
           dimensions:
             - name: build_canceled
@@ -212,19 +209,19 @@ metrics:
             - name: unknown_instruction_error
         - name: docker_engine.engine_daemon_health_checks_failed_total
           description: Health Checks
-          unit: "events/s"
+          unit: events/s
           chart_type: line
           dimensions:
             - name: fails
         - name: docker_engine.swarm_manager_leader
           description: Swarm Manager Leader
-          unit: "bool"
+          unit: bool
           chart_type: line
           dimensions:
             - name: is_leader
         - name: docker_engine.swarm_manager_object_store
           description: Swarm Manager Object Store
-          unit: "objects"
+          unit: objects
           chart_type: stacked
           dimensions:
             - name: nodes
@@ -235,7 +232,7 @@ metrics:
             - name: configs
         - name: docker_engine.swarm_manager_nodes_per_state
           description: Swarm Manager Nodes Per State
-          unit: "nodes"
+          unit: nodes
           chart_type: stacked
           dimensions:
             - name: ready
@@ -244,7 +241,7 @@ metrics:
             - name: disconnected
         - name: docker_engine.swarm_manager_tasks_per_state
           description: Swarm Manager Tasks Per State
-          unit: "tasks"
+          unit: tasks
           chart_type: stacked
           dimensions:
             - name: running
