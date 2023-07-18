@@ -1,4 +1,4 @@
-# PostgreSQL collector
+# PgBouncer collector
 
 ## Overview
 
@@ -97,7 +97,7 @@ To create the `netdata` user:
 
 #### File
 
-The configuration file name is `go.d/postgresql.conf`.
+The configuration file name is `go.d/pgbouncer.conf`.
 
 The file format is YAML. Generally, the format is:
 
@@ -114,7 +114,7 @@ Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/c
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
-sudo ./edit-config go.d/postgresql.conf
+sudo ./edit-config go.d/pgbouncer.conf
 ```
 
 #### Options
@@ -206,5 +206,5 @@ The output should give you clues as to why the collector isn't working.
 - Run the `go.d.plugin` to debug the collector:
 
   ```bash
-  ./go.d.plugin -d -m postgresql
+  ./go.d.plugin -d -m pgbouncer
   ```
