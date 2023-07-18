@@ -187,7 +187,7 @@ jobs:
 
 ### Debug mode
 
-To troubleshoot issues with the `postgresql` collector, run the `go.d.plugin` with the debug option enabled.
+To troubleshoot issues with the `pgbouncer` collector, run the `go.d.plugin` with the debug option enabled.
 The output should give you clues as to why the collector isn't working.
 
 - Navigate to the `plugins.d` directory, usually at `/usr/libexec/netdata/plugins.d/`. If that's not the case on
