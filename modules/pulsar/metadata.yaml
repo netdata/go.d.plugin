@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -17,34 +72,40 @@ metrics:
             - name: subscriptions
             - name: producers
             - name: consumers
+          chart_type: line
         - name: pulsar.messages_rate
           description: Messages Rate
           unit: messages/s
           dimensions:
             - name: publish
             - name: dispatch
+          chart_type: line
         - name: pulsar.throughput_rate
           description: Throughput Rate
           unit: KiB/s
           dimensions:
             - name: publish
             - name: dispatch
+          chart_type: area
         - name: pulsar.storage_size
           description: Storage Size
           unit: KiB
           dimensions:
             - name: used
+          chart_type: line
         - name: pulsar.storage_operations_rate
           description: Storage Read/Write Operations Rate
           unit: message batches/s
           dimensions:
             - name: read
             - name: write
+          chart_type: area
         - name: pulsar.msg_backlog
           description: Messages Backlog Size
           unit: messages
           dimensions:
             - name: backlog
+          chart_type: line
         - name: pulsar.storage_write_latency
           description: Storage Write Latency
           unit: entries/s
@@ -59,6 +120,7 @@ metrics:
             - name: <=200ms
             - name: <=1s
             - name: '>1s'
+          chart_type: stacked
         - name: pulsar.entry_size
           description: Entry Size
           unit: entries/s
@@ -72,38 +134,45 @@ metrics:
             - name: <=100KB
             - name: <=1MB
             - name: '>1MB'
+          chart_type: stacked
         - name: pulsar.subscription_delayed
           description: Subscriptions Delayed for Dispatching
           unit: message batches
           dimensions:
             - name: delayed
+          chart_type: line
         - name: pulsar.subscription_msg_rate_redeliver
           description: Subscriptions Redelivered Message Rate
           unit: messages/s
           dimensions:
             - name: redelivered
+          chart_type: line
         - name: pulsar.subscription_blocked_on_unacked_messages
           description: Subscriptions Blocked On Unacked Messages
           unit: subscriptions
           dimensions:
             - name: blocked
+          chart_type: line
         - name: pulsar.replication_rate
           description: Replication Rate
           unit: messages/s
           dimensions:
             - name: in
             - name: out
+          chart_type: line
         - name: pulsar.replication_throughput_rate
           description: Replication Throughput Rate
           unit: KiB/s
           dimensions:
             - name: in
             - name: out
+          chart_type: line
         - name: pulsar.replication_backlog
           description: Replication Backlog
           unit: messages
           dimensions:
             - name: backlog
+          chart_type: line
     - name: namespace
       description: TBD
       labels: []
@@ -116,34 +185,40 @@ metrics:
             - name: subscriptions
             - name: producers
             - name: consumers
+          chart_type: line
         - name: pulsar.namespace_messages_rate
           description: Messages Rate
           unit: messages/s
           dimensions:
             - name: publish
             - name: dispatch
+          chart_type: line
         - name: pulsar.namespace_throughput_rate
           description: Throughput Rate
           unit: KiB/s
           dimensions:
             - name: publish
             - name: dispatch
+          chart_type: area
         - name: pulsar.namespace_storage_size
           description: Storage Size
           unit: KiB
           dimensions:
             - name: used
+          chart_type: line
         - name: pulsar.namespace_storage_operations_rate
           description: Storage Read/Write Operations Rate
           unit: message batches/s
           dimensions:
             - name: read
             - name: write
+          chart_type: area
         - name: pulsar.namespace_msg_backlog
           description: Messages Backlog Size
           unit: messages
           dimensions:
             - name: backlog
+          chart_type: line
         - name: pulsar.namespace_storage_write_latency
           description: Storage Write Latency
           unit: entries/s
@@ -158,6 +233,7 @@ metrics:
             - name: <=200ms
             - name: <=1s
             - name: '>1s'
+          chart_type: stacked
         - name: pulsar.namespace_entry_size
           description: Entry Size
           unit: entries/s
@@ -171,130 +247,156 @@ metrics:
             - name: <=100KB
             - name: <=1MB
             - name: '>1MB'
+          chart_type: stacked
         - name: pulsar.namespace_subscription_delayed
           description: Subscriptions Delayed for Dispatching
           unit: message batches
           dimensions:
             - name: delayed
+          chart_type: line
         - name: pulsar.namespace_subscription_msg_rate_redeliver
           description: Subscriptions Redelivered Message Rate
           unit: messages/s
           dimensions:
             - name: redelivered
+          chart_type: line
         - name: pulsar.namespace_subscription_blocked_on_unacked_messages
           description: Subscriptions Blocked On Unacked Messages
           unit: subscriptions
           dimensions:
             - name: blocked
+          chart_type: line
         - name: pulsar.namespace_replication_rate
           description: Replication Rate
           unit: messages/s
           dimensions:
             - name: in
             - name: out
+          chart_type: line
         - name: pulsar.namespace_replication_throughput_rate
           description: Replication Throughput Rate
           unit: KiB/s
           dimensions:
             - name: in
             - name: out
+          chart_type: line
         - name: pulsar.namespace_replication_backlog
           description: Replication Backlog
           unit: messages
           dimensions:
             - name: backlog
+          chart_type: line
         - name: pulsar.topic_producers
           description: Topic Producers
           unit: producers
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_subscriptions
           description: Topic Subscriptions
           unit: subscriptions
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_consumers
           description: Topic Consumers
           unit: consumers
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_messages_rate_in
           description: Topic Publish Messages Rate
           unit: publishes/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_messages_rate_out
           description: Topic Dispatch Messages Rate
           unit: dispatches/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_throughput_rate_in
           description: Topic Publish Throughput Rate
           unit: KiB/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_throughput_rate_out
           description: Topic Dispatch Throughput Rate
           unit: KiB/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_storage_size
           description: Topic Storage Size
           unit: KiB
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_storage_read_rate
           description: Topic Storage Read Rate
           unit: message batches/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_storage_write_rate
           description: Topic Storage Write Rate
           unit: message batches/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_msg_backlog
           description: Topic Messages Backlog Size
           unit: messages
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_subscription_delayed
           description: Topic Subscriptions Delayed for Dispatching
           unit: message batches
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_subscription_msg_rate_redeliver
           description: Topic Subscriptions Redelivered Message Rate
           unit: messages/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_subscription_blocked_on_unacked_messages
           description: Topic Subscriptions Blocked On Unacked Messages
           unit: blocked subscriptions
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_replication_rate_in
           description: Topic Replication Rate From Remote Cluster
           unit: messages/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_replication_rate_out
           description: Topic Replication Rate To Remote Cluster
           unit: messages/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_replication_throughput_rate_in
           description: Topic Replication Throughput Rate From Remote Cluster
           unit: messages/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_replication_throughput_rate_out
           description: Topic Replication Throughput Rate To Remote Cluster
           unit: messages/s
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked
         - name: pulsar.topic_replication_backlog
           description: Topic Replication Backlog
           unit: messages
           dimensions:
             - name: a dimension per topic
+          chart_type: stacked

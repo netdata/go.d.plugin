@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,11 +68,13 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: nginxvts.active_connections
           description: Active connections
           unit: connections
           dimensions:
             - name: active
+          chart_type: line
         - name: nginxvts.connections_total
           description: Total connections
           unit: connections/s
@@ -27,27 +84,32 @@ metrics:
             - name: waiting
             - name: accepted
             - name: handled
+          chart_type: line
         - name: nginxvts.uptime
           description: Uptime
           unit: seconds
           dimensions:
             - name: uptime
+          chart_type: line
         - name: nginxvts.shm_usage
           description: Shared memory size
           unit: bytes
           dimensions:
             - name: max
             - name: used
+          chart_type: line
         - name: nginxvts.shm_used_node
           description: Number of node using shared memory
           unit: nodes
           dimensions:
             - name: used
+          chart_type: line
         - name: nginxvts.server_requests_total
           description: Total number of client requests
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: nginxvts.server_responses_total
           description: Total number of responses by code class
           unit: responses/s
@@ -57,12 +119,14 @@ metrics:
             - name: 3xx
             - name: 4xx
             - name: 5xx
+          chart_type: line
         - name: nginxvts.server_traffic_total
           description: Total amount of data transferred to and from the server
           unit: bytes/s
           dimensions:
             - name: in
             - name: out
+          chart_type: line
         - name: nginxvts.server_cache_total
           description: Total server cache
           unit: events/s
@@ -75,3 +139,4 @@ metrics:
             - name: revalidated
             - name: hit
             - name: scarce
+          chart_type: line

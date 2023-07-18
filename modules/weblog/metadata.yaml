@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,11 +68,13 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: web_log.excluded_requests
           description: Excluded Requests
           unit: requests/s
           dimensions:
             - name: unmatched
+          chart_type: stacked
         - name: web_log.type_requests
           description: Requests By Type
           unit: requests/s
@@ -26,6 +83,7 @@ metrics:
             - name: bad
             - name: redirect
             - name: error
+          chart_type: stacked
         - name: web_log.status_code_class_responses
           description: Responses By Status Code Class
           unit: responses/s
@@ -35,37 +93,44 @@ metrics:
             - name: 3xx
             - name: 4xx
             - name: 5xx
+          chart_type: stacked
         - name: web_log.status_code_class_1xx_responses
           description: Informational Responses By Status Code
           unit: responses/s
           dimensions:
             - name: a dimension per 1xx code
+          chart_type: stacked
         - name: web_log.status_code_class_2xx_responses
           description: Successful Responses By Status Code
           unit: responses/s
           dimensions:
             - name: a dimension per 2xx code
+          chart_type: stacked
         - name: web_log.status_code_class_3xx_responses
           description: Redirects Responses By Status Code
           unit: responses/s
           dimensions:
             - name: a dimension per 3xx code
+          chart_type: stacked
         - name: web_log.status_code_class_4xx_responses
           description: Client Errors Responses By Status Code
           unit: responses/s
           dimensions:
             - name: a dimension per 4xx code
+          chart_type: stacked
         - name: web_log.status_code_class_5xx_responses
           description: Server Errors Responses By Status Code
           unit: responses/s
           dimensions:
             - name: a dimension per 5xx code
+          chart_type: stacked
         - name: web_log.bandwidth
           description: Bandwidth
           unit: kilobits/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: web_log.request_processing_time
           description: Request Processing Time
           unit: milliseconds
@@ -73,11 +138,13 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: web_log.requests_processing_time_histogram
           description: Requests Processing Time Histogram
           unit: requests/s
           dimensions:
             - name: a dimension per bucket
+          chart_type: line
         - name: web_log.upstream_response_time
           description: Upstream Response Time
           unit: milliseconds
@@ -85,69 +152,82 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: web_log.upstream_responses_time_histogram
           description: Upstream Responses Time Histogram
           unit: requests/s
           dimensions:
             - name: a dimension per bucket
+          chart_type: line
         - name: web_log.current_poll_uniq_clients
           description: Current Poll Unique Clients
           unit: clients
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: stacked
         - name: web_log.vhost_requests
           description: Requests By Vhost
           unit: requests/s
           dimensions:
             - name: a dimension per vhost
+          chart_type: stacked
         - name: web_log.port_requests
           description: Requests By Port
           unit: requests/s
           dimensions:
             - name: a dimension per port
+          chart_type: stacked
         - name: web_log.scheme_requests
           description: Requests By Scheme
           unit: requests/s
           dimensions:
             - name: http
             - name: https
+          chart_type: stacked
         - name: web_log.http_method_requests
           description: Requests By HTTP Method
           unit: requests/s
           dimensions:
             - name: a dimension per HTTP method
+          chart_type: stacked
         - name: web_log.http_version_requests
           description: Requests By HTTP Version
           unit: requests/s
           dimensions:
             - name: a dimension per HTTP version
+          chart_type: stacked
         - name: web_log.ip_proto_requests
           description: Requests By IP Protocol
           unit: requests/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: stacked
         - name: web_log.ssl_proto_requests
           description: Requests By SSL Connection Protocol
           unit: requests/s
           dimensions:
             - name: a dimension per SSL protocol
+          chart_type: stacked
         - name: web_log.ssl_cipher_suite_requests
           description: Requests By SSL Connection Cipher Suite
           unit: requests/s
           dimensions:
             - name: a dimension per SSL cipher suite
+          chart_type: stacked
         - name: web_log.url_pattern_requests
           description: URL Field Requests By Pattern
           unit: requests/s
           dimensions:
             - name: a dimension per URL pattern
+          chart_type: stacked
         - name: web_log.custom_field_pattern_requests
           description: Custom Field Requests By Pattern
           unit: requests/s
           dimensions:
             - name: a dimension per custom field pattern
+          chart_type: stacked
     - name: custom time field
       description: TBD
       labels: []
@@ -159,11 +239,13 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: web_log.custom_time_field_histogram
           description: Custom Time Field Histogram
           unit: observations
           dimensions:
             - name: a dimension per bucket
+          chart_type: line
     - name: URL pattern
       description: TBD
       labels: []
@@ -173,17 +255,20 @@ metrics:
           unit: responses/s
           dimensions:
             - name: a dimension per pattern
+          chart_type: line
         - name: web_log.url_pattern_http_method_requests
           description: Requests By HTTP Method
           unit: requests/s
           dimensions:
             - name: a dimension per HTTP method
+          chart_type: line
         - name: web_log.url_pattern_bandwidth
           description: Bandwidth
           unit: kilobits/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: web_log.url_pattern_request_processing_time
           description: Request Processing Time
           unit: milliseconds
@@ -191,3 +276,4 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line

@@ -2,90 +2,92 @@ name: cockroachdb
 title: CockroachDB collector
 overview:
   application:
-    description: |
-      [CockroachDB](https://www.cockroachlabs.com/)  is the SQL database for building global, scalable cloud services that survive disasters.
+    description: "[CockroachDB](https://www.cockroachlabs.com/)  is the SQL database
+      for building global, scalable cloud services that survive disasters.\n"
   collector:
-    description: |
-      This collector monitors one or more CockroachDB databases, depending on your configuration.
+    description: "This collector monitors one or more CockroachDB databases, depending
+      on your configuration.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 10
           required: false
+          default_value: 10
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1:8080/_status/vars
           required: true
+          default_value: http://127.0.0.1:8080/_status/vars
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -93,37 +95,22 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8080/_status/vars
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8080/_status/vars\n"
         - name: HTTP authentication
           description: Local server with basic HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8080/_status/vars
-                username: username
-                password: password
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8080/_status/vars\n\
+            \    username: username\n    password: password\n"
         - name: HTTPS with self-signed certificate
           description: CockroachDB with enabled HTTPS and self-signed certificate.
-          data: |
-            jobs:
-              - name: local
-                url: https://127.0.0.1:8080/_status/vars
-                tls_skip_verify: yes
+          config: "jobs:\n  - name: local\n    url: https://127.0.0.1:8080/_status/vars\n\
+            \    tls_skip_verify: yes\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8080/_status/vars
-
-              - name: remote
-                url: http://203.0.113.10:8080/_status/vars
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8080/_status/vars\n\
+            \n  - name: remote\n    url: http://203.0.113.10:8080/_status/vars\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -131,8 +118,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -142,129 +130,152 @@ metrics:
           unit: percentage
           dimensions:
             - name: used
+          chart_type: line
         - name: cockroachdb.process_cpu_time_percentage
           description: CPU Time Percentage
           unit: percentage
           dimensions:
             - name: user
             - name: sys
+          chart_type: stacked
         - name: cockroachdb.process_cpu_time
           description: CPU Time
           unit: ms
           dimensions:
             - name: user
             - name: sys
+          chart_type: stacked
         - name: cockroachdb.process_memory
           description: Memory Usage
           unit: KiB
           dimensions:
             - name: rss
+          chart_type: line
         - name: cockroachdb.process_file_descriptors
           description: File Descriptors
           unit: fd
           dimensions:
             - name: open
+          chart_type: line
         - name: cockroachdb.process_uptime
           description: Uptime
           unit: seconds
           dimensions:
             - name: uptime
+          chart_type: line
         - name: cockroachdb.host_disk_bandwidth
           description: Host Disk Cumulative Bandwidth
           unit: KiB
           dimensions:
             - name: read
             - name: write
+          chart_type: area
         - name: cockroachdb.host_disk_operations
           description: Host Disk Cumulative Operations
           unit: operations
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: cockroachdb.host_disk_iops_in_progress
           description: Host Disk Cumulative IOPS In Progress
           unit: iops
           dimensions:
             - name: in_progress
+          chart_type: line
         - name: cockroachdb.host_network_bandwidth
           description: Host Network Cumulative Bandwidth
           unit: kilobits
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: cockroachdb.host_network_packets
           description: Host Network Cumulative Packets
           unit: packets
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: cockroachdb.live_nodes
           description: Live Nodes in the Cluster
           unit: nodes
           dimensions:
             - name: live_nodes
+          chart_type: line
         - name: cockroachdb.node_liveness_heartbeats
           description: Node Liveness Heartbeats
           unit: heartbeats
           dimensions:
             - name: successful
             - name: failed
+          chart_type: stacked
         - name: cockroachdb.total_storage_capacity
           description: Total Storage Capacity
           unit: KiB
           dimensions:
             - name: total
+          chart_type: line
         - name: cockroachdb.storage_capacity_usability
           description: Storage Capacity Usability
           unit: KiB
           dimensions:
             - name: usable
             - name: unusable
+          chart_type: stacked
         - name: cockroachdb.storage_usable_capacity
           description: Storage Usable Capacity
           unit: KiB
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: cockroachdb.storage_used_capacity_percentage
           description: Storage Used Capacity Utilization
           unit: percentage
           dimensions:
             - name: total
             - name: usable
+          chart_type: line
         - name: cockroachdb.sql_connections
           description: Active SQL Connections
           unit: connections
           dimensions:
             - name: active
+          chart_type: line
         - name: cockroachdb.sql_bandwidth
           description: SQL Bandwidth
           unit: KiB
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: cockroachdb.sql_statements_total
           description: SQL Statements Total
           unit: statements
           dimensions:
             - name: started
             - name: executed
+          chart_type: area
         - name: cockroachdb.sql_errors
           description: SQL Statements and Transaction Errors
           unit: errors
           dimensions:
             - name: statement
             - name: transaction
+          chart_type: line
         - name: cockroachdb.sql_started_ddl_statements
           description: SQL Started DDL Statements
           unit: statements
           dimensions:
             - name: ddl
+          chart_type: line
         - name: cockroachdb.sql_executed_ddl_statements
           description: SQL Executed DDL Statements
           unit: statements
           dimensions:
             - name: ddl
+          chart_type: line
         - name: cockroachdb.sql_started_dml_statements
           description: SQL Started DML Statements
           unit: statements
@@ -273,6 +284,7 @@ metrics:
             - name: update
             - name: delete
             - name: insert
+          chart_type: stacked
         - name: cockroachdb.sql_executed_dml_statements
           description: SQL Executed DML Statements
           unit: statements
@@ -281,6 +293,7 @@ metrics:
             - name: update
             - name: delete
             - name: insert
+          chart_type: stacked
         - name: cockroachdb.sql_started_tcl_statements
           description: SQL Started TCL Statements
           unit: statements
@@ -292,6 +305,7 @@ metrics:
             - name: savepoint_cockroach_restart
             - name: release_savepoint_cockroach_restart
             - name: rollback_to_savepoint_cockroach_restart
+          chart_type: stacked
         - name: cockroachdb.sql_executed_tcl_statements
           description: SQL Executed TCL Statements
           unit: statements
@@ -303,35 +317,41 @@ metrics:
             - name: savepoint_cockroach_restart
             - name: release_savepoint_cockroach_restart
             - name: rollback_to_savepoint_cockroach_restart
+          chart_type: stacked
         - name: cockroachdb.sql_active_distributed_queries
           description: Active Distributed SQL Queries
           unit: queries
           dimensions:
             - name: active
+          chart_type: line
         - name: cockroachdb.sql_distributed_flows
           description: Distributed SQL Flows
           unit: flows
           dimensions:
             - name: active
             - name: queued
+          chart_type: stacked
         - name: cockroachdb.live_bytes
           description: Used Live Data
           unit: KiB
           dimensions:
             - name: applications
             - name: system
+          chart_type: line
         - name: cockroachdb.logical_data
           description: Logical Data
           unit: KiB
           dimensions:
             - name: keys
             - name: values
+          chart_type: stacked
         - name: cockroachdb.logical_data_count
           description: Logical Data Count
           unit: num
           dimensions:
             - name: keys
             - name: values
+          chart_type: stacked
         - name: cockroachdb.kv_transactions
           description: KV Transactions
           unit: transactions
@@ -339,6 +359,7 @@ metrics:
             - name: committed
             - name: fast-path_committed
             - name: aborted
+          chart_type: area
         - name: cockroachdb.kv_transaction_restarts
           description: KV Transaction Restarts
           unit: restarts
@@ -352,11 +373,13 @@ metrics:
             - name: aborted
             - name: push_failure
             - name: unknown
+          chart_type: stacked
         - name: cockroachdb.ranges
           description: Ranges
           unit: ranges
           dimensions:
             - name: ranges
+          chart_type: line
         - name: cockroachdb.ranges_replication_problem
           description: Ranges Replication Problems
           unit: ranges
@@ -364,6 +387,7 @@ metrics:
             - name: unavailable
             - name: under_replicated
             - name: over_replicated
+          chart_type: stacked
         - name: cockroachdb.range_events
           description: Range Events
           unit: events
@@ -372,6 +396,7 @@ metrics:
             - name: add
             - name: remove
             - name: merge
+          chart_type: stacked
         - name: cockroachdb.range_snapshot_events
           description: Range Snapshot Events
           unit: events
@@ -380,60 +405,71 @@ metrics:
             - name: applied_raft_initiated
             - name: applied_learner
             - name: applied_preemptive
+          chart_type: stacked
         - name: cockroachdb.rocksdb_read_amplification
           description: RocksDB Read Amplification
           unit: reads/query
           dimensions:
             - name: reads
+          chart_type: line
         - name: cockroachdb.rocksdb_table_operations
           description: RocksDB Table Operations
           unit: operations
           dimensions:
             - name: compactions
             - name: flushes
+          chart_type: line
         - name: cockroachdb.rocksdb_cache_usage
           description: RocksDB Block Cache Usage
           unit: KiB
           dimensions:
             - name: used
+          chart_type: area
         - name: cockroachdb.rocksdb_cache_operations
           description: RocksDB Block Cache Operations
           unit: operations
           dimensions:
             - name: hits
             - name: misses
+          chart_type: stacked
         - name: cockroachdb.rocksdb_cache_hit_rate
           description: RocksDB Block Cache Hit Rate
           unit: percentage
           dimensions:
             - name: hit_rate
+          chart_type: area
         - name: cockroachdb.rocksdb_sstables
           description: RocksDB SSTables
           unit: sstables
           dimensions:
             - name: sstables
+          chart_type: line
         - name: cockroachdb.replicas
           description: Number of Replicas
           unit: replicas
           dimensions:
             - name: replicas
+          chart_type: line
         - name: cockroachdb.replicas_quiescence
           description: Replicas Quiescence
           unit: replicas
           dimensions:
             - name: quiescent
             - name: active
+          chart_type: stacked
         - name: cockroachdb.replicas_leaders
           description: Number of Raft Leaders
           unit: replicas
           dimensions:
             - name: leaders
             - name: not_leaseholders
+          chart_type: area
         - name: cockroachdb.replicas_leaseholders
           description: Number of Leaseholders
           unit: leaseholders
           dimensions:
             - name: leaseholders
+          chart_type: line
         - name: cockroachdb.queue_processing_failures
           description: Queues Processing Failures
           unit: failures
@@ -446,31 +482,37 @@ metrics:
             - name: raft_log
             - name: raft_snapshot
             - name: time_series_maintenance
+          chart_type: stacked
         - name: cockroachdb.rebalancing_queries
           description: Rebalancing Average Queries
           unit: queries/s
           dimensions:
             - name: avg
+          chart_type: line
         - name: cockroachdb.rebalancing_writes
           description: Rebalancing Average Writes
           unit: writes/s
           dimensions:
             - name: avg
+          chart_type: line
         - name: cockroachdb.timeseries_samples
           description: Time Series Written Samples
           unit: samples
           dimensions:
             - name: written
+          chart_type: line
         - name: cockroachdb.timeseries_write_errors
           description: Time Series Write Errors
           unit: errors
           dimensions:
             - name: write
+          chart_type: line
         - name: cockroachdb.timeseries_write_bytes
           description: Time Series Bytes Written
           unit: KiB
           dimensions:
             - name: written
+          chart_type: line
         - name: cockroachdb.slow_requests
           description: Slow Requests
           unit: requests
@@ -478,29 +520,35 @@ metrics:
             - name: acquiring_latches
             - name: acquiring_lease
             - name: in_raft
+          chart_type: stacked
         - name: cockroachdb.code_heap_memory_usage
           description: Heap Memory Usage
           unit: KiB
           dimensions:
             - name: go
             - name: cgo
+          chart_type: stacked
         - name: cockroachdb.goroutines
           description: Number of Goroutines
           unit: goroutines
           dimensions:
             - name: goroutines
+          chart_type: line
         - name: cockroachdb.gc_count
           description: GC Runs
           unit: invokes
           dimensions:
             - name: gc
+          chart_type: line
         - name: cockroachdb.gc_pause
           description: GC Pause Time
           unit: us
           dimensions:
             - name: pause
+          chart_type: line
         - name: cockroachdb.cgo_calls
           description: Cgo Calls
           unit: calls
           dimensions:
             - name: cgo
+          chart_type: line

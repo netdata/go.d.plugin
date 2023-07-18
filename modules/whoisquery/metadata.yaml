@@ -2,48 +2,44 @@ name: whoisquery
 title: Domain name expiry collector
 overview:
   application:
-    description: |
-      A domain name (often simply called a domain) is an easy-to-remember name 
-      that's associated with a physical IP address on the Internet.
-
+    description: "A domain name (often simply called a domain) is an easy-to-remember
+      name \nthat's associated with a physical IP address on the Internet.\n"
   collector:
-    description: |
-      This collector monitors the remaining time before the domain expires.
+    description: "This collector monitors the remaining time before the domain expires.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: source
           description: Domain address.
-          default: ""
           required: true
+          default_value: ''
         - name: days_until_expiration_warning
           description: Number of days before the alarm status is warning.
-          default: 30
           required: false
+          default_value: 30
         - name: days_until_expiration_critical
           description: Number of days before the alarm status is critical.
-          default: 15
           required: false
+          default_value: 15
         - name: timeout
           description: The query timeout in seconds.
-          default: 5
           required: false
+          default_value: 5
     examples:
       folding:
         title: Config
@@ -51,22 +47,14 @@ setup:
       list:
         - name: Basic
           description: Basic configuration example
-          data: |
-            jobs:
-              - name: my_site
-                source: my_site.com
+          config: "jobs:\n  - name: my_site\n    source: my_site.com\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define more than one job, their names must be unique.
-
-            Check the expiration status of the multiple domains.
-          data: |
-            jobs:
-              - name: my_site1
-                source: my_site1.com
-
-              - name: my_site2
-                source: my_site2.com
+          description: "> **Note**: When you define more than one job, their names
+            must be unique.\n\nCheck the expiration status of the multiple domains.\n"
+          config: "jobs:\n  - name: my_site1\n    source: my_site1.com\n\n  - name:
+            my_site2\n    source: my_site2.com\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -74,8 +62,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: domain
       description: These metrics refer to the configured source.
       labels:
@@ -87,3 +76,4 @@ metrics:
           unit: seconds
           dimensions:
             - name: expiry
+          chart_type: line

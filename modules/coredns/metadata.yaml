@@ -2,98 +2,100 @@ name: coredns
 title: CoreDNS collector
 overview:
   application:
-    description: |
-      [CoreDNS](https://coredns.io/) is a fast and flexible DNS server.
+    description: "[CoreDNS](https://coredns.io/) is a fast and flexible DNS server.\n"
   collector:
-    description: |
-      This module monitor one or more CoreDNS instances depending on configuration.
+    description: "This module monitor one or more CoreDNS instances depending on configuration.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: All options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
-          required: no
+          required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:9153/metrics`"
-          required: yes
+          required: true
+          default_value: '`http://127.0.0.1:9153/metrics`'
         - name: per_server_stats
-          description: "Server filter. Module will collect server statistics if filter matches the server. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format)."
-          default: "-"
-          required: no
+          description: 'Server filter. Module will collect server statistics if filter
+            matches the server. Filter logic: (pattern1 OR pattern2) AND !(pattern3
+            or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).'
+          required: false
+          default_value: '-'
         - name: per_zone_stats
-          description: "Zone filter. Module will collect zone statistics if filter matches the zone. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format)."
-          default: "-"
-          required: no
+          description: 'Zone filter. Module will collect zone statistics if filter
+            matches the zone. Filter logic: (pattern1 OR pattern2) AND !(pattern3
+            or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).'
+          required: false
+          default_value: '-'
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_url
           description: The Proxie's URL.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: timeout
           description: HTTP request timeout.
-          default: 2
-          required: no
+          required: false
+          default_value: 2
         - name: method
           description: HTTP request method.
-          default: "GET"
-          required: no
+          required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certificate authority that client use when verifying server
+            certificates.
+          required: false
+          default_value: '-'
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
     examples:
       list:
         - name: Basic
@@ -101,33 +103,27 @@ setup:
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:9153/metrics
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:9153/metrics\n"
         - name: Basic HTTP auth
           description: Local server with basic HTTP authentication.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:9153/metrics
-                username: foo
-                password: bar
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:9153/metrics\n\
+            \    username: foo\n    password: bar\n"
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          description: When you are defining more than one jobs, you must be careful
+            to use different job names, to not override each other.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:9153/metrics
-
-              - name: remote
-                url: http://203.0.113.10:9153/metrics
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:9153/metrics\n\
+            \n  - name: remote\n    url: http://203.0.113.10:9153/metrics\n"
+      folding:
+        title: Config options
+        enabled: true
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -136,7 +132,8 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -146,39 +143,46 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: coredns.dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
           dimensions:
             - name: responses
+          chart_type: line
         - name: coredns.dns_request_count_total_per_status
           description: Number Of Processed And Dropped DNS Requests
           unit: requests/s
           dimensions:
             - name: processed
             - name: dropped
+          chart_type: stacked
         - name: coredns.dns_no_matching_zone_dropped_total
           description: Number Of Dropped DNS Requests Because Of No Matching Zone
           unit: requests/s
           dimensions:
             - name: dropped
+          chart_type: line
         - name: coredns.dns_panic_count_total
           description: Number Of Panics
           unit: panics/s
           dimensions:
             - name: panics
+          chart_type: line
         - name: coredns.dns_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
           dimensions:
             - name: udp
             - name: tcp
+          chart_type: stacked
         - name: coredns.dns_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
           dimensions:
             - name: v4
             - name: v6
+          chart_type: stacked
         - name: coredns.dns_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
@@ -199,6 +203,7 @@ metrics:
             - name: ixfr
             - name: any
             - name: other
+          chart_type: stacked
         - name: coredns.dns_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
@@ -223,6 +228,7 @@ metrics:
             - name: badtrunc
             - name: badcookie
             - name: other
+          chart_type: stacked
     - name: server
       description: TBD
       labels:
@@ -234,29 +240,34 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: coredns.server_dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
           dimensions:
             - name: responses
+          chart_type: line
         - name: coredns.server_request_count_total_per_status
           description: Number Of Processed And Dropped DNS Requests
           unit: requests/s
           dimensions:
             - name: processed
             - name: dropped
+          chart_type: stacked
         - name: coredns.server_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
           dimensions:
             - name: udp
             - name: tcp
+          chart_type: stacked
         - name: coredns.server_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
           dimensions:
             - name: v4
             - name: v6
+          chart_type: stacked
         - name: coredns.server_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
@@ -277,6 +288,7 @@ metrics:
             - name: ixfr
             - name: any
             - name: other
+          chart_type: stacked
         - name: coredns.server_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
@@ -301,6 +313,7 @@ metrics:
             - name: badtrunc
             - name: badcookie
             - name: other
+          chart_type: stacked
     - name: zone
       description: TBD
       labels:
@@ -312,23 +325,27 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: coredns.zone_dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
           dimensions:
             - name: responses
+          chart_type: line
         - name: coredns.zone_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
           dimensions:
             - name: udp
             - name: tcp
+          chart_type: stacked
         - name: coredns.zone_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
           dimensions:
             - name: v4
             - name: v6
+          chart_type: stacked
         - name: coredns.zone_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
@@ -349,6 +366,7 @@ metrics:
             - name: ixfr
             - name: any
             - name: other
+          chart_type: stacked
         - name: coredns.zone_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
@@ -373,3 +391,4 @@ metrics:
             - name: badtrunc
             - name: badcookie
             - name: other
+          chart_type: stacked

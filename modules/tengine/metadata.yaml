@@ -2,94 +2,95 @@ name: tengine
 title: Tengine collector
 overview:
   application:
-    description: |
-      [Tengine](https://tengine.taobao.org/) is a web server originated by Taobao and is based on the [NGINX](https://nginx.org/en/).
+    description: "[Tengine](https://tengine.taobao.org/) is a web server originated
+      by Taobao and is based on the [NGINX](https://nginx.org/en/).\n"
   collector:
-    description: |
-      This collector monitors one or more Tengine instances, depending on your configuration.
+    description: "This collector monitors one or more Tengine instances, depending
+      on your configuration.\n"
 setup:
   prerequisites:
     list:
       - title: Enable ngx_http_reqstat_module module.
-        text: |
-          See [ngx_http_reqstat_module](https://tengine.taobao.org/document/http_reqstat.html) documentation.
-          The default line format is the only supported format.
+        description: "See [ngx_http_reqstat_module](https://tengine.taobao.org/document/http_reqstat.html)
+          documentation.\nThe default line format is the only supported format.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1/us
           required: true
+          default_value: http://127.0.0.1/us
         - name: timeout
           description: HTTP request timeout.
-          default: 2
           required: false
+          default_value: 2
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -97,37 +98,22 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1/us
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1/us\n"
         - name: HTTP authentication
           description: Local server with basic HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1/us
-                username: foo
-                password: bar
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1/us\n    username:
+            foo\n    password: bar\n"
         - name: HTTPS with self-signed certificate
           description: Tengine with enabled HTTPS and self-signed certificate.
-          data: |
-            jobs:
-              - name: local
-                url: https://127.0.0.1/us
-                tls_skip_verify: yes
+          config: "jobs:\n  - name: local\n    url: https://127.0.0.1/us\n    tls_skip_verify:
+            yes\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Local and remote instances.
-          data: |
-            jobs:
-             - name: local
-               url: http://127.0.0.1/us
-
-             - name: remote
-               url: http://203.0.113.10/us
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nLocal and remote instances.\n"
+          config: "jobs:\n - name: local\n   url: http://127.0.0.1/us\n\n - name:
+            remote\n   url: http://203.0.113.10/us\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -135,8 +121,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -147,16 +134,19 @@ metrics:
           dimensions:
             - name: in
             - name: out
+          chart_type: area
         - name: tengine.connections_total
           description: Connections
           unit: connections/s
           dimensions:
             - name: accepted
+          chart_type: line
         - name: tengine.requests_total
           description: Requests
           unit: requests/s
           dimensions:
             - name: processed
+          chart_type: line
         - name: tengine.requests_per_response_code_family_total
           description: Requests Per Response Code Family
           unit: requests/s
@@ -166,6 +156,7 @@ metrics:
             - name: 4xx
             - name: 5xx
             - name: other
+          chart_type: stacked
         - name: tengine.requests_per_response_code_detailed_total
           description: Requests Per Response Code Detailed
           unit: requests/s
@@ -184,19 +175,23 @@ metrics:
             - name: '504'
             - name: '508'
             - name: other
+          chart_type: stacked
         - name: tengine.requests_upstream_total
           description: Number Of Requests Calling For Upstream
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: tengine.tries_upstream_total
           description: Number Of Times Calling For Upstream
           unit: calls/s
           dimensions:
             - name: calls
+          chart_type: line
         - name: tengine.requests_upstream_per_response_code_family_total
           description: Upstream Requests Per Response Code Family
           unit: requests/s
           dimensions:
             - name: 4xx
             - name: 5xx
+          chart_type: stacked

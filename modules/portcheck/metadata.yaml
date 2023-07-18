@@ -2,41 +2,40 @@ name: portcheck
 title: TCP endpoint collector
 overview:
   application:
-    description: ""
+    description: ''
   collector:
-    description: |
-      This collector monitors one or more TCP services availability and response time.
+    description: "This collector monitors one or more TCP services availability and
+      response time.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
           required: false
+          default_value: 5
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: host
           description: Remote host address in IPv4, IPv6 format, or DNS name.
-          default: ""
           required: true
+          default_value: ''
         - name: ports
           description: Remote host ports. Must be specified in numeric format.
-          default: ""
           required: true
+          default_value: ''
         - name: timeout
           description: HTTP request timeout.
-          default: 2
           required: false
+          default_value: 2
     examples:
       folding:
         title: Config
@@ -44,40 +43,20 @@ setup:
       list:
         - name: Check SSH and telnet
           description: An example configuration.
-          data: |
-            jobs:
-              - name: server1
-                host: 127.0.0.1
-                ports:
-                  - 22
-                  - 23
+          config: "jobs:\n  - name: server1\n    host: 127.0.0.1\n    ports:\n   \
+            \   - 22\n      - 23\n"
         - name: Check webserver with IPv6 address
           description: An example configuration.
-          data: |
-            jobs:
-              - name: server2
-                host: "[2001:DB8::1]"
-                ports:
-                  - 80
-                  - 8080
+          config: "jobs:\n  - name: server2\n    host: \"[2001:DB8::1]\"\n    ports:\n\
+            \      - 80\n      - 8080\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-            
-            Multiple instances.
-          data: |
-            jobs:
-              - name: server1
-                host: 127.0.0.1
-                ports:
-                  - 22
-                  - 23
-            
-              - name: server2
-                host: 203.0.113.10
-                ports:
-                  - 22
-                  - 23
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nMultiple instances.\n"
+          config: "jobs:\n  - name: server1\n    host: 127.0.0.1\n    ports:\n   \
+            \   - 22\n      - 23\n\n  - name: server2\n    host: 203.0.113.10\n  \
+            \  ports:\n      - 22\n      - 23\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -85,8 +64,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: tcp endpoint
       description: These metrics refer to the TCP endpoint.
       labels:
@@ -102,13 +82,16 @@ metrics:
             - name: success
             - name: failed
             - name: timeout
+          chart_type: line
         - name: portcheck.state_duration
           description: Current State Duration
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line
         - name: portcheck.latency
           description: TCP Connection Latency
           unit: ms
           dimensions:
             - name: time
+          chart_type: line

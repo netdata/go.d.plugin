@@ -2,103 +2,100 @@ name: powerdns
 title: PowerDNS Authoritative Server collector
 overview:
   application:
-    description: |
-      [PowerDNS Authoritative Server](https://doc.powerdns.com/authoritative/) is a versatile nameserver which supports a
-      large number of backends.
+    description: "[PowerDNS Authoritative Server](https://doc.powerdns.com/authoritative/)
+      is a versatile nameserver which supports a\nlarge number of backends.\n"
   collector:
-    description: |
-      This collector monitors one or more PowerDNS Authoritative Server instances, depending on your configuration.
-      
-      It collects metrics from [the internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
-      
-      Used endpoints:
-      
-      - [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)
+    description: "This collector monitors one or more PowerDNS Authoritative Server
+      instances, depending on your configuration.\n\nIt collects metrics from [the
+      internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).\n
+      \nUsed endpoints:\n\n- [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)\n"
 setup:
   prerequisites:
     list:
       - title: Enable webserver
-        text: |
-          Follow [webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver) documentation.
+        description: "Follow [webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver)
+          documentation.\n"
       - title: Enable HTTP API
-        text: |
-          Follow [HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api) documentation.
+        description: "Follow [HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api)
+          documentation.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1:8081
           required: true
+          default_value: http://127.0.0.1:8081
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -106,30 +103,18 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8081
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8081\n"
         - name: HTTP authentication
           description: Basic HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8081
-                username: admin
-                password: password
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8081\n    username:
+            admin\n    password: password\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-            
-            Local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8081
-
-              - name: remote
-                url: http://203.0.113.0:8081
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nLocal and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8081\n\n  - name:
+            remote\n    url: http://203.0.113.0:8081\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -137,8 +122,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -149,12 +135,14 @@ metrics:
           dimensions:
             - name: udp
             - name: tcp
+          chart_type: line
         - name: powerdns.questions_out
           description: Outgoing questions
           unit: questions/s
           dimensions:
             - name: udp
             - name: tcp
+          chart_type: line
         - name: powerdns.cache_usage
           description: Cache Usage
           unit: events/s
@@ -163,6 +151,7 @@ metrics:
             - name: query-cache-miss
             - name: packetcache-hit
             - name: packetcache-miss
+          chart_type: line
         - name: powerdns.cache_size
           description: Cache Size
           unit: entries
@@ -171,8 +160,10 @@ metrics:
             - name: packet-cache
             - name: key-cache
             - name: meta-cache
+          chart_type: line
         - name: powerdns.latency
           description: Answer latency
           unit: microseconds
           dimensions:
             - name: latency
+          chart_type: line

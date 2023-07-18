@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,28 +68,34 @@ metrics:
           unit: pulls
           dimensions:
             - name: sum
+          chart_type: line
         - name: dockerhub.pulls
           description: Pulls
           unit: pulls
           dimensions:
             - name: a dimension per repository
+          chart_type: stacked
         - name: dockerhub.pulls_rate
           description: Pulls Rate
           unit: pulls/s
           dimensions:
             - name: a dimension per repository
+          chart_type: stacked
         - name: dockerhub.stars
           description: Stars
           unit: stars
           dimensions:
             - name: a dimension per repository
+          chart_type: stacked
         - name: dockerhub.status
           description: Current Status
           unit: status
           dimensions:
             - name: a dimension per repository
+          chart_type: line
         - name: dockerhub.last_updated
           description: Time Since Last Updated
           unit: seconds
           dimensions:
             - name: a dimension per repository
+          chart_type: line

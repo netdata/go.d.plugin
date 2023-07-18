@@ -2,94 +2,92 @@ name: solr
 title: Solr collector
 overview:
   application:
-    description: |
-      [Solr](https://lucene.apache.org/solr/) is an open-source enterprise-search platform, written in Java, from the Apache
-      Lucene project.
+    description: "[Solr](https://lucene.apache.org/solr/) is an open-source enterprise-search
+      platform, written in Java, from the Apache\nLucene project.\n"
   collector:
-    description: |
-      This module will monitor one or more Solr instances, depending on your configuration.
+    description: "This module will monitor one or more Solr instances, depending on
+      your configuration.\n"
 setup:
   prerequisites:
     list:
       - title: Solr version 6.4+
-        text: |
-          This collector does not work with Solr versions lower 6.4.
+        description: "This collector does not work with Solr versions lower 6.4.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: All options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
-          required: no
+          required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:8983`"
-          required: yes
+          required: true
+          default_value: '`http://127.0.0.1:8983`'
         - name: timeout
           description: HTTP request timeout.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_url
           description: Proxy URL.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: method
           description: HTTP request method.
-          default: "GET"
-          required: no
+          required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certificate authority that client use when verifying server
+            certificates.
+          required: false
+          default_value: '-'
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
     examples:
       list:
         - name: Basic
@@ -97,36 +95,27 @@ setup:
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-              url: http://localhost:8983
+          config: "jobs:\n  - name: local\n  url: http://localhost:8983\n"
         - name: Basic HTTP auth
           description: Local Solr instance with basic HTTP authentication.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost:8983
-                username: foo
-                password: bar
+          config: "jobs:\n  - name: local\n    url: http://localhost:8983\n    username:
+            foo\n    password: bar\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-            
-            Local and remote instances.
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nLocal and remote instances.\n"
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost:8983
-            
-              - name: remote
-                url: http://203.0.113.10:8983
+          config: "jobs:\n  - name: local\n    url: http://localhost:8983\n\n  - name:
+            remote\n    url: http://203.0.113.10:8983\n"
+      folding:
+        title: Config options
+        enabled: true
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -135,7 +124,8 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -145,11 +135,13 @@ metrics:
           unit: requests/s
           dimensions:
             - name: search
+          chart_type: line
         - name: solr.search_errors
           description: Search Errors
           unit: errors/s
           dimensions:
             - name: errors
+          chart_type: line
         - name: solr.search_errors_by_type
           description: Search Errors By Type
           unit: errors/s
@@ -157,11 +149,13 @@ metrics:
             - name: client
             - name: server
             - name: timeouts
+          chart_type: line
         - name: solr.search_requests_processing_time
           description: Search Requests Processing Time
           unit: milliseconds
           dimensions:
             - name: time
+          chart_type: line
         - name: solr.search_requests_timings
           description: Search Requests Timings
           unit: milliseconds
@@ -170,6 +164,7 @@ metrics:
             - name: median
             - name: mean
             - name: max
+          chart_type: line
         - name: solr.search_requests_processing_time_percentile
           description: Search Requests Processing Time Percentile
           unit: milliseconds
@@ -178,16 +173,19 @@ metrics:
             - name: p95
             - name: p99
             - name: p999
+          chart_type: line
         - name: solr.update_requests
           description: Update Requests
           unit: requests/s
           dimensions:
             - name: search
+          chart_type: line
         - name: solr.update_errors
           description: Update Errors
           unit: errors/s
           dimensions:
             - name: errors
+          chart_type: line
         - name: solr.update_errors_by_type
           description: Update Errors By Type
           unit: errors/s
@@ -195,11 +193,13 @@ metrics:
             - name: client
             - name: server
             - name: timeouts
+          chart_type: line
         - name: solr.update_requests_processing_time
           description: Update Requests Processing Time
           unit: milliseconds
           dimensions:
             - name: time
+          chart_type: line
         - name: solr.update_requests_timings
           description: Update Requests Timings
           unit: milliseconds
@@ -208,6 +208,7 @@ metrics:
             - name: median
             - name: mean
             - name: max
+          chart_type: line
         - name: solr.update_requests_processing_time_percentile
           description: Update Requests Processing Time Percentile
           unit: milliseconds
@@ -216,3 +217,4 @@ metrics:
             - name: p95
             - name: p99
             - name: p999
+          chart_type: line

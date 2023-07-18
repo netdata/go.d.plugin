@@ -2,38 +2,37 @@ name: systemdunits
 title: Systemd units state collector
 overview:
   application:
-    description: |
-      [Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is a suite of basic building blocks for a Linux system.
+    description: "[Systemd](https://www.freedesktop.org/wiki/Software/systemd/) is
+      a suite of basic building blocks for a Linux system.\n"
   collector:
-    description: |
-      This collector monitors Systemd units state. Works only on Linux systems.
+    description: "This collector monitors Systemd units state. Works only on Linux
+      systems.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: include
           description: Systemd units filter. Pattern syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
-          default: "*.service"
           required: false
+          default_value: '*.service'
         - name: timeout
           description: System bus requests timeout.
-          default: 1
           required: false
+          default_value: 1
     examples:
       folding:
         title: Config
@@ -41,39 +40,21 @@ setup:
       list:
         - name: Service units
           description: Collect state of all service type units.
-          data: |
-            jobs:
-              - name: service
-                include:
-                  - '*.service'
+          config: "jobs:\n  - name: service\n    include:\n      - '*.service'\n"
         - name: One specific unit
           description: Collect state of one specific unit.
-          data: |
-            jobs:
-              - name: my-specific-service
-                include:
-                  - 'my-specific.service'
+          config: "jobs:\n  - name: my-specific-service\n    include:\n      - 'my-specific.service'\n"
         - name: All unit types
           description: Collect state of all units.
-          data: |
-            jobs:
-              - name: my-specific-service-unit
-                include:
-                  - '*'
+          config: "jobs:\n  - name: my-specific-service-unit\n    include:\n     \
+            \ - '*'\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collect state of all service and socket type units.
-          data: |
-            jobs:
-              - name: service
-                include:
-                  - '*.service'
-
-              - name: socket
-                include:
-                  - '*.socket'
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollect state of all service and socket type units.\n"
+          config: "jobs:\n  - name: service\n    include:\n      - '*.service'\n\n\
+            \  - name: socket\n    include:\n      - '*.socket'\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -81,8 +62,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: unit
       description: These metrics refer to the systemd unit.
       labels:
@@ -98,6 +80,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.socket_unit_state
           description: Socket Unit State
           unit: state
@@ -107,6 +90,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.target_unit_state
           description: Target Unit State
           unit: state
@@ -116,6 +100,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.path_unit_state
           description: Path Unit State
           unit: state
@@ -125,6 +110,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.device_unit_state
           description: Device Unit State
           unit: state
@@ -134,6 +120,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.mount_unit_state
           description: Mount Unit State
           unit: state
@@ -143,6 +130,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.automount_unit_state
           description: Automount Unit State
           unit: state
@@ -152,6 +140,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.swap_unit_state
           description: Swap Unit State
           unit: state
@@ -161,6 +150,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.timer_unit_state
           description: Timer Unit State
           unit: state
@@ -170,6 +160,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.scope_unit_state
           description: Scope Unit State
           unit: state
@@ -179,6 +170,7 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line
         - name: systemd.slice_unit_state
           description: Slice Unit State
           unit: state
@@ -188,3 +180,4 @@ metrics:
             - name: activating
             - name: deactivating
             - name: failed
+          chart_type: line

@@ -2,69 +2,69 @@ name: x509check
 title: x509 certificate collector
 overview:
   application:
-    description: |
-      An X.509 certificate is a digital certificate based on the widely accepted International Telecommunications Union (ITU) X.509 standard.
-
+    description: "An X.509 certificate is a digital certificate based on the widely
+      accepted International Telecommunications Union (ITU) X.509 standard.\n"
   collector:
-    description: |
-      This collector checks the time until a x509 certificate expires and its revocation status.
-
-      Information about X509 certificates can be collected through a local file, TCP, UDP, HTTPS or SMTP protocols.
+    description: "This collector checks the time until a x509 certificate expires
+      and its revocation status.\n\nInformation about X509 certificates can be collected
+      through a local file, TCP, UDP, HTTPS or SMTP protocols.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: source
-          description: "Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file."
-          default: ""
+          description: 'Certificate source. Allowed schemes: https, tcp, tcp4, tcp6,
+            udp, udp4, udp6, file.'
           required: false
+          default_value: ''
         - name: days_until_expiration_warning
           description: Number of days before the alarm status is warning.
-          default: 30
           required: false
+          default_value: 30
         - name: days_until_expiration_critical
           description: Number of days before the alarm status is critical.
-          default: 15
           required: false
+          default_value: 15
         - name: check_revocation_status
           description: Whether to check the revocation status of the certificate.
-          default: no
           required: false
+          default_value: no
         - name: timeout
           description: SSL connection timeout.
-          default: 2
           required: false
+          default_value: 2
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -72,37 +72,22 @@ setup:
       list:
         - name: Website certificate
           description: Website certificate.
-          data: |
-            jobs:
-              - name: my_site_cert
-                source: https://my_site.org:443
+          config: "jobs:\n  - name: my_site_cert\n    source: https://my_site.org:443\n"
         - name: Local file certificate
           description: Local file certificate.
-          data: |
-            jobs:
-              - name: my_file_cert
-                source: file:///home/me/cert.pem
+          config: "jobs:\n  - name: my_file_cert\n    source: file:///home/me/cert.pem\n"
         - name: SMTP certificate
           description: SMTP certificate.
-          data: |
-            jobs:
-              - name: my_smtp_cert
-                source: smtp://smtp.my_mail.org:587
+          config: "jobs:\n  - name: my_smtp_cert\n    source: smtp://smtp.my_mail.org:587\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define more than one job, their names must be unique.
-
-            Check the expiration status of the multiple websites' certificates.
-          data: |
-            jobs:
-              - name: my_site_cert1
-                source: https://my_site1.org:443
-
-              - name: my_site_cert2
-                source: https://my_site1.org:443
-
-              - name: my_site_cert3
-                source: https://my_site3.org:443
+          description: "> **Note**: When you define more than one job, their names
+            must be unique.\n\nCheck the expiration status of the multiple websites'
+            certificates.\n"
+          config: "jobs:\n  - name: my_site_cert1\n    source: https://my_site1.org:443\n\
+            \n  - name: my_site_cert2\n    source: https://my_site1.org:443\n\n  -
+            name: my_site_cert3\n    source: https://my_site3.org:443\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -110,8 +95,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: source
       description: These metrics refer to the configured source.
       labels:
@@ -123,8 +109,10 @@ metrics:
           unit: seconds
           dimensions:
             - name: expiry
+          chart_type: line
         - name: x509check.revocation_status
           description: Revocation Status
           unit: boolean
           dimensions:
             - name: revoked
+          chart_type: line

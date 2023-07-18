@@ -2,63 +2,63 @@ name: zookeeper
 title: Zookeeper collector
 overview:
   application:
-    description: |
-      [ZooKeeper](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
-      providing distributed synchronization, and providing group services.
+    description: "[ZooKeeper](https://zookeeper.apache.org/) is a centralized service
+      for maintaining configuration information, naming,\nproviding distributed synchronization,
+      and providing group services.\n"
   collector:
-    description: |
-      This collector monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
-      by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
+    description: "This collector monitors one or more ZooKeeper servers, depending
+      on your configuration. It fetches metrics from ZooKeeper\nby using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands)
+      command.\n"
 setup:
   prerequisites:
     list:
       - title: Whitelist `mntr` command
-        text: |
-          Add `mntr` to Zookeeper's [4lw.commands.whitelist](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_4lw).
+        description: "Add `mntr` to Zookeeper's [4lw.commands.whitelist](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_4lw).\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: address
           description: Server address. The format is IP:PORT.
-          default: 127.0.0.1:2181
           required: true
+          default_value: 127.0.0.1:2181
         - name: timeout
           description: Connection/read/write/ssl handshake timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: use_tls
           description: Whether to use TLS or not.
-          default: no
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -66,30 +66,18 @@ setup:
       list:
         - name: Basic
           description: Local server.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:2181
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:2181\n"
         - name: TLS with self-signed certificate
           description: Zookeeper with TLS and self-signed certificate.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:2181
-                use_tls: yes
-                tls_skip_verify: yes
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:2181\n    use_tls:
+            yes\n    tls_skip_verify: yes\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:2181
-
-              - name: remote
-                address: 192.0.2.1:2181
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:2181\n\n  - name:
+            remote\n    address: 192.0.2.1:2181\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -97,8 +85,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -108,6 +97,7 @@ metrics:
           unit: requests
           dimensions:
             - name: outstanding
+          chart_type: line
         - name: zookeeper.requests_latency
           description: Requests Latency
           unit: ms
@@ -115,40 +105,48 @@ metrics:
             - name: min
             - name: avg
             - name: max
+          chart_type: line
         - name: zookeeper.connections
           description: Alive Connections
           unit: connections
           dimensions:
             - name: alive
+          chart_type: line
         - name: zookeeper.packets
           description: Packets
           unit: pps
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: zookeeper.file_descriptor
           description: Open File Descriptors
           unit: file descriptors
           dimensions:
             - name: open
+          chart_type: line
         - name: zookeeper.nodes
           description: Number of Nodes
           unit: nodes
           dimensions:
             - name: znode
             - name: ephemerals
+          chart_type: line
         - name: zookeeper.watches
           description: Number of Watches
           unit: watches
           dimensions:
             - name: watches
+          chart_type: line
         - name: zookeeper.approximate_data_size
           description: Approximate Data Tree Size
           unit: KiB
           dimensions:
             - name: size
+          chart_type: line
         - name: zookeeper.server_state
           description: Server State
           unit: state
           dimensions:
             - name: state
+          chart_type: line

@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -14,22 +69,26 @@ metrics:
           dimensions:
             - name: committed
             - name: used
+          chart_type: area
         - name: hdfs.gc_count_total
           description: GC Events
           unit: events/s
           dimensions:
             - name: gc
+          chart_type: line
         - name: hdfs.gc_time_total
           description: GC Time
           unit: ms
           dimensions:
             - name: ms
+          chart_type: line
         - name: hdfs.gc_threshold
           description: Number of Times That the GC Threshold is Exceeded
           unit: events/s
           dimensions:
             - name: info
             - name: warn
+          chart_type: line
         - name: hdfs.threads
           description: Number of Threads
           unit: num
@@ -40,6 +99,7 @@ metrics:
             - name: waiting
             - name: timed_waiting
             - name: terminated
+          chart_type: stacked
         - name: hdfs.logs_total
           description: Number of Logs
           unit: logs/s
@@ -48,70 +108,83 @@ metrics:
             - name: error
             - name: warn
             - name: fatal
+          chart_type: stacked
         - name: hdfs.rpc_bandwidth
           description: RPC Bandwidth
           unit: kilobits/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: hdfs.rpc_calls
           description: RPC Calls
           unit: calls/s
           dimensions:
             - name: calls
+          chart_type: line
         - name: hdfs.open_connections
           description: RPC Open Connections
           unit: connections
           dimensions:
             - name: open
+          chart_type: line
         - name: hdfs.call_queue_length
           description: RPC Call Queue Length
           unit: num
           dimensions:
             - name: length
+          chart_type: line
         - name: hdfs.avg_queue_time
           description: RPC Avg Queue Time
           unit: ms
           dimensions:
             - name: time
+          chart_type: line
         - name: hdfs.avg_processing_time
           description: RPC Avg Processing Time
           unit: ms
           dimensions:
             - name: time
+          chart_type: line
         - name: hdfs.capacity
           description: Capacity Across All Datanodes
           unit: KiB
           dimensions:
             - name: remaining
             - name: used
+          chart_type: stacked
         - name: hdfs.used_capacity
           description: Used Capacity Across All Datanodes
           unit: KiB
           dimensions:
             - name: dfs
             - name: non_dfs
+          chart_type: stacked
         - name: hdfs.load
           description: Number of Concurrent File Accesses (read/write) Across All
             DataNodes
           unit: load
           dimensions:
             - name: load
+          chart_type: line
         - name: hdfs.volume_failures_total
           description: Number of Volume Failures Across All Datanodes
           unit: events/s
           dimensions:
             - name: failures
+          chart_type: line
         - name: hdfs.files_total
           description: Number of Tracked Files
           unit: num
           dimensions:
             - name: files
+          chart_type: line
         - name: hdfs.blocks_total
           description: Number of Allocated Blocks in the System
           unit: num
           dimensions:
             - name: blocks
+          chart_type: line
         - name: hdfs.blocks
           description: Number of Problem Blocks (can point to an unhealthy cluster)
           unit: num
@@ -119,6 +192,7 @@ metrics:
             - name: corrupt
             - name: missing
             - name: under_replicated
+          chart_type: line
         - name: hdfs.data_nodes
           description: Number of Data Nodes By Status
           unit: num
@@ -126,26 +200,31 @@ metrics:
             - name: live
             - name: dead
             - name: stale
+          chart_type: stacked
         - name: hdfs.datanode_capacity
           description: Capacity
           unit: KiB
           dimensions:
             - name: remaining
             - name: used
+          chart_type: stacked
         - name: hdfs.datanode_used_capacity
           description: Used Capacity
           unit: KiB
           dimensions:
             - name: dfs
             - name: non_dfs
+          chart_type: stacked
         - name: hdfs.datanode_failed_volumes
           description: Number of Failed Volumes
           unit: num
           dimensions:
             - name: failed volumes
+          chart_type: line
         - name: hdfs.datanode_bandwidth
           description: Bandwidth
           unit: KiB/s
           dimensions:
             - name: reads
             - name: writes
+          chart_type: area

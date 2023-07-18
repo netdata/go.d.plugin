@@ -2,54 +2,45 @@ name: openvpn_status_log
 title: OpenVPN collector
 overview:
   application:
-    description: |
-      [OpenVPN](https://openvpn.net/) is an open-source commercial software that implements virtual private network
-      techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote
-      access facilities.
+    description: "[OpenVPN](https://openvpn.net/) is an open-source commercial software
+      that implements virtual private network\ntechniques to create secure point-to-point
+      or site-to-site connections in routed or bridged configurations and remote\n
+      access facilities.\n"
   collector:
-    description: |
-      This collector parses server log files and provides summary and per user metrics.
+    description: "This collector parses server log files and provides summary and
+      per user metrics.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: log_path
           description: Path to status log.
-          default: /var/log/openvpn/status.log
           required: true
+          default_value: /var/log/openvpn/status.log
         - name: per_user_stats
           description: User selector. Determines which user metrics will be collected.
-          default: ""
           required: false
-          details: |
-            Metrics of users matching the selector will be collected.
-            - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
-            - Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
-            - Syntax:
-              ```yaml
-              per_user_stats:
-                includes:
-                  - pattern1
-                  - pattern2
-                excludes:
-                  - pattern3
-                  - pattern4
-              ```
+          details: "Metrics of users matching the selector will be collected.\n- Logic:
+            (pattern1 OR pattern2) AND !(pattern3 or pattern4)\n- Pattern syntax:
+            [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).\n
+            - Syntax:\n  ```yaml\n  per_user_stats:\n    includes:\n      - pattern1\n\
+            \      - pattern2\n    excludes:\n      - pattern3\n      - pattern4\n\
+            \  ```\n"
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -57,12 +48,10 @@ setup:
       list:
         - name: With user metrics
           description: Collect metrics of all users.
-          data: |
-            jobs:
-              - name: local
-                per_user_stats:
-                  includes:
-                    - "* *"
+          config: "jobs:\n  - name: local\n    per_user_stats:\n      includes:\n\
+            \        - \"* *\"\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -70,8 +59,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -81,12 +71,14 @@ metrics:
           unit: clients
           dimensions:
             - name: clients
+          chart_type: line
         - name: openvpn.total_traffic
           description: Total Traffic
           unit: kilobits/s
           dimensions:
             - name: in
             - name: out
+          chart_type: area
     - name: user
       description: These metrics refer to the VPN user.
       labels:
@@ -99,8 +91,10 @@ metrics:
           dimensions:
             - name: in
             - name: out
+          chart_type: area
         - name: openvpn.user_connection_time
           description: User Connection Time
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line

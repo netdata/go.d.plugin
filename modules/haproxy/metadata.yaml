@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,26 +68,31 @@ metrics:
           unit: sessions
           dimensions:
             - name: a dimension per proxy
+          chart_type: line
         - name: haproxy.backend_sessions
           description: Sessions rate
           unit: sessions/s
           dimensions:
             - name: a dimension per proxy
+          chart_type: line
         - name: haproxy.backend_response_time_average
           description: Average response time for last 1024 successful connections
           unit: milliseconds
           dimensions:
             - name: a dimension per proxy
+          chart_type: line
         - name: haproxy.backend_queue_time_average
           description: Average queue time for last 1024 successful connections
           unit: milliseconds
           dimensions:
             - name: a dimension per proxy
+          chart_type: line
         - name: haproxy.backend_current_queue
           description: Current number of queued requests
           unit: requests
           dimensions:
             - name: a dimension per proxy
+          chart_type: line
     - name: proxy
       description: TBD
       labels: []
@@ -47,9 +107,11 @@ metrics:
             - name: 4xx
             - name: 5xx
             - name: other
+          chart_type: stacked
         - name: haproxy.backend_network_io
           description: Network traffic
           unit: bytes/s
           dimensions:
             - name: in
             - name: out
+          chart_type: area

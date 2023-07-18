@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,33 +68,40 @@ metrics:
           unit: boolean
           dimensions:
             - name: a dimension per file
+          chart_type: line
         - name: filecheck.file_mtime_ago
           description: File Time Since the Last Modification
           unit: seconds
           dimensions:
             - name: a dimension per file
+          chart_type: line
         - name: filecheck.file_size
           description: File Size
           unit: bytes
           dimensions:
             - name: a dimension per file
+          chart_type: line
         - name: filecheck.dir_existence
           description: 'Dir Existence (0: not exists, 1: exists)'
           unit: boolean
           dimensions:
             - name: a dimension per directory
+          chart_type: line
         - name: filecheck.dir_mtime_ago
           description: Dir Time Since the Last Modification
           unit: seconds
           dimensions:
             - name: a dimension per directory
+          chart_type: line
         - name: filecheck.dir_num_of_files
           description: Dir Number of Files
           unit: files
           dimensions:
             - name: a dimension per directory
+          chart_type: line
         - name: filecheck.dir_size
           description: Dir Size
           unit: bytes
           dimensions:
             - name: a dimension per directory
+          chart_type: line

@@ -2,64 +2,53 @@ name: ping
 title: Ping collector
 overview:
   application:
-    description: ""
+    description: ''
   collector:
-    description: |
-      This module measures round-tripe time and packet loss by sending ping messages to network hosts.
-      
-      There are two operational modes:
-
-      - privileged (send raw ICMP ping, default). Requires
-        CAP_NET_RAW [capability](https://man7.org/linux/man-pages/man7/capabilities.7.html) or root privileges:
-        > **Note**: set automatically during Netdata installation.
-
-        ```bash
-        sudo setcap CAP_NET_RAW=eip <INSTALL_PREFIX>/usr/libexec/netdata/plugins.d/go.d.plugin
-        ```
-
-      - unprivileged (send UDP ping, Linux only).
-        Requires configuring [ping_group_range](https://www.man7.org/linux/man-pages/man7/icmp.7.html):
-
-        ```bash
-        sudo sysctl -w net.ipv4.ping_group_range="0 2147483647"
-        ```
-        To persist the change add `net.ipv4.ping_group_range="0 2147483647"` to `/etc/sysctl.conf` and
-        execute `sudo sysctl -p`.
+    description: "This module measures round-tripe time and packet loss by sending
+      ping messages to network hosts.\n\nThere are two operational modes:\n\n- privileged
+      (send raw ICMP ping, default). Requires\n  CAP_NET_RAW [capability](https://man7.org/linux/man-pages/man7/capabilities.7.html)
+      or root privileges:\n  > **Note**: set automatically during Netdata installation.\n\
+      \n  ```bash\n  sudo setcap CAP_NET_RAW=eip <INSTALL_PREFIX>/usr/libexec/netdata/plugins.d/go.d.plugin\n\
+      \  ```\n\n- unprivileged (send UDP ping, Linux only).\n  Requires configuring
+      [ping_group_range](https://www.man7.org/linux/man-pages/man7/icmp.7.html):\n\
+      \n  ```bash\n  sudo sysctl -w net.ipv4.ping_group_range=\"0 2147483647\"\n \
+      \ ```\n  To persist the change add `net.ipv4.ping_group_range=\"0 2147483647\"\
+      ` to `/etc/sysctl.conf` and\n  execute `sudo sysctl -p`.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
           required: false
+          default_value: 5
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: hosts
           description: Network hosts.
-          default: ""
           required: true
+          default_value: ''
         - name: privileged
-          description: Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping.
-          default: yes
+          description: Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes"
+            - raw ICMP ping.
           required: false
+          default_value: yes
         - name: packets
           description: Number of ping packets to send.
-          default: 5
           required: false
+          default_value: 5
         - name: interval
           description: Timeout between sending ping packets.
-          default: 100ms
           required: false
+          default_value: 100ms
     examples:
       folding:
         title: Config
@@ -67,38 +56,20 @@ setup:
       list:
         - name: IPv4 hosts
           description: An example configuration.
-          data: |
-            jobs:
-              - name: example
-                hosts:
-                  - 192.0.2.0
-                  - 192.0.2.1
+          config: "jobs:\n  - name: example\n    hosts:\n      - 192.0.2.0\n     \
+            \ - 192.0.2.1\n"
         - name: Unprivileged mode
           description: An example configuration.
-          data: |
-            jobs:
-              - name: example
-                privileged: no
-                hosts:
-                  - 192.0.2.0
-                  - 192.0.2.1
+          config: "jobs:\n  - name: example\n    privileged: no\n    hosts:\n    \
+            \  - 192.0.2.0\n      - 192.0.2.1\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-            
-            Multiple instances.
-          data: |
-            jobs:
-              - name: example1
-                hosts:
-                  - 192.0.2.0
-                  - 192.0.2.1
-            
-              - name: example2
-                packets: 10
-                hosts:
-                  - 192.0.2.3
-                  - 192.0.2.4
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nMultiple instances.\n"
+          config: "jobs:\n  - name: example1\n    hosts:\n      - 192.0.2.0\n    \
+            \  - 192.0.2.1\n\n  - name: example2\n    packets: 10\n    hosts:\n  \
+            \    - 192.0.2.3\n      - 192.0.2.4\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -106,8 +77,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: host
       description: These metrics refer to the remote host.
       labels:
@@ -121,19 +93,23 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: ping.host_std_dev_rtt
           description: Ping round-trip time standard deviation
           unit: milliseconds
           dimensions:
             - name: std_dev
+          chart_type: line
         - name: ping.host_packet_loss
           description: Ping packet loss
           unit: percentage
           dimensions:
             - name: loss
+          chart_type: line
         - name: ping.host_packets
           description: Ping packets transferred
           unit: packets
           dimensions:
             - name: received
             - name: sent
+          chart_type: line

@@ -2,94 +2,93 @@ name: traefik
 title: Traefik collector
 overview:
   application:
-    description: |
-      [Traefik](https://traefik.io/traefik/) is a leading modern reverse proxy and load balancer that makes deploying
-      microservices easy.
+    description: "[Traefik](https://traefik.io/traefik/) is a leading modern reverse
+      proxy and load balancer that makes deploying\nmicroservices easy.\n"
   collector:
-    description: |
-      This module will monitor one or more Traefik instances, depending on your configuration.
+    description: "This module will monitor one or more Traefik instances, depending
+      on your configuration.\n"
 setup:
   prerequisites:
     list:
       - title: Enable built-in Prometheus exporter
-        text: |
-          To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+        description: "To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/)
+          documentation.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: All options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
-          required: no
+          required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: "http://127.0.0.1:8082/metrics"
-          required: yes
+          required: true
+          default_value: http://127.0.0.1:8082/metrics
         - name: timeout
           description: HTTP request timeout.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_url
           description: The Proxie's URL.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: method
           description: HTTP request method.
-          default: "GET"
-          required: no
+          required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
-          default: no
-          required: no
+          required: false
+          default_value: no
         - name: tls_ca
-          description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          description: Certificate authority that client use when verifying server
+            certificates.
+          required: false
+          default_value: '-'
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
     examples:
       list:
         - name: Basic
@@ -97,36 +96,27 @@ setup:
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8082/metrics
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8082/metrics\n"
         - name: Basic HTTP auth
           description: Local server with basic HTTP authentication.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8082/metrics
-                username: foo
-                password: bar
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8082/metrics\n\
+            \    username: foo\n    password: bar\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Local and remote instances.
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nLocal and remote instances.\n"
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                http://127.0.0.1:8082/metrics
-            
-              - name: remote
-                http://192.0.2.0:8082/metrics
+          config: "jobs:\n  - name: local\n    http://127.0.0.1:8082/metrics\n\n \
+            \ - name: remote\n    http://192.0.2.0:8082/metrics\n"
+      folding:
+        title: Config options
+        enabled: true
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -135,7 +125,8 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: entrypoint, protocol
       description: TBD
       labels: []
@@ -149,6 +140,7 @@ metrics:
             - name: 3xx
             - name: 4xx
             - name: 5xx
+          chart_type: stacked
         - name: traefik.entrypoint_request_duration_average
           description: Average HTTP request processing time
           unit: milliseconds
@@ -158,8 +150,10 @@ metrics:
             - name: 3xx
             - name: 4xx
             - name: 5xx
+          chart_type: stacked
         - name: traefik.entrypoint_open_connections
           description: Open connections
           unit: connections
           dimensions:
             - name: a dimension per HTTP method
+          chart_type: stacked

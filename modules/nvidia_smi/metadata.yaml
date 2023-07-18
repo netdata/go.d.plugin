@@ -2,53 +2,52 @@ name: nvidia_smi
 title: Nvidia GPU collector
 overview:
   application:
-    description: ""
+    description: ''
   collector:
-    description: |
-      This collector monitors GPUs performance metrics using
-      the [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface) CLI tool.
-
-      > **Warning**: under development, [loop mode](https://github.com/netdata/netdata/issues/14522) not implemented yet.
+    description: "This collector monitors GPUs performance metrics using\nthe [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface)
+      CLI tool.\n\n> **Warning**: under development, [loop mode](https://github.com/netdata/netdata/issues/14522)
+      not implemented yet.\n"
 setup:
   prerequisites:
     list:
       - title: Enable in go.d.conf.
-        text: |
-          This collector is disabled by default. You need to explicitly enable it in the `go.d.conf` file.
+        description: "This collector is disabled by default. You need to explicitly
+          enable it in the `go.d.conf` file.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 10
           required: false
+          default_value: 10
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: binary_path
-          description: Path to nvidia_smi binary. The default is "nvidia_smi" and the executable is looked for in the directories specified in the PATH environment variable.
-          default: nvidia_smi
+          description: Path to nvidia_smi binary. The default is "nvidia_smi" and
+            the executable is looked for in the directories specified in the PATH
+            environment variable.
           required: false
+          default_value: nvidia_smi
         - name: timeout
           description: nvidia_smi binary execution timeout.
-          default: 2
           required: false
+          default_value: 2
         - name: use_csv_format
-          description: Used format when requesting GPU information. XML is used if set to 'no'.
-          default: yes
+          description: Used format when requesting GPU information. XML is used if
+            set to 'no'.
           required: false
-          details: |
-            This module supports data collection in CSV and XML formats. The default is CSV.
-
-            - XML provides more metrics, but requesting GPU information consumes more CPU, especially if there are multiple GPUs
-              in the system.
-            - CSV provides fewer metrics, but is much lighter than XML in terms of CPU usage.
+          details: "This module supports data collection in CSV and XML formats. The
+            default is CSV.\n\n- XML provides more metrics, but requesting GPU information
+            consumes more CPU, especially if there are multiple GPUs\n  in the system.\n
+            - CSV provides fewer metrics, but is much lighter than XML in terms of
+            CPU usage.\n"
+          default_value: yes
     examples:
       folding:
         title: Config
@@ -56,16 +55,13 @@ setup:
       list:
         - name: XML format
           description: Use XML format when requesting GPU information.
-          data: |
-            jobs:
-              - name: nvidia_smi
-                use_csv_format: no
+          config: "jobs:\n  - name: nvidia_smi\n    use_csv_format: no\n"
         - name: Custom binary path
-          description: The executable is not in the directories specified in the PATH environment variable.
-          data: |
-            jobs:
-              - name: nvidia_smi
-                binary_path: /usr/local/sbin/nvidia_smi
+          description: The executable is not in the directories specified in the PATH
+            environment variable.
+          config: "jobs:\n  - name: nvidia_smi\n    binary_path: /usr/local/sbin/nvidia_smi\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -73,11 +69,11 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
+  description: ''
   availability:
     - XML
     - CSV
-  scope:
+  scopes:
     - name: gpu
       description: These metrics refer to the GPU.
       labels:
@@ -94,6 +90,7 @@ metrics:
           dimensions:
             - name: rx
             - name: tx
+          chart_type: line
         - name: nvidia_smi.gpu_pcie_bandwidth_utilization
           availability:
             - XML
@@ -102,6 +99,7 @@ metrics:
           dimensions:
             - name: rx
             - name: tx
+          chart_type: line
         - name: nvidia_smi.gpu_fan_speed_perc
           availability:
             - XML
@@ -110,6 +108,7 @@ metrics:
           unit: '%'
           dimensions:
             - name: fan_speed
+          chart_type: line
         - name: nvidia_smi.gpu_utilization
           availability:
             - XML
@@ -118,6 +117,7 @@ metrics:
           unit: '%'
           dimensions:
             - name: gpu
+          chart_type: line
         - name: nvidia_smi.gpu_memory_utilization
           availability:
             - XML
@@ -126,6 +126,7 @@ metrics:
           unit: '%'
           dimensions:
             - name: memory
+          chart_type: line
         - name: nvidia_smi.gpu_decoder_utilization
           availability:
             - XML
@@ -133,6 +134,7 @@ metrics:
           unit: '%'
           dimensions:
             - name: decoder
+          chart_type: line
         - name: nvidia_smi.gpu_encoder_utilization
           availability:
             - XML
@@ -140,6 +142,7 @@ metrics:
           unit: '%'
           dimensions:
             - name: encoder
+          chart_type: line
         - name: nvidia_smi.gpu_frame_buffer_memory_usage
           availability:
             - XML
@@ -150,6 +153,7 @@ metrics:
             - name: free
             - name: used
             - name: reserved
+          chart_type: stacked
         - name: nvidia_smi.gpu_bar1_memory_usage
           availability:
             - XML
@@ -158,6 +162,7 @@ metrics:
           dimensions:
             - name: free
             - name: used
+          chart_type: stacked
         - name: nvidia_smi.gpu_temperature
           availability:
             - XML
@@ -166,6 +171,7 @@ metrics:
           unit: Celsius
           dimensions:
             - name: temperature
+          chart_type: line
         - name: nvidia_smi.gpu_voltage
           availability:
             - XML
@@ -173,6 +179,7 @@ metrics:
           unit: V
           dimensions:
             - name: voltage
+          chart_type: line
         - name: nvidia_smi.gpu_clock_freq
           availability:
             - XML
@@ -184,6 +191,7 @@ metrics:
             - name: video
             - name: sm
             - name: mem
+          chart_type: line
         - name: nvidia_smi.gpu_power_draw
           availability:
             - XML
@@ -192,6 +200,7 @@ metrics:
           unit: Watts
           dimensions:
             - name: power_draw
+          chart_type: line
         - name: nvidia_smi.gpu_performance_state
           availability:
             - XML
@@ -200,6 +209,7 @@ metrics:
           unit: state
           dimensions:
             - name: P0-P15
+          chart_type: line
         - name: nvidia_smi.gpu_mig_mode_current_status
           availability:
             - XML
@@ -208,6 +218,7 @@ metrics:
           dimensions:
             - name: enabled
             - name: disabled
+          chart_type: line
         - name: nvidia_smi.gpu_mig_devices_count
           availability:
             - XML
@@ -215,6 +226,7 @@ metrics:
           unit: devices
           dimensions:
             - name: mig
+          chart_type: line
     - name: mig
       description: These metrics refer to the Multi-Instance GPU (MIG).
       labels:
@@ -234,6 +246,7 @@ metrics:
             - name: free
             - name: used
             - name: reserved
+          chart_type: stacked
         - name: nvidia_smi.gpu_mig_bar1_memory_usage
           availability:
             - XML
@@ -242,3 +255,4 @@ metrics:
           dimensions:
             - name: free
             - name: used
+          chart_type: stacked

@@ -2,19 +2,17 @@ name: logind
 title: systemd-logind collector
 overview:
   application:
-    description: |
-      [systemd-logind](https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html) is a system service that
-      manages user logins.
+    description: "[systemd-logind](https://www.freedesktop.org/software/systemd/man/systemd-logind.service.html)
+      is a system service that\nmanages user logins.\n"
   collector:
-    description: |
-      This collector monitors number of sessions and users as reported by the `org.freedesktop.login1` DBus API.
+    description: "This collector monitors number of sessions and users as reported
+      by the `org.freedesktop.login1` DBus API.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
@@ -24,6 +22,8 @@ setup:
         title: Config
         enabled: true
       list: []
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -31,8 +31,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -43,6 +44,7 @@ metrics:
           dimensions:
             - name: remote
             - name: local
+          chart_type: stacked
         - name: logind.sessions_type
           description: Logind Sessions By Type
           unit: sessions
@@ -50,6 +52,7 @@ metrics:
             - name: console
             - name: graphical
             - name: other
+          chart_type: stacked
         - name: logind.sessions_state
           description: Logind Sessions By State
           unit: sessions
@@ -57,6 +60,7 @@ metrics:
             - name: online
             - name: closing
             - name: active
+          chart_type: stacked
         - name: logind.users_state
           description: Logind Users By State
           unit: users
@@ -66,3 +70,4 @@ metrics:
             - name: online
             - name: lingering
             - name: active
+          chart_type: stacked

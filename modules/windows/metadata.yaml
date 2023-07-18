@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -16,131 +71,154 @@ metrics:
             - name: user
             - name: privileged
             - name: interrupt
+          chart_type: stacked
         - name: windows.memory_utilization
           description: Memory Utilization
           unit: bytes
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: windows.memory_page_faults
           description: Memory Page Faults
           unit: events/s
           dimensions:
             - name: page_faults
+          chart_type: line
         - name: windows.memory_swap_utilization
           description: Swap Utilization
           unit: bytes
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: windows.memory_swap_operations
           description: Swap Operations
           unit: operations/s
           dimensions:
             - name: read
             - name: write
+          chart_type: area
         - name: windows.memory_swap_pages
           description: Swap Pages
           unit: pages/s
           dimensions:
             - name: read
             - name: written
+          chart_type: line
         - name: windows.memory_cached
           description: Cached
           unit: KiB
           dimensions:
             - name: cached
+          chart_type: area
         - name: windows.memory_cache_faults
           description: Cache Faults
           unit: events/s
           dimensions:
             - name: cache_faults
+          chart_type: line
         - name: windows.memory_system_pool
           description: System Memory Pool
           unit: bytes
           dimensions:
             - name: paged
             - name: non-paged
+          chart_type: area
         - name: windows.tcp_conns_established
           description: TCP established connections
           unit: connections
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_conns_active
           description: TCP active connections
           unit: connections/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_conns_passive
           description: TCP passive connections
           unit: connections/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_conns_failures
           description: TCP connection failures
           unit: failures/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_conns_resets
           description: TCP connections resets
           unit: resets/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_segments_received
           description: Number of TCP segments received
           unit: segments/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_segments_sent
           description: Number of TCP segments sent
           unit: segments/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.tcp_segments_retransmitted
           description: Number of TCP segments retransmitted
           unit: segments/s
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: line
         - name: windows.os_processes
           description: Processes
           unit: number
           dimensions:
             - name: processes
+          chart_type: line
         - name: windows.os_users
           description: Number of Users
           unit: users
           dimensions:
             - name: users
+          chart_type: line
         - name: windows.os_visible_memory_usage
           description: Visible Memory Usage
           unit: bytes
           dimensions:
             - name: free
             - name: used
+          chart_type: stacked
         - name: windows.os_paging_files_usage
           description: Paging Files Usage
           unit: bytes
           dimensions:
             - name: free
             - name: used
+          chart_type: stacked
         - name: windows.system_threads
           description: Threads
           unit: number
           dimensions:
             - name: threads
+          chart_type: line
         - name: windows.system_uptime
           description: Uptime
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line
         - name: windows.logon_type_sessions
           description: Active User Logon Sessions By Type
           unit: seconds
@@ -158,46 +236,55 @@ metrics:
             - name: cached_interactive
             - name: cached_remote_interactive
             - name: cached_unlock
+          chart_type: stacked
         - name: windows.processes_cpu_utilization
           description: CPU usage (100% = 1 core)
           unit: percentage
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_handles
           description: Memory usage
           unit: handles
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_io_bytes
           description: Total of IO bytes (read, write, other)
           unit: bytes/s
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_io_operations
           description: Total of IO events (read, write, other)
           unit: operations/s
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_page_faults
           description: Number of page faults
           unit: pgfaults/s
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_page_file_bytes
           description: Bytes used in page file(s)
           unit: bytes
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_pool_bytes
           description: Active threads
           unit: bytes
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: windows.processes_threads
           description: Number of handles open
           unit: threads
           dimensions:
             - name: a dimension per process
+          chart_type: stacked
         - name: ad.database_operations
           description: AD database operations
           unit: operations/s
@@ -206,6 +293,7 @@ metrics:
             - name: delete
             - name: modify
             - name: recycle
+          chart_type: line
         - name: ad.directory_operations
           description: AD directory operations
           unit: operations/s
@@ -213,319 +301,379 @@ metrics:
             - name: read
             - name: write
             - name: search
+          chart_type: line
         - name: ad.name_cache_lookups
           description: Name cache lookups
           unit: lookups/s
           dimensions:
             - name: lookups
+          chart_type: line
         - name: ad.name_cache_hits
           description: Name cache hits
           unit: hits/s
           dimensions:
             - name: hits
+          chart_type: line
         - name: ad.atq_average_request_latency
           description: Average request processing time
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line
         - name: ad.atq_outstanding_requests
           description: Outstanding requests
           unit: requests
           dimensions:
             - name: outstanding
+          chart_type: line
         - name: ad.dra_replication_intersite_compressed_traffic
           description: DRA replication compressed traffic withing site
           unit: bytes/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: area
         - name: ad.dra_replication_intrasite_compressed_traffic
           description: DRA replication compressed traffic between sites
           unit: bytes/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: area
         - name: ad.dra_replication_sync_objects_remaining
           description: DRA replication full sync objects remaining
           unit: objects
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
         - name: ad.dra_replication_objects_filtered
           description: DRA replication objects filtered
           unit: objects/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
         - name: ad.dra_replication_properties_updated
           description: DRA replication properties updated
           unit: properties/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
         - name: ad.dra_replication_properties_filtered
           description: DRA replication properties filtered
           unit: properties/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
         - name: ad.dra_replication_pending_syncs
           description: DRA replication pending syncs
           unit: syncs
           dimensions:
             - name: pending
+          chart_type: line
         - name: ad.dra_replication_sync_requests
           description: DRA replication sync requests
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: ad.ds_threads
           description: Directory Service threads
           unit: threads
           dimensions:
             - name: in_use
+          chart_type: line
         - name: ad.ldap_last_bind_time
           description: LDAP last successful bind time
           unit: seconds
           dimensions:
             - name: last_bind
+          chart_type: line
         - name: ad.binds
           description: Successful binds
           unit: binds/s
           dimensions:
             - name: binds
+          chart_type: line
         - name: ad.ldap_searches
           description: LDAP client search operations
           unit: searches/s
           dimensions:
             - name: searches
+          chart_type: line
         - name: adfs.ad_login_connection_failures
           description: Connection failures
           unit: failures/s
           dimensions:
             - name: connection
+          chart_type: line
         - name: adfs.certificate_authentications
           description: User Certificate authentications
           unit: authentications/s
           dimensions:
             - name: authentications
+          chart_type: line
         - name: adfs.db_artifact_failures
           description: Connection failures to the artifact database
           unit: failures/s
           dimensions:
             - name: connection
+          chart_type: line
         - name: adfs.db_artifact_query_time_seconds
           description: Time taken for an artifact database query
           unit: seconds/s
           dimensions:
             - name: query_time
+          chart_type: line
         - name: adfs.db_config_failures
           description: Connection failures to the configuration database
           unit: failures/s
           dimensions:
             - name: connection
+          chart_type: line
         - name: adfs.db_config_query_time_seconds
           description: Time taken for a configuration database query
           unit: seconds/s
           dimensions:
             - name: query_time
+          chart_type: line
         - name: adfs.device_authentications
           description: Device authentications
           unit: authentications/s
           dimensions:
             - name: authentications
+          chart_type: line
         - name: adfs.external_authentications
           description: Authentications from external MFA providers
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.federated_authentications
           description: Authentications from Federated Sources
           unit: authentications/s
           dimensions:
             - name: authentications
+          chart_type: line
         - name: adfs.federation_metadata_requests
           description: Federation Metadata requests
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: adfs.oauth_authorization_requests
           description: Incoming requests to the OAuth Authorization endpoint
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: adfs.oauth_client_authentications
           description: OAuth client authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_client_credentials_requests
           description: OAuth client credentials requests
           unit: requests/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_client_privkey_jwt_authentications
           description: OAuth client private key JWT authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_client_secret_basic_authentications
           description: OAuth client secret basic authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_client_secret_post_authentications
           description: OAuth client secret post authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_client_windows_authentications
           description: OAuth client windows integrated authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_logon_certificate_requests
           description: OAuth logon certificate requests
           unit: requests/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_password_grant_requests
           description: OAuth password grant requests
           unit: requests/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.oauth_token_requests_success
           description: Successful RP token requests over OAuth protocol
           unit: requests/s
           dimensions:
             - name: success
+          chart_type: line
         - name: adfs.passive_requests
           description: Passive requests
           unit: requests/s
           dimensions:
             - name: passive
+          chart_type: line
         - name: adfs.passport_authentications
           description: Microsoft Passport SSO authentications
           unit: authentications/s
           dimensions:
             - name: passport
+          chart_type: line
         - name: adfs.password_change_requests
           description: Password change requests
           unit: requests/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.samlp_token_requests_success
           description: Successful RP token requests over SAML-P protocol
           unit: requests/s
           dimensions:
             - name: success
+          chart_type: line
         - name: adfs.sso_authentications
           description: SSO authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.token_requests
           description: Token access requests
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: adfs.userpassword_authentications
           description: AD U/P authentications
           unit: authentications/s
           dimensions:
             - name: success
             - name: failure
+          chart_type: line
         - name: adfs.windows_integrated_authentications
           description: Windows integrated authentications using Kerberos or NTLM
           unit: authentications/s
           dimensions:
             - name: authentications
+          chart_type: line
         - name: adfs.wsfed_token_requests_success
           description: Successful RP token requests over WS-Fed protocol
           unit: requests/s
           dimensions:
             - name: success
+          chart_type: line
         - name: adfs.wstrust_token_requests_success
           description: Successful RP token requests over WS-Trust protocol
           unit: requests/s
           dimensions:
             - name: success
+          chart_type: line
         - name: exchange.activesync_ping_cmds_pending
           description: Ping commands pending in queue
           unit: commands
           dimensions:
             - name: pending
+          chart_type: line
         - name: exchange.activesync_requests
           description: HTTP requests received from ASP.NET
           unit: requests/s
           dimensions:
             - name: received
+          chart_type: line
         - name: exchange.activesync_sync_cmds
           description: Sync commands processed
           unit: commands/s
           dimensions:
             - name: processed
+          chart_type: line
         - name: exchange.autodiscover_requests
           description: Autodiscover service requests processed
           unit: requests/s
           dimensions:
             - name: processed
+          chart_type: line
         - name: exchange.avail_service_requests
           description: Requests serviced
           unit: requests/s
           dimensions:
             - name: serviced
+          chart_type: line
         - name: exchange.owa_current_unique_users
           description: Unique users currently logged on to Outlook Web App
           unit: users
           dimensions:
             - name: logged-in
+          chart_type: line
         - name: exchange.owa_requests_total
           description: Requests handled by Outlook Web App
           unit: requests/s
           dimensions:
             - name: handled
+          chart_type: line
         - name: exchange.rpc_active_user_count
           description: Active unique users in the last 2 minutes
           unit: users
           dimensions:
             - name: active
+          chart_type: line
         - name: exchange.rpc_avg_latency
           description: Average latency
           unit: seconds
           dimensions:
             - name: latency
+          chart_type: line
         - name: exchange.rpc_connection_count
           description: Client connections
           unit: connections
           dimensions:
             - name: connections
+          chart_type: line
         - name: exchange.rpc_operations
           description: RPC operations
           unit: operations/s
           dimensions:
             - name: operations
+          chart_type: line
         - name: exchange.rpc_requests
           description: Clients requests currently being processed
           unit: requests
           dimensions:
             - name: processed
+          chart_type: line
         - name: exchange.rpc_user_count
           description: RPC users
           unit: users
           dimensions:
             - name: users
+          chart_type: line
         - name: exchange.transport_queues_active_mail_box_delivery
           description: Active Mailbox Delivery Queue length
           unit: messages/s
@@ -534,6 +682,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_external_active_remote_delivery
           description: External Active Remote Delivery Queue length
           unit: messages/s
@@ -542,6 +691,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_external_largest_delivery
           description: External Largest Delivery Queue length
           unit: messages/s
@@ -550,6 +700,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_internal_active_remote_delivery
           description: Internal Active Remote Delivery Queue length
           unit: messages/s
@@ -558,6 +709,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_internal_largest_delivery
           description: Internal Largest Delivery Queue length
           unit: messages/s
@@ -566,6 +718,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_retry_mailbox_delivery
           description: Internal Active Remote Delivery Queue length
           unit: messages/s
@@ -574,6 +727,7 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: exchange.transport_queues_poison
           description: Poison Queue Length
           unit: messages/s
@@ -582,12 +736,14 @@ metrics:
             - name: high
             - name: none
             - name: normal
+          chart_type: line
         - name: hyperv.vms_health
           description: Virtual machines health status
           unit: vms
           dimensions:
             - name: ok
             - name: critical
+          chart_type: stacked
         - name: hyperv.root_partition_device_space_pages
           description: Root partition pages in the device space
           unit: pages
@@ -595,6 +751,7 @@ metrics:
             - name: 4K
             - name: 2M
             - name: 1G
+          chart_type: line
         - name: hyperv.root_partition_gpa_space_pages
           description: Root partition pages in the GPA space
           unit: pages
@@ -602,61 +759,73 @@ metrics:
             - name: 4K
             - name: 2M
             - name: 1G
+          chart_type: line
         - name: hyperv.root_partition_gpa_space_modifications
           description: Root partition GPA space modifications
           unit: modifications/s
           dimensions:
             - name: gpa
+          chart_type: line
         - name: hyperv.root_partition_attached_devices
           description: Root partition attached devices
           unit: devices
           dimensions:
             - name: attached
+          chart_type: line
         - name: hyperv.root_partition_deposited_pages
           description: Root partition deposited pages
           unit: pages
           dimensions:
             - name: deposited
+          chart_type: line
         - name: hyperv.root_partition_skipped_interrupts
           description: Root partition skipped interrupts
           unit: interrupts
           dimensions:
             - name: skipped
+          chart_type: line
         - name: hyperv.root_partition_device_dma_errors
           description: Root partition illegal DMA requests
           unit: requests
           dimensions:
             - name: illegal_dma
+          chart_type: line
         - name: hyperv.root_partition_device_interrupt_errors
           description: Root partition illegal interrupt requests
           unit: requests
           dimensions:
             - name: illegal_interrupt
+          chart_type: line
         - name: hyperv.root_partition_device_interrupt_throttle_events
           description: Root partition throttled interrupts
           unit: events
           dimensions:
             - name: throttling
+          chart_type: line
         - name: hyperv.root_partition_io_tlb_flush
           description: Root partition flushes of I/O TLBs
           unit: flushes/s
           dimensions:
             - name: flushes
+          chart_type: line
         - name: hyperv.root_partition_address_space
           description: Root partition address spaces in the virtual TLB
           unit: address spaces
           dimensions:
             - name: address_spaces
+          chart_type: line
         - name: hyperv.root_partition_virtual_tlb_flush_entries
           description: Root partition flushes of the entire virtual TLB
           unit: flushes/s
           dimensions:
             - name: flushes
+          chart_type: line
         - name: hyperv.root_partition_virtual_tlb_pages
           description: Root partition pages used by the virtual TLB
           unit: pages
           dimensions:
             - name: used
+          chart_type: line
     - name: cpu core
       description: TBD
       labels:
@@ -671,16 +840,19 @@ metrics:
             - name: user
             - name: privileged
             - name: interrupt
+          chart_type: stacked
         - name: windows.cpu_core_interrupts
           description: Received and Serviced Hardware Interrupts
           unit: interrupts/s
           dimensions:
             - name: interrupts
+          chart_type: line
         - name: windows.cpu_core_dpcs
           description: Received and Serviced Deferred Procedure Calls (DPC)
           unit: dpcs/s
           dimensions:
             - name: dpcs
+          chart_type: line
         - name: windows.cpu_core_cstate
           description: Core Time Spent in Low-Power Idle State
           unit: percentage
@@ -688,6 +860,7 @@ metrics:
             - name: c1
             - name: c2
             - name: c3
+          chart_type: stacked
     - name: logical disk
       description: TBD
       labels:
@@ -700,24 +873,28 @@ metrics:
           dimensions:
             - name: free
             - name: used
+          chart_type: stacked
         - name: windows.logical_disk_bandwidth
           description: Bandwidth
           unit: bytes/s
           dimensions:
             - name: read
             - name: write
+          chart_type: area
         - name: windows.logical_disk_operations
           description: Operations
           unit: operations/s
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: windows.logical_disk_latency
           description: Average Read/Write Latency
           unit: seconds
           dimensions:
             - name: read
             - name: write
+          chart_type: line
     - name: network device
       description: TBD
       labels:
@@ -730,24 +907,28 @@ metrics:
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: windows.net_nic_packets
           description: Packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: windows.net_nic_errors
           description: Errors
           unit: errors/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
         - name: windows.net_nic_discarded
           description: Discards
           unit: discards/s
           dimensions:
             - name: inbound
             - name: outbound
+          chart_type: line
     - name: thermalzone
       description: TBD
       labels:
@@ -759,6 +940,7 @@ metrics:
           unit: celsius
           dimensions:
             - name: temperature
+          chart_type: line
     - name: service
       description: TBD
       labels:
@@ -777,6 +959,7 @@ metrics:
             - name: pause_pending
             - name: paused
             - name: unknown
+          chart_type: line
         - name: windows.service_status
           description: Service status
           unit: status
@@ -793,6 +976,7 @@ metrics:
             - name: nonrecover
             - name: no_contact
             - name: lost_comm
+          chart_type: line
     - name: website
       description: TBD
       labels:
@@ -805,60 +989,71 @@ metrics:
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: iis.website_requests_rate
           description: Website requests rate
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: iis.website_active_connections_count
           description: Website active connections
           unit: connections
           dimensions:
             - name: active
+          chart_type: line
         - name: iis.website_users_count
           description: Website users with pending requests
           unit: users
           dimensions:
             - name: anonymous
             - name: non_anonymous
+          chart_type: stacked
         - name: iis.website_connection_attempts_rate
           description: Website connections attempts
           unit: attempts/s
           dimensions:
             - name: connection
+          chart_type: line
         - name: iis.website_isapi_extension_requests_count
           description: ISAPI extension requests
           unit: requests
           dimensions:
             - name: isapi
+          chart_type: line
         - name: iis.website_isapi_extension_requests_rate
           description: Website extensions request
           unit: requests/s
           dimensions:
             - name: isapi
+          chart_type: line
         - name: iis.website_ftp_file_transfer_rate
           description: Website FTP file transfer rate
           unit: files/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: iis.website_logon_attempts_rate
           description: Website logon attempts
           unit: attempts/s
           dimensions:
             - name: logon
+          chart_type: line
         - name: iis.website_errors_rate
           description: Website errors
           unit: errors/s
           dimensions:
             - name: document_locked
             - name: document_not_found
+          chart_type: stacked
         - name: iis.website_uptime
           description: Website uptime
           unit: seconds
           dimensions:
             - name: document_locked
             - name: document_not_found
+          chart_type: line
     - name: mssql instance
       description: TBD
       labels:
@@ -870,37 +1065,44 @@ metrics:
           unit: splits/s
           dimensions:
             - name: page
+          chart_type: line
         - name: mssql.instance_cache_hit_ratio
           description: Buffer Cache hit ratio
           unit: percentage
           dimensions:
             - name: hit_ratio
+          chart_type: line
         - name: mssql.instance_bufman_checkpoint_pages
           description: Flushed pages
           unit: pages/s
           dimensions:
             - name: flushed
+          chart_type: line
         - name: mssql.instance_bufman_page_life_expectancy
           description: Page life expectancy
           unit: seconds
           dimensions:
             - name: life_expectancy
+          chart_type: line
         - name: mssql.instance_bufman_iops
           description: Number of pages input and output
           unit: iops
           dimensions:
             - name: read
             - name: written
+          chart_type: line
         - name: mssql.instance_blocked_processes
           description: Blocked processes
           unit: processes
           dimensions:
             - name: blocked
+          chart_type: line
         - name: mssql.instance_user_connection
           description: User connections
           unit: connections
           dimensions:
             - name: user
+          chart_type: line
         - name: mssql.instance_locks_lock_wait
           description: Lock requests that required the caller to wait
           unit: locks/s
@@ -919,6 +1121,7 @@ metrics:
             - name: rid
             - name: row_group
             - name: xact
+          chart_type: line
         - name: mssql.instance_locks_deadlocks
           description: Lock requests that resulted in deadlock
           unit: locks/s
@@ -937,26 +1140,31 @@ metrics:
             - name: rid
             - name: row_group
             - name: xact
+          chart_type: line
         - name: mssql.instance_memmgr_connection_memory_bytes
           description: Amount of dynamic memory to maintain connections
           unit: bytes
           dimensions:
             - name: memory
+          chart_type: line
         - name: mssql.instance_memmgr_external_benefit_of_memory
           description: Performance benefit from adding memory to a specific cache
           unit: bytes
           dimensions:
             - name: benefit
+          chart_type: line
         - name: mssql.instance_memmgr_pending_memory_grants
           description: Process waiting for memory grant
           unit: processes
           dimensions:
             - name: pending
+          chart_type: line
         - name: mssql.instance_memmgr_server_memory
           description: Memory committed
           unit: bytes
           dimensions:
             - name: memory
+          chart_type: line
         - name: mssql.instance_sql_errors
           description: Errors
           unit: errors
@@ -965,31 +1173,37 @@ metrics:
             - name: info
             - name: kill_connection
             - name: user
+          chart_type: line
         - name: mssql.instance_sqlstats_auto_parameterization_attempts
           description: Failed auto-parameterization attempts
           unit: attempts/s
           dimensions:
             - name: failed
+          chart_type: line
         - name: mssql.instance_sqlstats_batch_requests
           description: Total of batches requests
           unit: requests/s
           dimensions:
             - name: batch
+          chart_type: line
         - name: mssql.instance_sqlstats_safe_auto_parameterization_attempts
           description: Safe auto-parameterization attempts
           unit: attempts/s
           dimensions:
             - name: safe
+          chart_type: line
         - name: mssql.instance_sqlstats_sql_compilations
           description: SQL compilations
           unit: compilations/s
           dimensions:
             - name: compilations
+          chart_type: line
         - name: mssql.instance_sqlstats_sql_recompilations
           description: SQL re-compilations
           unit: recompiles/s
           dimensions:
             - name: recompiles
+          chart_type: line
     - name: database
       description: TBD
       labels:
@@ -1003,36 +1217,43 @@ metrics:
           unit: transactions
           dimensions:
             - name: active
+          chart_type: line
         - name: mssql.database_backup_restore_operations
           description: Backup IO per database
           unit: operations/s
           dimensions:
             - name: backup
+          chart_type: line
         - name: mssql.database_data_files_size
           description: Current database size
           unit: bytes
           dimensions:
             - name: size
+          chart_type: line
         - name: mssql.database_log_flushed
           description: Log flushed
           unit: bytes/s
           dimensions:
             - name: flushed
+          chart_type: line
         - name: mssql.database_log_flushes
           description: Log flushes
           unit: flushes/s
           dimensions:
             - name: log
+          chart_type: line
         - name: mssql.database_transactions
           description: Transactions
           unit: transactions/s
           dimensions:
             - name: transactions
+          chart_type: line
         - name: mssql.database_write_transactions
           description: Write transactions
           unit: transactions/s
           dimensions:
             - name: write
+          chart_type: line
     - name: certificate template
       description: TBD
       labels:
@@ -1044,67 +1265,80 @@ metrics:
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: adcs.cert_template_failed_requests
           description: Certificate failed requests processed
           unit: requests/s
           dimensions:
             - name: failed
+          chart_type: line
         - name: adcs.cert_template_issued_requests
           description: Certificate issued requests processed
           unit: requests/s
           dimensions:
             - name: issued
+          chart_type: line
         - name: adcs.cert_template_pending_requests
           description: Certificate pending requests processed
           unit: requests/s
           dimensions:
             - name: pending
+          chart_type: line
         - name: adcs.cert_template_request_processing_time
           description: Certificate last request processing time
           unit: seconds
           dimensions:
             - name: processing_time
+          chart_type: line
         - name: adcs.cert_template_retrievals
           description: Total of certificate retrievals
           unit: retrievals/s
           dimensions:
             - name: retrievals
+          chart_type: line
         - name: adcs.cert_template_retrieval_processing_time
           description: Certificate last retrieval processing time
           unit: seconds
           dimensions:
             - name: processing_time
+          chart_type: line
         - name: adcs.cert_template_request_cryptographic_signing_time
           description: Certificate last signing operation request time
           unit: seconds
           dimensions:
             - name: singing_time
+          chart_type: line
         - name: adcs.cert_template_request_policy_module_processing
           description: Certificate last policy module processing request time
           unit: seconds
           dimensions:
             - name: processing_time
+          chart_type: line
         - name: adcs.cert_template_challenge_responses
           description: Certificate challenge responses
           unit: responses/s
           dimensions:
             - name: challenge
+          chart_type: line
         - name: adcs.cert_template_challenge_response_processing_time
           description: Certificate last challenge response time
           unit: seconds
           dimensions:
             - name: processing_time
+          chart_type: line
         - name: adcs.cert_template_signed_certificate_timestamp_lists
           description: Certificate Signed Certificate Timestamp Lists processed
           unit: lists/s
           dimensions:
             - name: processed
+          chart_type: line
         - name: adcs.cert_template_signed_certificate_timestamp_list_processing_time
           description: Certificate last Signed Certificate Timestamp List process
             time
           unit: seconds
           dimensions:
             - name: processing_time
+          chart_type: line
     - name: process
       description: TBD
       labels:
@@ -1116,221 +1350,265 @@ metrics:
           unit: exceptions/s
           dimensions:
             - name: exceptions
+          chart_type: line
         - name: netframework.clrexception_filters
           description: Executed exception filters
           unit: filters/s
           dimensions:
             - name: filters
+          chart_type: line
         - name: netframework.clrexception_finallys
           description: Executed finally blocks
           unit: finallys/s
           dimensions:
             - name: finallys
+          chart_type: line
         - name: netframework.clrexception_throw_to_catch_depth
           description: Traversed stack frames
           unit: stack_frames/s
           dimensions:
             - name: traversed
+          chart_type: line
         - name: netframework.clrinterop_com_callable_wrappers
           description: COM callable wrappers (CCW)
           unit: ccw/s
           dimensions:
             - name: com_callable_wrappers
+          chart_type: line
         - name: netframework.clrinterop_interop_marshallings
           description: Arguments and return values marshallings
           unit: marshallings/s
           dimensions:
             - name: marshallings
+          chart_type: line
         - name: netframework.clrinterop_interop_stubs_created
           description: Created stubs
           unit: stubs/s
           dimensions:
             - name: created
+          chart_type: line
         - name: netframework.clrjit_methods
           description: JIT-compiled methods
           unit: methods/s
           dimensions:
             - name: jit-compiled
+          chart_type: line
         - name: netframework.clrjit_time
           description: Time spent in JIT compilation
           unit: percentage
           dimensions:
             - name: time
+          chart_type: line
         - name: netframework.clrjit_standard_failures
           description: JIT compiler failures
           unit: failures/s
           dimensions:
             - name: failures
+          chart_type: line
         - name: netframework.clrjit_il_bytes
           description: Compiled Microsoft intermediate language (MSIL) bytes
           unit: bytes/s
           dimensions:
             - name: compiled_msil
+          chart_type: line
         - name: netframework.clrloading_loader_heap_size
           description: Memory committed by class loader
           unit: bytes
           dimensions:
             - name: committed
+          chart_type: line
         - name: netframework.clrloading_appdomains_loaded
           description: Loaded application domains
           unit: domain/s
           dimensions:
             - name: loaded
+          chart_type: line
         - name: netframework.clrloading_appdomains_unloaded
           description: Unloaded application domains
           unit: domain/s
           dimensions:
             - name: unloaded
+          chart_type: line
         - name: netframework.clrloading_assemblies_loaded
           description: Loaded assemblies
           unit: assemblies/s
           dimensions:
             - name: loaded
+          chart_type: line
         - name: netframework.clrloading_classes_loaded
           description: Loaded classes in all assemblies
           unit: classes/s
           dimensions:
             - name: loaded
+          chart_type: line
         - name: netframework.clrloading_class_load_failures
           description: Class load failures
           unit: failures/s
           dimensions:
             - name: class_load
+          chart_type: line
         - name: netframework.clrlocksandthreads_queue_length
           description: Threads waited to acquire a managed lock
           unit: threads/s
           dimensions:
             - name: threads
+          chart_type: line
         - name: netframework.clrlocksandthreads_current_logical_threads
           description: Logical threads
           unit: threads
           dimensions:
             - name: logical
+          chart_type: line
         - name: netframework.clrlocksandthreads_current_physical_threads
           description: Physical threads
           unit: threads
           dimensions:
             - name: physical
+          chart_type: line
         - name: netframework.clrlocksandthreads_recognized_threads
           description: Threads recognized by the runtime
           unit: threads/s
           dimensions:
             - name: threads
+          chart_type: line
         - name: netframework.clrlocksandthreads_contentions
           description: Fails to acquire a managed lock
           unit: contentions/s
           dimensions:
             - name: contentions
+          chart_type: line
         - name: netframework.clrmemory_allocated_bytes
           description: Memory allocated on the garbage collection heap
           unit: bytes/s
           dimensions:
             - name: allocated
+          chart_type: line
         - name: netframework.clrmemory_finalization_survivors
           description: Objects that survived garbage-collection
           unit: objects
           dimensions:
             - name: survived
+          chart_type: line
         - name: netframework.clrmemory_heap_size
           description: Maximum bytes that can be allocated
           unit: bytes
           dimensions:
             - name: heap
+          chart_type: line
         - name: netframework.clrmemory_promoted
           description: Memory promoted to the next generation
           unit: bytes
           dimensions:
             - name: promoted
+          chart_type: line
         - name: netframework.clrmemory_number_gc_handles
           description: Garbage collection handles
           unit: handles
           dimensions:
             - name: used
+          chart_type: line
         - name: netframework.clrmemory_collections
           description: Garbage collections
           unit: gc/s
           dimensions:
             - name: gc
+          chart_type: line
         - name: netframework.clrmemory_induced_gc
           description: Garbage collections induced
           unit: gc/s
           dimensions:
             - name: gc
+          chart_type: line
         - name: netframework.clrmemory_number_pinned_objects
           description: Pinned objects encountered
           unit: objects
           dimensions:
             - name: pinned
+          chart_type: line
         - name: netframework.clrmemory_number_sink_blocks_in_use
           description: Synchronization blocks in use
           unit: blocks
           dimensions:
             - name: used
+          chart_type: line
         - name: netframework.clrmemory_committed
           description: Virtual memory committed by GC
           unit: bytes
           dimensions:
             - name: committed
+          chart_type: line
         - name: netframework.clrmemory_reserved
           description: Virtual memory reserved by GC
           unit: bytes
           dimensions:
             - name: reserved
+          chart_type: line
         - name: netframework.clrmemory_gc_time
           description: Time spent on GC
           unit: percentage
           dimensions:
             - name: time
+          chart_type: line
         - name: netframework.clrremoting_channels
           description: Registered channels
           unit: channels/s
           dimensions:
             - name: registered
+          chart_type: line
         - name: netframework.clrremoting_context_bound_classes_loaded
           description: Loaded context-bound classes
           unit: classes
           dimensions:
             - name: loaded
+          chart_type: line
         - name: netframework.clrremoting_context_bound_objects
           description: Allocated context-bound objects
           unit: objects/s
           dimensions:
             - name: allocated
+          chart_type: line
         - name: netframework.clrremoting_context_proxies
           description: Remoting proxy objects
           unit: objects/s
           dimensions:
             - name: objects
+          chart_type: line
         - name: netframework.clrremoting_contexts
           description: Total of remoting contexts
           unit: contexts
           dimensions:
             - name: contexts
+          chart_type: line
         - name: netframework.clrremoting_remote_calls
           description: Remote Procedure Calls (RPC) invoked
           unit: calls/s
           dimensions:
             - name: rpc
+          chart_type: line
         - name: netframework.clrsecurity_link_time_checks
           description: Link-time code access security checks
           unit: checks/s
           dimensions:
             - name: linktime
+          chart_type: line
         - name: netframework.clrsecurity_checks_time
           description: Time spent performing runtime code access security checks
           unit: percentage
           dimensions:
             - name: time
+          chart_type: line
         - name: netframework.clrsecurity_stack_walk_depth
           description: Depth of the stack
           unit: depth
           dimensions:
             - name: stack
+          chart_type: line
         - name: netframework.clrsecurity_runtime_checks
           description: Runtime code access security checks performed
           unit: checks/s
           dimensions:
             - name: runtime
+          chart_type: line
     - name: exchange workload
       description: TBD
       labels:
@@ -1342,27 +1620,32 @@ metrics:
           unit: tasks
           dimensions:
             - name: active
+          chart_type: line
         - name: exchange.workload_completed_tasks
           description: Workload completed tasks
           unit: tasks/s
           dimensions:
             - name: completed
+          chart_type: line
         - name: exchange.workload_queued_tasks
           description: Workload queued tasks
           unit: tasks/s
           dimensions:
             - name: queued
+          chart_type: line
         - name: exchange.workload_yielded_tasks
           description: Workload yielded tasks
           unit: tasks/s
           dimensions:
             - name: yielded
+          chart_type: line
         - name: exchange.workload_activity_status
           description: Workload activity status
           unit: status
           dimensions:
             - name: active
             - name: paused
+          chart_type: line
     - name: ldap process
       description: TBD
       labels:
@@ -1374,26 +1657,31 @@ metrics:
           unit: operations/s
           dimensions:
             - name: long-running
+          chart_type: line
         - name: exchange.ldap_read_time
           description: Time to send an LDAP read request and receive a response
           unit: seconds
           dimensions:
             - name: read
+          chart_type: line
         - name: exchange.ldap_search_time
           description: Time to send an LDAP search request and receive a response
           unit: seconds
           dimensions:
             - name: search
+          chart_type: line
         - name: exchange.ldap_write_time
           description: Time to send an LDAP search request and receive a response
           unit: seconds
           dimensions:
             - name: write
+          chart_type: line
         - name: exchange.ldap_timeout_errors
           description: LDAP timeout errors
           unit: errors/s
           dimensions:
             - name: timeout
+          chart_type: line
     - name: http proxy
       description: TBD
       labels:
@@ -1405,31 +1693,37 @@ metrics:
           unit: seconds
           dimensions:
             - name: latency
+          chart_type: line
         - name: exchange.http_proxy_avg_cas_processing_latency_sec
           description: Average time spent authenticating CAS
           unit: seconds
           dimensions:
             - name: latency
+          chart_type: line
         - name: exchange.http_proxy_mailbox_proxy_failure_rate
           description: Percentage of failures between this CAS and MBX servers
           unit: percentage
           dimensions:
             - name: failures
+          chart_type: line
         - name: exchange.http_proxy_mailbox_server_locator_avg_latency_sec
           description: Average latency of MailboxServerLocator web service calls
           unit: seconds
           dimensions:
             - name: latency
+          chart_type: line
         - name: exchange.http_proxy_outstanding_proxy_requests
           description: Concurrent outstanding proxy requests
           unit: requests
           dimensions:
             - name: outstanding
+          chart_type: line
         - name: exchange.http_proxy_requests
           description: Number of proxy requests processed each second
           unit: requests/s
           dimensions:
             - name: processed
+          chart_type: line
     - name: vm
       description: TBD
       labels:
@@ -1443,31 +1737,37 @@ metrics:
             - name: gues
             - name: hypervisor
             - name: remote
+          chart_type: stacked
         - name: hyperv.vm_memory_physical
           description: VM assigned memory
           unit: MiB
           dimensions:
             - name: assigned_memory
+          chart_type: line
         - name: hyperv.vm_memory_physical_guest_visible
           description: VM guest visible memory
           unit: MiB
           dimensions:
             - name: visible_memory
+          chart_type: line
         - name: hyperv.vm_memory_pressure_current
           description: VM current pressure
           unit: percentage
           dimensions:
             - name: pressure
+          chart_type: line
         - name: hyperv.vm_vid_physical_pages_allocated
           description: VM physical pages allocated
           unit: pages
           dimensions:
             - name: allocated
+          chart_type: line
         - name: hyperv.vm_vid_remote_physical_pages
           description: VM physical pages not allocated from the preferred NUMA node
           unit: pages
           dimensions:
             - name: remote_physical
+          chart_type: line
     - name: vm device
       description: TBD
       labels:
@@ -1480,17 +1780,20 @@ metrics:
           dimensions:
             - name: read
             - name: written
+          chart_type: area
         - name: hyperv.vm_device_operations
           description: VM storage device IOPS
           unit: operations/s
           dimensions:
             - name: read
             - name: write
+          chart_type: line
         - name: hyperv.vm_device_errors
           description: VM storage device errors
           unit: errors/s
           dimensions:
             - name: errors
+          chart_type: line
     - name: vm interface
       description: TBD
       labels:
@@ -1503,18 +1806,21 @@ metrics:
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: hyperv.vm_interface_packets
           description: VM interface packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: hyperv.vm_interface_packets_dropped
           description: VM interface packets dropped
           unit: drops/s
           dimensions:
             - name: incoming
             - name: outgoing
+          chart_type: line
     - name: vswitch
       description: TBD
       labels:
@@ -1527,54 +1833,64 @@ metrics:
           dimensions:
             - name: received
             - name: sent
+          chart_type: area
         - name: hyperv.vswitch_packets
           description: Virtual switch packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: hyperv.vswitch_directed_packets
           description: Virtual switch directed packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: hyperv.vswitch_broadcast_packets
           description: Virtual switch broadcast packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: hyperv.vswitch_multicast_packets
           description: Virtual switch multicast packets
           unit: packets/s
           dimensions:
             - name: received
             - name: sent
+          chart_type: line
         - name: hyperv.vswitch_dropped_packets
           description: Virtual switch dropped packets
           unit: drops/s
           dimensions:
             - name: incoming
             - name: outgoing
+          chart_type: line
         - name: hyperv.vswitch_extensions_dropped_packets
           description: Virtual switch extensions dropped packets
           unit: drops/s
           dimensions:
             - name: incoming
             - name: outgoing
+          chart_type: line
         - name: hyperv.vswitch_packets_flooded
           description: Virtual switch flooded packets
           unit: packets/s
           dimensions:
             - name: flooded
+          chart_type: line
         - name: hyperv.vswitch_learned_mac_addresses
           description: Virtual switch learned MAC addresses
           unit: mac addresses/s
           dimensions:
             - name: learned
+          chart_type: line
         - name: hyperv.vswitch_purged_mac_addresses
           description: Virtual switch purged MAC addresses
           unit: mac addresses/s
           dimensions:
             - name: purged
+          chart_type: line

@@ -2,99 +2,96 @@ name: dnsdist
 title: DNSdist collector
 overview:
   application:
-    description: |
-      [DNSdist](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer.
+    description: "[DNSdist](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware
+      loadbalancer.\n"
   collector:
-    description: |
-      This collector monitors load-balancer performance and health metrics.  
-      
-      It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).  
-      
-      Used endpoints:
-
-      - [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).
+    description: "This collector monitors load-balancer performance and health metrics.\
+      \  \n\nIt collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).\
+      \  \n\nUsed endpoints:\n\n- [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).\n"
 setup:
   prerequisites:
     list:
       - title: Enable DNSdist's built-in Webserver
-        text: |
-          For collecting metrics via HTTP, you need to [enable the built-in webserver](https://dnsdist.org/guides/webserver.html).
+        description: "For collecting metrics via HTTP, you need to [enable the built-in
+          webserver](https://dnsdist.org/guides/webserver.html).\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1:8083
           required: true
+          default_value: http://127.0.0.1:8083
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: "-"
           required: false
+          default_value: '-'
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -102,40 +99,18 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8083
-                headers:
-                  X-API-Key: your-api-key # static pre-shared authentication key for access to the REST API (api-key).
-        #TODO:
-        # - name: Basic HTTP auth
-        #   description: Local server with basic HTTP authentication.
-        #   folding:
-        #     title: Example
-        #     enabled: true
-        #   data: |
-        #     jobs:
-        #       - name: local
-        #         url: http://127.0.0.1:8083
-        #         username: foo
-        #         password: bar
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8083\n    headers:\n\
+            \      X-API-Key: your-api-key # static pre-shared authentication key
+            for access to the REST API (api-key).\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8083
-                headers:
-                  X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
-
-              - name: remote
-                url: http://203.0.113.0:8083
-                headers:
-                  X-API-Key: 'your-api-key'
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8083\n    headers:\n\
+            \      X-API-Key: 'your-api-key' # static pre-shared authentication key
+            for access to the REST API (api-key).\n\n  - name: remote\n    url: http://203.0.113.0:8083\n\
+            \    headers:\n      X-API-Key: 'your-api-key'\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -143,8 +118,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -156,6 +132,7 @@ metrics:
             - name: all
             - name: recursive
             - name: empty
+          chart_type: line
         - name: dnsdist.queries_dropped
           description: Client queries dropped
           unit: queries/s
@@ -164,11 +141,13 @@ metrics:
             - name: dynamic_blocked
             - name: no_policy
             - name: non_queries
+          chart_type: line
         - name: dnsdist.packets_dropped
           description: Packets dropped
           unit: packets/s
           dimensions:
             - name: acl
+          chart_type: line
         - name: dnsdist.answers
           description: Answers statistics
           unit: answers/s
@@ -177,16 +156,19 @@ metrics:
             - name: nxdomain
             - name: refused
             - name: trunc_failures
+          chart_type: line
         - name: dnsdist.backend_responses
           description: Backend responses
           unit: responses/s
           dimensions:
             - name: responses
+          chart_type: line
         - name: dnsdist.backend_commerrors
           description: Backend communication errors
           unit: errors/s
           dimensions:
             - name: send_errors
+          chart_type: line
         - name: dnsdist.backend_errors
           description: Backend error responses
           unit: responses/s
@@ -194,23 +176,27 @@ metrics:
             - name: timeouts
             - name: servfail
             - name: non_compliant
+          chart_type: line
         - name: dnsdist.cache
           description: Cache performance
           unit: answers/s
           dimensions:
             - name: hits
             - name: misses
+          chart_type: line
         - name: dnsdist.servercpu
           description: DNSdist server CPU utilization
           unit: ms/s
           dimensions:
             - name: system_state
             - name: user_state
+          chart_type: stacked
         - name: dnsdist.servermem
           description: DNSdist server memory utilization
           unit: MiB
           dimensions:
             - name: memory_usage
+          chart_type: area
         - name: dnsdist.query_latency
           description: Query latency
           unit: queries/s
@@ -221,6 +207,7 @@ metrics:
             - name: 100ms
             - name: 1sec
             - name: slow
+          chart_type: stacked
         - name: dnsdist.query_latency_avg
           description: Average latency for the last N queries
           unit: microseconds
@@ -229,3 +216,4 @@ metrics:
             - name: 1k
             - name: 10k
             - name: 1000k
+          chart_type: line

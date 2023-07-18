@@ -2,76 +2,65 @@ name: openvpn
 title: OpenVPN collector
 overview:
   application:
-    description: |
-      [OpenVPN](https://openvpn.net/) is an open-source commercial software that implements virtual private network
-      techniques to create secure point-to-point or site-to-site connections in routed or bridged configurations and remote
-      access facilities.
+    description: "[OpenVPN](https://openvpn.net/) is an open-source commercial software
+      that implements virtual private network\ntechniques to create secure point-to-point
+      or site-to-site connections in routed or bridged configurations and remote\n
+      access facilities.\n"
   collector:
-    description: |
-      This collector monitors one or more OpenVPN servers, depending on your configuration.
-
-      It uses OpenVPN [Management Interface](https://openvpn.net/community-resources/management-interface/) to collect metrics.
+    description: "This collector monitors one or more OpenVPN servers, depending on
+      your configuration.\n\nIt uses OpenVPN [Management Interface](https://openvpn.net/community-resources/management-interface/)
+      to collect metrics.\n"
 setup:
   prerequisites:
     list:
       - title: Enable in go.d.conf.
-        text: |
-          This collector is disabled by default. You need to explicitly enable it in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).
-          
-          From the documentation for the OpenVPN Management Interface:
-          > Currently, the OpenVPN daemon can at most support a single management client any one time.
-
-          It is disabled to not break other tools which use `Management Interface`.
+        description: "This collector is disabled by default. You need to explicitly
+          enable it in [go.d.conf](https://github.com/netdata/go.d.plugin/blob/master/config/go.d.conf).\n
+          \nFrom the documentation for the OpenVPN Management Interface:\n> Currently,
+          the OpenVPN daemon can at most support a single management client any one
+          time.\n\nIt is disabled to not break other tools which use `Management Interface`.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: address
           description: Server address in IP:PORT format.
-          default: 127.0.0.1:7505
           required: true
+          default_value: 127.0.0.1:7505
         - name: per_user_stats
           description: User selector. Determines which user metrics will be collected.
-          default: ""
           required: false
-          details: |
-            Metrics of users matching the selector will be collected.
-            - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
-            - Pattern syntax: [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).
-            - Syntax:
-              ```yaml
-              per_user_stats:
-                includes:
-                  - pattern1
-                  - pattern2
-                excludes:
-                  - pattern3
-                  - pattern4
-              ```
+          details: "Metrics of users matching the selector will be collected.\n- Logic:
+            (pattern1 OR pattern2) AND !(pattern3 or pattern4)\n- Pattern syntax:
+            [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).\n
+            - Syntax:\n  ```yaml\n  per_user_stats:\n    includes:\n      - pattern1\n\
+            \      - pattern2\n    excludes:\n      - pattern3\n      - pattern4\n\
+            \  ```\n"
+          default_value: ''
         - name: connect_timeout
-          description: Connection timeout in seconds. The timeout includes name resolution, if required.
-          default: 2
+          description: Connection timeout in seconds. The timeout includes name resolution,
+            if required.
           required: false
+          default_value: 2
         - name: read_timeout
           description: Read timeout in seconds. Sets deadline for read calls.
-          default: 2
           required: false
+          default_value: 2
         - name: write_timeout
           description: Write timeout in seconds. Sets deadline for write calls.
-          default: 2
           required: false
+          default_value: 2
     examples:
       folding:
         title: Config
@@ -79,31 +68,18 @@ setup:
       list:
         - name: Basic
           description: A basic example configuration.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:7505
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:7505\n"
         - name: With user metrics
           description: Collect metrics of all users.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:7505
-                per_user_stats:
-                  includes:
-                    - "* *"
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:7505\n    per_user_stats:\n\
+            \      includes:\n        - \"* *\"\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:7505
-            
-              - name: remote
-                address: 203.0.113.0:7505
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:7505\n\n  - name:
+            remote\n    address: 203.0.113.0:7505\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -111,8 +87,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -122,12 +99,14 @@ metrics:
           unit: clients
           dimensions:
             - name: clients
+          chart_type: line
         - name: openvpn.total_traffic
           description: Total Traffic
           unit: kilobits/s
           dimensions:
             - name: in
             - name: out
+          chart_type: area
     - name: user
       description: These metrics refer to the VPN user.
       labels:
@@ -140,8 +119,10 @@ metrics:
           dimensions:
             - name: in
             - name: out
+          chart_type: area
         - name: openvpn.user_connection_time
           description: User Connection Time
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line

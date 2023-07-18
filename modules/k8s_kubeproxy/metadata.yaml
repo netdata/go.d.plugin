@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -13,6 +68,7 @@ metrics:
           unit: events/s
           dimensions:
             - name: sync_proxy_rules
+          chart_type: line
         - name: k8s_kubeproxy.kubeproxy_sync_proxy_rules_latency_microsecond
           description: Sync Proxy Rules Latency
           unit: observes/s
@@ -33,6 +89,7 @@ metrics:
             - name: '8.192'
             - name: '16.384'
             - name: +Inf
+          chart_type: stacked
         - name: k8s_kubeproxy.kubeproxy_sync_proxy_rules_latency
           description: Sync Proxy Rules Latency Percentage
           unit: percentage
@@ -53,16 +110,19 @@ metrics:
             - name: '8.192'
             - name: '16.384'
             - name: +Inf
+          chart_type: stacked
         - name: k8s_kubeproxy.rest_client_requests_by_code
           description: HTTP Requests By Status Code
           unit: requests/s
           dimensions:
             - name: a dimension per HTTP status code
+          chart_type: stacked
         - name: k8s_kubeproxy.rest_client_requests_by_method
           description: HTTP Requests By Status Method
           unit: requests/s
           dimensions:
             - name: a dimension per HTTP method
+          chart_type: stacked
         - name: k8s_kubeproxy.http_request_duration
           description: HTTP Requests Duration
           unit: microseconds
@@ -70,3 +130,4 @@ metrics:
             - name: '0.5'
             - name: '0.9'
             - name: '0.99'
+          chart_type: stacked

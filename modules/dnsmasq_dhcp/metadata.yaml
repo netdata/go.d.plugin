@@ -2,50 +2,45 @@ name: dnsmasq_dhcp
 title: Dnsmasq DHCP collector
 overview:
   application:
-    description: |
-      [Dnsmasq](https://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+    description: "[Dnsmasq](https://www.thekelleys.org.uk/dnsmasq/doc.html) is a lightweight,
+      easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP
+      and TFTP) services to a small-scale network.\n"
   collector:
-    description: |
-      This collector monitors one or more Dnsmasq DHCP leases databases, depending on your configuration.
-
-      By default, it uses:
-
-      - `/var/lib/misc/dnsmasq.leases` to read leases.
-      - `/etc/dnsmasq.conf` to detect dhcp-ranges.
-      - `/etc/dnsmasq.d` to find additional configurations.
-      
-      All configured dhcp-ranges are detected automatically.
+    description: "This collector monitors one or more Dnsmasq DHCP leases databases,
+      depending on your configuration.\n\nBy default, it uses:\n\n- `/var/lib/misc/dnsmasq.leases`
+      to read leases.\n- `/etc/dnsmasq.conf` to detect dhcp-ranges.\n- `/etc/dnsmasq.d`
+      to find additional configurations.\n\nAll configured dhcp-ranges are detected
+      automatically.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: leases_path
           description: Path to dnsmasq DHCP leases file.
-          default: "/var/lib/misc/dnsmasq.leases"
           required: false
+          default_value: /var/lib/misc/dnsmasq.leases
         - name: conf_path
           description: Path to dnsmasq configuration file.
-          default: "/etc/dnsmasq.conf"
           required: false
+          default_value: /etc/dnsmasq.conf
         - name: conf_dir
           description: Path to dnsmasq configuration directory.
-          default: "/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new"
           required: false
+          default_value: /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new
     examples:
       folding:
         title: Config
@@ -53,20 +48,14 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: dnsmasq_dhcp
-                leases_path: /var/lib/misc/dnsmasq.leases
-                conf_path: /etc/dnsmasq.conf
-                conf_dir: /etc/dnsmasq.d
+          config: "jobs:\n  - name: dnsmasq_dhcp\n    leases_path: /var/lib/misc/dnsmasq.leases\n\
+            \    conf_path: /etc/dnsmasq.conf\n    conf_dir: /etc/dnsmasq.d\n"
         - name: Pi-hole
           description: Dnsmasq DHCP on Pi-hole.
-          data: |
-            jobs:
-              - name: dnsmasq_dhcp
-                leases_path: /etc/pihole/dhcp.leases
-                conf_path: /etc/dnsmasq.conf
-                conf_dir: /etc/dnsmasq.d
+          config: "jobs:\n  - name: dnsmasq_dhcp\n    leases_path: /etc/pihole/dhcp.leases\n\
+            \    conf_path: /etc/dnsmasq.conf\n    conf_dir: /etc/dnsmasq.d\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -74,8 +63,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -86,12 +76,14 @@ metrics:
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: stacked
         - name: dnsmasq_dhcp.dhcp_hosts
           description: Number of DHCP Hosts
           unit: hosts
           dimensions:
             - name: ipv4
             - name: ipv6
+          chart_type: stacked
     - name: dhcp range
       description: These metrics refer to the DHCP range.
       labels:
@@ -103,8 +95,10 @@ metrics:
           unit: percentage
           dimensions:
             - name: used
+          chart_type: line
         - name: dnsmasq_dhcp.dhcp_range_allocated_leases
           description: DHCP Range Allocated Leases
           unit: leases
           dimensions:
             - name: allocated
+          chart_type: line

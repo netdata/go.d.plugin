@@ -2,106 +2,108 @@ name: phpfpm
 title: PHP-FPM collector
 overview:
   application:
-    description: |
-      [PHP-FPM](https://php-fpm.org/) is an alternative PHP FastCGI implementation with some additional features useful for
-      sites of any size, especially busier sites.
+    description: "[PHP-FPM](https://php-fpm.org/) is an alternative PHP FastCGI implementation
+      with some additional features useful for\nsites of any size, especially busier
+      sites.\n"
   collector:
-    description: |
-      This collector monitors one or more PHP-FPM instances, depending on your configuration..
+    description: "This collector monitors one or more PHP-FPM instances, depending
+      on your configuration..\n"
 setup:
   prerequisites:
     list:
       - title: Enable status page
-        text: |
-          Uncomment the `pm.status_path = /status` variable in the `php-fpm` config file.
+        description: "Uncomment the `pm.status_path = /status` variable in the `php-fpm`
+          config file.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1/status?full&json
           required: true
+          default_value: http://127.0.0.1/status?full&json
         - name: socket
           description: Server Unix socket.
-          default: ""
           required: false
+          default_value: ''
         - name: address
           description: Server address in IP:PORT format.
-          default: ""
           required: false
+          default_value: ''
         - name: fcgi_path
           description: Status path.
-          default: /status
           required: false
+          default_value: /status
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -109,34 +111,20 @@ setup:
       list:
         - name: HTTP
           description: Collecting data from a local instance over HTTP.
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost/status?full&json
+          config: "jobs:\n  - name: local\n    url: http://localhost/status?full&json\n"
         - name: Unix socket
           description: Collecting data from a local instance over Unix socket.
-          data: |
-            jobs:
-              - name: local
-                socket: '/tmp/php-fpm.sock'
+          config: "jobs:\n  - name: local\n    socket: '/tmp/php-fpm.sock'\n"
         - name: TCP socket
           description: Collecting data from a local instance over TCP socket.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:9000
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:9000\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-                - name: local
-                  url: http://localhost/status?full&json
-            
-                - name: remote
-                  url: http://203.0.113.10/status?full&json
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n    - name: local\n      url: http://localhost/status?full&json\n\
+            \n    - name: remote\n      url: http://203.0.113.10/status?full&json\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -144,8 +132,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -157,17 +146,20 @@ metrics:
             - name: active
             - name: max_active
             - name: idle
+          chart_type: line
         - name: phpfpm.requests
           description: Requests
           unit: requests/s
           dimensions:
             - name: requests
+          chart_type: line
         - name: phpfpm.performance
           description: Performance
           unit: status
           dimensions:
             - name: max_children_reached
             - name: slow_requests
+          chart_type: line
         - name: phpfpm.request_duration
           description: Requests Duration Among All Idle Processes
           unit: milliseconds
@@ -175,6 +167,7 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: phpfpm.request_cpu
           description: Last Request CPU Usage Among All Idle Processes
           unit: percentage
@@ -182,6 +175,7 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line
         - name: phpfpm.request_mem
           description: Last Request Memory Usage Among All Idle Processes
           unit: KB
@@ -189,3 +183,4 @@ metrics:
             - name: min
             - name: max
             - name: avg
+          chart_type: line

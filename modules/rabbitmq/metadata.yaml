@@ -2,106 +2,105 @@ name: rabbitmq
 title: RabbitMQ collector
 overview:
   application:
-    description: |
-      [RabbitMQ](https://www.rabbitmq.com/) is an open-source message broker.
+    description: "[RabbitMQ](https://www.rabbitmq.com/) is an open-source message
+      broker.\n"
   collector:
-    description: |
-      This collector monitors one or more RabbitMQ instances, depending on your configuration.
-  
-      It collects data using an HTTP-based API provided by the [management plugin](https://www.rabbitmq.com/management.html).
-      The following endpoints are used:
-
-      - `/api/overview`
-      - `/api/node/{node_name}`
-      - `/api/vhosts`
-      - `/api/queues` (disabled by default)
+    description: "This collector monitors one or more RabbitMQ instances, depending
+      on your configuration.\n\nIt collects data using an HTTP-based API provided
+      by the [management plugin](https://www.rabbitmq.com/management.html).\nThe following
+      endpoints are used:\n\n- `/api/overview`\n- `/api/node/{node_name}`\n- `/api/vhosts`\n
+      - `/api/queues` (disabled by default)\n"
 setup:
   prerequisites:
     list:
       - title: Enable management plugin.
-        text: |
-          The management plugin is included in the RabbitMQ distribution, but disabled.
-          To enable see [Management Plugin](https://www.rabbitmq.com/management.html#getting-started) documentation.
+        description: "The management plugin is included in the RabbitMQ distribution,
+          but disabled.\nTo enable see [Management Plugin](https://www.rabbitmq.com/management.html#getting-started)
+          documentation.\n"
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://localhost:15672
           required: true
+          default_value: http://localhost:15672
         - name: collect_queues_metrics
-          description: Collect stats per vhost per queues. Enabling this can introduce serious overhead on both Netdata and RabbitMQ if many queues are configured and used.
-          default: no
+          description: Collect stats per vhost per queues. Enabling this can introduce
+            serious overhead on both Netdata and RabbitMQ if many queues are configured
+            and used.
           required: false
+          default_value: no
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -109,30 +108,18 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:15672
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:15672\n"
         - name: Basic HTTP auth
           description: Local server with basic HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:15672
-                username: admin
-                password: password
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:15672\n    username:
+            admin\n    password: password\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:15672
-            
-              - name: remote
-                url: http://192.0.2.0:15672
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nLocal and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:15672\n\n  -
+            name: remote\n    url: http://192.0.2.0:15672\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -140,8 +127,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -152,6 +140,7 @@ metrics:
           dimensions:
             - name: ready
             - name: unacknowledged
+          chart_type: stacked
         - name: rabbitmq.messages_rate
           description: Messages
           unit: messages/s
@@ -168,6 +157,7 @@ metrics:
             - name: deliver_get
             - name: redeliver
             - name: return_unroutable
+          chart_type: line
         - name: rabbitmq.objects_count
           description: Objects
           unit: messages
@@ -177,18 +167,21 @@ metrics:
             - name: connections
             - name: queues
             - name: exchanges
+          chart_type: line
         - name: rabbitmq.connection_churn_rate
           description: Connection churn
           unit: operations/s
           dimensions:
             - name: created
             - name: closed
+          chart_type: line
         - name: rabbitmq.channel_churn_rate
           description: Channel churn
           unit: operations/s
           dimensions:
             - name: created
             - name: closed
+          chart_type: line
         - name: rabbitmq.queue_churn_rate
           description: Queue churn
           unit: operations/s
@@ -196,39 +189,46 @@ metrics:
             - name: created
             - name: deleted
             - name: declared
+          chart_type: line
         - name: rabbitmq.file_descriptors_count
           description: File descriptors
           unit: fd
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: rabbitmq.sockets_count
           description: Used sockets
           unit: sockets
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: rabbitmq.erlang_processes_count
           description: Erlang processes
           unit: processes
           dimensions:
             - name: available
             - name: used
+          chart_type: stacked
         - name: rabbitmq.erlang_run_queue_processes_count
           description: Erlang run queue
           unit: processes
           dimensions:
             - name: length
+          chart_type: line
         - name: rabbitmq.memory_usage
           description: Memory
           unit: bytes
           dimensions:
             - name: used
+          chart_type: line
         - name: rabbitmq.disk_space_free_size
           description: Free disk space
           unit: bytes
           dimensions:
             - name: free
+          chart_type: line
     - name: vhost
       description: These metrics refer to the virtual host.
       labels:
@@ -241,6 +241,7 @@ metrics:
           dimensions:
             - name: ready
             - name: unacknowledged
+          chart_type: line
         - name: rabbitmq.vhost_messages_rate
           description: Vhost messages rate
           unit: messages/s
@@ -257,6 +258,7 @@ metrics:
             - name: deliver_get
             - name: redeliver
             - name: return_unroutable
+          chart_type: line
     - name: queue
       description: These metrics refer to the virtual host queue.
       labels:
@@ -273,6 +275,7 @@ metrics:
             - name: unacknowledged
             - name: paged_out
             - name: persistent
+          chart_type: line
         - name: rabbitmq.queue_messages_rate
           description: Queue messages rate
           unit: messages/s
@@ -289,3 +292,4 @@ metrics:
             - name: deliver_get
             - name: redeliver
             - name: return_unroutable
+          chart_type: line

@@ -2,47 +2,40 @@ name: supervisord
 title: Supervisord collector
 overview:
   application:
-    description: |
-      [Supervisor](http://supervisord.org/) is a client/server system that allows its users to monitor and control a number of
-      processes on UNIX-like operating systems.
+    description: "[Supervisor](http://supervisord.org/) is a client/server system
+      that allows its users to monitor and control a number of\nprocesses on UNIX-like
+      operating systems.\n"
   collector:
-    description: |
-      This collector monitors one or more Supervisor instances, depending on your configuration.
-
-      It can collect metrics from
-      both [unix socket](http://supervisord.org/configuration.html?highlight=unix_http_server#unix-http-server-section-values)
-      and [internal http server](http://supervisord.org/configuration.html?highlight=unix_http_server#inet-http-server-section-settings)
-
-      Used methods:
-
-      - [`supervisor.getAllProcessInfo`](http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getAllProcessInfo)
+    description: "This collector monitors one or more Supervisor instances, depending
+      on your configuration.\n\nIt can collect metrics from\nboth [unix socket](http://supervisord.org/configuration.html?highlight=unix_http_server#unix-http-server-section-values)\n
+      and [internal http server](http://supervisord.org/configuration.html?highlight=unix_http_server#inet-http-server-section-settings)\n
+      \nUsed methods:\n\n- [`supervisor.getAllProcessInfo`](http://supervisord.org/api.html#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getAllProcessInfo)\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1:9001/RPC2
           required: true
+          default_value: http://127.0.0.1:9001/RPC2
         - name: timeout
           description: System bus requests timeout.
-          default: 1
           required: false
+          default_value: 1
     examples:
       folding:
         title: Config
@@ -50,27 +43,17 @@ setup:
       list:
         - name: HTTP
           description: Collect metrics via HTTP.
-          data: |
-            jobs:
-              - name: local
-                url: 'http://127.0.0.1:9001/RPC2'
+          config: "jobs:\n  - name: local\n    url: 'http://127.0.0.1:9001/RPC2'\n"
         - name: Socket
           description: Collect metrics via Unix socket.
-          data: |
-            - name: local
-              url: 'unix:///run/supervisor.sock'
+          config: "- name: local\n  url: 'unix:///run/supervisor.sock'\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collect metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: 'http://127.0.0.1:9001/RPC2'
-
-              - name: remote
-                url: 'http://192.0.2.1:9001/RPC2'
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollect metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: 'http://127.0.0.1:9001/RPC2'\n\
+            \n  - name: remote\n    url: 'http://192.0.2.1:9001/RPC2'\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -78,8 +61,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -90,6 +74,7 @@ metrics:
           dimensions:
             - name: running
             - name: non-running
+          chart_type: stacked
     - name: process group
       description: These metrics refer to the process group.
       labels: []
@@ -100,23 +85,28 @@ metrics:
           dimensions:
             - name: running
             - name: non-running
+          chart_type: stacked
         - name: supervisord.process_state_code
           description: State code
           unit: code
           dimensions:
             - name: a dimension per process
+          chart_type: line
         - name: supervisord.process_exit_status
           description: Exit status
           unit: exit status
           dimensions:
             - name: a dimension per process
+          chart_type: line
         - name: supervisord.process_uptime
           description: Uptime
           unit: seconds
           dimensions:
             - name: a dimension per process
+          chart_type: line
         - name: supervisord.process_downtime
           description: Downtime
           unit: seconds
           dimensions:
             - name: a dimension per process
+          chart_type: line

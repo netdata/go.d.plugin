@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -17,12 +72,14 @@ metrics:
             - name: 3xx
             - name: 4xx
             - name: 5xx
+          chart_type: stacked
         - name: springboot2.thread
           description: Threads
           unit: threads
           dimensions:
             - name: daemon
             - name: total
+          chart_type: area
         - name: springboot2.heap
           description: Overview
           unit: B
@@ -31,26 +88,31 @@ metrics:
             - name: eden
             - name: survivor
             - name: old
+          chart_type: stacked
         - name: springboot2.heap_eden
           description: Eden Space
           unit: B
           dimensions:
             - name: used
             - name: commited
+          chart_type: area
         - name: springboot2.heap_survivor
           description: Survivor Space
           unit: B
           dimensions:
             - name: used
             - name: commited
+          chart_type: area
         - name: springboot2.heap_old
           description: Old Space
           unit: B
           dimensions:
             - name: used
             - name: commited
+          chart_type: area
         - name: springboot2.uptime
           description: TThe uptime of the Java virtual machine
           unit: seconds
           dimensions:
             - name: uptime
+          chart_type: line

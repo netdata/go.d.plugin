@@ -2,46 +2,47 @@ name: couchbase
 title: Couchbase collector
 overview:
   application:
-    description: |
-      [Couchbase](https://www.couchbase.com/) is an open source, distributed, JSON document database. It exposes a scale-out, key-value store with managed cache for sub-millisecond data operations, purpose-built indexers for efficient queries and a powerful query engine for executing SQL-like queries.
+    description: "[Couchbase](https://www.couchbase.com/) is an open source, distributed,
+      JSON document database. It exposes a scale-out, key-value store with managed
+      cache for sub-millisecond data operations, purpose-built indexers for efficient
+      queries and a powerful query engine for executing SQL-like queries.\n"
   collector:
-    description: |
-      This collector collects metrics exposed from the `/pools/default/buckets` endpoint.
+    description: "This collector collects metrics exposed from the `/pools/default/buckets`
+      endpoint.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: All options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
-          required: no
+          required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:8091`"
-          required: yes
+          required: true
+          default_value: '`http://127.0.0.1:8091`'
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          required: false
+          default_value: '-'
         - name: timeout
           description: HTTP request timeout.
-          default: 10
-          required: no
+          required: false
+          default_value: 10
     examples:
       list:
         - name: Basic
@@ -49,33 +50,27 @@ setup:
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8091
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8091\n"
         - name: Basic HTTP auth
           description: Local server with basic HTTP authentication.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8091
-                username: foo
-                password: bar
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8091\n    username:
+            foo\n    password: bar\n"
         - name: Multi-instance
-          description: When you are defining more than one jobs, you must be careful to use different job names, to not override each other.
+          description: When you are defining more than one jobs, you must be careful
+            to use different job names, to not override each other.
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1:8091
-
-              - name: remote
-                url: http://203.0.113.0:8091
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1:8091\n\n  - name:
+            remote\n    url: http://203.0.113.0:8091\n"
+      folding:
+        title: Config options
+        enabled: true
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -84,7 +79,8 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -94,38 +90,46 @@ metrics:
           unit: percentage
           dimensions:
             - name: a dimension per bucket
+          chart_type: line
         - name: couchbase.bucket_ops_per_sec
           description: Operations Per Second Per Bucket
           unit: ops/s
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_disk_fetches
           description: Disk Fetches Per Bucket
           unit: fetches
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_item_count
           description: Item Count Per Bucket
           unit: items
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_disk_used_stats
           description: Disk Used Per Bucket
           unit: bytes
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_data_used
           description: Data Used Per Bucket
           unit: bytes
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_mem_used
           description: Memory Used Per Bucket
           unit: bytes
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked
         - name: couchbase.bucket_vb_active_num_non_resident
           description: Number Of Non-Resident Items Per Bucket
           unit: items
           dimensions:
             - name: a dimension per bucket
+          chart_type: stacked

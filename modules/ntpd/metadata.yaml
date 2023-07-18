@@ -2,45 +2,44 @@ name: ntpd
 title: NTP daemon collector
 overview:
   application:
-    description: |
-      The NTPd (Network Time Protocol daemon) is an operating system program that maintains the system time in synchronization
-      with time-servers using the Network Time Protocol.
+    description: "The NTPd (Network Time Protocol daemon) is an operating system program
+      that maintains the system time in synchronization\nwith time-servers using the
+      Network Time Protocol.\n"
   collector:
-    description: |
-      This collector monitors the system variables of the local `ntpd` daemon (optional incl. variables of the polled peers)
-      using the NTP Control Message Protocol via UDP socket, similar to `ntpq`,
-      the [standard NTP query program](https://doc.ntp.org/current-stable/ntpq.html).
+    description: "This collector monitors the system variables of the local `ntpd`
+      daemon (optional incl. variables of the polled peers)\nusing the NTP Control
+      Message Protocol via UDP socket, similar to `ntpq`,\nthe [standard NTP query
+      program](https://doc.ntp.org/current-stable/ntpq.html).\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: address
           description: Server address in IP:PORT format.
-          default: 127.0.0.1:123
           required: true
+          default_value: 127.0.0.1:123
         - name: timeout
           description: Connection/read/write timeout.
-          default: 3
           required: false
+          default_value: 3
         - name: collect_peers
           description: Determines whether peer metrics will be collected.
-          default: no
           required: false
+          default_value: no
     examples:
       folding:
         title: Config
@@ -48,29 +47,18 @@ setup:
       list:
         - name: Basic
           description: A basic example configuration.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:123
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:123\n"
         - name: With peers metrics
           description: Collect peers metrics.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:123
-                collect_peers: yes
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:123\n    collect_peers:
+            yes\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:123
-            
-              - name: remote
-                address: 203.0.113.0:123
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:123\n\n  - name:
+            remote\n    address: 203.0.113.0:123\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -78,8 +66,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -89,116 +78,138 @@ metrics:
           unit: milliseconds
           dimensions:
             - name: offset
+          chart_type: area
         - name: ntpd.sys_jitter
           description: Combined system jitter and clock jitter
           unit: milliseconds
           dimensions:
             - name: system
             - name: clock
+          chart_type: line
         - name: ntpd.sys_frequency
           description: Frequency offset relative to hardware clock
           unit: ppm
           dimensions:
             - name: frequency
+          chart_type: area
         - name: ntpd.sys_wander
           description: Clock frequency wander
           unit: ppm
           dimensions:
             - name: clock
+          chart_type: area
         - name: ntpd.sys_rootdelay
           description: Total roundtrip delay to the primary reference clock
           unit: milliseconds
           dimensions:
             - name: delay
+          chart_type: area
         - name: ntpd.sys_rootdisp
           description: Total root dispersion to the primary reference clock
           unit: milliseconds
           dimensions:
             - name: dispersion
+          chart_type: area
         - name: ntpd.sys_stratum
           description: Stratum
           unit: stratum
           dimensions:
             - name: stratum
+          chart_type: line
         - name: ntpd.sys_tc
           description: Time constant and poll exponent
           unit: log2
           dimensions:
             - name: current
             - name: minimum
+          chart_type: line
         - name: ntpd.sys_precision
           description: Precision
           unit: log2
           dimensions:
             - name: precision
+          chart_type: line
     - name: peer
       description: These metrics refer to the NTPd peer.
       labels:
         - name: peer_address
-          description: "peer's source IP address"
+          description: peer's source IP address
       metrics:
         - name: ntpd.peer_offset
           description: Peer offset
           unit: milliseconds
           dimensions:
             - name: offset
+          chart_type: line
         - name: ntpd.peer_delay
           description: Peer delay
           unit: milliseconds
           dimensions:
             - name: delay
+          chart_type: line
         - name: ntpd.peer_dispersion
           description: Peer dispersion
           unit: milliseconds
           dimensions:
             - name: dispersion
+          chart_type: line
         - name: ntpd.peer_jitter
           description: Peer jitter
           unit: milliseconds
           dimensions:
             - name: jitter
+          chart_type: line
         - name: ntpd.peer_xleave
           description: Peer interleave delay
           unit: milliseconds
           dimensions:
             - name: xleave
+          chart_type: line
         - name: ntpd.peer_rootdelay
           description: Peer roundtrip delay to the primary reference clock
           unit: milliseconds
           dimensions:
             - name: rootdelay
+          chart_type: line
         - name: ntpd.peer_rootdisp
           description: Peer root dispersion to the primary reference clock
           unit: milliseconds
           dimensions:
             - name: dispersion
+          chart_type: line
         - name: ntpd.peer_stratum
           description: Peer stratum
           unit: stratum
           dimensions:
             - name: stratum
+          chart_type: line
         - name: ntpd.peer_hmode
           description: Peer host mode
           unit: hmode
           dimensions:
             - name: hmode
+          chart_type: line
         - name: ntpd.peer_pmode
           description: Peer mode
           unit: pmode
           dimensions:
             - name: pmode
+          chart_type: line
         - name: ntpd.peer_hpoll
           description: Peer host poll exponent
           unit: log2
           dimensions:
             - name: hpoll
+          chart_type: line
         - name: ntpd.peer_ppoll
           description: Peer poll exponent
           unit: log2
           dimensions:
             - name: ppoll
+          chart_type: line
         - name: ntpd.peer_precision
           description: Peer precision
           unit: log2
           dimensions:
             - name: precision
+          chart_type: line

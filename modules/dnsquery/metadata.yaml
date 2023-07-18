@@ -2,54 +2,53 @@ name: dnsquery
 title: DNS query collector
 overview:
   application:
-    description: |
-      TBD
+    description: "TBD\n"
   collector:
-    description: |
-      This module provides DNS query round-trip time (RTT).
+    description: "This module provides DNS query round-trip time (RTT).\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: All options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
-          required: no
+          required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
-          required: no
+          required: false
+          default_value: 0
         - name: domains
-          description: Domain or subdomains to query. The collector will choose a random domain from the list on every iteration.
-          default: "-"
-          required: yes
+          description: Domain or subdomains to query. The collector will choose a
+            random domain from the list on every iteration.
+          required: true
+          default_value: '-'
         - name: servers
           description: Servers to query.
-          default: "-"
-          required: yes
+          required: true
+          default_value: '-'
         - name: port
           description: DNS server port.
-          default: 53
-          required: no
+          required: false
+          default_value: 53
         - name: network
-          description: "Network protocol name. Vailable options: udp, tcp, tcp-tls."
-          default: "udp"
-          required: no
+          description: 'Network protocol name. Vailable options: udp, tcp, tcp-tls.'
+          required: false
+          default_value: udp
         - name: record_types
-          description: "Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV."
-          default: "A"
-          required: no
+          description: 'Query record type. Available options: A, AAAA, CNAME, MX,
+            NS, PTR, TXT, SOA, SPF, TXT, SRV.'
+          required: false
+          default_value: A
         - name: timeout
-          description: "Query read timeout."
-          default: 2
-          required: no
+          description: Query read timeout.
+          required: false
+          default_value: 2
     examples:
       list:
         - name: Basic
@@ -57,19 +56,14 @@ setup:
           folding:
             title: Example
             enabled: true
-          data: |
-            jobs:
-              - name: job1
-                record_types:
-                  - A
-                  - AAAA
-                domains:
-                  - google.com
-                  - github.com
-                  - reddit.com
-                servers:
-                  - 8.8.8.8
-                  - 8.8.4.4
+          config: "jobs:\n  - name: job1\n    record_types:\n      - A\n      - AAAA\n\
+            \    domains:\n      - google.com\n      - github.com\n      - reddit.com\n\
+            \    servers:\n      - 8.8.8.8\n      - 8.8.4.4\n"
+      folding:
+        title: Config options
+        enabled: true
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -78,7 +72,8 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: server
       description: TBD
       labels:
@@ -96,8 +91,10 @@ metrics:
             - name: success
             - name: network_error
             - name: dns_error
+          chart_type: line
         - name: dns_query.query_time
           description: DNS Query Time
           unit: seconds
           dimensions:
             - name: query_time
+          chart_type: line

@@ -2,38 +2,37 @@ name: wireguard
 title: WireGuard collector
 overview:
   application:
-    description: |
-      [WireGuard](https://www.wireguard.com/) is an extremely simple yet fast and modern VPN that utilizes state-of-the-art
-      cryptography.
-
+    description: "[WireGuard](https://www.wireguard.com/) is an extremely simple yet
+      fast and modern VPN that utilizes state-of-the-art\ncryptography.\n"
   collector:
-    description: |
-      This collector monitors WireGuard VPN network interfaces and peers traffic.
-      CAP_NET_ADMIN capability is required. It is set automatically during installation.
+    description: "This collector monitors WireGuard VPN network interfaces and peers
+      traffic.\nCAP_NET_ADMIN capability is required. It is set automatically during
+      installation.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
     examples:
       folding:
         title: Config
         enabled: true
       list: []
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -41,8 +40,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: device
       description: These metrics refer to the VPN network interface.
       labels:
@@ -55,11 +55,13 @@ metrics:
           dimensions:
             - name: receive
             - name: transmit
+          chart_type: area
         - name: wireguard.device_peers
           description: Device peers
           unit: peers
           dimensions:
             - name: peers
+          chart_type: line
     - name: peer
       description: These metrics refer to the VPN peer.
       labels:
@@ -74,8 +76,10 @@ metrics:
           dimensions:
             - name: receive
             - name: transmit
+          chart_type: area
         - name: wireguard.peer_latest_handshake_ago
           description: Peer time elapsed since the latest handshake
           unit: seconds
           dimensions:
             - name: time
+          chart_type: line

@@ -2,57 +2,49 @@ name: dnsmasq
 title: Dnsmasq collector
 overview:
   application:
-    description: |
-      [Dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) is a lightweight, easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP and TFTP) services to a small-scale network.
+    description: "[Dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) is a lightweight,
+      easy to configure DNS forwarder, designed to provide DNS (and optionally DHCP
+      and TFTP) services to a small-scale network.\n"
   collector:
-    description: |
-      This collector monitors one or more Dnsmasq DNS Forwarder instances, depending on your configuration.
-
-      It collects DNS cache statistics by [reading the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):
-
-      ```cmd
-      ;; opcode: QUERY, status: NOERROR, id: 37862
-      ;; flags: rd; QUERY: 7, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
-
-      ;; QUESTION SECTION:
-      ;cachesize.bind.   CH	 TXT
-      ;insertions.bind.  CH	 TXT
-      ;evictions.bind.   CH	 TXT
-      ;hits.bind.        CH	 TXT
-      ;misses.bind.      CH	 TXT
-      ;servers.bind.     CH	 TXT
-      ```
+    description: "This collector monitors one or more Dnsmasq DNS Forwarder instances,
+      depending on your configuration.\n\nIt collects DNS cache statistics by [reading
+      the response on the following query](https://manpages.debian.org/stretch/dnsmasq-base/dnsmasq.8.en.html#NOTES):\n
+      \n```cmd\n;; opcode: QUERY, status: NOERROR, id: 37862\n;; flags: rd; QUERY:
+      7, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0\n\n;; QUESTION SECTION:\n;cachesize.bind.\
+      \   CH\t TXT\n;insertions.bind.  CH\t TXT\n;evictions.bind.   CH\t TXT\n;hits.bind.\
+      \        CH\t TXT\n;misses.bind.      CH\t TXT\n;servers.bind.     CH\t TXT\n\
+      ```\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: address
           description: Server's address. Format is 'ip_address:port'.
-          default: 127.0.0.1:53
           required: true
+          default_value: 127.0.0.1:53
         - name: protocol
-          description: "DNS query transport protocol. Supported protocols: udp, tcp, tcp-tls."
-          default: udp
+          description: 'DNS query transport protocol. Supported protocols: udp, tcp,
+            tcp-tls.'
           required: false
+          default_value: udp
         - name: timeout
-          description: "DNS query timeout (dial, write and read) in seconds."
-          default: 1
+          description: DNS query timeout (dial, write and read) in seconds.
           required: false
+          default_value: 1
     examples:
       folding:
         title: Config
@@ -60,29 +52,18 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:53
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:53\n"
         - name: Using TCP protocol
           description: Local server with specific DNS query transport protocol.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:53
-                protocol: tcp
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:53\n    protocol:
+            tcp\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                address: 127.0.0.1:53
-
-              - name: remote
-                address: 203.0.113.0:53
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    address: 127.0.0.1:53\n\n  - name:
+            remote\n    address: 203.0.113.0:53\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -90,8 +71,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: The metrics apply to the entire monitored application.
       labels: []
@@ -102,20 +84,24 @@ metrics:
           dimensions:
             - name: success
             - name: failed
+          chart_type: line
         - name: dnsmasq.cache_performance
           description: Cache performance
           unit: events/s
           dimensions:
             - name: hist
             - name: misses
+          chart_type: line
         - name: dnsmasq.cache_operations
           description: Cache operations
           unit: operations/s
           dimensions:
             - name: insertions
             - name: evictions
+          chart_type: line
         - name: dnsmasq.cache_size
           description: Cache size
           unit: entries
           dimensions:
             - name: size
+          chart_type: line

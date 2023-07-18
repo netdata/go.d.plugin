@@ -2,91 +2,93 @@ name: logstash
 title: Logstash collector
 overview:
   application:
-    description: |
-      [Logstash](https://www.elastic.co/products/logstash) is an open-source data processing pipeline that allows you to
-      collect, process, and load data into Elasticsearch.
+    description: "[Logstash](https://www.elastic.co/products/logstash) is an open-source
+      data processing pipeline that allows you to\ncollect, process, and load data
+      into Elasticsearch.\n"
   collector:
-    description: |
-      This collector monitors one or more Logstash instances, depending on your configuration.
+    description: "This collector monitors one or more Logstash instances, depending
+      on your configuration.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
           required: false
+          default_value: 1
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://localhost:9600
           required: true
+          default_value: http://localhost:9600
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -94,37 +96,22 @@ setup:
       list:
         - name: Basic
           description: A basic example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost:9600
+          config: "jobs:\n  - name: local\n    url: http://localhost:9600\n"
         - name: HTTP authentication
           description: HTTP authentication.
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost:9600
-                username: username
-                password: password
+          config: "jobs:\n  - name: local\n    url: http://localhost:9600\n    username:
+            username\n    password: password\n"
         - name: HTTPS with self-signed certificate
           description: HTTPS and self-signed certificate.
-          data: |
-            jobs:
-              - name: local
-                url: https://localhost:9600
-                tls_skip_verify: yes
+          config: "jobs:\n  - name: local\n    url: https://localhost:9600\n    tls_skip_verify:
+            yes\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://localhost:9600
-            
-              - name: remote
-                url: http://192.0.2.1:9600
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://localhost:9600\n\n  - name:
+            remote\n    url: http://192.0.2.1:9600\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -132,8 +119,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -143,52 +131,61 @@ metrics:
           unit: count
           dimensions:
             - name: threads
+          chart_type: line
         - name: logstash.jvm_mem_heap_used
           description: JVM Heap Memory Percentage
           unit: percentage
           dimensions:
             - name: in_use
+          chart_type: line
         - name: logstash.jvm_mem_heap
           description: JVM Heap Memory
           unit: KiB
           dimensions:
             - name: committed
             - name: used
+          chart_type: area
         - name: logstash.jvm_mem_pools_eden
           description: JVM Pool Eden Memory
           unit: KiB
           dimensions:
             - name: committed
             - name: used
+          chart_type: area
         - name: logstash.jvm_mem_pools_survivor
           description: JVM Pool Survivor Memory
           unit: KiB
           dimensions:
             - name: committed
             - name: used
+          chart_type: area
         - name: logstash.jvm_mem_pools_old
           description: JVM Pool Old Memory
           unit: KiB
           dimensions:
             - name: committed
             - name: used
+          chart_type: area
         - name: logstash.jvm_gc_collector_count
           description: Garbage Collection Count
           unit: counts/s
           dimensions:
             - name: eden
             - name: old
+          chart_type: line
         - name: logstash.jvm_gc_collector_time
           description: Time Spent On Garbage Collection
           unit: ms
           dimensions:
             - name: eden
             - name: old
+          chart_type: line
         - name: logstash.open_file_descriptors
           description: Open File Descriptors
           unit: fd
           dimensions:
             - name: open
+          chart_type: line
         - name: logstash.event
           description: Events Overview
           unit: events/s
@@ -196,17 +193,20 @@ metrics:
             - name: in
             - name: filtered
             - name: out
+          chart_type: line
         - name: logstash.event_duration
           description: Events Duration
           unit: seconds
           dimensions:
             - name: event
             - name: queue
+          chart_type: line
         - name: logstash.uptime
           description: Uptime
           unit: seconds
           dimensions:
             - name: uptime
+          chart_type: line
     - name: pipeline
       description: These metrics refer to the pipeline.
       labels:
@@ -220,9 +220,11 @@ metrics:
             - name: in
             - name: filtered
             - name: out
+          chart_type: line
         - name: logstash.pipeline_event
           description: Pipeline Events Duration
           unit: seconds
           dimensions:
             - name: event
             - name: queue
+          chart_type: line

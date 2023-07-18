@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -14,6 +69,7 @@ metrics:
           dimensions:
             - name: requests
             - name: responses
+          chart_type: line
         - name: freeradius.authentication_access_responses
           description: Authentication Responses
           unit: packets/s
@@ -21,6 +77,7 @@ metrics:
             - name: accepts
             - name: rejects
             - name: challenges
+          chart_type: line
         - name: freeradius.bad_authentication
           description: Bad Authentication Requests
           unit: packets/s
@@ -30,12 +87,14 @@ metrics:
             - name: invalid
             - name: malformed
             - name: unknown-types
+          chart_type: line
         - name: freeradius.proxy_authentication
           description: Authentication
           unit: packets/s
           dimensions:
             - name: requests
             - name: responses
+          chart_type: line
         - name: freeradius.proxy_authentication_access_responses
           description: Authentication Responses
           unit: packets/s
@@ -43,6 +102,7 @@ metrics:
             - name: accepts
             - name: rejects
             - name: challenges
+          chart_type: line
         - name: freeradius.proxy_bad_authentication
           description: Bad Authentication Requests
           unit: packets/s
@@ -52,12 +112,14 @@ metrics:
             - name: invalid
             - name: malformed
             - name: unknown-types
+          chart_type: line
         - name: freeradius.accounting
           description: Accounting
           unit: packets/s
           dimensions:
             - name: requests
             - name: responses
+          chart_type: line
         - name: freeradius.bad_accounting
           description: Bad Accounting Requests
           unit: packets/s
@@ -67,12 +129,14 @@ metrics:
             - name: invalid
             - name: malformed
             - name: unknown-types
+          chart_type: line
         - name: freeradius.proxy_accounting
           description: Accounting
           unit: packets/s
           dimensions:
             - name: requests
             - name: responses
+          chart_type: line
         - name: freeradius.proxy_bad_accounting
           description: Bad Accounting Requests
           unit: packets/s
@@ -82,3 +146,4 @@ metrics:
             - name: invalid
             - name: malformed
             - name: unknown-types
+          chart_type: line

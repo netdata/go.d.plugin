@@ -2,98 +2,99 @@ name: pihole
 title: Pi-hole collector
 overview:
   application:
-    description: |
-      [Pi-hole](https://pi-hole.net) is a Linux network-level advertisement and Internet tracker blocking application which
-      acts as a DNS sinkhole, intended for use on a private network.
+    description: "[Pi-hole](https://pi-hole.net) is a Linux network-level advertisement
+      and Internet tracker blocking application which\nacts as a DNS sinkhole, intended
+      for use on a private network.\n"
   collector:
-    description: |
-      This collector monitors one or more Pi-hole instances using [PHP API](https://github.com/pi-hole/AdminLTE).
-      
-      The data provided by the API is for the last 24 hours. All collected values refer to this time period and not to the
-      module's collection interval.
+    description: "This collector monitors one or more Pi-hole instances using [PHP
+      API](https://github.com/pi-hole/AdminLTE).\n\nThe data provided by the API is
+      for the last 24 hours. All collected values refer to this time period and not
+      to the\nmodule's collection interval.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
           required: false
+          default_value: 5
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: http://127.0.0.1
           required: true
+          default_value: http://127.0.0.1
         - name: setup_vars_path
           description: Path to setupVars.conf. This file is used to get the web password.
-          default: /etc/pihole/setupVars.conf
           required: false
+          default_value: /etc/pihole/setupVars.conf
         - name: timeout
           description: HTTP request timeout.
-          default: 5
           required: false
+          default_value: 5
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -101,31 +102,18 @@ setup:
       list:
         - name: Basic
           description: A basic example configuration.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1\n"
         - name: HTTPS with self-signed certificate
           description: Remote instance with enabled HTTPS and self-signed certificate.
-          data: |
-            jobs:
-              - name: local
-                url: https://203.0.113.11
-                tls_skip_verify: yes
-                password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b
+          config: "jobs:\n  - name: local\n    url: https://203.0.113.11\n    tls_skip_verify:
+            yes\n    password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-
-            Collecting metrics from local and remote instances.
-          data: |
-            jobs:
-              - name: local
-                url: http://127.0.0.1
-            
-              - name: remote
-                url: http://203.0.113.10
-                password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nCollecting metrics from local and remote instances.\n"
+          config: "jobs:\n  - name: local\n    url: http://127.0.0.1\n\n  - name:
+            remote\n    url: http://203.0.113.10\n    password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -133,8 +121,9 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -144,6 +133,7 @@ metrics:
           unit: queries
           dimensions:
             - name: queries
+          chart_type: line
         - name: pihole.dns_queries
           description: DNS Queries
           unit: queries
@@ -151,6 +141,7 @@ metrics:
             - name: cached
             - name: blocked
             - name: forwarded
+          chart_type: stacked
         - name: pihole.dns_queries_percentage
           description: DNS Queries Percentage
           unit: percentage
@@ -158,27 +149,32 @@ metrics:
             - name: cached
             - name: blocked
             - name: forwarded
+          chart_type: stacked
         - name: pihole.unique_clients
           description: Unique Clients
           unit: clients
           dimensions:
             - name: unique
+          chart_type: line
         - name: pihole.domains_on_blocklist
           description: Domains On Blocklist
           unit: domains
           dimensions:
             - name: blocklist
+          chart_type: line
         - name: pihole.blocklist_last_update
           description: Blocklist Last Update
           unit: seconds
           dimensions:
             - name: ago
+          chart_type: line
         - name: pihole.unwanted_domains_blocking_status
           description: Unwanted Domains Blocking Status
           unit: status
           dimensions:
             - name: enabled
             - name: disabled
+          chart_type: line
         - name: pihole.dns_queries_types
           description: DNS Queries Per Type
           unit: percentage
@@ -190,6 +186,7 @@ metrics:
             - name: soa
             - name: srv
             - name: txt
+          chart_type: stacked
         - name: pihole.dns_queries_forwarded_destination
           description: DNS Queries Per Destination
           unit: percentage
@@ -197,3 +194,4 @@ metrics:
             - name: cached
             - name: blocked
             - name: other
+          chart_type: stacked

@@ -2,92 +2,93 @@ name: vcsa
 title: vCenter Server Appliance collector
 overview:
   application:
-    description: |
-      The [vCenter Server Appliance](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)
-      is a preconfigured Linux virtual machine, which is optimized for running VMware vCenter Server® and the associated services on Linux.
+    description: "The [vCenter Server Appliance](https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html)\n
+      is a preconfigured Linux virtual machine, which is optimized for running VMware
+      vCenter Server® and the associated services on Linux.\n"
   collector:
-    description: |
-      This collector monitors [health statistics](https://developer.vmware.com/apis/vsphere-automation/latest/appliance/health/)
-      from one or more vCenter Server Appliance servers, depending on your configuration.
+    description: "This collector monitors [health statistics](https://developer.vmware.com/apis/vsphere-automation/latest/appliance/health/)\n
+      from one or more vCenter Server Appliance servers, depending on your configuration.\n"
 setup:
   prerequisites:
     list: []
   configuration:
     options:
-      description: |
-        The following options can be defined globally: update_every, autodetection_retry.
+      description: "The following options can be defined globally: update_every, autodetection_retry.\n"
       folding:
         title: Config options
         enabled: true
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
           required: false
+          default_value: 5
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
           required: false
+          default_value: 0
         - name: url
           description: Server URL.
-          default: ""
           required: true
+          default_value: ''
         - name: timeout
           description: HTTP request timeout.
-          default: 1
           required: false
+          default_value: 1
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
           required: true
+          default_value: ''
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
           required: true
+          default_value: ''
         - name: proxy_url
           description: Proxy URL.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
           required: false
+          default_value: ''
         - name: method
           description: HTTP request method.
-          default: "GET"
           required: false
+          default_value: GET
         - name: body
           description: HTTP request body.
-          default: ""
           required: false
+          default_value: ''
         - name: headers
           description: HTTP request headers.
-          default: ""
           required: false
+          default_value: ''
         - name: not_follow_redirects
-          description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          description: Redirect handling policy. Controls whether the client follows
+            redirects.
           required: false
+          default_value: no
         - name: tls_skip_verify
-          description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          description: Server certificate chain and hostname validation policy. Controls
+            whether the client performs this check.
           required: false
+          default_value: no
         - name: tls_ca
-          description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          description: Certification authority that the client uses when verifying
+            the server's certificates.
           required: false
+          default_value: ''
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
           required: false
+          default_value: ''
         - name: tls_key
           description: Client TLS key.
-          default: ""
           required: false
+          default_value: ''
     examples:
       folding:
         title: Config
@@ -95,28 +96,17 @@ setup:
       list:
         - name: Basic
           description: An example configuration.
-          data: |
-            jobs:
-              - name: vcsa1
-                url: https://203.0.113.1
-                username: admin@vsphere.local
-                password: password
+          config: "jobs:\n  - name: vcsa1\n    url: https://203.0.113.1\n    username:
+            admin@vsphere.local\n    password: password\n"
         - name: Multi-instance
-          description: |
-            > **Note**: When you define multiple jobs, their names must be unique.
-            
-            Two instances.
-          data: |
-            jobs:
-              - name: vcsa1
-                url: https://203.0.113.1
-                username: admin@vsphere.local
-                password: password
-
-              - name: vcsa2
-                url: https://203.0.113.10
-                username: admin@vsphere.local
-                password: password
+          description: "> **Note**: When you define multiple jobs, their names must
+            be unique.\n\nTwo instances.\n"
+          config: "jobs:\n  - name: vcsa1\n    url: https://203.0.113.1\n    username:
+            admin@vsphere.local\n    password: password\n\n  - name: vcsa2\n    url:
+            https://203.0.113.10\n    username: admin@vsphere.local\n    password:
+            password\n"
+    file:
+      name: ''
 troubleshooting:
   problems:
     list: []
@@ -124,46 +114,43 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ""
-  scope:
+  description: ''
+  availability: []
+  scopes:
     - name: global
-      description: |
-        These metrics refer to the entire monitored application.
-        <details>
-        <summary>See health statuses</summary>
-        Overall System Health:
-
-        | Numeric |   Text    | Description                                                                                                              |
-        |:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|
-        |  `-1`   | `unknown` | Module failed to decode status.                                                                                          |
-        |   `0`   |  `green`  | All components in the appliance are healthy.                                                                             |
-        |   `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.                                                    |
-        |   `2`   | `orange`  | One or more components in the appliance might be degraded.                                                               |
-        |   `3`   |   `red`   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
-        |   `4`   |  `gray`   | No health data is available.                                                                                             |
-
-        Components Health:
-
-        | Numeric |   Text    | Description                                                  |
-        |:-------:|:---------:|:-------------------------------------------------------------|
-        |  `-1`   | `unknown` | Module failed to decode status.                              |
-        |   `0`   |  `green`  | The component is healthy.                                    |
-        |   `1`   | `yellow`  | The component is healthy, but may have some problems.        |
-        |   `2`   | `orange`  | The component is degraded, and may have serious problems.    |
-        |   `3`   |   `red`   | The component is unavailable, or will stop functioning soon. |
-        |   `4`   |  `gray`   | No health data is available.                                 |
-
-        Software Updates Health:
-
-        | Numeric |   Text    | Description                                          |
-        |:-------:|:---------:|:-----------------------------------------------------|
-        |  `-1`   | `unknown` | Module failed to decode status.                      |
-        |   `0`   |  `green`  | No updates available.                                |
-        |   `2`   | `orange`  | Non-security patches might be available.             |
-        |   `3`   |   `red`   | Security patches might be available.                 |
-        |   `4`   |  `gray`   | An error retrieving information on software updates. |
-
-        </details>
+      description: "These metrics refer to the entire monitored application.\n<details>\n
+        <summary>See health statuses</summary>\nOverall System Health:\n\n| Numeric
+        |   Text    | Description                                                \
+        \                                                              |\n|:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|\n\
+        |  `-1`   | `unknown` | Module failed to decode status.                  \
+        \                                                                        |\n\
+        |   `0`   |  `green`  | All components in the appliance are healthy.     \
+        \                                                                        |\n\
+        |   `1`   | `yellow`  | One or more components in the appliance might become
+        overloaded soon.                                                    |\n| \
+        \  `2`   | `orange`  | One or more components in the appliance might be degraded.\
+        \                                                               |\n|   `3`\
+        \   |   `red`   | One or more components in the appliance might be in an unusable
+        status and the appliance might become unresponsive soon. |\n|   `4`   |  `gray`\
+        \   | No health data is available.                                       \
+        \                                                      |\n\nComponents Health:\n
+        \n| Numeric |   Text    | Description                                    \
+        \              |\n|:-------:|:---------:|:-------------------------------------------------------------|\n\
+        |  `-1`   | `unknown` | Module failed to decode status.                  \
+        \            |\n|   `0`   |  `green`  | The component is healthy.        \
+        \                            |\n|   `1`   | `yellow`  | The component is healthy,
+        but may have some problems.        |\n|   `2`   | `orange`  | The component
+        is degraded, and may have serious problems.    |\n|   `3`   |   `red`   |
+        The component is unavailable, or will stop functioning soon. |\n|   `4`  \
+        \ |  `gray`   | No health data is available.                             \
+        \    |\n\nSoftware Updates Health:\n\n| Numeric |   Text    | Description\
+        \                                          |\n|:-------:|:---------:|:-----------------------------------------------------|\n\
+        |  `-1`   | `unknown` | Module failed to decode status.                  \
+        \    |\n|   `0`   |  `green`  | No updates available.                    \
+        \            |\n|   `2`   | `orange`  | Non-security patches might be available.\
+        \             |\n|   `3`   |   `red`   | Security patches might be available.\
+        \                 |\n|   `4`   |  `gray`   | An error retrieving information
+        on software updates. |\n\n</details>\n"
       labels: []
       metrics:
         - name: vcsa.system_health
@@ -171,6 +158,7 @@ metrics:
           unit: status
           dimensions:
             - name: system
+          chart_type: line
         - name: vcsa.components_health
           description: Components Health
           unit: status
@@ -180,8 +168,10 @@ metrics:
             - name: mem
             - name: storage
             - name: swap
+          chart_type: line
         - name: vcsa.software_updates_health
           description: Software Updates Health
           unit: status
           dimensions:
             - name: software_packages
+          chart_type: line

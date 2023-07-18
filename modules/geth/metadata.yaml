@@ -1,9 +1,64 @@
+meta:
+  plugin_name: ''
+  module_name: ''
+  monitored_instance:
+    name: ''
+    link: ''
+    categories: []
+    icon_filename: ''
+  related_resources:
+    integrations:
+      list: []
+  info_provided_to_referring_integrations:
+    description: ''
+  keywords: []
+  most_popular: false
+overview:
+  data_collection:
+    metrics_description: ''
+    method_description: ''
+  supported_platforms:
+    include: []
+    exclude: []
+  multi-instance: true
+  additional_permissions:
+    description: ''
+  default_behavior:
+    auto_detection:
+      description: ''
+    limits:
+      description: ''
+    performance_impact:
+      description: ''
+setup:
+  prerequisites:
+    list: []
+  configuration:
+    file:
+      name: ''
+      description: ''
+    options:
+      description: ''
+      folding:
+        title: ''
+        enabled: true
+      list: []
+    examples:
+      folding:
+        enabled: true
+        title: ''
+      list: []
+troubleshooting:
+  problems:
+    list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  availability: []
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -14,35 +69,41 @@ metrics:
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: geth.eth_db_chaindata_ancient_io
           description: Session ancient Chaindata
           unit: bytes
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: geth.eth_db_chaindata_disk_io
           description: Session chaindata on disk
           unit: bytes
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: geth.goroutines
           description: Number of goroutines
           unit: goroutines
           dimensions:
             - name: goroutines
+          chart_type: line
         - name: geth.eth_db_chaindata_disk_io_rate
           description: On disk Chaindata rate
           unit: bytes/s
           dimensions:
             - name: reads
             - name: writes
+          chart_type: line
         - name: geth.chaindata_db_size
           description: Chaindata Size
           unit: bytes
           dimensions:
             - name: level_db
             - name: ancient_db
+          chart_type: line
         - name: geth.chainhead
           description: Chainhead
           unit: block
@@ -50,6 +111,7 @@ metrics:
             - name: block
             - name: receipt
             - name: header
+          chart_type: line
         - name: geth.tx_pool_pending
           description: Pending Transaction Pool
           unit: transactions
@@ -61,6 +123,7 @@ metrics:
             - name: no_funds
             - name: ratelimit
             - name: replace
+          chart_type: line
         - name: geth.tx_pool_current
           description: Transaction Pool
           unit: transactions
@@ -69,6 +132,7 @@ metrics:
             - name: pending
             - name: local
             - name: pool
+          chart_type: line
         - name: geth.tx_pool_queued
           description: Queued Transaction Pool
           unit: transactions
@@ -77,37 +141,44 @@ metrics:
             - name: eviction
             - name: no_funds
             - name: ratelimit
+          chart_type: line
         - name: geth.p2p_bandwidth
           description: P2P bandwidth
           unit: bytes/s
           dimensions:
             - name: ingress
             - name: egress
+          chart_type: line
         - name: geth.reorgs
           description: Executed Reorgs
           unit: reorgs
           dimensions:
             - name: executed
+          chart_type: line
         - name: geth.reorgs_blocks
           description: Blocks Added/Removed from Reorg
           unit: blocks
           dimensions:
             - name: added
             - name: dropped
+          chart_type: line
         - name: geth.p2p_peers
           description: Number of Peers
           unit: peers
           dimensions:
             - name: peers
+          chart_type: line
         - name: geth.p2p_peers_calls
           description: P2P Serves and Dials
           unit: calls/s
           dimensions:
             - name: dials
             - name: serves
+          chart_type: line
         - name: geth.rpc_calls
           description: rpc calls
           unit: calls/s
           dimensions:
             - name: failed
             - name: successful
+          chart_type: line
