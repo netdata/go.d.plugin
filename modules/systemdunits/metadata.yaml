@@ -28,7 +28,7 @@ setup:
           required: false
         - name: include
           description: Systemd units filter. Pattern syntax is [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
-          default: "*.service"
+          default: '*.service'
           required: false
         - name: timeout
           description: System bus requests timeout.
@@ -63,14 +63,14 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collect state of all service and socket type units.
           data: |
             jobs:
               - name: service
                 include:
                   - '*.service'
-
+            
               - name: socket
                 include:
                   - '*.socket'
@@ -82,7 +82,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: unit
       description: These metrics refer to the systemd unit.
       labels:
@@ -92,6 +92,7 @@ metrics:
         - name: systemd.service_unit_state
           description: Service Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -101,6 +102,7 @@ metrics:
         - name: systemd.socket_unit_state
           description: Socket Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -110,6 +112,7 @@ metrics:
         - name: systemd.target_unit_state
           description: Target Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -119,6 +122,7 @@ metrics:
         - name: systemd.path_unit_state
           description: Path Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -128,6 +132,7 @@ metrics:
         - name: systemd.device_unit_state
           description: Device Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -137,6 +142,7 @@ metrics:
         - name: systemd.mount_unit_state
           description: Mount Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -146,6 +152,7 @@ metrics:
         - name: systemd.automount_unit_state
           description: Automount Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -155,6 +162,7 @@ metrics:
         - name: systemd.swap_unit_state
           description: Swap Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -164,6 +172,7 @@ metrics:
         - name: systemd.timer_unit_state
           description: Timer Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -173,6 +182,7 @@ metrics:
         - name: systemd.scope_unit_state
           description: Scope Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive
@@ -182,6 +192,7 @@ metrics:
         - name: systemd.slice_unit_state
           description: Slice Unit State
           unit: state
+          chart_type: line
           dimensions:
             - name: active
             - name: inactive

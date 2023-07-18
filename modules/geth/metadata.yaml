@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,41 +11,48 @@ metrics:
         - name: geth.eth_db_chaindata_ancient_io_rate
           description: Ancient Chaindata rate
           unit: bytes/s
+          chart_type: line
           dimensions:
             - name: reads
             - name: writes
         - name: geth.eth_db_chaindata_ancient_io
           description: Session ancient Chaindata
           unit: bytes
+          chart_type: line
           dimensions:
             - name: reads
             - name: writes
         - name: geth.eth_db_chaindata_disk_io
           description: Session chaindata on disk
           unit: bytes
+          chart_type: line
           dimensions:
             - name: reads
             - name: writes
         - name: geth.goroutines
           description: Number of goroutines
           unit: goroutines
+          chart_type: line
           dimensions:
             - name: goroutines
         - name: geth.eth_db_chaindata_disk_io_rate
           description: On disk Chaindata rate
           unit: bytes/s
+          chart_type: line
           dimensions:
             - name: reads
             - name: writes
         - name: geth.chaindata_db_size
           description: Chaindata Size
           unit: bytes
+          chart_type: line
           dimensions:
             - name: level_db
             - name: ancient_db
         - name: geth.chainhead
           description: Chainhead
           unit: block
+          chart_type: line
           dimensions:
             - name: block
             - name: receipt
@@ -53,6 +60,7 @@ metrics:
         - name: geth.tx_pool_pending
           description: Pending Transaction Pool
           unit: transactions
+          chart_type: line
           dimensions:
             - name: invalid
             - name: pending
@@ -64,6 +72,7 @@ metrics:
         - name: geth.tx_pool_current
           description: Transaction Pool
           unit: transactions
+          chart_type: line
           dimensions:
             - name: invalid
             - name: pending
@@ -72,6 +81,7 @@ metrics:
         - name: geth.tx_pool_queued
           description: Queued Transaction Pool
           unit: transactions
+          chart_type: line
           dimensions:
             - name: discard
             - name: eviction
@@ -80,34 +90,40 @@ metrics:
         - name: geth.p2p_bandwidth
           description: P2P bandwidth
           unit: bytes/s
+          chart_type: line
           dimensions:
             - name: ingress
             - name: egress
         - name: geth.reorgs
           description: Executed Reorgs
           unit: reorgs
+          chart_type: line
           dimensions:
             - name: executed
         - name: geth.reorgs_blocks
           description: Blocks Added/Removed from Reorg
           unit: blocks
+          chart_type: line
           dimensions:
             - name: added
             - name: dropped
         - name: geth.p2p_peers
           description: Number of Peers
           unit: peers
+          chart_type: line
           dimensions:
             - name: peers
         - name: geth.p2p_peers_calls
           description: P2P Serves and Dials
           unit: calls/s
+          chart_type: line
           dimensions:
             - name: dials
             - name: serves
         - name: geth.rpc_calls
           description: rpc calls
           unit: calls/s
+          chart_type: line
           dimensions:
             - name: failed
             - name: successful

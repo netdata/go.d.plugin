@@ -6,7 +6,7 @@ overview:
   collector:
     description: |
       This module measures round-tripe time and packet loss by sending ping messages to network hosts.
-      
+
       There are two operational modes:
 
       - privileged (send raw ICMP ping, default). Requires
@@ -50,7 +50,7 @@ setup:
           required: true
         - name: privileged
           description: Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping.
-          default: yes
+          default: true
           required: false
         - name: packets
           description: Number of ping packets to send.
@@ -107,7 +107,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: host
       description: These metrics refer to the remote host.
       labels:
@@ -117,6 +117,7 @@ metrics:
         - name: ping.host_rtt
           description: Ping round-trip time
           unit: milliseconds
+          chart_type: line
           dimensions:
             - name: min
             - name: max
@@ -124,16 +125,19 @@ metrics:
         - name: ping.host_std_dev_rtt
           description: Ping round-trip time standard deviation
           unit: milliseconds
+          chart_type: line
           dimensions:
             - name: std_dev
         - name: ping.host_packet_loss
           description: Ping packet loss
           unit: percentage
+          chart_type: line
           dimensions:
             - name: loss
         - name: ping.host_packets
           description: Ping packets transferred
           unit: packets
+          chart_type: line
           dimensions:
             - name: received
             - name: sent

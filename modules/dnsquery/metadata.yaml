@@ -21,35 +21,35 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: domains
           description: Domain or subdomains to query. The collector will choose a random domain from the list on every iteration.
-          default: "-"
-          required: yes
+          default: '-'
+          required: true
         - name: servers
           description: Servers to query.
-          default: "-"
-          required: yes
+          default: '-'
+          required: true
         - name: port
           description: DNS server port.
           default: 53
-          required: no
+          required: false
         - name: network
-          description: "Network protocol name. Vailable options: udp, tcp, tcp-tls."
-          default: "udp"
-          required: no
+          description: 'Network protocol name. Vailable options: udp, tcp, tcp-tls.'
+          default: udp
+          required: false
         - name: record_types
-          description: "Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV."
-          default: "A"
-          required: no
+          description: 'Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV.'
+          default: A
+          required: false
         - name: timeout
-          description: "Query read timeout."
+          description: Query read timeout.
           default: 2
-          required: no
+          required: false
     examples:
       list:
         - name: Basic
@@ -78,7 +78,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: server
       description: TBD
       labels:
@@ -92,6 +92,7 @@ metrics:
         - name: dns_query.query_status
           description: DNS Query Status
           unit: status
+          chart_type: line
           dimensions:
             - name: success
             - name: network_error
@@ -99,5 +100,6 @@ metrics:
         - name: dns_query.query_time
           description: DNS Query Time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: query_time

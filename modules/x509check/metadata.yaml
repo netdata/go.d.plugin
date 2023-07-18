@@ -4,7 +4,6 @@ overview:
   application:
     description: |
       An X.509 certificate is a digital certificate based on the widely accepted International Telecommunications Union (ITU) X.509 standard.
-
   collector:
     description: |
       This collector checks the time until a x509 certificate expires and its revocation status.
@@ -30,7 +29,7 @@ setup:
           default: 0
           required: false
         - name: source
-          description: "Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file."
+          description: 'Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file.'
           default: ""
           required: false
         - name: days_until_expiration_warning
@@ -43,7 +42,7 @@ setup:
           required: false
         - name: check_revocation_status
           description: Whether to check the revocation status of the certificate.
-          default: no
+          default: false
           required: false
         - name: timeout
           description: SSL connection timeout.
@@ -51,7 +50,7 @@ setup:
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -91,16 +90,16 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define more than one job, their names must be unique.
-
+            
             Check the expiration status of the multiple websites' certificates.
           data: |
             jobs:
               - name: my_site_cert1
                 source: https://my_site1.org:443
-
+            
               - name: my_site_cert2
                 source: https://my_site1.org:443
-
+            
               - name: my_site_cert3
                 source: https://my_site3.org:443
 troubleshooting:
@@ -111,7 +110,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: source
       description: These metrics refer to the configured source.
       labels:
@@ -121,10 +120,12 @@ metrics:
         - name: x509check.time_until_expiration
           description: Time Until Certificate Expiration
           unit: seconds
+          chart_type: line
           dimensions:
             - name: expiry
         - name: x509check.revocation_status
           description: Revocation Status
           unit: boolean
+          chart_type: line
           dimensions:
             - name: revoked

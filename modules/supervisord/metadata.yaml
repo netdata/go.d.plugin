@@ -62,13 +62,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collect metrics from local and remote instances.
           data: |
             jobs:
               - name: local
                 url: 'http://127.0.0.1:9001/RPC2'
-
+            
               - name: remote
                 url: 'http://192.0.2.1:9001/RPC2'
 troubleshooting:
@@ -79,7 +79,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -87,6 +87,7 @@ metrics:
         - name: supervisord.summary_processes
           description: Processes
           unit: processes
+          chart_type: stacked
           dimensions:
             - name: running
             - name: non-running
@@ -97,26 +98,31 @@ metrics:
         - name: supervisord.processes
           description: Processes
           unit: processes
+          chart_type: stacked
           dimensions:
             - name: running
             - name: non-running
         - name: supervisord.process_state_code
           description: State code
           unit: code
+          chart_type: line
           dimensions:
             - name: a dimension per process
         - name: supervisord.process_exit_status
           description: Exit status
           unit: exit status
+          chart_type: line
           dimensions:
             - name: a dimension per process
         - name: supervisord.process_uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: a dimension per process
         - name: supervisord.process_downtime
           description: Downtime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: a dimension per process

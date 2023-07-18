@@ -60,7 +60,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -72,11 +72,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -119,13 +119,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Local and remote instances.
           data: |
             jobs:
              - name: local
                url: http://127.0.0.1/us
-
+            
              - name: remote
                url: http://203.0.113.10/us
 troubleshooting:
@@ -136,7 +136,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -144,22 +144,26 @@ metrics:
         - name: tengine.bandwidth_total
           description: Bandwidth
           unit: B/s
+          chart_type: area
           dimensions:
             - name: in
             - name: out
         - name: tengine.connections_total
           description: Connections
           unit: connections/s
+          chart_type: line
           dimensions:
             - name: accepted
         - name: tengine.requests_total
           description: Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: processed
         - name: tengine.requests_per_response_code_family_total
           description: Requests Per Response Code Family
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: 2xx
             - name: 3xx
@@ -169,34 +173,38 @@ metrics:
         - name: tengine.requests_per_response_code_detailed_total
           description: Requests Per Response Code Detailed
           unit: requests/s
+          chart_type: stacked
           dimensions:
-            - name: '200'
-            - name: '206'
-            - name: '302'
-            - name: '304'
-            - name: '403'
-            - name: '404'
-            - name: '419'
-            - name: '499'
-            - name: '500'
-            - name: '502'
-            - name: '503'
-            - name: '504'
-            - name: '508'
+            - name: "200"
+            - name: "206"
+            - name: "302"
+            - name: "304"
+            - name: "403"
+            - name: "404"
+            - name: "419"
+            - name: "499"
+            - name: "500"
+            - name: "502"
+            - name: "503"
+            - name: "504"
+            - name: "508"
             - name: other
         - name: tengine.requests_upstream_total
           description: Number Of Requests Calling For Upstream
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: tengine.tries_upstream_total
           description: Number Of Times Calling For Upstream
           unit: calls/s
+          chart_type: line
           dimensions:
             - name: calls
         - name: tengine.requests_upstream_per_response_code_family_total
           description: Upstream Requests Per Response Code Family
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: 4xx
             - name: 5xx

@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,30 +11,36 @@ metrics:
         - name: dockerhub.pulls_sum
           description: Pulls Summary
           unit: pulls
+          chart_type: line
           dimensions:
             - name: sum
         - name: dockerhub.pulls
           description: Pulls
           unit: pulls
+          chart_type: stacked
           dimensions:
             - name: a dimension per repository
         - name: dockerhub.pulls_rate
           description: Pulls Rate
           unit: pulls/s
+          chart_type: stacked
           dimensions:
             - name: a dimension per repository
         - name: dockerhub.stars
           description: Stars
           unit: stars
+          chart_type: stacked
           dimensions:
             - name: a dimension per repository
         - name: dockerhub.status
           description: Current Status
           unit: status
+          chart_type: line
           dimensions:
             - name: a dimension per repository
         - name: dockerhub.last_updated
           description: Time Since Last Updated
           unit: seconds
+          chart_type: line
           dimensions:
             - name: a dimension per repository

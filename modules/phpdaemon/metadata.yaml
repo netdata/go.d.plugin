@@ -17,18 +17,18 @@ setup:
           
           <details>
           <summary>phpDaemon configuration</summary>
-
+          
           Instruction from [@METAJIJI](https://github.com/METAJIJI).
-
+          
           For enable `phpd` statistics on http, you must enable the http server and write an application.
-
+          
           Application is important, because standalone
           application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php)
           provides statistics in html format and unusable for `netdata`.
           
           ```php
           // /opt/phpdaemon/conf/phpd.conf
-
+          
           path /opt/phpdaemon/conf/AppResolver.php;
           Pool:HTTPServer {
               privileged;
@@ -39,7 +39,7 @@ setup:
           
           ```php
           // /opt/phpdaemon/conf/AppResolver.php
-
+          
           <?php
           
           class MyAppResolver extends \PHPDaemon\Core\AppResolver {
@@ -55,7 +55,7 @@ setup:
           
           ```php
           /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatus.php
-
+          
           <?php
           namespace PHPDaemon\Applications;
           
@@ -86,7 +86,7 @@ setup:
               }
           }
           ```
-
+          
           </details>
   configuration:
     options:
@@ -134,7 +134,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -146,11 +146,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -193,7 +193,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
@@ -210,7 +210,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -218,12 +218,14 @@ metrics:
         - name: phpdaemon.workers
           description: Workers
           unit: workers
+          chart_type: line
           dimensions:
             - name: alive
             - name: shutdown
         - name: phpdaemon.alive_workers
           description: Alive Workers State
           unit: workers
+          chart_type: line
           dimensions:
             - name: idle
             - name: busy
@@ -231,6 +233,7 @@ metrics:
         - name: phpdaemon.idle_workers
           description: Idle Workers State
           unit: workers
+          chart_type: line
           dimensions:
             - name: preinit
             - name: init
@@ -238,5 +241,6 @@ metrics:
         - name: phpdaemon.uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time

@@ -8,11 +8,11 @@ overview:
   collector:
     description: |
       This collector monitors one or more PowerDNS Authoritative Server instances, depending on your configuration.
-      
+
       It collects metrics from [the internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
-      
+
       Used endpoints:
-      
+
       - [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)
 setup:
   prerequisites:
@@ -69,7 +69,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -81,11 +81,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -127,7 +127,7 @@ setup:
             jobs:
               - name: local
                 url: http://127.0.0.1:8081
-
+            
               - name: remote
                 url: http://203.0.113.0:8081
 troubleshooting:
@@ -138,7 +138,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -146,18 +146,21 @@ metrics:
         - name: powerdns.questions_in
           description: Incoming questions
           unit: questions/s
+          chart_type: line
           dimensions:
             - name: udp
             - name: tcp
         - name: powerdns.questions_out
           description: Outgoing questions
           unit: questions/s
+          chart_type: line
           dimensions:
             - name: udp
             - name: tcp
         - name: powerdns.cache_usage
           description: Cache Usage
           unit: events/s
+          chart_type: line
           dimensions:
             - name: query-cache-hit
             - name: query-cache-miss
@@ -166,6 +169,7 @@ metrics:
         - name: powerdns.cache_size
           description: Cache Size
           unit: entries
+          chart_type: line
           dimensions:
             - name: query-cache
             - name: packet-cache
@@ -174,5 +178,6 @@ metrics:
         - name: powerdns.latency
           description: Answer latency
           unit: microseconds
+          chart_type: line
           dimensions:
             - name: latency

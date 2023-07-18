@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels:
@@ -13,16 +13,19 @@ metrics:
         - name: httpcheck.response_time
           description: HTTP Response Time
           unit: ms
+          chart_type: line
           dimensions:
             - name: time
         - name: httpcheck.response_length
           description: HTTP Response Body Length
           unit: characters
+          chart_type: line
           dimensions:
             - name: length
         - name: httpcheck.status
           description: HTTP Check Status
           unit: boolean
+          chart_type: line
           dimensions:
             - name: success
             - name: no_connection
@@ -32,5 +35,6 @@ metrics:
         - name: httpcheck.in_state
           description: HTTP Current State Duration
           unit: boolean
+          chart_type: line
           dimensions:
             - name: time

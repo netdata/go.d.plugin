@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,22 +11,26 @@ metrics:
         - name: lighttpd.requests
           description: Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: lighttpd.net
           description: Bandwidth
           unit: kilobits/s
+          chart_type: area
           dimensions:
             - name: sent
         - name: lighttpd.workers
           description: Servers
           unit: servers
+          chart_type: stacked
           dimensions:
             - name: idle
             - name: busy
         - name: lighttpd.scoreboard
           description: ScoreBoard
           unit: connections
+          chart_type: line
           dimensions:
             - name: waiting
             - name: open
@@ -42,5 +46,6 @@ metrics:
         - name: lighttpd.uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime

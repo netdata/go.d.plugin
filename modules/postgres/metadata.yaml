@@ -18,11 +18,11 @@ meta:
   info_provided_to_referring_integrations:
     description: ""
   keywords:
-    - "db"
-    - "database"
-    - "postgres"
-    - "postgresql"
-    - "sql"
+    - db
+    - database
+    - postgres
+    - postgresql
+    - sql
   most_popular: true
 overview:
   multi-instance: true
@@ -64,13 +64,13 @@ setup:
           CREATE USER netdata;
           GRANT pg_monitor TO netdata;
           ```
-
+          
           After creating the new user, restart the Netdata agent with `sudo systemctl restart netdata`, or
           the [appropriate method](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) for your
           system.
   configuration:
     file:
-      name: "go.d/postgres.conf"
+      name: go.d/postgres.conf
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -134,7 +134,7 @@ setup:
             jobs:
               - name: local
                 dsn: 'postgresql://netdata@127.0.0.1:5432/postgres'
-
+            
               - name: remote
                 dsn: 'postgresql://netdata@203.0.113.0:5432/postgres'
 troubleshooting:

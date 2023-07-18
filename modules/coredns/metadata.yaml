@@ -21,79 +21,79 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "`http://127.0.0.1:9153/metrics`"
-          required: yes
+          default: '`http://127.0.0.1:9153/metrics`'
+          required: true
         - name: per_server_stats
-          description: "Server filter. Module will collect server statistics if filter matches the server. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format)."
-          default: "-"
-          required: no
+          description: 'Server filter. Module will collect server statistics if filter matches the server. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).'
+          default: '-'
+          required: false
         - name: per_zone_stats
-          description: "Zone filter. Module will collect zone statistics if filter matches the zone. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format)."
-          default: "-"
-          required: no
+          description: 'Zone filter. Module will collect zone statistics if filter matches the zone. Filter logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4). Check the [pattern syntax](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format).'
+          default: '-'
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_url
           description: The Proxie's URL.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: timeout
           description: HTTP request timeout.
           default: 2
-          required: no
+          required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
-          required: no
+          default: GET
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
-          default: no
-          required: no
+          default: false
+          required: false
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
-          default: no
-          required: no
+          default: false
+          required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
     examples:
       list:
         - name: Basic
@@ -125,7 +125,7 @@ setup:
             jobs:
               - name: local
                 url: http://127.0.0.1:9153/metrics
-
+            
               - name: remote
                 url: http://203.0.113.10:9153/metrics
 troubleshooting:
@@ -136,7 +136,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -144,44 +144,52 @@ metrics:
         - name: coredns.dns_request_count_total
           description: Number Of DNS Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: coredns.dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: responses
         - name: coredns.dns_request_count_total_per_status
           description: Number Of Processed And Dropped DNS Requests
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: processed
             - name: dropped
         - name: coredns.dns_no_matching_zone_dropped_total
           description: Number Of Dropped DNS Requests Because Of No Matching Zone
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: dropped
         - name: coredns.dns_panic_count_total
           description: Number Of Panics
           unit: panics/s
+          chart_type: line
           dimensions:
             - name: panics
         - name: coredns.dns_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: udp
             - name: tcp
         - name: coredns.dns_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: v4
             - name: v6
         - name: coredns.dns_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: a
             - name: aaaa
@@ -202,6 +210,7 @@ metrics:
         - name: coredns.dns_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
+          chart_type: stacked
           dimensions:
             - name: noerror
             - name: formerr
@@ -232,34 +241,40 @@ metrics:
         - name: coredns.server_dns_request_count_total
           description: Number Of DNS Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: coredns.server_dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: responses
         - name: coredns.server_request_count_total_per_status
           description: Number Of Processed And Dropped DNS Requests
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: processed
             - name: dropped
         - name: coredns.server_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: udp
             - name: tcp
         - name: coredns.server_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: v4
             - name: v6
         - name: coredns.server_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: a
             - name: aaaa
@@ -280,6 +295,7 @@ metrics:
         - name: coredns.server_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
+          chart_type: stacked
           dimensions:
             - name: noerror
             - name: formerr
@@ -310,28 +326,33 @@ metrics:
         - name: coredns.zone_dns_request_count_total
           description: Number Of DNS Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: coredns.zone_dns_responses_count_total
           description: Number Of DNS Responses
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: responses
         - name: coredns.zone_requests_count_total_per_proto
           description: Number Of DNS Requests Per Transport Protocol
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: udp
             - name: tcp
         - name: coredns.zone_requests_count_total_per_ip_family
           description: Number Of DNS Requests Per IP Family
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: v4
             - name: v6
         - name: coredns.zone_requests_count_total_per_per_type
           description: Number Of DNS Requests Per Type
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: a
             - name: aaaa
@@ -352,6 +373,7 @@ metrics:
         - name: coredns.zone_responses_count_total_per_rcode
           description: Number Of DNS Responses Per Rcode
           unit: responses/s
+          chart_type: stacked
           dimensions:
             - name: noerror
             - name: formerr

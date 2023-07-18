@@ -81,13 +81,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 address: 127.0.0.1:323
-
+            
               - name: remote
                 address: 192.0.2.1:323
 troubleshooting:

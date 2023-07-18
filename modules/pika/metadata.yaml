@@ -38,7 +38,7 @@ setup:
           required: true
           details: |
             There are two connection types: by tcp socket and by unix socket.
-
+            
             - Tcp connection: `redis://<user>:<password>@<host>:<port>/<db_number>`
             - Unix connection: `unix://<user>:<password>@</path/to/redis.sock>?db=<db_number>`
         - name: timeout
@@ -55,7 +55,7 @@ setup:
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
@@ -95,7 +95,7 @@ setup:
             jobs:
               - name: local
                 address: 'redis://:password@127.0.0.1:9221'
-
+            
               - name: remote
                 address: 'redis://user:password@203.0.113.0:9221'
 troubleshooting:
@@ -106,7 +106,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -114,110 +114,132 @@ metrics:
         - name: pika.connections
           description: Connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: accepted
         - name: pika.clients
           description: Clients
           unit: clients
+          chart_type: line
           dimensions:
             - name: connected
         - name: pika.memory
           description: Memory usage
           unit: bytes
+          chart_type: area
           dimensions:
             - name: used
         - name: pika.connected_replicas
           description: Connected replicas
           unit: replicas
+          chart_type: line
           dimensions:
             - name: connected
         - name: pika.commands
           description: Processed commands
           unit: commands/s
+          chart_type: line
           dimensions:
             - name: processed
         - name: pika.commands_calls
           description: Calls per command
           unit: calls/s
+          chart_type: stacked
           dimensions:
             - name: a dimension per command
         - name: pika.database_strings_keys
           description: Strings type keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_strings_expires_keys
           description: Strings type expires keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_strings_invalid_keys
           description: Strings type invalid keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_hashes_keys
           description: Hashes type keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_hashes_expires_keys
           description: Hashes type expires keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_hashes_invalid_keys
           description: Hashes type invalid keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_lists_keys
           description: Lists type keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_lists_expires_keys
           description: Lists type expires keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_lists_invalid_keys
           description: Lists type invalid keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_zsets_keys
           description: Zsets type keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_zsets_expires_keys
           description: Zsets type expires keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_zsets_invalid_keys
           description: Zsets type invalid keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_sets_keys
           description: Sets type keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_sets_expires_keys
           description: Sets type expires keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.database_sets_invalid_keys
           description: Sets invalid keys per database
           unit: keys
+          chart_type: stacked
           dimensions:
             - name: a dimension per database
         - name: pika.uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime

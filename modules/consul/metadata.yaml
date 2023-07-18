@@ -6,7 +6,7 @@ meta:
     link: https://www.consul.io/
     categories:
       - data-collection.service-discovery-registry
-    icon_filename: "consul.png"
+    icon_filename: consul.png
   alternative_monitored_instances: []
   related_resources:
     integrations:
@@ -72,7 +72,7 @@ setup:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
       folding:
-        title: "All options"
+        title: All options
         enabled: true
       list:
         - name: update_every
@@ -125,7 +125,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default_value: "GET"
+          default_value: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -137,11 +137,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -181,14 +181,14 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8500
                 acl_token: "ec15675e-2999-d789-832e-8c4794daa8d7"
-
+            
               - name: remote
                 url: http://203.0.113.10:8500
                 acl_token: "ada7f751-f654-8872-7f93-498e799158b6"
@@ -291,7 +291,7 @@ metrics:
             - name: sys
         - name: consul.gc_pause_time
           description: Garbage collection stop-the-world pause time
-          unit: "seconds"
+          unit: seconds
           chart_type: line
           dimensions:
             - name: gc_pause

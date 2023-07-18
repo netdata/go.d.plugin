@@ -72,7 +72,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -84,11 +84,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -128,7 +128,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
@@ -145,7 +145,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -153,6 +153,7 @@ metrics:
         - name: phpfpm.connections
           description: Active Connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: active
             - name: max_active
@@ -160,17 +161,20 @@ metrics:
         - name: phpfpm.requests
           description: Requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: phpfpm.performance
           description: Performance
           unit: status
+          chart_type: line
           dimensions:
             - name: max_children_reached
             - name: slow_requests
         - name: phpfpm.request_duration
           description: Requests Duration Among All Idle Processes
           unit: milliseconds
+          chart_type: line
           dimensions:
             - name: min
             - name: max
@@ -178,6 +182,7 @@ metrics:
         - name: phpfpm.request_cpu
           description: Last Request CPU Usage Among All Idle Processes
           unit: percentage
+          chart_type: line
           dimensions:
             - name: min
             - name: max
@@ -185,6 +190,7 @@ metrics:
         - name: phpfpm.request_mem
           description: Last Request Memory Usage Among All Idle Processes
           unit: KB
+          chart_type: line
           dimensions:
             - name: min
             - name: max

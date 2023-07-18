@@ -86,7 +86,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: tcp endpoint
       description: These metrics refer to the TCP endpoint.
       labels:
@@ -98,6 +98,7 @@ metrics:
         - name: portcheck.status
           description: TCP Check Status
           unit: boolean
+          chart_type: line
           dimensions:
             - name: success
             - name: failed
@@ -105,10 +106,12 @@ metrics:
         - name: portcheck.state_duration
           description: Current State Duration
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: portcheck.latency
           description: TCP Connection Latency
           unit: ms
+          chart_type: line
           dimensions:
             - name: time

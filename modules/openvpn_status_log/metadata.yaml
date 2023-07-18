@@ -71,7 +71,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -79,11 +79,13 @@ metrics:
         - name: openvpn.active_clients
           description: Total Number Of Active Clients
           unit: clients
+          chart_type: line
           dimensions:
             - name: clients
         - name: openvpn.total_traffic
           description: Total Traffic
           unit: kilobits/s
+          chart_type: area
           dimensions:
             - name: in
             - name: out
@@ -96,11 +98,13 @@ metrics:
         - name: openvpn.user_traffic
           description: User Traffic
           unit: kilobits/s
+          chart_type: area
           dimensions:
             - name: in
             - name: out
         - name: openvpn.user_connection_time
           description: User Connection Time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time

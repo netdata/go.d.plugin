@@ -106,7 +106,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default_value: "GET"
+          default_value: GET
           required: false
         - name: timeout
           description: HTTP request timeout.
@@ -122,11 +122,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -177,14 +177,14 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:8161
                 webadmin: admin
-
+            
               - name: remote
                 url: http://192.0.2.1:8161
                 webadmin: admin
