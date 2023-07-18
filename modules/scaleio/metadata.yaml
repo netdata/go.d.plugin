@@ -64,7 +64,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -76,11 +76,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -120,7 +120,7 @@ setup:
                 username: admin
                 password: password
                 tls_skip_verify: yes  # self-signed certificate
-
+            
               - name: remote
                 url: https://203.0.113.10
                 username: admin
@@ -134,7 +134,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -142,16 +142,19 @@ metrics:
         - name: scaleio.system_capacity_total
           description: Total Capacity
           unit: KiB
+          chart_type: line
           dimensions:
             - name: total
         - name: scaleio.system_capacity_in_use
           description: Capacity In Use
           unit: KiB
+          chart_type: line
           dimensions:
             - name: in_use
         - name: scaleio.system_capacity_usage
           description: Capacity Usage
           unit: KiB
+          chart_type: stacked
           dimensions:
             - name: thick
             - name: decreased
@@ -162,11 +165,13 @@ metrics:
         - name: scaleio.system_capacity_available_volume_allocation
           description: Available For Volume Allocation
           unit: KiB
+          chart_type: line
           dimensions:
             - name: available
         - name: scaleio.system_capacity_health_state
           description: Capacity Health State
           unit: KiB
+          chart_type: stacked
           dimensions:
             - name: protected
             - name: degraded
@@ -176,60 +181,71 @@ metrics:
         - name: scaleio.system_workload_primary_bandwidth_total
           description: Primary Backend Bandwidth Total (Read and Write)
           unit: KiB/s
+          chart_type: line
           dimensions:
             - name: total
         - name: scaleio.system_workload_primary_bandwidth
           description: Primary Backend Bandwidth
           unit: KiB/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.system_workload_primary_iops_total
           description: Primary Backend IOPS Total (Read and Write)
           unit: iops/s
+          chart_type: line
           dimensions:
             - name: total
         - name: scaleio.system_workload_primary_iops
           description: Primary Backend IOPS
           unit: iops/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.system_workload_primary_io_size_total
           description: Primary Backend I/O Size Total (Read and Write)
           unit: KiB
+          chart_type: line
           dimensions:
             - name: io_size
         - name: scaleio.system_rebalance
           description: Rebalance
           unit: KiB/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.system_rebalance_left
           description: Rebalance Pending Capacity
           unit: KiB
+          chart_type: line
           dimensions:
             - name: left
         - name: scaleio.system_rebalance_time_until_finish
           description: Rebalance Approximate Time Until Finish
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: scaleio.system_rebuild
           description: Rebuild Bandwidth Total (Forward, Backward and Normal)
           unit: KiB/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.system_rebuild_left
           description: Rebuild Pending Capacity Total (Forward, Backward and Normal)
           unit: KiB
+          chart_type: line
           dimensions:
             - name: left
         - name: scaleio.system_defined_components
           description: Components
           unit: components
+          chart_type: line
           dimensions:
             - name: devices
             - name: fault_sets
@@ -244,12 +260,14 @@ metrics:
         - name: scaleio.system_components_volumes_by_type
           description: Volumes By Type
           unit: volumes
+          chart_type: stacked
           dimensions:
             - name: thick
             - name: thin
         - name: scaleio.system_components_volumes_by_mapping
           description: Volumes By Mapping
           unit: volumes
+          chart_type: stacked
           dimensions:
             - name: mapped
             - name: unmapped
@@ -260,16 +278,19 @@ metrics:
         - name: scaleio.storage_pool_capacity_total
           description: Total Capacity
           unit: KiB
+          chart_type: line
           dimensions:
             - name: total
         - name: scaleio.storage_pool_capacity_in_use
           description: Capacity In Use
           unit: KiB
+          chart_type: line
           dimensions:
             - name: in_use
         - name: scaleio.storage_pool_capacity_usage
           description: Capacity Usage
           unit: KiB
+          chart_type: stacked
           dimensions:
             - name: thick
             - name: decreased
@@ -280,16 +301,19 @@ metrics:
         - name: scaleio.storage_pool_capacity_utilization
           description: Capacity Utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: scaleio.storage_pool_capacity_available_volume_allocation
           description: Available For Volume Allocation
           unit: KiB
+          chart_type: line
           dimensions:
             - name: available
         - name: scaleio.storage_pool_capacity_health_state
           description: Capacity Health State
           unit: KiB
+          chart_type: stacked
           dimensions:
             - name: protected
             - name: degraded
@@ -299,6 +323,7 @@ metrics:
         - name: scaleio.storage_pool_components
           description: Components
           unit: components
+          chart_type: line
           dimensions:
             - name: devices
             - name: snapshots
@@ -311,28 +336,33 @@ metrics:
         - name: scaleio.sdc_mdm_connection_state
           description: MDM Connection State
           unit: boolean
+          chart_type: line
           dimensions:
             - name: connected
         - name: scaleio.sdc_bandwidth
           description: Bandwidth
           unit: KiB/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.sdc_iops
           description: IOPS
           unit: iops/s
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.sdc_io_size
           description: IOPS Size
           unit: KiB
+          chart_type: area
           dimensions:
             - name: read
             - name: write
         - name: scaleio.sdc_num_of_mapped_volumed
           description: Mapped Volumes
           unit: volumes
+          chart_type: line
           dimensions:
             - name: mapped

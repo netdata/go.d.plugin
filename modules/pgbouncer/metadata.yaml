@@ -96,7 +96,7 @@ setup:
             jobs:
               - name: local
                 dsn: 'postgres://postgres:postgres@127.0.0.1:6432/pgbouncer'
-
+            
               - name: remote
                 dsn: 'postgres://postgres:postgres@203.0.113.10:6432/pgbouncer'
 troubleshooting:
@@ -107,7 +107,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -115,6 +115,7 @@ metrics:
         - name: pgbouncer.client_connections_utilization
           description: Client connections utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
     - name: database
@@ -128,6 +129,7 @@ metrics:
         - name: pgbouncer.db_client_connections
           description: Database client connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: active
             - name: waiting
@@ -135,6 +137,7 @@ metrics:
         - name: pgbouncer.db_server_connections
           description: Database server connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: active
             - name: idle
@@ -144,51 +147,61 @@ metrics:
         - name: pgbouncer.db_server_connections_utilization
           description: Database server connections utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: pgbouncer.db_clients_wait_time
           description: Database clients wait time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_client_max_wait_time
           description: Database client max wait time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_transactions
           description: Database pooled SQL transactions
           unit: transactions/s
+          chart_type: line
           dimensions:
             - name: transactions
         - name: pgbouncer.db_transactions_time
           description: Database transactions time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_transaction_avg_time
           description: Database transaction average time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_queries
           description: Database pooled SQL queries
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: queries
         - name: pgbouncer.db_queries_time
           description: Database queries time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_query_avg_time
           description: Database query average time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time
         - name: pgbouncer.db_network_io
           description: Database traffic
           unit: B/s
+          chart_type: area
           dimensions:
             - name: received
             - name: sent

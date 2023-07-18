@@ -8,7 +8,7 @@ overview:
   collector:
     description: |
       This collector monitors one or more Pi-hole instances using [PHP API](https://github.com/pi-hole/AdminLTE).
-      
+
       The data provided by the API is for the last 24 hours. All collected values refer to this time period and not to the
       module's collection interval.
 setup:
@@ -64,7 +64,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -76,11 +76,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -116,7 +116,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
@@ -134,7 +134,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -142,11 +142,13 @@ metrics:
         - name: pihole.dns_queries_total
           description: DNS Queries Total (Cached, Blocked and Forwarded)
           unit: queries
+          chart_type: line
           dimensions:
             - name: queries
         - name: pihole.dns_queries
           description: DNS Queries
           unit: queries
+          chart_type: stacked
           dimensions:
             - name: cached
             - name: blocked
@@ -154,6 +156,7 @@ metrics:
         - name: pihole.dns_queries_percentage
           description: DNS Queries Percentage
           unit: percentage
+          chart_type: stacked
           dimensions:
             - name: cached
             - name: blocked
@@ -161,27 +164,32 @@ metrics:
         - name: pihole.unique_clients
           description: Unique Clients
           unit: clients
+          chart_type: line
           dimensions:
             - name: unique
         - name: pihole.domains_on_blocklist
           description: Domains On Blocklist
           unit: domains
+          chart_type: line
           dimensions:
             - name: blocklist
         - name: pihole.blocklist_last_update
           description: Blocklist Last Update
           unit: seconds
+          chart_type: line
           dimensions:
             - name: ago
         - name: pihole.unwanted_domains_blocking_status
           description: Unwanted Domains Blocking Status
           unit: status
+          chart_type: line
           dimensions:
             - name: enabled
             - name: disabled
         - name: pihole.dns_queries_types
           description: DNS Queries Per Type
           unit: percentage
+          chart_type: stacked
           dimensions:
             - name: a
             - name: aaaa
@@ -193,6 +201,7 @@ metrics:
         - name: pihole.dns_queries_forwarded_destination
           description: DNS Queries Per Destination
           unit: percentage
+          chart_type: stacked
           dimensions:
             - name: cached
             - name: blocked

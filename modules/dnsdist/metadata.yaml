@@ -5,14 +5,7 @@ overview:
     description: |
       [DNSdist](https://dnsdist.org/) is a highly DNS-, DoS- and abuse-aware loadbalancer.
   collector:
-    description: |
-      This collector monitors load-balancer performance and health metrics.  
-      
-      It collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).  
-      
-      Used endpoints:
-
-      - [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).
+    description: "This collector monitors load-balancer performance and health metrics.  \n\nIt collects metrics from [the internal webserver](https://dnsdist.org/guides/webserver.html).  \n\nUsed endpoints:\n\n- [/jsonstat?command=stats](https://dnsdist.org/guides/webserver.html#get--jsonstat).\n"
 setup:
   prerequisites:
     list:
@@ -65,11 +58,11 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
-          default: "-"
+          default: '-'
           required: false
         - name: headers
           description: HTTP request headers.
@@ -77,11 +70,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -108,22 +101,10 @@ setup:
                 url: http://127.0.0.1:8083
                 headers:
                   X-API-Key: your-api-key # static pre-shared authentication key for access to the REST API (api-key).
-        #TODO:
-        # - name: Basic HTTP auth
-        #   description: Local server with basic HTTP authentication.
-        #   folding:
-        #     title: Example
-        #     enabled: true
-        #   data: |
-        #     jobs:
-        #       - name: local
-        #         url: http://127.0.0.1:8083
-        #         username: foo
-        #         password: bar
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
@@ -131,7 +112,7 @@ setup:
                 url: http://127.0.0.1:8083
                 headers:
                   X-API-Key: 'your-api-key' # static pre-shared authentication key for access to the REST API (api-key).
-
+            
               - name: remote
                 url: http://203.0.113.0:8083
                 headers:
@@ -144,7 +125,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -152,6 +133,7 @@ metrics:
         - name: dnsdist.queries
           description: Client queries received
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: all
             - name: recursive
@@ -159,6 +141,7 @@ metrics:
         - name: dnsdist.queries_dropped
           description: Client queries dropped
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: rule_drop
             - name: dynamic_blocked
@@ -167,11 +150,13 @@ metrics:
         - name: dnsdist.packets_dropped
           description: Packets dropped
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: acl
         - name: dnsdist.answers
           description: Answers statistics
           unit: answers/s
+          chart_type: line
           dimensions:
             - name: self_answered
             - name: nxdomain
@@ -180,16 +165,19 @@ metrics:
         - name: dnsdist.backend_responses
           description: Backend responses
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: responses
         - name: dnsdist.backend_commerrors
           description: Backend communication errors
           unit: errors/s
+          chart_type: line
           dimensions:
             - name: send_errors
         - name: dnsdist.backend_errors
           description: Backend error responses
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: timeouts
             - name: servfail
@@ -197,23 +185,27 @@ metrics:
         - name: dnsdist.cache
           description: Cache performance
           unit: answers/s
+          chart_type: line
           dimensions:
             - name: hits
             - name: misses
         - name: dnsdist.servercpu
           description: DNSdist server CPU utilization
           unit: ms/s
+          chart_type: stacked
           dimensions:
             - name: system_state
             - name: user_state
         - name: dnsdist.servermem
           description: DNSdist server memory utilization
           unit: MiB
+          chart_type: area
           dimensions:
             - name: memory_usage
         - name: dnsdist.query_latency
           description: Query latency
           unit: queries/s
+          chart_type: stacked
           dimensions:
             - name: 1ms
             - name: 10ms
@@ -224,8 +216,9 @@ metrics:
         - name: dnsdist.query_latency_avg
           description: Average latency for the last N queries
           unit: microseconds
+          chart_type: line
           dimensions:
-            - name: '100'
+            - name: "100"
             - name: 1k
             - name: 10k
             - name: 1000k

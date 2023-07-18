@@ -25,71 +25,71 @@ setup:
         - name: update_every
           description: Data collection frequency.
           default: 1
-          required: no
+          required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
           default: 0
-          required: no
+          required: false
         - name: url
           description: Server URL.
-          default: "http://127.0.0.1:8082/metrics"
-          required: yes
+          default: http://127.0.0.1:8082/metrics
+          required: true
         - name: timeout
           description: HTTP request timeout.
           default: 1
-          required: no
+          required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_url
           description: The Proxie's URL.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
-          required: no
+          default: GET
+          required: false
         - name: body
           description: HTTP request body.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: headers
           description: HTTP request headers.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: not_follow_redirects
           description: Whether to not follow redirects from the server.
-          default: no
-          required: no
+          default: false
+          required: false
         - name: tls_skip_verify
           description: Whether to skip verifying server's certificate chain and hostname.
-          default: no
-          required: no
+          default: false
+          required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: tls_cert
           description: Client tls certificate.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
         - name: tls_key
           description: Client tls key.
-          default: "-"
-          required: no
+          default: '-'
+          required: false
     examples:
       list:
         - name: Basic
@@ -115,7 +115,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Local and remote instances.
           folding:
             title: Example
@@ -135,7 +135,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: entrypoint, protocol
       description: TBD
       labels: []
@@ -143,6 +143,7 @@ metrics:
         - name: traefik.entrypoint_requests
           description: Processed HTTP requests
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: 1xx
             - name: 2xx
@@ -152,6 +153,7 @@ metrics:
         - name: traefik.entrypoint_request_duration_average
           description: Average HTTP request processing time
           unit: milliseconds
+          chart_type: stacked
           dimensions:
             - name: 1xx
             - name: 2xx
@@ -161,5 +163,6 @@ metrics:
         - name: traefik.entrypoint_open_connections
           description: Open connections
           unit: connections
+          chart_type: stacked
           dimensions:
             - name: a dimension per HTTP method

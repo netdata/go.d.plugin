@@ -45,7 +45,7 @@ setup:
           To enable built-in Prometheus exporter, follow the [official documentation](https://docs.docker.com/config/daemon/prometheus/#configure-docker).
   configuration:
     file:
-      name: "go.d/docker_engine.conf"
+      name: go.d/docker_engine.conf
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -91,7 +91,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default_value: "GET"
+          default_value: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -152,13 +152,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:9323/metrics
-
+            
               - name: remote
                 url: http://192.0.2.1:9323/metrics
 troubleshooting:

@@ -70,7 +70,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -82,11 +82,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -128,7 +128,7 @@ setup:
             jobs:
               - name: local
                 url: http://127.0.0.1:8081
-
+            
               - name: remote
                 url: http://203.0.113.0:8081
 troubleshooting:
@@ -139,7 +139,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -147,6 +147,7 @@ metrics:
         - name: powerdns_recursor.questions_in
           description: Incoming questions
           unit: questions/s
+          chart_type: line
           dimensions:
             - name: total
             - name: tcp
@@ -154,6 +155,7 @@ metrics:
         - name: powerdns_recursor.questions_out
           description: Outgoing questions
           unit: questions/s
+          chart_type: line
           dimensions:
             - name: udp
             - name: tcp
@@ -162,6 +164,7 @@ metrics:
         - name: powerdns_recursor.answer_time
           description: Queries answered within a time range
           unit: queries/s
+          chart_type: line
           dimensions:
             - name: 0-1ms
             - name: 1-10ms
@@ -171,6 +174,7 @@ metrics:
         - name: powerdns_recursor.timeouts
           description: Timeouts on outgoing UDP queries
           unit: timeouts/s
+          chart_type: line
           dimensions:
             - name: total
             - name: ipv4
@@ -178,6 +182,7 @@ metrics:
         - name: powerdns_recursor.drops
           description: Drops
           unit: drops/s
+          chart_type: line
           dimensions:
             - name: over-capacity-drops
             - name: query-pipe-full-drops
@@ -187,6 +192,7 @@ metrics:
         - name: powerdns_recursor.cache_usage
           description: Cache Usage
           unit: events/s
+          chart_type: line
           dimensions:
             - name: cache-hits
             - name: cache-misses
@@ -195,6 +201,7 @@ metrics:
         - name: powerdns_recursor.cache_size
           description: Cache Size
           unit: entries
+          chart_type: line
           dimensions:
             - name: cache
             - name: packet-cache

@@ -5,7 +5,6 @@ overview:
     description: |
       [WireGuard](https://www.wireguard.com/) is an extremely simple yet fast and modern VPN that utilizes state-of-the-art
       cryptography.
-
   collector:
     description: |
       This collector monitors WireGuard VPN network interfaces and peers traffic.
@@ -42,7 +41,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: device
       description: These metrics refer to the VPN network interface.
       labels:
@@ -52,12 +51,14 @@ metrics:
         - name: wireguard.device_network_io
           description: Device traffic
           unit: B/s
+          chart_type: area
           dimensions:
             - name: receive
             - name: transmit
         - name: wireguard.device_peers
           description: Device peers
           unit: peers
+          chart_type: line
           dimensions:
             - name: peers
     - name: peer
@@ -71,11 +72,13 @@ metrics:
         - name: wireguard.peer_network_io
           description: Peer traffic
           unit: B/s
+          chart_type: area
           dimensions:
             - name: receive
             - name: transmit
         - name: wireguard.peer_latest_handshake_ago
           description: Peer time elapsed since the latest handshake
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time

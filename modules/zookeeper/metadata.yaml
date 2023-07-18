@@ -41,11 +41,11 @@ setup:
           required: false
         - name: use_tls
           description: Whether to use TLS or not.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -81,13 +81,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
               - name: local
                 address: 127.0.0.1:2181
-
+            
               - name: remote
                 address: 192.0.2.1:2181
 troubleshooting:
@@ -98,7 +98,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -106,11 +106,13 @@ metrics:
         - name: zookeeper.requests
           description: Outstanding Requests
           unit: requests
+          chart_type: line
           dimensions:
             - name: outstanding
         - name: zookeeper.requests_latency
           description: Requests Latency
           unit: ms
+          chart_type: line
           dimensions:
             - name: min
             - name: avg
@@ -118,37 +120,44 @@ metrics:
         - name: zookeeper.connections
           description: Alive Connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: alive
         - name: zookeeper.packets
           description: Packets
           unit: pps
+          chart_type: line
           dimensions:
             - name: received
             - name: sent
         - name: zookeeper.file_descriptor
           description: Open File Descriptors
           unit: file descriptors
+          chart_type: line
           dimensions:
             - name: open
         - name: zookeeper.nodes
           description: Number of Nodes
           unit: nodes
+          chart_type: line
           dimensions:
             - name: znode
             - name: ephemerals
         - name: zookeeper.watches
           description: Number of Watches
           unit: watches
+          chart_type: line
           dimensions:
             - name: watches
         - name: zookeeper.approximate_data_size
           description: Approximate Data Tree Size
           unit: KiB
+          chart_type: line
           dimensions:
             - name: size
         - name: zookeeper.server_state
           description: Server State
           unit: state
+          chart_type: line
           dimensions:
             - name: state

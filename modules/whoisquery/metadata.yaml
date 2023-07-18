@@ -2,10 +2,7 @@ name: whoisquery
 title: Domain name expiry collector
 overview:
   application:
-    description: |
-      A domain name (often simply called a domain) is an easy-to-remember name 
-      that's associated with a physical IP address on the Internet.
-
+    description: "A domain name (often simply called a domain) is an easy-to-remember name \nthat's associated with a physical IP address on the Internet.\n"
   collector:
     description: |
       This collector monitors the remaining time before the domain expires.
@@ -58,13 +55,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define more than one job, their names must be unique.
-
+            
             Check the expiration status of the multiple domains.
           data: |
             jobs:
               - name: my_site1
                 source: my_site1.com
-
+            
               - name: my_site2
                 source: my_site2.com
 troubleshooting:
@@ -75,7 +72,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: domain
       description: These metrics refer to the configured source.
       labels:
@@ -85,5 +82,6 @@ metrics:
         - name: whoisquery.time_until_expiration
           description: Time Until Domain Expiration
           unit: seconds
+          chart_type: line
           dimensions:
             - name: expiry

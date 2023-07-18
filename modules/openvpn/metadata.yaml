@@ -20,7 +20,7 @@ setup:
           
           From the documentation for the OpenVPN Management Interface:
           > Currently, the OpenVPN daemon can at most support a single management client any one time.
-
+          
           It is disabled to not break other tools which use `Management Interface`.
   configuration:
     options:
@@ -95,7 +95,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           data: |
             jobs:
@@ -112,7 +112,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -120,11 +120,13 @@ metrics:
         - name: openvpn.active_clients
           description: Total Number Of Active Clients
           unit: clients
+          chart_type: line
           dimensions:
             - name: clients
         - name: openvpn.total_traffic
           description: Total Traffic
           unit: kilobits/s
+          chart_type: area
           dimensions:
             - name: in
             - name: out
@@ -137,11 +139,13 @@ metrics:
         - name: openvpn.user_traffic
           description: User Traffic
           unit: kilobits/s
+          chart_type: area
           dimensions:
             - name: in
             - name: out
         - name: openvpn.user_connection_time
           description: User Connection Time
           unit: seconds
+          chart_type: line
           dimensions:
             - name: time

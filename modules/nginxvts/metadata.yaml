@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,16 +11,19 @@ metrics:
         - name: nginxvts.requests_total
           description: Total requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: nginxvts.active_connections
           description: Active connections
           unit: connections
+          chart_type: line
           dimensions:
             - name: active
         - name: nginxvts.connections_total
           description: Total connections
           unit: connections/s
+          chart_type: line
           dimensions:
             - name: reading
             - name: writing
@@ -30,27 +33,32 @@ metrics:
         - name: nginxvts.uptime
           description: Uptime
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime
         - name: nginxvts.shm_usage
           description: Shared memory size
           unit: bytes
+          chart_type: line
           dimensions:
             - name: max
             - name: used
         - name: nginxvts.shm_used_node
           description: Number of node using shared memory
           unit: nodes
+          chart_type: line
           dimensions:
             - name: used
         - name: nginxvts.server_requests_total
           description: Total number of client requests
           unit: requests/s
+          chart_type: line
           dimensions:
             - name: requests
         - name: nginxvts.server_responses_total
           description: Total number of responses by code class
           unit: responses/s
+          chart_type: line
           dimensions:
             - name: 1xx
             - name: 2xx
@@ -60,12 +68,14 @@ metrics:
         - name: nginxvts.server_traffic_total
           description: Total amount of data transferred to and from the server
           unit: bytes/s
+          chart_type: line
           dimensions:
             - name: in
             - name: out
         - name: nginxvts.server_cache_total
           description: Total server cache
           unit: events/s
+          chart_type: line
           dimensions:
             - name: miss
             - name: bypass

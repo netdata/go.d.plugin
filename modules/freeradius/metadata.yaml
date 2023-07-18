@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,12 +11,14 @@ metrics:
         - name: freeradius.authentication
           description: Authentication
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: requests
             - name: responses
         - name: freeradius.authentication_access_responses
           description: Authentication Responses
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: accepts
             - name: rejects
@@ -24,6 +26,7 @@ metrics:
         - name: freeradius.bad_authentication
           description: Bad Authentication Requests
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: dropped
             - name: duplicate
@@ -33,12 +36,14 @@ metrics:
         - name: freeradius.proxy_authentication
           description: Authentication
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: requests
             - name: responses
         - name: freeradius.proxy_authentication_access_responses
           description: Authentication Responses
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: accepts
             - name: rejects
@@ -46,6 +51,7 @@ metrics:
         - name: freeradius.proxy_bad_authentication
           description: Bad Authentication Requests
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: dropped
             - name: duplicate
@@ -55,12 +61,14 @@ metrics:
         - name: freeradius.accounting
           description: Accounting
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: requests
             - name: responses
         - name: freeradius.bad_accounting
           description: Bad Accounting Requests
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: dropped
             - name: duplicate
@@ -70,12 +78,14 @@ metrics:
         - name: freeradius.proxy_accounting
           description: Accounting
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: requests
             - name: responses
         - name: freeradius.proxy_bad_accounting
           description: Bad Accounting Requests
           unit: packets/s
+          chart_type: line
           dimensions:
             - name: dropped
             - name: duplicate

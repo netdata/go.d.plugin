@@ -3,7 +3,7 @@ metrics:
     title: Metrics
     enabled: false
   description: TBD
-  scope:
+  scopes:
     - name: global
       description: TBD
       labels: []
@@ -11,6 +11,7 @@ metrics:
         - name: springboot2.response_codes
           description: Response Codes
           unit: requests/s
+          chart_type: stacked
           dimensions:
             - name: 1xx
             - name: 2xx
@@ -20,12 +21,14 @@ metrics:
         - name: springboot2.thread
           description: Threads
           unit: threads
+          chart_type: area
           dimensions:
             - name: daemon
             - name: total
         - name: springboot2.heap
           description: Overview
           unit: B
+          chart_type: stacked
           dimensions:
             - name: free
             - name: eden
@@ -34,23 +37,27 @@ metrics:
         - name: springboot2.heap_eden
           description: Eden Space
           unit: B
+          chart_type: area
           dimensions:
             - name: used
             - name: commited
         - name: springboot2.heap_survivor
           description: Survivor Space
           unit: B
+          chart_type: area
           dimensions:
             - name: used
             - name: commited
         - name: springboot2.heap_old
           description: Old Space
           unit: B
+          chart_type: area
           dimensions:
             - name: used
             - name: commited
         - name: springboot2.uptime
           description: TThe uptime of the Java virtual machine
           unit: seconds
+          chart_type: line
           dimensions:
             - name: uptime

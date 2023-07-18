@@ -22,7 +22,7 @@ overview:
       This collector monitors Docker containers state, health status and more.
     method_description: |
       It connects to the Docker instance via a TCP or UNIX socket and executes the following commands:
-      
+
       - [System info](https://docs.docker.com/engine/api/v1.43/#tag/System/operation/SystemInfo).
       - [List images](https://docs.docker.com/engine/api/v1.43/#tag/Image/operation/ImageList).
       - [List containers](https://docs.docker.com/engine/api/v1.43/#tag/Container/operation/ContainerList).
@@ -63,8 +63,8 @@ setup:
           default_value: 0
           required: false
         - name: address
-          description: "Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port]"
-          default_value: "unix:///var/run/docker.sock"
+          description: 'Docker daemon''s listening address. When using a TCP socket, the format is: tcp://[ip]:[port]'
+          default_value: unix:///var/run/docker.sock
           required: true
         - name: timeout
           description: Request timeout in seconds.
@@ -90,13 +90,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 address: 'unix:///var/run/docker.sock'
-
+            
               - name: remote
                 address: 'tcp://203.0.113.10:2375'
 troubleshooting:

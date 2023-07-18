@@ -35,9 +35,9 @@ overview:
     auto_detection:
       description: |
         This collector discovers instances running on the local host that provide metrics on port 7072.
-        
+
         On startup, it tries to collect metrics from:
-        
+
         - http://127.0.0.1:7072/metrics
     limits:
       description: ""
@@ -49,9 +49,9 @@ setup:
       - title: Configure Cassandra with Prometheus JMX Exporter
         description: |
           To configure Cassandra with the [JMX Exporter](https://github.com/prometheus/jmx_exporter):
-
+          
           > **Note**: paths can differ depends on your setup.
-
+          
           - Download latest [jmx_exporter](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/) jar file
             and install it in a directory where Cassandra can access it.
           - Add
@@ -110,11 +110,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -159,13 +159,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Collecting metrics from local and remote instances.
           config: |
             jobs:
               - name: local
                 url: http://127.0.0.1:7072/metrics
-
+            
               - name: remote
                 url: http://192.0.2.1:7072/metrics
 troubleshooting:
@@ -176,7 +176,7 @@ metrics:
   folding:
     title: Metrics
     enabled: false
-  description: ''
+  description: ""
   availability: []
   scopes:
     - name: global
@@ -372,7 +372,7 @@ metrics:
           dimensions:
             - name: storage
     - name: thread pool
-      description: "Metrics related to Cassandra's thread pools. Each thread pool provides its own set of the following metrics."
+      description: Metrics related to Cassandra's thread pools. Each thread pool provides its own set of the following metrics.
       labels:
         - name: thread_pool
           description: thread pool name

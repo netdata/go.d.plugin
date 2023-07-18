@@ -13,7 +13,7 @@ overview:
       - `/var/lib/misc/dnsmasq.leases` to read leases.
       - `/etc/dnsmasq.conf` to detect dhcp-ranges.
       - `/etc/dnsmasq.d` to find additional configurations.
-      
+
       All configured dhcp-ranges are detected automatically.
 setup:
   prerequisites:
@@ -36,15 +36,15 @@ setup:
           required: false
         - name: leases_path
           description: Path to dnsmasq DHCP leases file.
-          default: "/var/lib/misc/dnsmasq.leases"
+          default: /var/lib/misc/dnsmasq.leases
           required: false
         - name: conf_path
           description: Path to dnsmasq configuration file.
-          default: "/etc/dnsmasq.conf"
+          default: /etc/dnsmasq.conf
           required: false
         - name: conf_dir
           description: Path to dnsmasq configuration directory.
-          default: "/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new"
+          default: /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new
           required: false
     examples:
       folding:
@@ -75,7 +75,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -83,12 +83,14 @@ metrics:
         - name: dnsmasq_dhcp.dhcp_ranges
           description: Number of DHCP Ranges
           unit: ranges
+          chart_type: stacked
           dimensions:
             - name: ipv4
             - name: ipv6
         - name: dnsmasq_dhcp.dhcp_hosts
           description: Number of DHCP Hosts
           unit: hosts
+          chart_type: stacked
           dimensions:
             - name: ipv4
             - name: ipv6
@@ -101,10 +103,12 @@ metrics:
         - name: dnsmasq_dhcp.dhcp_range_utilization
           description: DHCP Range utilization
           unit: percentage
+          chart_type: line
           dimensions:
             - name: used
         - name: dnsmasq_dhcp.dhcp_range_allocated_leases
           description: DHCP Range Allocated Leases
           unit: leases
+          chart_type: line
           dimensions:
             - name: allocated

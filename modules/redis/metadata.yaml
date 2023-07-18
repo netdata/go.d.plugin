@@ -18,9 +18,9 @@ meta:
   info_provided_to_referring_integrations:
     description: ""
   keywords:
-    - "db"
-    - "database"
-    - "cache"
+    - db
+    - database
+    - cache
   most_popular: true
 overview:
   data_collection:
@@ -77,7 +77,7 @@ setup:
           required: true
           details: |
             There are two connection types: by tcp socket and by unix socket.
-
+            
             - Tcp connection: `redis://<user>:<password>@<host>:<port>/<db_number>`
             - Unix connection: `unix://<user>:<password>@</path/to/redis.sock>?db=<db_number>`
         - name: timeout
@@ -94,7 +94,7 @@ setup:
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default_value: no
+          default_value: false
           required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
@@ -134,13 +134,13 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Local and remote instances.
           config: |
             jobs:
               - name: local
                 address: 'redis://:password@127.0.0.1:6379'
-
+            
               - name: remote
                 address: 'redis://user:password@203.0.113.0:6379'
 troubleshooting:
@@ -158,7 +158,7 @@ alerts:
   - name: redis_bgsave_broken
     link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
     metric: redis.bgsave_health
-    info: "status of the last RDB save operation (0: ok, 1: error)"
+    info: 'status of the last RDB save operation (0: ok, 1: error)'
   - name: redis_master_link_down
     link: https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf
     metric: redis.master_link_down_since_time
@@ -254,7 +254,7 @@ metrics:
           dimensions:
             - name: current_bgsave_time
         - name: redis.bgsave_health
-          description: "Status of the last RDB save operation (0: ok, 1: err)"
+          description: 'Status of the last RDB save operation (0: ok, 1: err)'
           unit: status
           chart_type: line
           dimensions:

@@ -7,7 +7,7 @@ overview:
   collector:
     description: |
       This collector monitors one or more RabbitMQ instances, depending on your configuration.
-  
+
       It collects data using an HTTP-based API provided by the [management plugin](https://www.rabbitmq.com/management.html).
       The following endpoints are used:
 
@@ -44,7 +44,7 @@ setup:
           required: true
         - name: collect_queues_metrics
           description: Collect stats per vhost per queues. Enabling this can introduce serious overhead on both Netdata and RabbitMQ if many queues are configured and used.
-          default: no
+          default: false
           required: false
         - name: timeout
           description: HTTP request timeout.
@@ -72,7 +72,7 @@ setup:
           required: false
         - name: method
           description: HTTP request method.
-          default: "GET"
+          default: GET
           required: false
         - name: body
           description: HTTP request body.
@@ -84,11 +84,11 @@ setup:
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: no
+          default: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: no
+          default: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
@@ -124,7 +124,7 @@ setup:
         - name: Multi-instance
           description: |
             > **Note**: When you define multiple jobs, their names must be unique.
-
+            
             Local and remote instances.
           data: |
             jobs:
@@ -141,7 +141,7 @@ metrics:
     title: Metrics
     enabled: false
   description: ""
-  scope:
+  scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
       labels: []
@@ -149,12 +149,14 @@ metrics:
         - name: rabbitmq.messages_count
           description: Messages
           unit: messages
+          chart_type: stacked
           dimensions:
             - name: ready
             - name: unacknowledged
         - name: rabbitmq.messages_rate
           description: Messages
           unit: messages/s
+          chart_type: line
           dimensions:
             - name: ack
             - name: publish
@@ -171,6 +173,7 @@ metrics:
         - name: rabbitmq.objects_count
           description: Objects
           unit: messages
+          chart_type: line
           dimensions:
             - name: channels
             - name: consumers
@@ -180,18 +183,21 @@ metrics:
         - name: rabbitmq.connection_churn_rate
           description: Connection churn
           unit: operations/s
+          chart_type: line
           dimensions:
             - name: created
             - name: closed
         - name: rabbitmq.channel_churn_rate
           description: Channel churn
           unit: operations/s
+          chart_type: line
           dimensions:
             - name: created
             - name: closed
         - name: rabbitmq.queue_churn_rate
           description: Queue churn
           unit: operations/s
+          chart_type: line
           dimensions:
             - name: created
             - name: deleted
@@ -199,34 +205,40 @@ metrics:
         - name: rabbitmq.file_descriptors_count
           description: File descriptors
           unit: fd
+          chart_type: stacked
           dimensions:
             - name: available
             - name: used
         - name: rabbitmq.sockets_count
           description: Used sockets
           unit: sockets
+          chart_type: stacked
           dimensions:
             - name: available
             - name: used
         - name: rabbitmq.erlang_processes_count
           description: Erlang processes
           unit: processes
+          chart_type: stacked
           dimensions:
             - name: available
             - name: used
         - name: rabbitmq.erlang_run_queue_processes_count
           description: Erlang run queue
           unit: processes
+          chart_type: line
           dimensions:
             - name: length
         - name: rabbitmq.memory_usage
           description: Memory
           unit: bytes
+          chart_type: line
           dimensions:
             - name: used
         - name: rabbitmq.disk_space_free_size
           description: Free disk space
           unit: bytes
+          chart_type: line
           dimensions:
             - name: free
     - name: vhost
@@ -238,12 +250,14 @@ metrics:
         - name: rabbitmq.vhost_messages_count
           description: Vhost messages
           unit: messages
+          chart_type: line
           dimensions:
             - name: ready
             - name: unacknowledged
         - name: rabbitmq.vhost_messages_rate
           description: Vhost messages rate
           unit: messages/s
+          chart_type: line
           dimensions:
             - name: ack
             - name: publish
@@ -268,6 +282,7 @@ metrics:
         - name: rabbitmq.queue_messages_count
           description: Queue messages
           unit: messages
+          chart_type: line
           dimensions:
             - name: ready
             - name: unacknowledged
@@ -276,6 +291,7 @@ metrics:
         - name: rabbitmq.queue_messages_rate
           description: Queue messages rate
           unit: messages/s
+          chart_type: line
           dimensions:
             - name: ack
             - name: publish
