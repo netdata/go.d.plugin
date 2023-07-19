@@ -2049,7 +2049,7 @@ modules:
       monitored_instance:
         name: MSSQL
         link: https://www.microsoft.com/en-us/sql-server/
-        icon_filename: windows.png
+        icon_filename: mssql.png
         categories:
           - data-collection.windows-systems
           - data-collection.database-servers
@@ -2099,7 +2099,7 @@ modules:
       monitored_instance:
         name: Active Directory
         link: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview
-        icon_filename: windows.png
+        icon_filename: ad.png
         categories:
           - data-collection.windows-systems
   - <<: *module
