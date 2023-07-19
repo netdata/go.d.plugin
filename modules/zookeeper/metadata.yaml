@@ -7,7 +7,6 @@ meta:
     categories:
       - data-collection.service-discovery-registry
     icon_filename: zookeeper.png
-  alternative_monitored_instances: []
   keywords:
     - zookeeper
   most_popular: false
