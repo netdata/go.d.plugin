@@ -1,0 +1,259 @@
+plugin_name: go.d.plugin
+modules:
+  - &module
+    meta: &meta
+      module_name: prometheus
+      plugin_name: go.d.plugin
+      monitored_instance:
+        name: Prometheus endpoint
+        link: https://prometheus.io/
+        icon_filename: prometheus.png
+        categories:
+          - data-collection.apm
+      keywords:
+        - prometheus
+      related_resources:
+        integrations:
+          list: []
+      info_provided_to_referring_integrations:
+        description: ""
+      most_popular: true
+    overview:
+      data_collection:
+        metrics_description: |
+          This generic Prometheus collector gathers metrics from any [`Prometheus`](https://prometheus.io/) endpoints.
+        method_description: |
+          It collects metrics by periodically sending HTTP requests to the target instance and parsing the response.
+      supported_platforms:
+        include: []
+        exclude: []
+      multi-instance: true
+      additional_permissions:
+        description: ""
+      default_behavior:
+        auto_detection:
+          description: |
+            By default, it detects instances running on the local host by trying to connect to known ports that are [allocated to exporters](https://github.com/prometheus/prometheus/wiki/Default-port-allocations).
+            The full list of endpoints is available in the collector's [configuration file](https://github.com/netdata/go.d.plugin/blob/master/config/go.d/prometheus.conf).
+        limits:
+          description: ""
+        performance_impact:
+          description: ""
+    setup:
+      prerequisites:
+        list: []
+      configuration:
+        file:
+          name: go.d/prometheus.conf
+        options:
+          description: |
+            The following options can be defined globally: update_every, autodetection_retry.
+          folding:
+            title: Config options
+            enabled: true
+          list:
+            - name: update_every
+              description: Data collection frequency.
+              default_value: 10
+              required: false
+            - name: autodetection_retry
+              description: Recheck interval in seconds. Zero means no recheck will be scheduled.
+              default_value: 0
+              required: false
+            - name: url
+              description: Server URL.
+              default_value: ""
+              required: true
+            - name: selector
+              description: Time series selector (filter).
+              default_value: ""
+              required: false
+              detailed_description: |
+                This option allows you to filter out unwanted time series. Only metrics matching the selector will be collected.
+
+                - Logic: (pattern1 OR pattern2) AND !(pattern3 or pattern4)
+                - Pattern syntax: [selector](https://github.com/netdata/go.d.plugin/pkg/prometheus/selector#time-series-selectors).
+                - Option syntax:
+                
+                ```yaml
+                selector:
+                  allow:
+                    - pattern1
+                    - pattern2
+                  deny:
+                    - pattern3
+                    - pattern4
+                ```
+            - name: fallback_type
+              description: Time series selector (filter).
+              default_value: ""
+              required: false
+              detailed_description: |
+                This option allows you to process Untyped metrics as Counter or Gauge instead of ignoring them.
+
+                - Metric name pattern syntax: [shell file name pattern](https://golang.org/pkg/path/filepath/#Match).
+                - Option syntax:
+                
+                ```yaml
+                fallback_type:
+                  counter:
+                    - metric_name_pattern1
+                    - metric_name_pattern2
+                  gauge:
+                    - metric_name_pattern3
+                    - metric_name_pattern4
+                ```
+            - name: max_time_series
+              description: Global time series limit. If an endpoint returns number of time series > limit the data is not processed.
+              default_value: 2000
+              required: false
+            - name: max_time_series_per_metric
+              description: Time series per metric (metric name) limit. Metrics with number of time series > limit are skipped.
+              default_value: 200
+              required: false
+            - name: timeout
+              description: HTTP request timeout.
+              default_value: 10
+              required: false
+            - name: username
+              description: Username for basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: password
+              description: Password for basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: proxy_url
+              description: Proxy URL.
+              default_value: ""
+              required: false
+            - name: proxy_username
+              description: Username for proxy basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: proxy_password
+              description: Password for proxy basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: method
+              description: HTTP request method.
+              default_value: "GET"
+              required: false
+            - name: body
+              description: HTTP request body.
+              default_value: ""
+              required: false
+            - name: headers
+              description: HTTP request headers.
+              default_value: ""
+              required: false
+            - name: not_follow_redirects
+              description: Redirect handling policy. Controls whether the client follows redirects.
+              default_value: no
+              required: false
+            - name: tls_skip_verify
+              description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
+              default_value: no
+              required: false
+            - name: tls_ca
+              description: Certification authority that the client uses when verifying the server's certificates.
+              default_value: ""
+              required: false
+            - name: tls_cert
+              description: Client TLS certificate.
+              default_value: ""
+              required: false
+            - name: tls_key
+              description: Client TLS key.
+              default_value: ""
+              required: false
+        examples:
+          folding:
+            title: Config
+            enabled: true
+          list:
+            - name: Basic
+              folding:
+                enabled: false
+              description: |
+                > **Note**: Change the port of the monitored application on which it provides metrics.
+
+                A basic example configuration.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:9090/metrics
+            - name: HTTP authentication
+              description: |
+                > **Note**: Change the port of the monitored application on which it provides metrics.
+
+                Basic HTTP authentication.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:9090/metrics
+                    username: username
+                    password: password
+            - name: HTTPS with self-signed certificate
+              description: |
+                > **Note**: Change the port of the monitored application on which it provides metrics.
+
+                 Do not validate server certificate chain and hostname.
+              config: |
+                jobs:
+                  - name: local
+                    url: https://127.0.0.1:9090/metrics
+                    tls_skip_verify: yes
+            - name: Multi-instance
+              description: |
+                > **Note**: When you define multiple jobs, their names must be unique.
+                > **Note**: Change the port of the monitored application on which it provides metrics.
+                
+                Collecting metrics from local and remote instances.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:9090/metrics
+                
+                  - name: remote
+                    url: http://192.0.2.1:9090/metrics
+    troubleshooting:
+      problems:
+        list: []
+    alerts: []
+    metrics:
+      folding:
+        title: Metrics
+        enabled: false
+      description: |
+        This collector has built-in grouping logic based on the [type of metrics](https://prometheus.io/docs/concepts/metric_types/).
+
+        | Metric                    | Chart                                     | Dimension(s)         | Algorithm   |
+        |---------------------------|-------------------------------------------|----------------------|-------------|
+        | Gauge                     | for each label set                        | one, the metric name | absolute    |
+        | Counter                   | for each label set                        | one, the metric name | incremental |
+        | Summary (quantiles)       | for each label set (excluding 'quantile') | for each quantile    | absolute    |
+        | Summary (sum and count)   | for each label set                        | the metric name      | incremental |
+        | Histogram (buckets)       | for each label set (excluding 'le')       | for each bucket      | incremental |
+        | Histogram (sum and count) | for each label set                        | the metric name      | incremental |
+
+        Untyped metrics (have no '# TYPE') processing:
+
+        - As Counter or Gauge depending on pattern match when 'fallback_type' is used.
+        - As Counter if it has suffix '_total'.
+        - As Summary if it has 'quantile' label.
+        - As Histogram if it has 'le' label.
+
+        **The rest are ignored**.
+      availability: []
+      scopes: []
+#  - <<: *module
+#    meta:
+#      <<: *meta
+#      most_popular: false
+#      monitored_instance:
+#        name: NAME
+#        link: LINK
+#        icon_filename: ICON
+#        categories:
+#          - CATEGORY

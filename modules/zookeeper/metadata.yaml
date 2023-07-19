@@ -1,21 +1,55 @@
-name: zookeeper
-title: Zookeeper collector
+meta:
+  plugin_name: go.d.plugin
+  module_name: zookeeper
+  monitored_instance:
+    name: ZooKeeper
+    link: https://zookeeper.apache.org/
+    categories:
+      - data-collection.service-discovery-registry
+    icon_filename: zookeeper.png
+  keywords:
+    - zookeeper
+  most_popular: false
+  info_provided_to_referring_integrations:
+    description: ""
+  related_resources:
+    integrations:
+      list:
+        - plugin_name: apps.plugin
+          module_name: apps
 overview:
-  application:
-    description: |
-      [ZooKeeper](https://zookeeper.apache.org/) is a centralized service for maintaining configuration information, naming,
-      providing distributed synchronization, and providing group services.
-  collector:
-    description: |
-      This collector monitors one or more ZooKeeper servers, depending on your configuration. It fetches metrics from ZooKeeper
-      by using the [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands) command.
+  data_collection:
+    metrics_description: ""
+    method_description: |
+      It connects to the Zookeeper instance via a TCP and executes the following commands:
+
+      - [mntr](https://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands).
+  default_behavior:
+    auto_detection:
+      description: |
+        By default, it detects instances running on localhost by attempting to connect using known ZooKeeper TCP sockets:
+
+        - 127.0.0.1:2181
+        - 127.0.0.1:2182
+    limits:
+      description: ""
+    performance_impact:
+      description: ""
+  additional_permissions:
+    description: ""
+  multi-instance: true
+  supported_platforms:
+    include: []
+    exclude: []
 setup:
   prerequisites:
     list:
       - title: Whitelist `mntr` command
-        text: |
+        description: |
           Add `mntr` to Zookeeper's [4lw.commands.whitelist](https://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_4lw).
   configuration:
+    file:
+      name: "go.d/zookeeper.conf"
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -25,39 +59,39 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
+          default_value: 0
           required: false
         - name: address
           description: Server address. The format is IP:PORT.
-          default: 127.0.0.1:2181
+          default_value: 127.0.0.1:2181
           required: true
         - name: timeout
           description: Connection/read/write/ssl handshake timeout.
-          default: 1
+          default_value: 1
           required: false
         - name: use_tls
           description: Whether to use TLS or not.
-          default: false
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: false
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client TLS key.
-          default: ""
+          default_value: ""
           required: false
     examples:
       folding:
@@ -66,13 +100,13 @@ setup:
       list:
         - name: Basic
           description: Local server.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 127.0.0.1:2181
         - name: TLS with self-signed certificate
           description: Zookeeper with TLS and self-signed certificate.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 127.0.0.1:2181
@@ -83,7 +117,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Collecting metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 127.0.0.1:2181
@@ -93,11 +127,13 @@ setup:
 troubleshooting:
   problems:
     list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: ""
+  availability: []
   scopes:
     - name: global
       description: These metrics refer to the entire monitored application.
