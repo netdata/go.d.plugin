@@ -131,9 +131,60 @@ modules:
             title: Config
             enabled: true
           list:
-            - name: ""
-              description: ""
-              config: ""
+            - name: Basic
+              folding:
+                enabled: false
+              description: A basic example configuration.
+              config: |
+                jobs:
+                  - name: win_server
+                    url: http://192.0.2.1:9182/metrics
+            - name: HTTP authentication
+              description: Basic HTTP authentication.
+              config: |
+                jobs:
+                  - name: win_server
+                    url: http://192.0.2.1:9182/metrics
+                    username: username
+                    password: password
+            - name: HTTPS with self-signed certificate
+              description: Do not validate server certificate chain and hostname.
+              config: |
+                jobs:
+                  - name: win_server
+                    url: https://192.0.2.1:9182/metrics
+                    tls_skip_verify: yes
+            - name: Virtual Node
+              description: |
+                The Virtual Node functionality allows you to define nodes in configuration files and treat them as ordinary nodes in all interfaces, panels, tabs, filters, etc.
+                You can create a virtual node for all your Windows machines and control them as separate entities.
+                
+                To make your Windows server a virtual node, you need to define virtual nodes in `/etc/netdata/vnodes/vnodes.conf`:
+                
+                > **Note**: To create a valid guid, you can use the `uuidgen` command on Linux, or the `[guid]::NewGuid()` command in PowerShell on Windows.
+                
+                ```yaml
+                # /etc/netdata/vnodes/vnodes.conf
+                - hostname: win_server
+                  guid: <value>
+                ```
+              config: |
+                jobs:
+                  - name: win_server
+                    vnode: win_server
+                    url: http://192.0.2.1:9182/metrics
+            - name: Multi-instance
+              description: |
+                > **Note**: When you define multiple jobs, their names must be unique.
+                
+                Collecting metrics from multiple remote instances.
+              config: |
+                jobs:
+                  - name: win_server1
+                    url: http://192.0.2.1:9182/metrics
+                
+                  - name: win_server2
+                    url: http://192.0.2.2:9182/metrics
     troubleshooting:
       problems:
         list: []
