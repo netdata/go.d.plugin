@@ -1,18 +1,49 @@
-name: wireguard
-title: WireGuard collector
+meta:
+  plugin_name: go.d.plugin
+  module_name: wireguard
+  monitored_instance:
+    name: WireGuard
+    link: https://www.wireguard.com/
+    categories:
+      - data-collection.vpns
+    icon_filename: wireguard.png
+  keywords:
+    - wireguard
+    - vpn
+    - security
+  most_popular: false
+  info_provided_to_referring_integrations:
+    description: ""
+  related_resources:
+    integrations:
+      list: []
 overview:
-  application:
-    description: |
-      [WireGuard](https://www.wireguard.com/) is an extremely simple yet fast and modern VPN that utilizes state-of-the-art
-      cryptography.
-  collector:
-    description: |
-      This collector monitors WireGuard VPN network interfaces and peers traffic.
-      CAP_NET_ADMIN capability is required. It is set automatically during installation.
+  data_collection:
+    metrics_description: |
+      This collector monitors WireGuard VPN devices and peers traffic.
+    method_description: |
+      It connects to the local WireGuard instance using [wireguard-go client](https://github.com/WireGuard/wireguard-go).
+  default_behavior:
+    auto_detection:
+      description: |
+        It automatically detects instances running on localhost.
+    limits:
+      description: |
+        Doesn't work if Netdata or WireGuard is installed in the container.
+    performance_impact:
+      description: ""
+  additional_permissions:
+    description: ""
+  multi-instance: true
+  supported_platforms:
+    include: []
+    exclude: []
 setup:
   prerequisites:
     list: []
   configuration:
+    file:
+      name: go.d/wireguard.conf
     options:
       description: |
         The following options can be defined globally: update_every, autodetection_retry.
@@ -22,11 +53,11 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Re-check interval in seconds. Zero means not to schedule re-check.
-          default: 0
+          default_value: 0
           required: false
     examples:
       folding:
@@ -36,11 +67,13 @@ setup:
 troubleshooting:
   problems:
     list: []
+alerts: []
 metrics:
   folding:
     title: Metrics
     enabled: false
   description: ""
+  availability: []
   scopes:
     - name: device
       description: These metrics refer to the VPN network interface.
