@@ -1,7 +1,6 @@
 plugin_name: go.d.plugin
 modules:
-  - &module
-    meta: &meta
+  - meta:
       plugin_name: go.d.plugin
       module_name: docker_engine
       alternative_monitored_instances: []

@@ -1,7 +1,6 @@
 plugin_name: go.d.plugin
 modules:
-  - &module
-    meta: &meta
+  - meta:
       module_name: chrony
       plugin_name: go.d.plugin
       monitored_instance:

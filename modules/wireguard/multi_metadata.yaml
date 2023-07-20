@@ -1,7 +1,6 @@
 plugin_name: go.d.plugin
 modules:
-  - &module
-    meta: &meta
+  - meta:
       plugin_name: go.d.plugin
       module_name: wireguard
       monitored_instance:
