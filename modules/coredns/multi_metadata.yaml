@@ -195,11 +195,11 @@ modules:
       folding:
         title: Metrics
         enabled: false
-      description: TBD
+      description: ""
       availability: []
       scopes:
         - name: global
-          description: TBD
+          description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
             - name: coredns.dns_request_count_total
@@ -294,10 +294,10 @@ modules:
                 - name: badcookie
                 - name: other
         - name: server
-          description: TBD
+          description: These metrics refer to the DNS server.
           labels:
             - name: server_name
-              description: TBD
+              description: Server name.
           metrics:
             - name: coredns.server_dns_request_count_total
               description: Number Of DNS Requests
@@ -379,10 +379,10 @@ modules:
                 - name: badcookie
                 - name: other
         - name: zone
-          description: TBD
+          description: These metrics refer to the DNS zone.
           labels:
             - name: zone_name
-              description: TBD
+              description: Zone name.
           metrics:
             - name: coredns.zone_dns_request_count_total
               description: Number Of DNS Requests

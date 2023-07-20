@@ -156,11 +156,11 @@ modules:
       folding:
         title: Metrics
         enabled: false
-      description: TBD
+      description: ""
       availability: []
       scopes:
         - name: global
-          description: TBD
+          description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
             - name: couchbase.bucket_quota_percent_used
