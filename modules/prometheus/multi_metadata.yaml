@@ -1889,3 +1889,1171 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [Kafka Consumer Lag Monitoring](https://github.com/omarsmak/kafka-consumer-lag-monitoring) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Kafka
+        link: https://github.com/danielqsj/kafka_exporter/
+        icon_filename: kafka.png
+        categories:
+          - data-collection.message-brokers
+      keywords:
+        - big data
+        - stream processing
+        - message broker
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Kafka message queue metrics for optimized data streaming and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Kafka Exporter](https://github.com/danielqsj/kafka_exporter/) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Kafka Exporter](https://github.com/danielqsj/kafka_exporter/) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Kafka ZooKeeper
+        link: https://github.com/cloudflare/kafka_zookeeper_exporter
+        icon_filename: kafka.png
+        categories:
+          - data-collection.message-brokers
+      keywords:
+        - big data
+        - stream processing
+        - message broker
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Kafka ZooKeeper metrics for optimized distributed coordination and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Kafka ZooKeeper Exporter](https://github.com/cloudflare/kafka_zookeeper_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Kafka ZooKeeper Exporter](https://github.com/cloudflare/kafka_zookeeper_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Linode
+        link: https://github.com/DazWilkin/linode-exporter
+        icon_filename: linode.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Linode cloud hosting metrics for efficient virtual server management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Linode Exporter](https://github.com/DazWilkin/linode-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Linode Exporter](https://github.com/DazWilkin/linode-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: loki
+        link: https://github.com/ricoberger/loki_exporter
+        icon_filename: loki.png
+        categories:
+          - data-collection.logs-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Loki log aggregation metrics for efficient log management and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [loki_exporter](https://github.com/ricoberger/loki_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [loki_exporter](https://github.com/ricoberger/loki_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Minecraft
+        link: https://github.com/sladkoff/minecraft-prometheus-exporter
+        icon_filename: bukkit-minecraft.png
+        categories:
+          - data-collection.gaming
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Minecraft server metrics for efficient game server management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Minecraft Exporter](https://github.com/sladkoff/minecraft-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Minecraft Exporter](https://github.com/sladkoff/minecraft-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: mosquitto
+        link: https://github.com/sapcc/mosquitto-exporter
+        icon_filename: mosquitto.png
+        categories:
+          - data-collection.message-brokers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Mosquitto MQTT broker metrics for efficient IoT message transport and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [mosquitto exporter](https://github.com/sapcc/mosquitto-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [mosquitto exporter](https://github.com/sapcc/mosquitto-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: MP707 USB thermometer
+        link: https://github.com/nradchenko/mp707_exporter
+        icon_filename: thermometer.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track MP707 power strip metrics for efficient energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [MP707 exporter](https://github.com/nradchenko/mp707_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [MP707 exporter](https://github.com/nradchenko/mp707_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: IBM MQ
+        link: https://github.com/agebhar1/mq_exporter
+        icon_filename: ibm-mq.png
+        categories:
+          - data-collection.message-brokers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on IBM MQ message queue metrics for efficient message transport and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [MQ Exporter](https://github.com/agebhar1/mq_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [MQ Exporter](https://github.com/agebhar1/mq_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: MQTT Blackbox
+        link: https://github.com/inovex/mqtt_blackbox_exporter
+        icon_filename: mqtt.png
+        categories:
+          - data-collection.synthetic-checks
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track MQTT message transport performance using blackbox testing methods.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [MQTT Blackbox Exporter](https://github.com/inovex/mqtt_blackbox_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [MQTT Blackbox Exporter](https://github.com/inovex/mqtt_blackbox_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Netapp ONTAP API
+        link: https://github.com/sapcc/netapp-api-exporter
+        icon_filename: netapp.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on NetApp ONTAP storage system metrics for efficient data storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Netapp ONTAP API Exporter](https://github.com/sapcc/netapp-api-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Netapp ONTAP API Exporter](https://github.com/sapcc/netapp-api-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NetApp Solidfire
+        link: https://github.com/mjavier2k/solidfire-exporter
+        icon_filename: netapp.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track NetApp Solidfire storage system metrics for efficient data storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NetApp Solidfire Exporter](https://github.com/mjavier2k/solidfire-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NetApp Solidfire Exporter](https://github.com/mjavier2k/solidfire-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NetMeter
+        link: https://github.com/ssbostan/netmeter-exporter
+        icon_filename: netmeter.png
+        categories:
+          - data-collection.iot-devices
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor NetMeter network traffic metrics for efficient network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NetMeter Exporter](https://github.com/ssbostan/netmeter-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NetMeter Exporter](https://github.com/ssbostan/netmeter-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: New Relic
+        link: https://github.com/jfindley/newrelic_exporter
+        icon_filename: newrelic.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor New Relic application performance management metrics for efficient application monitoring and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [New Relic exporter](https://github.com/jfindley/newrelic_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [New Relic exporter](https://github.com/jfindley/newrelic_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Open vSwitch
+        link: https://github.com/digitalocean/openvswitch_exporter
+        icon_filename: ovs.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Open vSwitch software-defined networking metrics for efficient network virtualization and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Open vSwitch Exporter](https://github.com/digitalocean/openvswitch_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Open vSwitch Exporter](https://github.com/digitalocean/openvswitch_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: OpenLDAP
+        link: https://github.com/tomcz/openldap_exporter
+        icon_filename: openldap.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor OpenLDAP directory service metrics for efficient directory management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [OpenLDAP Metrics Exporter](https://github.com/tomcz/openldap_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [OpenLDAP Metrics Exporter](https://github.com/tomcz/openldap_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: OpenStack
+        link: https://github.com/CanonicalLtd/prometheus-openstack-exporter
+        icon_filename: openstack.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track OpenStack cloud computing platform metrics for efficient infrastructure management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Openstack exporter](https://github.com/CanonicalLtd/prometheus-openstack-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Openstack exporter](https://github.com/CanonicalLtd/prometheus-openstack-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: OpenVAS
+        link: https://github.com/ModeClearCode/openvas_exporter
+        icon_filename: openVAS.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor OpenVAS vulnerability scanner metrics for efficient security assessment and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [OpenVAS exporter](https://github.com/ModeClearCode/openvas_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [OpenVAS exporter](https://github.com/ModeClearCode/openvas_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Google Pagespeed
+        link: https://github.com/foomo/pagespeed_exporter
+        icon_filename: google-pagespeed.png
+        categories:
+          - data-collection.apm
+      keywords:
+        - cloud services
+        - cloud computing
+        - google cloud services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Google PageSpeed Insights performance metrics for efficient web page optimization and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Pagespeed exporter](https://github.com/foomo/pagespeed_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Pagespeed exporter](https://github.com/foomo/pagespeed_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Philips Hue
+        link: https://github.com/aexel90/hue_exporter
+        icon_filename: hue.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Philips Hue smart lighting metrics for efficient home automation and energy management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Philips Hue Exporter](https://github.com/aexel90/hue_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Philips Hue Exporter](https://github.com/aexel90/hue_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Podman
+        link: https://github.com/containers/prometheus-podman-exporter
+        icon_filename: podman.png
+        categories:
+          - data-collection.containers-and-vms
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Podman container runtime metrics for efficient container management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [PODMAN exporter](https://github.com/containers/prometheus-podman-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [PODMAN exporter](https://github.com/containers/prometheus-podman-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Proxmox VE
+        link: https://github.com/prometheus-pve/prometheus-pve-exporter
+        icon_filename: proxmox.png
+        categories:
+          - data-collection.containers-and-vms
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Proxmox Virtual Environment metrics for efficient virtualization and container management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Proxmox VE Exporter](https://github.com/prometheus-pve/prometheus-pve-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Proxmox VE Exporter](https://github.com/prometheus-pve/prometheus-pve-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: RADIUS
+        link: https://github.com/devon-mar/radius-exporter
+        icon_filename: radius.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on RADIUS (Remote Authentication Dial-In User Service) protocol metrics for efficient authentication and access management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [RADIUS exporter](https://github.com/devon-mar/radius-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [RADIUS exporter](https://github.com/devon-mar/radius-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS RDS
+        link: https://github.com/percona/rds_exporter
+        icon_filename: rds.png
+        categories:
+          - data-collection.database-servers
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Amazon RDS (Relational Database Service) metrics for efficient cloud database management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [rds_exporter](https://github.com/percona/rds_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [rds_exporter](https://github.com/percona/rds_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: RIPE Atlas
+        link: https://github.com/czerwonk/atlas_exporter
+        icon_filename: ripe.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on RIPE Atlas Internet measurement platform metrics for efficient network monitoring and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [RIPE Atlas Exporter](https://github.com/czerwonk/atlas_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [RIPE Atlas Exporter](https://github.com/czerwonk/atlas_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Sentry
+        link: https://github.com/snakecharmer/sentry_exporter
+        icon_filename: sentry.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Sentry error tracking and monitoring platform metrics for efficient application performance and error management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Sentry Exporter](https://github.com/snakecharmer/sentry_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Sentry Exporter](https://github.com/snakecharmer/sentry_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Slurm
+        link: https://github.com/vpenso/prometheus-slurm-exporter
+        icon_filename: slurm.png
+        categories:
+          - data-collection.provisioning-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Slurm workload manager metrics for efficient high-performance computing (HPC) and cluster management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [slurm exporter](https://github.com/vpenso/prometheus-slurm-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [slurm exporter](https://github.com/vpenso/prometheus-slurm-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: IPMI (By SoundCloud)
+        link: https://github.com/prometheus-community/ipmi_exporter
+        icon_filename: soundcloud.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor IPMI metrics externally for efficient server hardware management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [SoundCloud IPMI Exporter (querying IPMI externally, blackbox-exporter style)](https://github.com/prometheus-community/ipmi_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [SoundCloud IPMI Exporter (querying IPMI externally, blackbox-exporter style)](https://github.com/prometheus-community/ipmi_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Spacelift
+        link: https://github.com/spacelift-io/prometheus-exporter
+        icon_filename: spacelift.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Spacelift infrastructure-as-code (IaC) platform metrics for efficient infrastructure automation and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Spacelift Exporter](https://github.com/spacelift-io/prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Spacelift Exporter](https://github.com/spacelift-io/prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: SSH
+        link: https://github.com/Nordstrom/ssh_exporter
+        icon_filename: ssh.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor SSH server metrics for efficient secure shell server management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [SSH Exporter](https://github.com/Nordstrom/ssh_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [SSH Exporter](https://github.com/Nordstrom/ssh_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: SSL Certificate
+        link: https://github.com/ribbybibby/ssl_exporter
+        icon_filename: ssl.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track SSL/TLS certificate metrics for efficient web security and certificate management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [SSL Certificate exporter](https://github.com/ribbybibby/ssl_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [SSL Certificate exporter](https://github.com/ribbybibby/ssl_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Starlink (SpaceX)
+        link: https://github.com/danopstech/starlink_exporter
+        icon_filename: starlink.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor SpaceX Starlink satellite internet metrics for efficient internet service management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Starlink Exporter (SpaceX)](https://github.com/danopstech/starlink_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Starlink Exporter (SpaceX)](https://github.com/danopstech/starlink_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: StatusPage
+        link: https://github.com/vladvasiliu/statuspage-exporter
+        icon_filename: statuspage.png
+        categories:
+          - data-collection.notifications
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor StatusPage.io incident and status metrics for efficient incident management and communication.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [StatusPage Exporter](https://github.com/vladvasiliu/statuspage-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [StatusPage Exporter](https://github.com/vladvasiliu/statuspage-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: TACACS
+        link: https://github.com/devon-mar/tacacs-exporter
+        icon_filename: tacacs.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Terminal Access Controller Access-Control System (TACACS) protocol metrics for efficient network authentication and authorization management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [TACACS Exporter](https://github.com/devon-mar/tacacs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [TACACS Exporter](https://github.com/devon-mar/tacacs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Tesla vehicle
+        link: https://github.com/wywywywy/tesla-prometheus-exporter
+        icon_filename: tesla.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Tesla vehicle metrics for efficient electric vehicle management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Tesla exporter](https://github.com/wywywywy/tesla-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Tesla exporter](https://github.com/wywywywy/tesla-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Tesla Powerwall
+        link: https://github.com/foogod/powerwall_exporter
+        icon_filename: tesla.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Tesla Powerwall metrics for efficient home energy storage and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Tesla Powerwall Exporter](https://github.com/foogod/powerwall_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Tesla Powerwall Exporter](https://github.com/foogod/powerwall_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Twitch
+        link: https://github.com/damoun/twitch_exporter
+        icon_filename: twitch.png
+        categories:
+          - data-collection.media-streaming-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Twitch streaming platform metrics for efficient live streaming management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Twitch exporter](https://github.com/damoun/twitch_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Twitch exporter](https://github.com/damoun/twitch_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Ubiquiti UFiber OLT
+        link: https://github.com/swoga/ufiber-exporter
+        icon_filename: ubiquiti.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Ubiquiti UFiber GPON (Gigabit Passive Optical Network) device metrics for efficient fiber-optic network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ufiber-exporter](https://github.com/swoga/ufiber-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ufiber-exporter](https://github.com/swoga/ufiber-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Uptimerobot
+        link: https://github.com/wosc/prometheus-uptimerobot
+        icon_filename: uptimerobot.png
+        categories:
+          - data-collection.synthetic-checks
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor UptimeRobot website uptime monitoring metrics for efficient website availability tracking and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Uptimerobot Exporter](https://github.com/wosc/prometheus-uptimerobot) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Uptimerobot Exporter](https://github.com/wosc/prometheus-uptimerobot) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: HashiCorp Vault secrets
+        link: https://github.com/tomtom-international/vault-assessment-prometheus-exporter
+        icon_filename: vault.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track HashiCorp Vault security assessment metrics for efficient secrets management and security.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Vault Assessment Prometheus Exporter](https://github.com/tomtom-international/vault-assessment-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Vault Assessment Prometheus Exporter](https://github.com/tomtom-international/vault-assessment-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Vault PKI
+        link: https://github.com/aarnaud/vault-pki-exporter
+        icon_filename: vault.png
+        categories:
+          - data-collection.authentication-and-authorization
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor HashiCorp Vault Public Key Infrastructure (PKI) metrics for efficient certificate management and security.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Vault PKI Exporter](https://github.com/aarnaud/vault-pki-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Vault PKI Exporter](https://github.com/aarnaud/vault-pki-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Vertica
+        link: https://github.com/vertica/vertica-prometheus-exporter
+        icon_filename: vertica.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Vertica analytics database platform metrics for efficient database performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [vertica-prometheus-exporter](https://github.com/vertica/vertica-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [vertica-prometheus-exporter](https://github.com/vertica/vertica-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: VMWare
+        link: https://github.com/pryorda/vmware_exporter
+        icon_filename: vmware.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on VMWare virtualization platform metrics for efficient virtual infrastructure management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [VMWare exporter](https://github.com/pryorda/vmware_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [VMWare exporter](https://github.com/pryorda/vmware_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: VSCode
+        link: https://github.com/guicaulada/vscode-exporter
+        icon_filename: vscode.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Visual Studio Code editor metrics for efficient development environment management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [VSCode Exporter](https://github.com/guicaulada/vscode-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [VSCode Exporter](https://github.com/guicaulada/vscode-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Airthings Waveplus air sensor
+        link: https://github.com/jeremybz/waveplus_exporter
+        icon_filename: airthings.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Waveplus radon sensor metrics for efficient indoor air quality monitoring and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Waveplus Radon Sensor Exporter](https://github.com/jeremybz/waveplus_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Waveplus Radon Sensor Exporter](https://github.com/jeremybz/waveplus_exporter) by following the instructions mentioned in the exporter README.
