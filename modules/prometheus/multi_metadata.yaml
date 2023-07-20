@@ -1622,3 +1622,270 @@ modules:
           - title: Configure built-in Prometheus exporter
             description: |
               To configure the built-in Prometheus exporter, follow the [official documentation](https://go2docs.graylog.org/5-0/interacting_with_your_log_data/metrics.html#PrometheusMetricExporting).
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: HANA
+        link: https://github.com/jenningsloy318/hana_exporter
+        icon_filename: sap.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track SAP HANA database metrics for efficient data storage and query performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [HANA Exporter](https://github.com/jenningsloy318/hana_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [HANA Exporter](https://github.com/jenningsloy318/hana_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Honeypot
+        link: https://github.com/Intrinsec/honeypot_exporter
+        icon_filename: intrinsec
+        categories:
+          - data-collection.security-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor honeypot metrics for efficient threat detection and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Intrinsec honeypot_exporter](https://github.com/Intrinsec/honeypot_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Intrinsec honeypot_exporter](https://github.com/Intrinsec/honeypot_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: HP iLO
+        link: https://github.com/infinityworks/hpilo-exporter
+        icon_filename: hpe.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor HP Integrated Lights Out (iLO) metrics for efficient server management and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [HP iLO Metrics Exporter](https://github.com/infinityworks/hpilo-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [HP iLO Metrics Exporter](https://github.com/infinityworks/hpilo-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Hubble
+        link: https://github.com/cilium/hubble
+        icon_filename: hubble.png
+        categories:
+          - data-collection.observability
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Hubble network observability metrics for efficient network visibility and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to Hubble built-in Prometheus exporter and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics).
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: IBM Spectrum
+        link: https://github.com/topine/ibm-spectrum-exporter
+        icon_filename: ibm-spectrum.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor IBM Spectrum storage metrics for efficient data management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [IBM Spectrum Exporter](https://github.com/topine/ibm-spectrum-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [IBM Spectrum Exporter](https://github.com/topine/ibm-spectrum-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: InfluxDB
+        link: https://github.com/prometheus/influxdb_exporter
+        icon_filename: influxDB.png
+        categories:
+          - data-collection.database-servers
+      keywords:
+        - database
+        - dbms
+        - data storage
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor InfluxDB time-series database metrics for efficient data storage and query performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [InfluxDB exporter](https://github.com/prometheus/influxdb_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [InfluxDB exporter](https://github.com/prometheus/influxdb_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Jenkins
+        link: https://www.jenkins.io/
+        icon_filename: jenkins.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Jenkins continuous integration server metrics for efficient development and build management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Jenkins exporter](https://github.com/simplesurance/jenkins-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Jenkins exporter](https://github.com/simplesurance/jenkins-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: JMX
+        link: https://github.com/prometheus/jmx_exporter
+        icon_filename: jmx-exporter.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Java Management Extensions (JMX) metrics for efficient Java application management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [JMX Exporter](https://github.com/prometheus/jmx_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [JMX Exporter](https://github.com/prometheus/jmx_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: jolokia
+        link: https://github.com/aklinkert/jolokia_exporter
+        icon_filename: jolokia.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Jolokia JVM metrics for optimized Java application performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [jolokia_exporter](https://github.com/aklinkert/jolokia_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [jolokia_exporter](https://github.com/aklinkert/jolokia_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Kafka Consumer Lag
+        link: https://github.com/omarsmak/kafka-consumer-lag-monitoring
+        icon_filename: kafka.png
+        categories:
+          - data-collection.message-brokers
+      keywords:
+        - big data
+        - stream processing
+        - message broker
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Kafka consumer lag metrics for efficient message queue management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Kafka Consumer Lag Monitoring](https://github.com/omarsmak/kafka-consumer-lag-monitoring) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Kafka Consumer Lag Monitoring](https://github.com/omarsmak/kafka-consumer-lag-monitoring) by following the instructions mentioned in the exporter README.
