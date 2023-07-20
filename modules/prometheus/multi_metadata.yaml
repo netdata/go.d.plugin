@@ -3057,3 +3057,508 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [Waveplus Radon Sensor Exporter](https://github.com/jeremybz/waveplus_exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: XMPP Server
+        link: https://github.com/horazont/xmpp-blackbox-exporter
+        icon_filename: xmpp.png
+        categories:
+          - data-collection.message-brokers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor XMPP (Extensible Messaging and Presence Protocol) server metrics for efficient messaging and communication management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [XMPP Server Exporter](https://github.com/horazont/xmpp-blackbox-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [XMPP Server Exporter](https://github.com/horazont/xmpp-blackbox-exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: 4D Server
+        link: https://github.com/ThomasMaul/Prometheus_4D_Exporter
+        icon_filename: 4d_server.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor 4D Server performance metrics for efficient application management and optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [4D Server exporter](https://github.com/ThomasMaul/Prometheus_4D_Exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [4D Server exporter](https://github.com/ThomasMaul/Prometheus_4D_Exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: 8430FT modem
+        link: https://github.com/dernasherbrezon/8430ft_exporter
+        icon_filename: 8430ft.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep track of vital metrics from the MTS 8430FT modem for streamlined network performance and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [8430FT Exporter](https://github.com/dernasherbrezon/8430ft_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [8430FT Exporter](https://github.com/dernasherbrezon/8430ft_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: A2S
+        link: https://github.com/armsnyder/a2s-exporter
+        icon_filename: a2s.png
+        categories:
+          - data-collection.gaming
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Gain insights into Steam A2S-supported game servers for performance and availability through real-time metric monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [A2S Exporter](https://github.com/armsnyder/a2s-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [A2S Exporter](https://github.com/armsnyder/a2s-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Akamai Edge DNS Traffic
+        link: https://github.com/akamai/akamai-edgedns-traffic-exporter
+        icon_filename: akamai.png
+        categories:
+          - data-collection.dns-and-dhcp-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track and analyze Akamai Edge DNS traffic for enhanced performance and security.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Akamai Edge DNS Traffic Exporter](https://github.com/akamai/akamai-edgedns-traffic-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Akamai Edge DNS Traffic Exporter](https://github.com/akamai/akamai-edgedns-traffic-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Akamai Global Traffic Management
+        link: https://github.com/akamai/akamai-gtm-metrics-exporter
+        icon_filename: akamai.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor vital metrics of Akamai Global Traffic Management (GTM) for optimized load balancing and failover.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Akamai Global Traffic Management Metrics Exporter](https://github.com/akamai/akamai-gtm-metrics-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Akamai Global Traffic Management Metrics Exporter](https://github.com/akamai/akamai-gtm-metrics-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Alamos FE2 server
+        link: https://github.com/codemonauts/prometheus-fe2-exporter
+        icon_filename: alamos_fe2.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Alamos FE2 systems for improved performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Alamos FE2 Exporter](https://github.com/codemonauts/prometheus-fe2-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Alamos FE2 Exporter](https://github.com/codemonauts/prometheus-fe2-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Altaro Backup
+        link: https://github.com/raph2i/altaro_backup_exporter
+        icon_filename: altaro.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Altaro Backup performance metrics to ensure smooth data protection and recovery operations.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Altaro Backup Exporter](https://github.com/raph2i/altaro_backup_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Altaro Backup Exporter](https://github.com/raph2i/altaro_backup_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AMD CPU & GPU
+        link: https://github.com/amd/amd_smi_exporter
+        icon_filename: amd.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor AMD System Management Interface performance for optimized hardware management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AMD SMI Exporter](https://github.com/amd/amd_smi_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AMD SMI Exporter](https://github.com/amd/amd_smi_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Andrews & Arnold line status
+        link: https://github.com/daveio/aaisp-exporter
+        icon_filename: andrews-and-arnold.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Andrews & Arnold Ltd (AAISP) metrics for improved network performance and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Andrews & Arnold line status exporter](https://github.com/daveio/aaisp-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Andrews & Arnold line status exporter](https://github.com/daveio/aaisp-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: APIcast
+        link: https://github.com/3scale/apicast
+        icon_filename: apicast.png
+        categories:
+          - data-collection.api-gateways
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor APIcast performance metrics to optimize API gateway operations and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [APIcast](https://github.com/3scale/apicast) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [APIcast](https://github.com/3scale/apicast) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Apple Time Machine
+        link: https://github.com/znerol/prometheus-timemachine-exporter
+        icon_filename: apple.png
+        categories:
+          - data-collection.macos-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Apple Time Machine backup metrics for efficient data protection and recovery.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Apple Time Machine Exporter](https://github.com/znerol/prometheus-timemachine-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Apple Time Machine Exporter](https://github.com/znerol/prometheus-timemachine-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ARM HWCPipe
+        link: https://github.com/ylz-at/arm-hwcpipe-exporter
+        icon_filename: arm.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep track of ARM running Android devices and get metrics for efficient performance optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ARM HWCPipe Exporter](https://github.com/ylz-at/arm-hwcpipe-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ARM HWCPipe Exporter](https://github.com/ylz-at/arm-hwcpipe-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ArvanCloud CDN
+        link: https://github.com/arvancloud/ar-prometheus-exporter
+        icon_filename: arvancloud.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track and analyze ArvanCloud CDN and cloud services performance metrics for optimized delivery and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ArvanCloud exporter](https://github.com/arvancloud/ar-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ArvanCloud exporter](https://github.com/arvancloud/ar-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Audisto
+        link: https://github.com/ZeitOnline/audisto_exporter
+        icon_filename: audisto.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Audisto SEO and website metrics for improved search performance and optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Audisto exporter](https://github.com/ZeitOnline/audisto_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Audisto exporter](https://github.com/ZeitOnline/audisto_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AuthLog
+        link: https://github.com/woblerr/authlog_exporter
+        icon_filename: linux.png
+        categories:
+          - data-collection.logs-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor authentication logs for security insights and efficient access management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AuthLog Exporter](https://github.com/woblerr/authlog_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AuthLog Exporter](https://github.com/woblerr/authlog_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS EC2 Spot Instance
+        link: https://github.com/patcadelina/ec2-spot-exporter
+        icon_filename: aws-ec2.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor AWS EC2 Spot instances'' performance metrics for efficient resource allocation and cost optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS EC2 Spot Exporter](https://github.com/patcadelina/ec2-spot-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS EC2 Spot Exporter](https://github.com/patcadelina/ec2-spot-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS Quota
+        link: https://github.com/emylincon/aws_quota_exporter
+        icon_filename: aws.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor AWS service quotas for effective resource usage and cost management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [aws_quota_exporter](https://github.com/emylincon/aws_quota_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [aws_quota_exporter](https://github.com/emylincon/aws_quota_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Bobcat Miner 300
+        link: https://github.com/pperzyna/bobcat_exporter
+        icon_filename: bobber.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Bobcat equipment metrics for optimized performance and maintenance management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Bobcat Exporter](https://github.com/pperzyna/bobcat_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Bobcat Exporter](https://github.com/pperzyna/bobcat_exporter) by following the instructions mentioned in the exporter README.
