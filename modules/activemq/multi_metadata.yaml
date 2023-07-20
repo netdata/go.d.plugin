@@ -39,7 +39,7 @@ modules:
           description: ""
         performance_impact:
           description: ""
-      multi-instance: true
+      multi_instance: true
       supported_platforms:
         include: []
         exclude: []

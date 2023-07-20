@@ -28,7 +28,7 @@ modules:
         - "sql"
       most_popular: true
     overview:
-      multi-instance: true
+      multi_instance: true
       data_collection:
         metrics_description: |
           This collector monitors the health and performance of MySQL servers and collects general statistics, replication and user metrics.

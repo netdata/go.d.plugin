@@ -38,7 +38,7 @@ modules:
             Data collection affects the CPU usage of the Windows host. CPU usage depends on the frequency of data collection and the [enabled collectors](https://github.com/prometheus-community/windows_exporter#collectors).
       additional_permissions:
         description: ""
-      multi-instance: true
+      multi_instance: true
       supported_platforms:
         include: []
         exclude: []

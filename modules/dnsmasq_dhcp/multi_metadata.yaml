@@ -32,7 +32,7 @@ modules:
       supported_platforms:
         include: []
         exclude: []
-      multi-instance: false
+      multi_instance: false
       additional_permissions:
         description: ""
       default_behavior:

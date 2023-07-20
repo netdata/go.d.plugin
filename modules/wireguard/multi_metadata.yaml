@@ -37,7 +37,7 @@ modules:
       additional_permissions:
         description: |
           This collector requires the CAP_NET_ADMIN capability, but it is set automatically during installation, so no manual configuration is needed.
-      multi-instance: true
+      multi_instance: true
       supported_platforms:
         include: []
         exclude: []
