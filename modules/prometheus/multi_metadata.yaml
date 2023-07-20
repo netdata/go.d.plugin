@@ -19,7 +19,7 @@ modules:
         description: ""
       most_popular: true
     overview: &overview
-      data_collection: &data_collection
+      data_collection:
         metrics_description: |
           This generic Prometheus collector gathers metrics from any [`Prometheus`](https://prometheus.io/) endpoints.
         method_description: |
@@ -39,7 +39,7 @@ modules:
           description: ""
         performance_impact:
           description: ""
-    setup:
+    setup: &setup
       prerequisites:
         list: []
       configuration:
@@ -247,20 +247,1378 @@ modules:
         **The rest are ignored**.
       availability: []
       scopes: []
-#  - <<: *module
-#    meta:
-#      <<: *meta
-#      most_popular: false
-#      monitored_instance:
-#        name: NAME
-#        link: LINK
-#        icon_filename: ICON
-#        categories:
-#          - CATEGORY
-#      keywords:
-#        - KEYWORD
-#    overview:
-#      <<: *overview
-#      data_collection:
-#        <<: *data_collection
-#        metrics_description: DESCRIPTION
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: A10 ACOS network devices
+        link: https://github.com/a10networks/PrometheusExporter
+        icon_filename: a10-networks.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor A10 Networks device metrics for comprehensive management and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [A10-Networks Prometheus Exporter](https://github.com/a10networks/PrometheusExporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [A10-Networks Prometheus Exporter](https://github.com/a10networks/PrometheusExporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Apache Airflow
+        link: https://github.com/shalb/airflow-exporter
+        icon_filename: airflow.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Apache Airflow metrics to optimize task scheduling and workflow management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Airflow exporter](https://github.com/shalb/airflow-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Airflow exporter](https://github.com/shalb/airflow-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Alibaba Cloud
+        link: https://github.com/aylei/aliyun-exporter # FIXME: This repository has been archived by the owner on Oct 28, 2019
+        icon_filename: alibaba-cloud.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Alibaba Cloud services and resources for efficient management and cost optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Alibaba Cloud Exporter](https://github.com/aylei/aliyun-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Alibaba Cloud Exporter](https://github.com/aylei/aliyun-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Apache Flink
+        link: https://github.com/matsumana/flink_exporter
+        icon_filename: apache_flink.png
+        categories:
+          - data-collection.apm
+      keywords:
+        - web server
+        - http
+        - https
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Apache Flink metrics for efficient stream processing and application management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Apache Flink Metrics Reporter](https://github.com/matsumana/flink_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Apache Flink Metrics Reporter](https://github.com/matsumana/flink_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Aruba devices
+        link: https://github.com/slashdoom/aruba_exporter
+        icon_filename: aruba.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - network monitoring
+        - network performance
+        - aruba devices
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Aruba Networks devices performance metrics for comprehensive network management and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Aruba Exporter](https://github.com/slashdoom/aruba_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Aruba Exporter](https://github.com/slashdoom/aruba_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS EC2 Compute instances
+        link: https://github.com/O1ahmad/aws_ec2_exporter
+        icon_filename: aws-ec2.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track AWS EC2 instances key metrics for optimized performance and cost management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS EC2 Exporter](https://github.com/O1ahmad/aws_ec2_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS EC2 Exporter](https://github.com/O1ahmad/aws_ec2_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS ECS
+        link: https://github.com/bevers222/ecs-exporter
+        icon_filename: amazon-ecs.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on AWS ECS services and resources for optimized container management and orchestration.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS ECS exporter](https://github.com/bevers222/ecs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS ECS exporter](https://github.com/bevers222/ecs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS Health events
+        link: https://github.com/vladvasiliu/aws-health-exporter-rs
+        icon_filename: aws.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track AWS service health metrics for proactive incident management and resolution.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS Health Exporter](https://github.com/vladvasiliu/aws-health-exporter-rs) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS Health Exporter](https://github.com/vladvasiliu/aws-health-exporter-rs) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS instance health
+        link: https://github.com/bobtfish/aws-instance-health-exporter
+        icon_filename: aws.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor the health of AWS instances for improved performance and availability.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS instance health exporter](https://github.com/bobtfish/aws-instance-health-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS instance health exporter](https://github.com/bobtfish/aws-instance-health-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS S3 buckets
+        link: https://github.com/ribbybibby/s3_exporter
+        icon_filename: aws-s3.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor AWS S3 storage metrics for optimized performance, data management, and cost efficiency.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS S3 Exporter](https://github.com/ribbybibby/s3_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS S3 Exporter](https://github.com/ribbybibby/s3_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: AWS SQS
+        link: https://github.com/jmal98/sqs-exporter
+        icon_filename: aws-sqs.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - aws services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track AWS SQS messaging metrics for efficient message processing and queue management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [AWS SQS Exporter](https://github.com/jmal98/sqs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [AWS SQS Exporter](https://github.com/jmal98/sqs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure AD App passwords
+        link: https://github.com/vladvasiliu/azure-app-secrets-monitor
+        icon_filename: azure.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - azure services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Safeguard and track Azure App secrets for enhanced security and access management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure App Secrets monitor](https://github.com/vladvasiliu/azure-app-secrets-monitor) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure App Secrets monitor](https://github.com/vladvasiliu/azure-app-secrets-monitor) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure Elastic Pool SQL
+        link: https://github.com/benclapp/azure_elastic_sql_exporter
+        icon_filename: azure-elastic-sql.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - database
+        - relational db
+        - data querying
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Azure Elastic SQL performance metrics for efficient database management and query optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure Elastic SQL Exporter](https://github.com/benclapp/azure_elastic_sql_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure Elastic SQL Exporter](https://github.com/benclapp/azure_elastic_sql_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure application
+        link: https://github.com/RobustPerception/azure_metrics_exporter
+        icon_filename: azure.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - azure services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Azure Monitor metrics for comprehensive resource management and performance optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure Monitor exporter](https://github.com/RobustPerception/azure_metrics_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure Monitor exporter](https://github.com/RobustPerception/azure_metrics_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure Resources
+        link: https://github.com/FXinnovation/azure-resources-exporter
+        icon_filename: azure.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - azure services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Azure resources vital metrics for efficient cloud management and cost optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure Resources Exporter](https://github.com/FXinnovation/azure-resources-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure Resources Exporter](https://github.com/FXinnovation/azure-resources-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure Service Bus
+        link: https://github.com/marcinbudny/servicebus_exporter
+        icon_filename: azure-service-bus.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - azure services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Azure Service Bus messaging metrics for optimized communication and integration.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure Service Bus Exporter](https://github.com/marcinbudny/servicebus_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure Service Bus Exporter](https://github.com/marcinbudny/servicebus_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Azure SQL
+        link: https://github.com/iamseth/azure_sql_exporter
+        icon_filename: azure-sql.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - database
+        - relational db
+        - data querying
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Azure SQL performance metrics for efficient database management and query performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Azure SQL exporter](https://github.com/iamseth/azure_sql_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Azure SQL exporter](https://github.com/iamseth/azure_sql_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: BigQuery
+        link: https://github.com/m-lab/prometheus-bigquery-exporter
+        icon_filename: bigquery.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Google BigQuery metrics for optimized data processing and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [BigQuery Exporter](https://github.com/m-lab/prometheus-bigquery-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [BigQuery Exporter](https://github.com/m-lab/prometheus-bigquery-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Blackbox
+        link: https://github.com/prometheus/blackbox_exporter
+        icon_filename: prometheus.png
+        categories:
+          - data-collection.synthetic-checks
+      keywords:
+        - blackbox
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track external service availability and response times with Blackbox monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Blackbox exporter](https://github.com/prometheus/blackbox_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Blackbox exporter](https://github.com/prometheus/blackbox_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Borg backup
+        link: https://github.com/k0ral/borg-exporter
+        icon_filename: borg.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Borg backup performance metrics for efficient data protection and recovery.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Borg backup exporter](https://github.com/k0ral/borg-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Borg backup exporter](https://github.com/k0ral/borg-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: cAdvisor
+        link: https://github.com/google/cadvisor
+        icon_filename: cadvisor.png
+        categories:
+          - data-collection.containers-and-vms
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor container resource usage and performance metrics with cAdvisor for efficient container management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [cAdvisor](https://github.com/google/cadvisor) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [cAdvisor](https://github.com/google/cadvisor) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cilium Agent
+        link: https://github.com/cilium/cilium
+        icon_filename: cilium.png
+        categories:
+          - data-collection.kubernetes
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Cilium Agent metrics for optimized network security and connectivity.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cilium Agent](https://github.com/cilium/cilium) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cilium Agent](https://github.com/cilium/cilium) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cilium Operator
+        link: https://github.com/cilium/cilium
+        icon_filename: cilium.png
+        categories:
+          - data-collection.kubernetes
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Cilium Operator metrics for efficient Kubernetes network security management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cilium Operator](https://github.com/cilium/cilium) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cilium Operator](https://github.com/cilium/cilium) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cilium Proxy
+        link: https://github.com/cilium/proxy
+        icon_filename: cilium.png
+        categories:
+          - data-collection.kubernetes
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Cilium Proxy metrics for enhanced network security and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cilium Proxy](https://github.com/cilium/proxy) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cilium Proxy](https://github.com/cilium/proxy) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cisco ACI
+        link: https://github.com/RavuAlHemio/prometheus_aci_exporter
+        icon_filename: cisco.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - network monitoring
+        - network performance
+        - cisco devices
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Cisco ACI infrastructure metrics for optimized network performance and resource management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cisco ACI Exporter](https://github.com/RavuAlHemio/prometheus_aci_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cisco ACI Exporter](https://github.com/RavuAlHemio/prometheus_aci_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Citrix NetScaler
+        link: https://github.com/rokett/Citrix-NetScaler-Exporter
+        icon_filename: netscaler.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on NetScaler performance metrics for efficient application delivery and load balancing.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Citrix NetScaler Exporter](https://github.com/rokett/Citrix-NetScaler-Exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Citrix NetScaler Exporter](https://github.com/rokett/Citrix-NetScaler-Exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ClickHouse
+        link: https://github.com/ClickHouse/ClickHouse
+        icon_filename: clickhouse.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor ClickHouse database metrics for efficient data storage and query performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to the ClickHouse built-in Prometheus exporter and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#server_configuration_parameters-prometheus).
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cloudflare PCAP
+        link: https://github.com/wehkamp/docker-prometheus-cloudflare-exporter
+        icon_filename: cloudflare.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Cloudflare CDN and security metrics for optimized content delivery and protection.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cloudflare exporter](https://github.com/wehkamp/docker-prometheus-cloudflare-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cloudflare exporter](https://github.com/wehkamp/docker-prometheus-cloudflare-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: CloudWatch
+        link: https://github.com/prometheus/cloudwatch_exporter
+        icon_filename: aws-cloudwatch.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor AWS CloudWatch metrics for comprehensive AWS resource management and performance optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [CloudWatch exporter](https://github.com/prometheus/cloudwatch_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [CloudWatch exporter](https://github.com/prometheus/cloudwatch_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Concourse
+        link: https://concourse-ci.org
+        icon_filename: concourse.png
+        categories:
+          - data-collection.ci-cd-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Concourse CI/CD pipeline metrics for optimized workflow management and deployment.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to the Concourse built-in Prometheus exporter and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://concourse-ci.org/metrics.html#configuring-metrics).
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Crowdsec
+        link: https://docs.crowdsec.net/docs/observability/prometheus
+        icon_filename: crowdsec.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Crowdsec security metrics for efficient threat detection and response.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to the Crowdsec build-in Prometheus exporter and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://docs.crowdsec.net/docs/observability/prometheus/).
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dell EMC ECS cluster
+        link: https://github.com/paychex/prometheus-emcecs-exporter
+        icon_filename: dell-emc-ecs.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Dell EMC ECS object storage metrics for optimized storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Dell EMC ECS Exporter](https://github.com/paychex/prometheus-emcecs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Dell EMC ECS Exporter](https://github.com/paychex/prometheus-emcecs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dell EMC Isilon cluster
+        link: https://github.com/paychex/prometheus-isilon-exporter
+        icon_filename: dell-emc-isilon.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Dell EMC Isilon scale-out NAS metrics for efficient storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Dell EMC Isilon Exporter](https://github.com/paychex/prometheus-isilon-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Dell EMC Isilon Exporter](https://github.com/paychex/prometheus-isilon-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: DigitalOcean
+        link: https://github.com/metalmatze/digitalocean_exporter
+        icon_filename: digitalocean.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track DigitalOcean cloud provider metrics for optimized resource management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [DigitalOcean Exporter](https://github.com/metalmatze/digitalocean_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [DigitalOcean Exporter](https://github.com/metalmatze/digitalocean_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Discourse
+        link: https://github.com/discourse/discourse-prometheus
+        icon_filename: discourse.png
+        categories:
+          - data-collection.web-servers-and-web-proxies
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Discourse forum metrics for efficient community management and engagement.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Discourse Exporter](https://github.com/discourse/discourse-prometheus) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Discourse Exporter](https://github.com/discourse/discourse-prometheus) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Network UPS Tools
+        link: https://github.com/HON95/prometheus-nut-exporter
+        icon_filename: nut.png
+        categories:
+          - data-collection.ups
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Network UPS Tools (NUT) metrics for efficient uninterruptible power supply management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Network UPS Tools exporter](https://github.com/HON95/prometheus-nut-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Network UPS Tools exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dynatrace
+        link: https://github.com/Apside-TOP/dynatrace_exporter
+        icon_filename: dynatrace.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Dynatrace APM metrics for comprehensive application performance management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Dynatrace Exporter](https://github.com/Apside-TOP/dynatrace_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Dynatrace Exporter](https://github.com/Apside-TOP/dynatrace_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: EOS
+        link: https://eos-web.web.cern.ch/eos-web/
+        icon_filename: eos.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor CERN EOS metrics for efficient storage management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [EOS exporter](https://github.com/cern-eos/eos_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [EOS exporter](https://github.com/cern-eos/eos_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: etcd
+        link: https://etcd.io/
+        icon_filename: etcd.png
+        categories:
+          - data-collection.service-discovery-registry
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track etcd database metrics for optimized distributed key-value store management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to etcd built-in Prometheus exporter and parsing the response.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Fortigate firewall
+        link: https://github.com/bluecmd/fortigate_exporter
+        icon_filename: fortinet.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Fortigate firewall metrics for enhanced network protection and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [fortigate_exporter](https://github.com/bluecmd/fortigate_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [fortigate_exporter](https://github.com/bluecmd/fortigate_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: FreeBSD NFS
+        link: https://github.com/Axcient/freebsd-nfs-exporter
+        icon_filename: freebsd.jpg
+        categories:
+          - data-collection.freebsd-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor FreeBSD Network File System metrics for efficient file sharing management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [FreeBSD NFS Exporter](https://github.com/Axcient/freebsd-nfs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [FreeBSD NFS Exporter](https://github.com/Axcient/freebsd-nfs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: FreeBSD RCTL/RACCT
+        link: https://github.com/yo000/rctl_exporter
+        icon_filename: freebsd.jpg
+        categories:
+          - data-collection.freebsd-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on FreeBSD Resource Container metrics for optimized resource management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [FreeBSD RCTL Exporter](https://github.com/yo000/rctl_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [FreeBSD RCTL Exporter](https://github.com/yo000/rctl_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: GCP GCE
+        link: https://github.com/O1ahmad/gcp-gce-exporter
+        icon_filename: gcp-gce.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Google Cloud Platform Compute Engine metrics for efficient cloud resource management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [GCP GCE Exporter](https://github.com/O1ahmad/gcp-gce-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [GCP GCE Exporter](https://github.com/O1ahmad/gcp-gce-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: GCP Quota
+        link: https://github.com/mintel/gcp-quota-exporter
+        icon_filename: gcp.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Google Cloud Platform quota metrics for optimized resource usage and cost management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [GCP Quota Exporter](https://github.com/mintel/gcp-quota-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [GCP Quota Exporter](https://github.com/mintel/gcp-quota-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: GitHub repository
+        link: https://github.com/githubexporter/github-exporter
+        icon_filename: github.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track GitHub repository metrics for optimized project and user analytics monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [GitHub Exporter](https://github.com/githubexporter/github-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [GitHub Exporter](https://github.com/githubexporter/github-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: GitLab Runner
+        link: https://gitlab.com/gitlab-org/gitlab-runner
+        icon_filename: gitlab.png
+        categories:
+          - data-collection.ci-cd-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on GitLab CI/CD job metrics for efficient development and deployment management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to GitLab built-in Prometheus exporter.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://docs.gitlab.com/runner/monitoring/#configuration-of-the-metrics-http-server).
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Gobetween
+        link: https://github.com/yyyar/gobetween
+        icon_filename: gobetween.png
+        categories:
+          - data-collection.web-servers-and-web-proxies
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Gobetween load balancer metrics for optimized network traffic management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to Gobetween built-in Prometheus exporter and parsing the response.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Google Cloud Platform
+        link: https://github.com/DazWilkin/gcp-exporter
+        icon_filename: gcp.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Google Cloud Platform metrics for comprehensive cloud resource management and performance optimization.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Google Cloud Platform Exporter](https://github.com/DazWilkin/gcp-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Google Cloud Platform Exporter](https://github.com/DazWilkin/gcp-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Google Stackdriver
+        link: https://github.com/prometheus-community/stackdriver_exporter
+        icon_filename: gcp-stackdriver.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - google cloud services
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Google Stackdriver monitoring metrics for optimized cloud performance and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Google Stackdriver exporter](https://github.com/prometheus-community/stackdriver_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Google Stackdriver exporter](https://github.com/prometheus-community/stackdriver_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Grafana
+        link: https://grafana.com/
+        icon_filename: grafana.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Grafana dashboard and visualization metrics for optimized monitoring and data analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to Grafana built-in Prometheus exporter and parsing the response.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Graylog Server
+        link: https://github.com/Graylog2/graylog2-server/
+        icon_filename: graylog.png
+        categories:
+          - data-collection.logs-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Graylog server metrics for efficient log management and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to Graylog built-in Prometheus exporter and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Configure built-in Prometheus exporter
+            description: |
+              To configure the built-in Prometheus exporter, follow the [official documentation](https://go2docs.graylog.org/5-0/interacting_with_your_log_data/metrics.html#PrometheusMetricExporting).
