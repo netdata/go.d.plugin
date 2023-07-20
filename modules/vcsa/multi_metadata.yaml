@@ -1,0 +1,252 @@
+plugin_name: go.d.plugin
+modules:
+  - meta:
+      plugin_name: go.d.plugin
+      module_name: vcsa
+      monitored_instance:
+        name: vCenter Server Appliance
+        link: https://docs.vmware.com/en/VMware-vSphere/6.5/com.vmware.vsphere.vcsa.doc/GUID-223C2821-BD98-4C7A-936B-7DBE96291BA4.html
+        icon_filename: vmware.png
+        categories:
+          - data-collection.containers-and-vms
+      keywords:
+        - vmware
+      related_resources:
+        integrations:
+          list: []
+      info_provided_to_referring_integrations:
+        description: ""
+      most_popular: false
+    overview:
+      data_collection:
+        metrics_description: |
+          This collector monitors [health statistics](https://developer.vmware.com/apis/vsphere-automation/latest/appliance/health/) of vCenter Server Appliance servers.
+        method_description: ""
+      supported_platforms:
+        include: []
+        exclude: []
+      multi-instance: true
+      additional_permissions:
+        description: ""
+      default_behavior:
+        auto_detection:
+          description: ""
+        limits:
+          description: ""
+        performance_impact:
+          description: ""
+    setup:
+      prerequisites:
+        list: []
+      configuration:
+        file:
+          name: "go.d/vcsa.conf"
+        options:
+          description: |
+            The following options can be defined globally: update_every, autodetection_retry.
+          folding:
+            title: Config options
+            enabled: true
+          list:
+            - name: update_every
+              description: Data collection frequency.
+              default_value: 5
+              required: false
+            - name: autodetection_retry
+              description: Re-check interval in seconds. Zero means not to schedule re-check.
+              default_value: 0
+              required: false
+            - name: url
+              description: Server URL.
+              default_value: ""
+              required: true
+            - name: timeout
+              description: HTTP request timeout.
+              default_value: 1
+              required: false
+            - name: username
+              description: Username for basic HTTP authentication.
+              default_value: ""
+              required: true
+            - name: password
+              description: Password for basic HTTP authentication.
+              default_value: ""
+              required: true
+            - name: proxy_url
+              description: Proxy URL.
+              default_value: ""
+              required: false
+            - name: proxy_username
+              description: Username for proxy basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: proxy_password
+              description: Password for proxy basic HTTP authentication.
+              default_value: ""
+              required: false
+            - name: method
+              description: HTTP request method.
+              default_value: GET
+              required: false
+            - name: body
+              description: HTTP request body.
+              default_value: ""
+              required: false
+            - name: headers
+              description: HTTP request headers.
+              default_value: ""
+              required: false
+            - name: not_follow_redirects
+              description: Redirect handling policy. Controls whether the client follows redirects.
+              default_value: false
+              required: false
+            - name: tls_skip_verify
+              description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
+              default_value: false
+              required: false
+            - name: tls_ca
+              description: Certification authority that the client uses when verifying the server's certificates.
+              default_value: ""
+              required: false
+            - name: tls_cert
+              description: Client TLS certificate.
+              default_value: ""
+              required: false
+            - name: tls_key
+              description: Client TLS key.
+              default_value: ""
+              required: false
+        examples:
+          folding:
+            title: Config
+            enabled: true
+          list:
+            - name: Basic
+              description: An example configuration.
+              config: |
+                jobs:
+                  - name: vcsa1
+                    url: https://203.0.113.1
+                    username: admin@vsphere.local
+                    password: password
+            - name: Multi-instance
+              description: |
+                > **Note**: When you define multiple jobs, their names must be unique.
+                
+                Two instances.
+              config: |
+                jobs:
+                  - name: vcsa1
+                    url: https://203.0.113.1
+                    username: admin@vsphere.local
+                    password: password
+                
+                  - name: vcsa2
+                    url: https://203.0.113.10
+                    username: admin@vsphere.local
+                    password: password
+    troubleshooting:
+      problems:
+        list: []
+    alerts:
+      - name: vcsa_system_health
+        metric: vcsa.system_health
+        info: overall system health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_swap_health
+        metric: vcsa.components_health
+        info: swap health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_storage_health
+        metric: vcsa.components_health
+        info: storage health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_mem_health
+        metric: vcsa.components_health
+        info: memory health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_load_health
+        metric: vcsa.components_health
+        info: load health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_database_storage_health
+        metric: vcsa.components_health
+        info: database storage health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_applmgmt_health
+        metric: vcsa.components_health
+        info: database storage health status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+      - name: vcsa_software_updates_health
+        metric: vcsa.components_health
+        info: software updates availability status
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf
+    metrics:
+      folding:
+        title: Metrics
+        enabled: false
+      description: ""
+      availability: []
+      scopes:
+        - name: global
+          description: |
+            These metrics refer to the entire monitored application.
+            <details>
+            <summary>See health statuses</summary>
+            Overall System Health:
+            
+            | Numeric |   Text    | Description                                                                                                              |
+            |:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|
+            |  `-1`   | `unknown` | Module failed to decode status.                                                                                          |
+            |   `0`   |  `green`  | All components in the appliance are healthy.                                                                             |
+            |   `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.                                                    |
+            |   `2`   | `orange`  | One or more components in the appliance might be degraded.                                                               |
+            |   `3`   |   `red`   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
+            |   `4`   |  `gray`   | No health data is available.                                                                                             |
+            
+            Components Health:
+            
+            | Numeric |   Text    | Description                                                  |
+            |:-------:|:---------:|:-------------------------------------------------------------|
+            |  `-1`   | `unknown` | Module failed to decode status.                              |
+            |   `0`   |  `green`  | The component is healthy.                                    |
+            |   `1`   | `yellow`  | The component is healthy, but may have some problems.        |
+            |   `2`   | `orange`  | The component is degraded, and may have serious problems.    |
+            |   `3`   |   `red`   | The component is unavailable, or will stop functioning soon. |
+            |   `4`   |  `gray`   | No health data is available.                                 |
+            
+            Software Updates Health:
+            
+            | Numeric |   Text    | Description                                          |
+            |:-------:|:---------:|:-----------------------------------------------------|
+            |  `-1`   | `unknown` | Module failed to decode status.                      |
+            |   `0`   |  `green`  | No updates available.                                |
+            |   `2`   | `orange`  | Non-security patches might be available.             |
+            |   `3`   |   `red`   | Security patches might be available.                 |
+            |   `4`   |  `gray`   | An error retrieving information on software updates. |
+            
+            </details>
+          labels: []
+          metrics:
+            - name: vcsa.system_health
+              description: Overall System Health
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: system
+            - name: vcsa.components_health
+              description: Components Health
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: applmgmt
+                - name: database_storage
+                - name: mem
+                - name: storage
+                - name: swap
+            - name: vcsa.software_updates_health
+              description: Software Updates Health
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: software_packages
