@@ -31,7 +31,7 @@ modules:
       supported_platforms:
         include: []
         exclude: []
-      multi-instance: true
+      multi_instance: true
       additional_permissions:
         description: Requires netdata user to be in the docker group.
       default_behavior:

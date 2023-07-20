@@ -27,7 +27,7 @@ modules:
         - sql
       most_popular: true
     overview:
-      multi-instance: true
+      multi_instance: true
       data_collection:
         metrics_description: |
           This collector monitors the activity and performance of Postgres servers, collects replication statistics, metrics for each database, table and index, and more.
