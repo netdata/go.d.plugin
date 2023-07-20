@@ -3562,3 +3562,771 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [Bobcat Exporter](https://github.com/pperzyna/bobcat_exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: BOSH
+        link: https://github.com/bosh-prometheus/bosh_exporter
+        icon_filename: bosh.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on BOSH deployment metrics for improved cloud orchestration and resource management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [BOSH exporter](https://github.com/bosh-prometheus/bosh_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [BOSH exporter](https://github.com/bosh-prometheus/bosh_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: bpftrace variables
+        link: https://github.com/andreasgerstmayr/bpftrace_exporter
+        icon_filename: bpftrace.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track bpftrace metrics for advanced performance analysis and troubleshooting.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [bpftrace exporter](https://github.com/andreasgerstmayr/bpftrace_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [bpftrace exporter](https://github.com/andreasgerstmayr/bpftrace_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: BungeeCord
+        link: https://github.com/weihao/bungeecord-prometheus-exporter
+        icon_filename: bungee.png
+        categories:
+          - data-collection.gaming
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track BungeeCord proxy server metrics for efficient load balancing and performance management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [BungeeCord Prometheus Exporter](https://github.com/weihao/bungeecord-prometheus-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [BungeeCord Prometheus Exporter](https://github.com/weihao/bungeecord-prometheus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Celery
+        link: https://github.com/ZeitOnline/celery_redis_prometheus
+        icon_filename: celery.png
+        categories:
+          - data-collection.task-queues
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Celery task queue metrics for optimized task processing and resource management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Celery Exporter](https://github.com/ZeitOnline/celery_redis_prometheus) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Celery Exporter](https://github.com/ZeitOnline/celery_redis_prometheus) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Checkpoint device
+        link: https://github.com/RespiroConsulting/CheckPointExporter
+        icon_filename: checkpoint.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Check Point firewall and security metrics for enhanced network protection and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Checkpoint exporter](https://github.com/RespiroConsulting/CheckPointExporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Checkpoint exporter](https://github.com/RespiroConsulting/CheckPointExporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Chia
+        link: https://github.com/chia-network/chia-exporter
+        icon_filename: chia.png
+        categories:
+          - data-collection.blockchain-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Chia blockchain metrics for optimized farming and resource allocation.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Chia Exporter](https://github.com/chia-network/chia-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Chia Exporter](https://github.com/chia-network/chia-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Christ Elektronik CLM5IP power panel
+        link: https://github.com/christmann/clm5ip_exporter/
+        icon_filename: christelec.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Christ Elektronik CLM5IP device metrics for efficient performance and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Christ Elektronik CLM5IP Exporter](https://github.com/christmann/clm5ip_exporter/) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Christ Elektronik CLM5IP Exporter](https://github.com/christmann/clm5ip_exporter/) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ClamAV daemon
+        link: https://github.com/sergeymakinen/clamav_exporter
+        icon_filename: clamav.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track ClamAV antivirus metrics for enhanced threat detection and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ClamAV daemon stats exporter](https://github.com/sergeymakinen/clamav_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ClamAV daemon stats exporter](https://github.com/sergeymakinen/clamav_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Clamscan results
+        link: https://github.com/FortnoxAB/clamscan-exporter
+        icon_filename: clamav.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor ClamAV scanning performance metrics for efficient malware detection and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [clamscan-exporter](https://github.com/FortnoxAB/clamscan-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [clamscan-exporter](https://github.com/FortnoxAB/clamscan-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Clash
+        link: https://github.com/elonzh/clash_exporter
+        icon_filename: clash.png
+        categories:
+          - data-collection.web-servers-and-web-proxies
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Clash proxy server metrics for optimized network performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Clash exporter](https://github.com/elonzh/clash_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Clash exporter](https://github.com/elonzh/clash_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cloud Foundry
+        link: https://github.com/bosh-prometheus/cf_exporter
+        icon_filename: cloud-foundry.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Cloud Foundry platform metrics for optimized application deployment and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cloud Foundry exporter](https://github.com/bosh-prometheus/cf_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cloud Foundry exporter](https://github.com/bosh-prometheus/cf_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cloud Foundry Firehose
+        link: https://github.com/bosh-prometheus/firehose_exporter
+        icon_filename: cloud-foundry.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Cloud Foundry Firehose metrics for comprehensive platform diagnostics and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cloud Foundry Firehose exporter](https://github.com/bosh-prometheus/firehose_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cloud Foundry Firehose exporter](https://github.com/bosh-prometheus/firehose_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Akami Cloudmonitor
+        link: https://github.com/ExpressenAB/cloudmonitor_exporter
+        icon_filename: akamai.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Akamai cloudmonitor provider metrics for comprehensive cloud performance management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cloudmonitor exporter](https://github.com/ExpressenAB/cloudmonitor_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cloudmonitor exporter](https://github.com/ExpressenAB/cloudmonitor_exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Lustre metadata
+        link: https://github.com/GSI-HPC/prometheus-cluster-exporter
+        icon_filename: lustre.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Lustre clustered file system for efficient management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cluster Exporter](https://github.com/GSI-HPC/prometheus-cluster-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cluster Exporter](https://github.com/GSI-HPC/prometheus-cluster-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ClusterControl CMON
+        link: https://github.com/severalnines/cmon_exporter
+        icon_filename: severalnines.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track CMON metrics for Severalnines Cluster Control for efficient monitoring and management of database operations.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [CMON Exporter](https://github.com/severalnines/cmon_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [CMON Exporter](https://github.com/severalnines/cmon_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Collectd
+        link: https://github.com/prometheus/collectd_exporter
+        icon_filename: collectd.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor system and application metrics with Collectd for comprehensive performance analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Collectd exporter](https://github.com/prometheus/collectd_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Collectd exporter](https://github.com/prometheus/collectd_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Shell command
+        link: https://github.com/tomwilkie/prom-run
+        icon_filename: crunner.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track custom command output metrics for tailored monitoring and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Command runner exporter](https://github.com/tomwilkie/prom-run) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Command runner exporter](https://github.com/tomwilkie/prom-run) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: CraftBeerPi
+        link: https://github.com/jo-hannes/craftbeerpi_exporter
+        icon_filename: craftbeer.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on CraftBeerPi homebrewing metrics for optimized brewing process management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [CraftBeerPi exporter](https://github.com/jo-hannes/craftbeerpi_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [CraftBeerPi exporter](https://github.com/jo-hannes/craftbeerpi_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Crypto exchanges
+        link: https://github.com/ix-ai/crypto-exporter
+        icon_filename: crypto.png
+        categories:
+          - data-collection.blockchain-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track cryptocurrency market metrics for informed investment and trading decisions.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Crypto exporter](https://github.com/ix-ai/crypto-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Crypto exporter](https://github.com/ix-ai/crypto-exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Cryptowatch
+        link: https://github.com/nbarrientos/cryptowat_exporter
+        icon_filename: cryptowatch.png
+        categories:
+          - data-collection.blockchain-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Cryptowatch market data metrics for comprehensive cryptocurrency market analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Cryptowat Exporter](https://github.com/nbarrientos/cryptowat_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Cryptowat Exporter](https://github.com/nbarrientos/cryptowat_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: CS:GO
+        link: https://github.com/kinduff/csgo_exporter
+        icon_filename: csgo.png
+        categories:
+          - data-collection.gaming
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Counter-Strike: Global Offensive server metrics for improved game performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [CS:GO Exporter](https://github.com/kinduff/csgo_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [CS:GO Exporter](https://github.com/kinduff/csgo_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Certificate Transparency
+        link: https://github.com/Hsn723/ct-exporter
+        icon_filename: ct.png
+        categories:
+          - data-collection.security-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track certificate transparency log metrics for enhanced
+          SSL/TLS certificate management and security.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ct-exporter](https://github.com/Hsn723/ct-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ct-exporter](https://github.com/Hsn723/ct-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Custom Exporter
+        link: https://github.com/orange-cloudfoundry/custom_exporter
+        icon_filename: customdata.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Create and monitor custom metrics tailored to your specific use case and requirements.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Custom Exporter](https://github.com/orange-cloudfoundry/custom_exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Custom Exporter](https://github.com/orange-cloudfoundry/custom_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: CVMFS clients
+        link: https://github.com/guilbaults/cvmfs-exporter
+        icon_filename: cvmfs.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track CernVM File System metrics for optimized distributed file system performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [CVMFS exporter](https://github.com/guilbaults/cvmfs-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [CVMFS exporter](https://github.com/guilbaults/cvmfs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: DDWRT Routers
+        link: https://github.com/camelusferus/ddwrt_collector
+        icon_filename: ddwrt.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on DD-WRT router metrics for efficient network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ddwrt-collector](https://github.com/camelusferus/ddwrt_collector) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ddwrt-collector](https://github.com/camelusferus/ddwrt_collector) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dell EMC XtremIO cluster
+        link: https://github.com/cthiel42/prometheus-xtremio-exporter
+        icon_filename: dell-emc.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Dell/EMC XtremIO storage metrics for optimized data management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Dell/EMC XtremIO Exporter](https://github.com/cthiel42/prometheus-xtremio-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Dell/EMC XtremIO Exporter](https://github.com/cthiel42/prometheus-xtremio-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dependency-Track
+        link: https://github.com/jetstack/dependency-track-exporter
+        icon_filename: dependency-track.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Dependency-Track metrics for efficient vulnerability management and software supply chain analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Dependency-Track Exporter](https://github.com/jetstack/dependency-track-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Dependency-Track Exporter](https://github.com/jetstack/dependency-track-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: DMARC
+        link: https://github.com/jgosmann/dmarc-metrics-exporter
+        icon_filename: dmarc.png
+        categories:
+          - data-collection.mail-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track DMARC email authentication metrics for improved email security and deliverability.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [dmarc-metrics-exporter](https://github.com/jgosmann/dmarc-metrics-exporter) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [dmarc-metrics-exporter](https://github.com/jgosmann/dmarc-metrics-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: DNSBL
+        link: https://github.com/Luzilla/dnsbl_exporter/
+        icon_filename: dns.png
+        categories:
+          - data-collection.dns-and-dhcp-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor DNSBL metrics for efficient domain reputation and security management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [dnsbl-exporter](https://github.com/Luzilla/dnsbl_exporter/) and parsing the response.
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [dnsbl-exporter](https://github.com/Luzilla/dnsbl_exporter/) by following the instructions mentioned in the exporter README.
+
