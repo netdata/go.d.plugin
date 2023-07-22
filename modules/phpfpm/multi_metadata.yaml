@@ -2,15 +2,15 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: phpdaemon
+      module_name: phpfpm
       monitored_instance:
-        name: phpDaemon
-        link: https://github.com/kakserpom/phpdaemon
-        icon_filename: php.png
+        name: PHP-FPM
+        link: https://php-fpm.org/
+        icon_filename: phpfpm.png
         categories:
-          - data-collection.apm
+          - data-collection.web-servers-and-web-proxies
       keywords:
-        - phpdaemon
+        - phpfpm
         - php
       related_resources:
         integrations:
@@ -21,7 +21,7 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors phpDaemon instances.
+          This collector monitors PHP-FPM instances.
         method_description: ""
       supported_platforms:
         include: []
@@ -39,83 +39,12 @@ modules:
     setup:
       prerequisites:
         list:
-          - title: Enable phpDaemon's HTTP server
+          - title: Enable status page
             description: |
-              Statistics expected to be in JSON format.
-              
-              <details>
-              <summary>phpDaemon configuration</summary>
-              
-              Instruction from [@METAJIJI](https://github.com/METAJIJI).
-              
-              To enable `phpd` statistics on http, you must enable the http server and write an application.
-              Application is important, because standalone application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php) provides statistics in html format and unusable for `netdata`.
-              
-              ```php
-              // /opt/phpdaemon/conf/phpd.conf
-              
-              path /opt/phpdaemon/conf/AppResolver.php;
-              Pool:HTTPServer {
-                  privileged;
-                  listen '127.0.0.1';
-                  port 8509;
-              }
-              ```
-              
-              ```php
-              // /opt/phpdaemon/conf/AppResolver.php
-              
-              <?php
-              
-              class MyAppResolver extends \PHPDaemon\Core\AppResolver {
-                  public function getRequestRoute($req, $upstream) {
-                      if (preg_match('~^/(ServerStatus|FullStatus)/~', $req->attrs->server['DOCUMENT_URI'], $m)) {
-                          return $m[1];
-                      }
-                  }
-              }
-              
-              return new MyAppResolver;
-              ```
-              
-              ```php
-              /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatus.php
-              
-              <?php
-              namespace PHPDaemon\Applications;
-              
-              class FullStatus extends \PHPDaemon\Core\AppInstance {
-                  public function beginRequest($req, $upstream) {
-                      return new FullStatusRequest($this, $upstream, $req);
-                  }
-              }
-              ```
-              
-              ```php
-              // /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatusRequest.php
-              
-              <?php
-              namespace PHPDaemon\Applications;
-              
-              use PHPDaemon\Core\Daemon;
-              use PHPDaemon\HTTPRequest\Generic;
-              
-              class FullStatusRequest extends Generic {
-                  public function run() {
-                      $stime = microtime(true);
-                      $this->header('Content-Type: application/javascript; charset=utf-8');
-              
-                      $stat = Daemon::getStateOfWorkers();
-                      $stat['uptime'] = time() - Daemon::$startTime;
-                      echo json_encode($stat);
-                  }
-              }
-              ```
-              
-              </details>
+              Uncomment the `pm.status_path = /status` variable in the `php-fpm` config file.
       configuration:
         file:
-          name: go.d/phpdaemon.conf
+          name: go.d/phpfpm.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
@@ -133,11 +62,23 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1:8509/FullStatus
+              default_value: http://127.0.0.1/status?full&json
               required: true
+            - name: socket
+              description: Server Unix socket.
+              default_value: ""
+              required: false
+            - name: address
+              description: Server address in IP:PORT format.
+              default_value: ""
+              required: false
+            - name: fcgi_path
+              description: Status path.
+              default_value: /status
+              required: false
             - name: timeout
               description: HTTP request timeout.
-              default_value: 2
+              default_value: 1
               required: false
             - name: username
               description: Username for basic HTTP authentication.
@@ -196,27 +137,24 @@ modules:
             title: Config
             enabled: true
           list:
-            - name: Basic
-              description: A basic example configuration.
+            - name: HTTP
+              description: Collecting data from a local instance over HTTP.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8509/FullStatus
-            - name: HTTP authentication
-              description: HTTP authentication.
+                    url: http://localhost/status?full&json
+            - name: Unix socket
+              description: Collecting data from a local instance over Unix socket.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8509/FullStatus
-                    username: username
-                    password: password
-            - name: HTTPS with self-signed certificate
-              description: HTTPS with self-signed certificate.
+                    socket: '/tmp/php-fpm.sock'
+            - name: TCP socket
+              description: Collecting data from a local instance over TCP socket.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8509/FullStatus
-                    tls_skip_verify: yes
+                    address: 127.0.0.1:9000
             - name: Multi-instance
               description: |
                 > **Note**: When you define multiple jobs, their names must be unique.
@@ -224,11 +162,11 @@ modules:
                 Collecting metrics from local and remote instances.
               config: |
                 jobs:
-                  - name: local
-                    url: http://127.0.0.1:8509/FullStatus
+                    - name: local
+                      url: http://localhost/status?full&json
                 
-                  - name: remote
-                    url: http://192.0.2.1:8509/FullStatus
+                    - name: remote
+                      url: http://203.0.113.10/status?full&json
     troubleshooting:
       problems:
         list: []
@@ -244,32 +182,48 @@ modules:
           description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: phpdaemon.workers
-              description: Workers
-              unit: workers
+            - name: phpfpm.connections
+              description: Active Connections
+              unit: connections
               chart_type: line
               dimensions:
-                - name: alive
-                - name: shutdown
-            - name: phpdaemon.alive_workers
-              description: Alive Workers State
-              unit: workers
-              chart_type: line
-              dimensions:
+                - name: active
+                - name: max_active
                 - name: idle
-                - name: busy
-                - name: reloading
-            - name: phpdaemon.idle_workers
-              description: Idle Workers State
-              unit: workers
+            - name: phpfpm.requests
+              description: Requests
+              unit: requests/s
               chart_type: line
               dimensions:
-                - name: preinit
-                - name: init
-                - name: initialized
-            - name: phpdaemon.uptime
-              description: Uptime
-              unit: seconds
+                - name: requests
+            - name: phpfpm.performance
+              description: Performance
+              unit: status
               chart_type: line
               dimensions:
-                - name: time
+                - name: max_children_reached
+                - name: slow_requests
+            - name: phpfpm.request_duration
+              description: Requests Duration Among All Idle Processes
+              unit: milliseconds
+              chart_type: line
+              dimensions:
+                - name: min
+                - name: max
+                - name: avg
+            - name: phpfpm.request_cpu
+              description: Last Request CPU Usage Among All Idle Processes
+              unit: percentage
+              chart_type: line
+              dimensions:
+                - name: min
+                - name: max
+                - name: avg
+            - name: phpfpm.request_mem
+              description: Last Request Memory Usage Among All Idle Processes
+              unit: KB
+              chart_type: line
+              dimensions:
+                - name: min
+                - name: max
+                - name: avg
