@@ -198,7 +198,7 @@ modules:
               description: |
                 > **Note**: Change the port of the monitored application on which it provides metrics.
 
-                 Do not validate server certificate chain and hostname.
+                Do not validate server certificate chain and hostname.
               config: |
                 jobs:
                   - name: local
