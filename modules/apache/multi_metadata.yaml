@@ -2,8 +2,8 @@ plugin_name: go.d.plugin
 modules:
   - &module
     meta: &meta
-      module_name: apache
       plugin_name: go.d.plugin
+      module_name: apache
       monitored_instance:
         name: Apache
         link: https://httpd.apache.org/
@@ -71,7 +71,7 @@ modules:
               default_value: 1
               required: false
             - name: autodetection_retry
-              description: Re-check interval in seconds. Zero means not to schedule re-check.
+              description: Recheck interval in seconds. Zero means no recheck will be scheduled.
               default_value: 0
               required: false
             - name: url

@@ -2,17 +2,16 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: traefik
+      module_name: powerdns
       monitored_instance:
-        name: Traefik
-        link: Traefik
-        icon_filename: traefik.png
+        name: PowerDNS Authoritative Server
+        link: https://doc.powerdns.com/authoritative/
+        icon_filename: powerdns.jpeg
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.dns-and-dhcp-servers
       keywords:
-        - traefik
-        - proxy
-        - webproxy
+        - powerdns
+        - dns
       related_resources:
         integrations:
           list: []
@@ -22,7 +21,12 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors Traefik servers.
+          This collector monitors PowerDNS Authoritative Server instances.
+          It collects metrics from [the internal webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver).
+          
+          Used endpoints:
+          
+          - [`/api/v1/servers/localhost/statistics`](https://doc.powerdns.com/authoritative/http-api/statistics.html)
         method_description: ""
       supported_platforms:
         include: []
@@ -40,17 +44,20 @@ modules:
     setup:
       prerequisites:
         list:
-          - title: Enable built-in Prometheus exporter
+          - title: Enable webserver
             description: |
-              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+              Follow [webserver](https://doc.powerdns.com/authoritative/http-api/index.html#webserver) documentation.
+          - title: Enable HTTP API
+            description: |
+              Follow [HTTP API](https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api) documentation.
       configuration:
         file:
-          name: go.d/traefik.conf
+          name: go.d/powerdns.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
           folding:
-            title: All options
+            title: Config options
             enabled: true
           list:
             - name: update_every
@@ -63,7 +70,7 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1:8082/metrics
+              default_value: http://127.0.0.1:8081
               required: true
             - name: timeout
               description: HTTP request timeout.
@@ -131,15 +138,15 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-            - name: Basic HTTP auth
-              description: Local server with basic HTTP authentication.
+                    url: http://127.0.0.1:8081
+            - name: HTTP authentication
+              description: Basic HTTP authentication.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-                    username: foo
-                    password: bar
+                    url: http://127.0.0.1:8081
+                    username: admin
+                    password: password
             - name: Multi-instance
               description: |
                 > **Note**: When you define multiple jobs, their names must be unique.
@@ -148,10 +155,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    http://127.0.0.1:8082/metrics
+                    url: http://127.0.0.1:8081
                 
                   - name: remote
-                    http://192.0.2.0:8082/metrics
+                    url: http://203.0.113.0:8081
     troubleshooting:
       problems:
         list: []
@@ -163,33 +170,45 @@ modules:
       description: ""
       availability: []
       scopes:
-        - name: entrypoint, protocol
-          description: These metrics refer to the endpoint.
+        - name: global
+          description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: traefik.entrypoint_requests
-              description: Processed HTTP requests
-              unit: requests/s
-              chart_type: stacked
+            - name: powerdns.questions_in
+              description: Incoming questions
+              unit: questions/s
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_request_duration_average
-              description: Average HTTP request processing time
-              unit: milliseconds
-              chart_type: stacked
+                - name: udp
+                - name: tcp
+            - name: powerdns.questions_out
+              description: Outgoing questions
+              unit: questions/s
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_open_connections
-              description: Open connections
-              unit: connections
-              chart_type: stacked
+                - name: udp
+                - name: tcp
+            - name: powerdns.cache_usage
+              description: Cache Usage
+              unit: events/s
+              chart_type: line
               dimensions:
-                - name: a dimension per HTTP method
+                - name: query-cache-hit
+                - name: query-cache-miss
+                - name: packetcache-hit
+                - name: packetcache-miss
+            - name: powerdns.cache_size
+              description: Cache Size
+              unit: entries
+              chart_type: line
+              dimensions:
+                - name: query-cache
+                - name: packet-cache
+                - name: key-cache
+                - name: meta-cache
+            - name: powerdns.latency
+              description: Answer latency
+              unit: microseconds
+              chart_type: line
+              dimensions:
+                - name: latency

@@ -2,19 +2,16 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: haproxy
+      module_name: phpdaemon
       monitored_instance:
-        name: HAProxy
-        link: https://www.haproxy.org/
-        icon_filename: haproxy.png
+        name: phpDaemon
+        link: https://github.com/kakserpom/phpdaemon
+        icon_filename: php.png
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.apm
       keywords:
-        - haproxy
-        - web
-        - webserver
-        - http
-        - proxy
+        - phpdaemon
+        - php
       related_resources:
         integrations:
           list: []
@@ -24,7 +21,7 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors HAProxy servers.
+          This collector monitors phpDaemon instances.
         method_description: ""
       supported_platforms:
         include: []
@@ -42,12 +39,83 @@ modules:
     setup:
       prerequisites:
         list:
-          - title: Enable PROMEX addon.
+          - title: Enable phpDaemon's HTTP server
             description: |
-              To enable PROMEX addon, follow the [official documentation](https://github.com/haproxy/haproxy/tree/master/addons/promex).
+              Statistics expected to be in JSON format.
+              
+              <details>
+              <summary>phpDaemon configuration</summary>
+              
+              Instruction from [@METAJIJI](https://github.com/METAJIJI).
+              
+              To enable `phpd` statistics on http, you must enable the http server and write an application.
+              Application is important, because standalone application [ServerStatus.php](https://github.com/kakserpom/phpdaemon/blob/master/PHPDaemon/Applications/ServerStatus.php) provides statistics in html format and unusable for `netdata`.
+              
+              ```php
+              // /opt/phpdaemon/conf/phpd.conf
+              
+              path /opt/phpdaemon/conf/AppResolver.php;
+              Pool:HTTPServer {
+                  privileged;
+                  listen '127.0.0.1';
+                  port 8509;
+              }
+              ```
+              
+              ```php
+              // /opt/phpdaemon/conf/AppResolver.php
+              
+              <?php
+              
+              class MyAppResolver extends \PHPDaemon\Core\AppResolver {
+                  public function getRequestRoute($req, $upstream) {
+                      if (preg_match('~^/(ServerStatus|FullStatus)/~', $req->attrs->server['DOCUMENT_URI'], $m)) {
+                          return $m[1];
+                      }
+                  }
+              }
+              
+              return new MyAppResolver;
+              ```
+              
+              ```php
+              /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatus.php
+              
+              <?php
+              namespace PHPDaemon\Applications;
+              
+              class FullStatus extends \PHPDaemon\Core\AppInstance {
+                  public function beginRequest($req, $upstream) {
+                      return new FullStatusRequest($this, $upstream, $req);
+                  }
+              }
+              ```
+              
+              ```php
+              // /opt/phpdaemon/conf/PHPDaemon/Applications/FullStatusRequest.php
+              
+              <?php
+              namespace PHPDaemon\Applications;
+              
+              use PHPDaemon\Core\Daemon;
+              use PHPDaemon\HTTPRequest\Generic;
+              
+              class FullStatusRequest extends Generic {
+                  public function run() {
+                      $stime = microtime(true);
+                      $this->header('Content-Type: application/javascript; charset=utf-8');
+              
+                      $stat = Daemon::getStateOfWorkers();
+                      $stat['uptime'] = time() - Daemon::$startTime;
+                      echo json_encode($stat);
+                  }
+              }
+              ```
+              
+              </details>
       configuration:
         file:
-          name: go.d/haproxy.conf
+          name: go.d/phpdaemon.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
@@ -65,11 +133,11 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1
+              default_value: http://127.0.0.1:8509/FullStatus
               required: true
             - name: timeout
               description: HTTP request timeout.
-              default_value: 1
+              default_value: 2
               required: false
             - name: username
               description: Username for basic HTTP authentication.
@@ -133,21 +201,21 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://127.0.0.1:8509/FullStatus
             - name: HTTP authentication
-              description: Basic HTTP authentication.
+              description: HTTP authentication.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://127.0.0.1:8509/FullStatus
                     username: username
                     password: password
             - name: HTTPS with self-signed certificate
-              description: NGINX Plus with enabled HTTPS and self-signed certificate.
+              description: HTTPS with self-signed certificate.
               config: |
                 jobs:
                   - name: local
-                    url: https://127.0.0.1:8404/metrics
+                    url: http://127.0.0.1:8509/FullStatus
                     tls_skip_verify: yes
             - name: Multi-instance
               description: |
@@ -157,10 +225,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://127.0.0.1:8509/FullStatus
                 
                   - name: remote
-                    url: http://192.0.2.1:8404/metrics
+                    url: http://192.0.2.1:8509/FullStatus
     troubleshooting:
       problems:
         list: []
@@ -176,55 +244,32 @@ modules:
           description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: haproxy.backend_current_sessions
-              description: Current number of active sessions
-              unit: sessions
+            - name: phpdaemon.workers
+              description: Workers
+              unit: workers
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_sessions
-              description: Sessions rate
-              unit: sessions/s
+                - name: alive
+                - name: shutdown
+            - name: phpdaemon.alive_workers
+              description: Alive Workers State
+              unit: workers
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_response_time_average
-              description: Average response time for last 1024 successful connections
-              unit: milliseconds
+                - name: idle
+                - name: busy
+                - name: reloading
+            - name: phpdaemon.idle_workers
+              description: Idle Workers State
+              unit: workers
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_queue_time_average
-              description: Average queue time for last 1024 successful connections
-              unit: milliseconds
+                - name: preinit
+                - name: init
+                - name: initialized
+            - name: phpdaemon.uptime
+              description: Uptime
+              unit: seconds
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_current_queue
-              description: Current number of queued requests
-              unit: requests
-              chart_type: line
-              dimensions:
-                - name: a dimension per proxy
-        - name: proxy
-          description: These metrics refer to the Proxy.
-          labels: []
-          metrics:
-            - name: haproxy.backend_http_responses
-              description: HTTP responses by code class
-              unit: responses/s
-              chart_type: stacked
-              dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-                - name: other
-            - name: haproxy.backend_network_io
-              description: Network traffic
-              unit: bytes/s
-              chart_type: area
-              dimensions:
-                - name: in
-                - name: out
+                - name: time

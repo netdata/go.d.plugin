@@ -9,7 +9,7 @@ modules:
         link: https://www.mysql.com/
         categories:
           - data-collection.database-servers
-        icon_filename: TODO
+        icon_filename: mysql.png
       related_resources:
         integrations:
           list:
@@ -100,7 +100,7 @@ modules:
               default_value: 5
               required: false
             - name: autodetection_retry
-              description: Re-check interval in seconds. Zero means not to schedule re-check.
+              description: Recheck interval in seconds. Zero means no recheck will be scheduled.
               default_value: 0
               required: false
             - name: dsn
@@ -137,7 +137,7 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    dsn: netdata:password@tcp(127.0.0.1:3306)/
+                    dsn: netconfig:password@tcp(127.0.0.1:3306)/
             - name: my.cnf
               description: An example configuration.
               config: |
@@ -155,7 +155,7 @@ modules:
                     dsn: netdata@tcp(127.0.0.1:3306)/
                 
                   - name: remote
-                    dsn: netdata:password@tcp(203.0.113.0:3306)/
+                    dsn: netconfig:password@tcp(203.0.113.0:3306)/
     troubleshooting:
       problems:
         list: []
@@ -788,7 +788,7 @@ modules:
       monitored_instance:
         name: MariaDB
         link: https://mariadb.org/
-        icon_filename: TODO
+        icon_filename: mariadb.png
         categories:
           - data-collection.database-servers
   - <<: *module
@@ -797,6 +797,6 @@ modules:
       monitored_instance:
         name: Percona MySQL
         link: https://www.percona.com/software/mysql-database/percona-server
-        icon_filename: TODO
+        icon_filename: mysql.png
         categories:
           - data-collection.database-servers

@@ -63,7 +63,7 @@ modules:
               default_value: 1
               required: false
             - name: autodetection_retry
-              description: Re-check interval in seconds. Zero means not to schedule re-check.
+              description: Recheck interval in seconds. Zero means no recheck will be scheduled.
               default_value: 0
               required: false
             - name: url
@@ -2103,7 +2103,6 @@ modules:
         icon_filename: mssql.png
         categories:
           - data-collection.windows-systems
-          - data-collection.database-servers
   - <<: *module
     meta:
       <<: *meta
@@ -2120,7 +2119,6 @@ modules:
         icon_filename: windows.png
         categories:
           - data-collection.windows-systems
-          - data-collection.containers-and-vms
   - <<: *module
     meta:
       <<: *meta
@@ -2135,7 +2133,6 @@ modules:
         icon_filename: windows.png
         categories:
           - data-collection.windows-systems
-          - data-collection.mail-servers
   - <<: *module
     meta:
       <<: *meta

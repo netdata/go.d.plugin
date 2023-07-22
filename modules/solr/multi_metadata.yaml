@@ -2,17 +2,15 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: traefik
+      module_name: solr
       monitored_instance:
-        name: Traefik
-        link: Traefik
-        icon_filename: traefik.png
+        name: Solr
+        link: https://lucene.apache.org/solr/
+        icon_filename: solr.png
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.search-engines
       keywords:
-        - traefik
-        - proxy
-        - webproxy
+        - solr
       related_resources:
         integrations:
           list: []
@@ -22,7 +20,7 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors Traefik servers.
+          This collector monitors Solr instances.
         method_description: ""
       supported_platforms:
         include: []
@@ -40,12 +38,12 @@ modules:
     setup:
       prerequisites:
         list:
-          - title: Enable built-in Prometheus exporter
+          - title: Solr version 6.4+
             description: |
-              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+              This collector does not work with Solr versions lower 6.4.
       configuration:
         file:
-          name: go.d/traefik.conf
+          name: go.d/solr.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
@@ -63,8 +61,20 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1:8082/metrics
+              default_value: http://127.0.0.1:8983
               required: true
+            - name: socket
+              description: Server Unix socket.
+              default_value: ""
+              required: false
+            - name: address
+              description: Server address in IP:PORT format.
+              default_value: ""
+              required: false
+            - name: fcgi_path
+              description: Status path.
+              default_value: /status
+              required: false
             - name: timeout
               description: HTTP request timeout.
               default_value: 1
@@ -131,13 +141,13 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
+                  url: http://localhost:8983
             - name: Basic HTTP auth
-              description: Local server with basic HTTP authentication.
+              description: Local Solr instance with basic HTTP authentication.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
+                    url: http://localhost:8983
                     username: foo
                     password: bar
             - name: Multi-instance
@@ -148,10 +158,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    http://127.0.0.1:8082/metrics
+                    url: http://localhost:8983
                 
                   - name: remote
-                    http://192.0.2.0:8082/metrics
+                    url: http://203.0.113.10:8983
     troubleshooting:
       problems:
         list: []
@@ -163,33 +173,95 @@ modules:
       description: ""
       availability: []
       scopes:
-        - name: entrypoint, protocol
-          description: These metrics refer to the endpoint.
+        - name: global
+          description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: traefik.entrypoint_requests
-              description: Processed HTTP requests
+            - name: solr.search_requests
+              description: Search Requests
               unit: requests/s
-              chart_type: stacked
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_request_duration_average
-              description: Average HTTP request processing time
+                - name: search
+            - name: solr.search_errors
+              description: Search Errors
+              unit: errors/s
+              chart_type: line
+              dimensions:
+                - name: errors
+            - name: solr.search_errors_by_type
+              description: Search Errors By Type
+              unit: errors/s
+              chart_type: line
+              dimensions:
+                - name: client
+                - name: server
+                - name: timeouts
+            - name: solr.search_requests_processing_time
+              description: Search Requests Processing Time
               unit: milliseconds
-              chart_type: stacked
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_open_connections
-              description: Open connections
-              unit: connections
-              chart_type: stacked
+                - name: time
+            - name: solr.search_requests_timings
+              description: Search Requests Timings
+              unit: milliseconds
+              chart_type: line
               dimensions:
-                - name: a dimension per HTTP method
+                - name: min
+                - name: median
+                - name: mean
+                - name: max
+            - name: solr.search_requests_processing_time_percentile
+              description: Search Requests Processing Time Percentile
+              unit: milliseconds
+              chart_type: line
+              dimensions:
+                - name: p75
+                - name: p95
+                - name: p99
+                - name: p999
+            - name: solr.update_requests
+              description: Update Requests
+              unit: requests/s
+              chart_type: line
+              dimensions:
+                - name: search
+            - name: solr.update_errors
+              description: Update Errors
+              unit: errors/s
+              chart_type: line
+              dimensions:
+                - name: errors
+            - name: solr.update_errors_by_type
+              description: Update Errors By Type
+              unit: errors/s
+              chart_type: line
+              dimensions:
+                - name: client
+                - name: server
+                - name: timeouts
+            - name: solr.update_requests_processing_time
+              description: Update Requests Processing Time
+              unit: milliseconds
+              chart_type: line
+              dimensions:
+                - name: time
+            - name: solr.update_requests_timings
+              description: Update Requests Timings
+              unit: milliseconds
+              chart_type: line
+              dimensions:
+                - name: min
+                - name: median
+                - name: mean
+                - name: max
+            - name: solr.update_requests_processing_time_percentile
+              description: Update Requests Processing Time Percentile
+              unit: milliseconds
+              chart_type: line
+              dimensions:
+                - name: p75
+                - name: p95
+                - name: p99
+                - name: p999

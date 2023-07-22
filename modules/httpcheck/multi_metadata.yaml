@@ -2,27 +2,25 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: traefik
+      module_name: httpcheck
       monitored_instance:
-        name: Traefik
-        link: Traefik
-        icon_filename: traefik.png
+        name: HTTP Endpoints
+        link: ""
+        icon_filename: globe.svg
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.synthetic-checks
       keywords:
-        - traefik
-        - proxy
-        - webproxy
+        - webserver
       related_resources:
         integrations:
           list: []
       info_provided_to_referring_integrations:
         description: ""
-      most_popular: false
+      most_popular: true
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors Traefik servers.
+          This collector monitors HTTP servers availability and response time.
         method_description: ""
       supported_platforms:
         include: []
@@ -39,18 +37,15 @@ modules:
           description: ""
     setup:
       prerequisites:
-        list:
-          - title: Enable built-in Prometheus exporter
-            description: |
-              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+        list: []
       configuration:
         file:
-          name: go.d/traefik.conf
+          name: go.d/httpcheck.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
           folding:
-            title: All options
+            title: Config options
             enabled: true
           list:
             - name: update_every
@@ -63,8 +58,20 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1:8082/metrics
+              default_value: ""
               required: true
+            - name: status_accepted
+              description: "HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart."
+              default_value: "[200]"
+              required: false
+            - name: response_match
+              description: If the status code is accepted, the content of the response will be matched against this regular expression.
+              default_value: ""
+              required: false
+            - name: cookie_file
+              description: Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat).
+              default_value: ""
+              required: false
             - name: timeout
               description: HTTP request timeout.
               default_value: 1
@@ -91,7 +98,7 @@ modules:
               required: false
             - name: method
               description: HTTP request method.
-              default_value: GET
+              default_value: "GET"
               required: false
             - name: body
               description: HTTP request body.
@@ -103,11 +110,11 @@ modules:
               required: false
             - name: not_follow_redirects
               description: Redirect handling policy. Controls whether the client follows redirects.
-              default_value: false
+              default_value: no
               required: false
             - name: tls_skip_verify
               description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-              default_value: false
+              default_value: no
               required: false
             - name: tls_ca
               description: Certification authority that the client uses when verifying the server's certificates.
@@ -127,31 +134,48 @@ modules:
             enabled: true
           list:
             - name: Basic
-              description: An example configuration.
+              description: A basic example configuration.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-            - name: Basic HTTP auth
-              description: Local server with basic HTTP authentication.
+                    url: http://127.0.0.1:8080
+            - name: With status_accepted
+              description: A basic example configuration with non-default status_accepted.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-                    username: foo
-                    password: bar
+                    url: http://127.0.0.1:8080
+                    status_accepted:
+                      - 200
+                      - 204
+            - name: HTTP authentication
+              description: Basic HTTP authentication.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    username: username
+                    password: password
+            - name: HTTPS with self-signed certificate
+              description: |
+                Do not validate server certificate chain and hostname.
+              config: |
+                jobs:
+                  - name: local
+                    url: https://127.0.0.1:8080
+                    tls_skip_verify: yes
             - name: Multi-instance
               description: |
                 > **Note**: When you define multiple jobs, their names must be unique.
                 
-                Local and remote instances.
+                Collecting metrics from local and remote instances.
               config: |
                 jobs:
                   - name: local
-                    http://127.0.0.1:8082/metrics
+                    url: http://127.0.0.1:8080
                 
                   - name: remote
-                    http://192.0.2.0:8082/metrics
+                    url: http://192.0.2.1:8080
     troubleshooting:
       problems:
         list: []
@@ -163,33 +187,37 @@ modules:
       description: ""
       availability: []
       scopes:
-        - name: entrypoint, protocol
-          description: These metrics refer to the endpoint.
-          labels: []
+        - name: target
+          description: The metrics refer to the monitored target.
+          labels:
+            - name: url
+              description: url value that is set in the configuration file.
           metrics:
-            - name: traefik.entrypoint_requests
-              description: Processed HTTP requests
-              unit: requests/s
-              chart_type: stacked
+            - name: httpcheck.response_time
+              description: HTTP Response Time
+              unit: ms
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_request_duration_average
-              description: Average HTTP request processing time
-              unit: milliseconds
-              chart_type: stacked
+                - name: time
+            - name: httpcheck.response_length
+              description: HTTP Response Body Length
+              unit: characters
+              chart_type: line
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_open_connections
-              description: Open connections
-              unit: connections
-              chart_type: stacked
+                - name: length
+            - name: httpcheck.status
+              description: HTTP Check Status
+              unit: boolean
+              chart_type: line
               dimensions:
-                - name: a dimension per HTTP method
+                - name: success
+                - name: no_connection
+                - name: timeout
+                - name: bad_content
+                - name: bad_status
+            - name: httpcheck.in_state
+              description: HTTP Current State Duration
+              unit: boolean
+              chart_type: line
+              dimensions:
+                - name: time

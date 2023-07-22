@@ -2,19 +2,15 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: haproxy
+      module_name: logstash
       monitored_instance:
-        name: HAProxy
-        link: https://www.haproxy.org/
-        icon_filename: haproxy.png
+        name: Logstash
+        link: https://www.elastic.co/products/logstash
+        icon_filename: elastic.png
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.logs-servers
       keywords:
-        - haproxy
-        - web
-        - webserver
-        - http
-        - proxy
+        - logstatsh
       related_resources:
         integrations:
           list: []
@@ -24,7 +20,7 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors HAProxy servers.
+          This collector monitors Logstash instances.
         method_description: ""
       supported_platforms:
         include: []
@@ -41,13 +37,10 @@ modules:
           description: ""
     setup:
       prerequisites:
-        list:
-          - title: Enable PROMEX addon.
-            description: |
-              To enable PROMEX addon, follow the [official documentation](https://github.com/haproxy/haproxy/tree/master/addons/promex).
+        list: []
       configuration:
         file:
-          name: go.d/haproxy.conf
+          name: go.d/logstatsh.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
@@ -65,7 +58,7 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1
+              default_value: http://localhost:9600
               required: true
             - name: timeout
               description: HTTP request timeout.
@@ -133,21 +126,21 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://localhost:9600
             - name: HTTP authentication
-              description: Basic HTTP authentication.
+              description: HTTP authentication.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://localhost:9600
                     username: username
                     password: password
             - name: HTTPS with self-signed certificate
-              description: NGINX Plus with enabled HTTPS and self-signed certificate.
+              description: HTTPS and self-signed certificate.
               config: |
                 jobs:
                   - name: local
-                    url: https://127.0.0.1:8404/metrics
+                    url: https://localhost:9600
                     tls_skip_verify: yes
             - name: Multi-instance
               description: |
@@ -157,10 +150,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8404/metrics
+                    url: http://localhost:9600
                 
                   - name: remote
-                    url: http://192.0.2.1:8404/metrics
+                    url: http://192.0.2.1:9600
     troubleshooting:
       problems:
         list: []
@@ -176,55 +169,105 @@ modules:
           description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: haproxy.backend_current_sessions
-              description: Current number of active sessions
-              unit: sessions
+            - name: logstash.jvm_threads
+              description: JVM Threads
+              unit: count
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_sessions
-              description: Sessions rate
-              unit: sessions/s
+                - name: threads
+            - name: logstash.jvm_mem_heap_used
+              description: JVM Heap Memory Percentage
+              unit: percentage
               chart_type: line
               dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_response_time_average
-              description: Average response time for last 1024 successful connections
-              unit: milliseconds
-              chart_type: line
-              dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_queue_time_average
-              description: Average queue time for last 1024 successful connections
-              unit: milliseconds
-              chart_type: line
-              dimensions:
-                - name: a dimension per proxy
-            - name: haproxy.backend_current_queue
-              description: Current number of queued requests
-              unit: requests
-              chart_type: line
-              dimensions:
-                - name: a dimension per proxy
-        - name: proxy
-          description: These metrics refer to the Proxy.
-          labels: []
-          metrics:
-            - name: haproxy.backend_http_responses
-              description: HTTP responses by code class
-              unit: responses/s
-              chart_type: stacked
-              dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-                - name: other
-            - name: haproxy.backend_network_io
-              description: Network traffic
-              unit: bytes/s
+                - name: in_use
+            - name: logstash.jvm_mem_heap
+              description: JVM Heap Memory
+              unit: KiB
               chart_type: area
               dimensions:
+                - name: committed
+                - name: used
+            - name: logstash.jvm_mem_pools_eden
+              description: JVM Pool Eden Memory
+              unit: KiB
+              chart_type: area
+              dimensions:
+                - name: committed
+                - name: used
+            - name: logstash.jvm_mem_pools_survivor
+              description: JVM Pool Survivor Memory
+              unit: KiB
+              chart_type: area
+              dimensions:
+                - name: committed
+                - name: used
+            - name: logstash.jvm_mem_pools_old
+              description: JVM Pool Old Memory
+              unit: KiB
+              chart_type: area
+              dimensions:
+                - name: committed
+                - name: used
+            - name: logstash.jvm_gc_collector_count
+              description: Garbage Collection Count
+              unit: counts/s
+              chart_type: line
+              dimensions:
+                - name: eden
+                - name: old
+            - name: logstash.jvm_gc_collector_time
+              description: Time Spent On Garbage Collection
+              unit: ms
+              chart_type: line
+              dimensions:
+                - name: eden
+                - name: old
+            - name: logstash.open_file_descriptors
+              description: Open File Descriptors
+              unit: fd
+              chart_type: line
+              dimensions:
+                - name: open
+            - name: logstash.event
+              description: Events Overview
+              unit: events/s
+              chart_type: line
+              dimensions:
                 - name: in
+                - name: filtered
                 - name: out
+            - name: logstash.event_duration
+              description: Events Duration
+              unit: seconds
+              chart_type: line
+              dimensions:
+                - name: event
+                - name: queue
+            - name: logstash.uptime
+              description: Uptime
+              unit: seconds
+              chart_type: line
+              dimensions:
+                - name: uptime
+        - name: pipeline
+          description: These metrics refer to the pipeline.
+          labels:
+            - name: pipeline
+              description: pipeline name
+          metrics:
+            - name: logstash.pipeline_event
+              description: Pipeline Events
+              unit: events/s
+              chart_type: line
+              dimensions:
+                - name: in
+                - name: filtered
+                - name: out
+            - name: logstash.pipeline_event
+              description: Pipeline Events Duration
+              unit: seconds
+              chart_type: line
+              dimensions:
+                - name: event
+                - name: queue

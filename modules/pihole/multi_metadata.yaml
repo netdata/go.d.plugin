@@ -2,17 +2,15 @@ plugin_name: go.d.plugin
 modules:
   - meta:
       plugin_name: go.d.plugin
-      module_name: traefik
+      module_name: pihole
       monitored_instance:
-        name: Traefik
-        link: Traefik
-        icon_filename: traefik.png
+        name: Pi-hole
+        link: https://pi-hole.net
+        icon_filename: pihole.png
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.dns-and-dhcp-servers
       keywords:
-        - traefik
-        - proxy
-        - webproxy
+        - pihole
       related_resources:
         integrations:
           list: []
@@ -22,7 +20,10 @@ modules:
     overview:
       data_collection:
         metrics_description: |
-          This collector monitors Traefik servers.
+          This collector monitors Pi-hole instances using [PHP API](https://github.com/pi-hole/AdminLTE).
+          
+          The data provided by the API is for the last 24 hours. All collected values refer to this time period and not to the
+          module's collection interval.
         method_description: ""
       supported_platforms:
         include: []
@@ -39,23 +40,20 @@ modules:
           description: ""
     setup:
       prerequisites:
-        list:
-          - title: Enable built-in Prometheus exporter
-            description: |
-              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+        list: []
       configuration:
         file:
-          name: go.d/traefik.conf
+          name: go.d/pihole.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
           folding:
-            title: All options
+            title: Config options
             enabled: true
           list:
             - name: update_every
               description: Data collection frequency.
-              default_value: 1
+              default_value: 5
               required: false
             - name: autodetection_retry
               description: Recheck interval in seconds. Zero means no recheck will be scheduled.
@@ -63,11 +61,15 @@ modules:
               required: false
             - name: url
               description: Server URL.
-              default_value: http://127.0.0.1:8082/metrics
+              default_value: http://127.0.0.1
               required: true
+            - name: setup_vars_path
+              description: Path to setupVars.conf. This file is used to get the web password.
+              default_value: /etc/pihole/setupVars.conf
+              required: false
             - name: timeout
               description: HTTP request timeout.
-              default_value: 1
+              default_value: 5
               required: false
             - name: username
               description: Username for basic HTTP authentication.
@@ -127,35 +129,44 @@ modules:
             enabled: true
           list:
             - name: Basic
-              description: An example configuration.
+              description: A basic example configuration.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-            - name: Basic HTTP auth
-              description: Local server with basic HTTP authentication.
+                    url: http://127.0.0.1
+            - name: HTTPS with self-signed certificate
+              description: Remote instance with enabled HTTPS and self-signed certificate.
               config: |
                 jobs:
                   - name: local
-                    url: http://127.0.0.1:8082/metrics
-                    username: foo
-                    password: bar
+                    url: https://203.0.113.11
+                    tls_skip_verify: yes
+                    password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b
             - name: Multi-instance
               description: |
                 > **Note**: When you define multiple jobs, their names must be unique.
                 
-                Local and remote instances.
+                Collecting metrics from local and remote instances.
               config: |
                 jobs:
                   - name: local
-                    http://127.0.0.1:8082/metrics
+                    url: http://127.0.0.1
                 
                   - name: remote
-                    http://192.0.2.0:8082/metrics
+                    url: http://203.0.113.10
+                    password: 1ebd33f882f9aa5fac26a7cb74704742f91100228eb322e41b7bd6e6aeb8f74b
     troubleshooting:
       problems:
         list: []
-    alerts: []
+    alerts:
+      - name: pihole_blocklist_last_update
+        metric: pihole.blocklist_last_update
+        info: "gravity.list (blocklist) file last update time"
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf
+      - name: pihole_status
+        metric: pihole.unwanted_domains_blocking_status
+        info: unwanted domains blocking is disabled
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf
     metrics:
       folding:
         title: Metrics
@@ -163,33 +174,74 @@ modules:
       description: ""
       availability: []
       scopes:
-        - name: entrypoint, protocol
-          description: These metrics refer to the endpoint.
+        - name: global
+          description: These metrics refer to the entire monitored application.
           labels: []
           metrics:
-            - name: traefik.entrypoint_requests
-              description: Processed HTTP requests
-              unit: requests/s
+            - name: pihole.dns_queries_total
+              description: DNS Queries Total (Cached, Blocked and Forwarded)
+              unit: queries
+              chart_type: line
+              dimensions:
+                - name: queries
+            - name: pihole.dns_queries
+              description: DNS Queries
+              unit: queries
               chart_type: stacked
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_request_duration_average
-              description: Average HTTP request processing time
-              unit: milliseconds
+                - name: cached
+                - name: blocked
+                - name: forwarded
+            - name: pihole.dns_queries_percentage
+              description: DNS Queries Percentage
+              unit: percentage
               chart_type: stacked
               dimensions:
-                - name: 1xx
-                - name: 2xx
-                - name: 3xx
-                - name: 4xx
-                - name: 5xx
-            - name: traefik.entrypoint_open_connections
-              description: Open connections
-              unit: connections
+                - name: cached
+                - name: blocked
+                - name: forwarded
+            - name: pihole.unique_clients
+              description: Unique Clients
+              unit: clients
+              chart_type: line
+              dimensions:
+                - name: unique
+            - name: pihole.domains_on_blocklist
+              description: Domains On Blocklist
+              unit: domains
+              chart_type: line
+              dimensions:
+                - name: blocklist
+            - name: pihole.blocklist_last_update
+              description: Blocklist Last Update
+              unit: seconds
+              chart_type: line
+              dimensions:
+                - name: ago
+            - name: pihole.unwanted_domains_blocking_status
+              description: Unwanted Domains Blocking Status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: enabled
+                - name: disabled
+            - name: pihole.dns_queries_types
+              description: DNS Queries Per Type
+              unit: percentage
               chart_type: stacked
               dimensions:
-                - name: a dimension per HTTP method
+                - name: a
+                - name: aaaa
+                - name: any
+                - name: ptr
+                - name: soa
+                - name: srv
+                - name: txt
+            - name: pihole.dns_queries_forwarded_destination
+              description: DNS Queries Per Destination
+              unit: percentage
+              chart_type: stacked
+              dimensions:
+                - name: cached
+                - name: blocked
+                - name: other

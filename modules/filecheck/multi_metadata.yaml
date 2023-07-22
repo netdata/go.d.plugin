@@ -38,7 +38,7 @@ modules:
           suggest [to use file access control lists](https://linux.die.net/man/1/setfacl):
           
           ```cmd
-          setfacl -m u:netdata:rx file ...
+          setfacl -m u:netconfig:rx file ...
           ``` 
 
           > **Warning**: For security reasons, this should not be applied recursively, but only to the exact set of directories
