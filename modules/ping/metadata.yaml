@@ -38,27 +38,27 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: hosts
           description: Network hosts.
-          default: ""
+          default_value: ""
           required: true
         - name: privileged
           description: Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping.
-          default: true
+          default_value: true
           required: false
         - name: packets
           description: Number of ping packets to send.
-          default: 5
+          default_value: 5
           required: false
         - name: interval
           description: Timeout between sending ping packets.
-          default: 100ms
+          default_value: 100ms
           required: false
     examples:
       folding:
@@ -67,7 +67,7 @@ setup:
       list:
         - name: IPv4 hosts
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: example
                 hosts:
@@ -75,7 +75,7 @@ setup:
                   - 192.0.2.1
         - name: Unprivileged mode
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: example
                 privileged: no
@@ -87,7 +87,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Multiple instances.
-          data: |
+          config: |
             jobs:
               - name: example1
                 hosts:

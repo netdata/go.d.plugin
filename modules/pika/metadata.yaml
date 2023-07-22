@@ -26,15 +26,15 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: address
           description: Pika server address.
-          default: redis://@localhost:9221
+          default_value: redis://@localhost:9221
           required: true
           details: |
             There are two connection types: by tcp socket and by unix socket.
@@ -43,31 +43,31 @@ setup:
             - Unix connection: `unix://<user>:<password>@</path/to/redis.sock>?db=<db_number>`
         - name: timeout
           description: Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds.
-          default: 1
+          default_value: 1
           required: false
         - name: username
           description: Username used for authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: password
           description: Password used for authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: false
+          default_value: false
           required: false
         - name: tls_ca
           description: Certificate authority that client use when verifying server certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client tls certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client tls key.
-          default: ""
+          default_value: ""
           required: false
     examples:
       folding:
@@ -76,13 +76,13 @@ setup:
       list:
         - name: TCP socket
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 'redis://@localhost:9221'
         - name: TCP socket with password
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 'redis://:password@127.0.0.1:9221'
@@ -91,7 +91,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 'redis://:password@127.0.0.1:9221'

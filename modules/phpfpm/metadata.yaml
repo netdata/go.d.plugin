@@ -24,83 +24,83 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: url
           description: Server URL.
-          default: http://127.0.0.1/status?full&json
+          default_value: http://127.0.0.1/status?full&json
           required: true
         - name: socket
           description: Server Unix socket.
-          default: ""
+          default_value: ""
           required: false
         - name: address
           description: Server address in IP:PORT format.
-          default: ""
+          default_value: ""
           required: false
         - name: fcgi_path
           description: Status path.
-          default: /status
+          default_value: /status
           required: false
         - name: timeout
           description: HTTP request timeout.
-          default: 1
+          default_value: 1
           required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_url
           description: Proxy URL.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: method
           description: HTTP request method.
-          default: GET
+          default_value: GET
           required: false
         - name: body
           description: HTTP request body.
-          default: ""
+          default_value: ""
           required: false
         - name: headers
           description: HTTP request headers.
-          default: ""
+          default_value: ""
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: false
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: false
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client TLS key.
-          default: ""
+          default_value: ""
           required: false
     examples:
       folding:
@@ -109,19 +109,19 @@ setup:
       list:
         - name: HTTP
           description: Collecting data from a local instance over HTTP.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://localhost/status?full&json
         - name: Unix socket
           description: Collecting data from a local instance over Unix socket.
-          data: |
+          config: |
             jobs:
               - name: local
                 socket: '/tmp/php-fpm.sock'
         - name: TCP socket
           description: Collecting data from a local instance over TCP socket.
-          data: |
+          config: |
             jobs:
               - name: local
                 address: 127.0.0.1:9000
@@ -130,7 +130,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Collecting metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
                 - name: local
                   url: http://localhost/status?full&json

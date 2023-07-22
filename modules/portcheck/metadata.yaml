@@ -19,23 +19,23 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: host
           description: Remote host address in IPv4, IPv6 format, or DNS name.
-          default: ""
+          default_value: ""
           required: true
         - name: ports
           description: Remote host ports. Must be specified in numeric format.
-          default: ""
+          default_value: ""
           required: true
         - name: timeout
           description: HTTP request timeout.
-          default: 2
+          default_value: 2
           required: false
     examples:
       folding:
@@ -44,7 +44,7 @@ setup:
       list:
         - name: Check SSH and telnet
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: server1
                 host: 127.0.0.1
@@ -53,7 +53,7 @@ setup:
                   - 23
         - name: Check webserver with IPv6 address
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: server2
                 host: "[2001:DB8::1]"
@@ -65,7 +65,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Multiple instances.
-          data: |
+          config: |
             jobs:
               - name: server1
                 host: 127.0.0.1

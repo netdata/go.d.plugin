@@ -29,19 +29,19 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: url
           description: Server URL.
-          default: http://127.0.0.1:9001/RPC2
+          default_value: http://127.0.0.1:9001/RPC2
           required: true
         - name: timeout
           description: System bus requests timeout.
-          default: 1
+          default_value: 1
           required: false
     examples:
       folding:
@@ -50,13 +50,13 @@ setup:
       list:
         - name: HTTP
           description: Collect metrics via HTTP.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: 'http://127.0.0.1:9001/RPC2'
         - name: Socket
           description: Collect metrics via Unix socket.
-          data: |
+          config: |
             - name: local
               url: 'unix:///run/supervisor.sock'
         - name: Multi-instance
@@ -64,7 +64,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Collect metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: 'http://127.0.0.1:9001/RPC2'

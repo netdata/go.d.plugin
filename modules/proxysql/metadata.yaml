@@ -20,23 +20,23 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: dsn
           description: Data Source Name. See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name).
-          default: stats:stats@tcp(127.0.0.1:6032)/
+          default_value: stats:stats@tcp(127.0.0.1:6032)/
           required: true
         - name: my.cnf
           description: Specifies my.cnf file to read connection parameters from under the [client] section.
-          default: ""
+          default_value: ""
           required: false
         - name: timeout
           description: Query timeout in seconds.
-          default: 1
+          default_value: 1
           required: false
     examples:
       folding:
@@ -45,13 +45,13 @@ setup:
       list:
         - name: TCP socket
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 dsn: stats:stats@tcp(127.0.0.1:6032)/
         - name: my.cnf
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 my.cnf: '/etc/my.cnf'
@@ -60,7 +60,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 dsn: stats:stats@tcp(127.0.0.1:6032)/

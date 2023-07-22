@@ -137,7 +137,7 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    dsn: netdata:password@tcp(127.0.0.1:3306)/
+                    dsn: netconfig:password@tcp(127.0.0.1:3306)/
             - name: my.cnf
               description: An example configuration.
               config: |
@@ -155,7 +155,7 @@ modules:
                     dsn: netdata@tcp(127.0.0.1:3306)/
                 
                   - name: remote
-                    dsn: netdata:password@tcp(203.0.113.0:3306)/
+                    dsn: netconfig:password@tcp(203.0.113.0:3306)/
     troubleshooting:
       problems:
         list: []

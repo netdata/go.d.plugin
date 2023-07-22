@@ -50,23 +50,23 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 5
+          default_value: 5
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: uri
           description: MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/).
-          default: mongodb://localhost:27017
+          default_value: mongodb://localhost:27017
           required: true
         - name: timeout
           description: Query timeout in seconds.
-          default: 2
+          default_value: 2
           required: false
         - name: databases
           description: Databases selector. Determines which database metrics will be collected.
-          default: ""
+          default_value: ""
           required: false
           details: |
             Metrics of databases matching the selector will be collected.
@@ -89,16 +89,16 @@ setup:
       list:
         - name: TCP socket
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
-                uri: mongodb://netdata:password@localhost:27017
+                uri: mongodb://netconfig:password@localhost:27017
         - name: With databases metrics
           description: An example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
-                uri: mongodb://netdata:password@localhost:27017
+                uri: mongodb://netconfig:password@localhost:27017
                 databases:
                   includes:
                     - "* *"
@@ -107,13 +107,13 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
-                uri: mongodb://netdata:password@localhost:27017
+                uri: mongodb://netconfig:password@localhost:27017
             
               - name: remote
-                uri: mongodb://netdata:password@203.0.113.0:27017
+                uri: mongodb://netconfig:password@203.0.113.0:27017
 troubleshooting:
   problems:
     list: []

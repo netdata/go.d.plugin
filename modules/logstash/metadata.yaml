@@ -21,71 +21,71 @@ setup:
       list:
         - name: update_every
           description: Data collection frequency.
-          default: 1
+          default_value: 1
           required: false
         - name: autodetection_retry
           description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-          default: 0
+          default_value: 0
           required: false
         - name: url
           description: Server URL.
-          default: http://localhost:9600
+          default_value: http://localhost:9600
           required: true
         - name: timeout
           description: HTTP request timeout.
-          default: 1
+          default_value: 1
           required: false
         - name: username
           description: Username for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: password
           description: Password for basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_url
           description: Proxy URL.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_username
           description: Username for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: proxy_password
           description: Password for proxy basic HTTP authentication.
-          default: ""
+          default_value: ""
           required: false
         - name: method
           description: HTTP request method.
-          default: GET
+          default_value: GET
           required: false
         - name: body
           description: HTTP request body.
-          default: ""
+          default_value: ""
           required: false
         - name: headers
           description: HTTP request headers.
-          default: ""
+          default_value: ""
           required: false
         - name: not_follow_redirects
           description: Redirect handling policy. Controls whether the client follows redirects.
-          default: false
+          default_value: false
           required: false
         - name: tls_skip_verify
           description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-          default: false
+          default_value: false
           required: false
         - name: tls_ca
           description: Certification authority that the client uses when verifying the server's certificates.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_cert
           description: Client TLS certificate.
-          default: ""
+          default_value: ""
           required: false
         - name: tls_key
           description: Client TLS key.
-          default: ""
+          default_value: ""
           required: false
     examples:
       folding:
@@ -94,13 +94,13 @@ setup:
       list:
         - name: Basic
           description: A basic example configuration.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://localhost:9600
         - name: HTTP authentication
           description: HTTP authentication.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://localhost:9600
@@ -108,7 +108,7 @@ setup:
                 password: password
         - name: HTTPS with self-signed certificate
           description: HTTPS and self-signed certificate.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: https://localhost:9600
@@ -118,7 +118,7 @@ setup:
             > **Note**: When you define multiple jobs, their names must be unique.
             
             Collecting metrics from local and remote instances.
-          data: |
+          config: |
             jobs:
               - name: local
                 url: http://localhost:9600
