@@ -8,7 +8,7 @@ modules:
         link: ""
         categories:
           - data-collection.synthetic-checks
-        icon_filename: TODO
+        icon_filename: lock.svg
       keywords:
         - x509
         - certificate
