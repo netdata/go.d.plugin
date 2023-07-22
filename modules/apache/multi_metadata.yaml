@@ -2,8 +2,8 @@ plugin_name: go.d.plugin
 modules:
   - &module
     meta: &meta
-      module_name: apache
       plugin_name: go.d.plugin
+      module_name: apache
       monitored_instance:
         name: Apache
         link: https://httpd.apache.org/
