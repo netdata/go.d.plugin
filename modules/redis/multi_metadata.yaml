@@ -8,7 +8,7 @@ modules:
         link: https://redis.com/
         categories:
           - data-collection.database-servers
-        icon_filename: TODO
+        icon_filename: redis.png
       related_resources:
         integrations:
           list:
@@ -20,9 +20,8 @@ modules:
       info_provided_to_referring_integrations:
         description: ""
       keywords:
-        - db
-        - database
-        - cache
+        - redis
+        - databases
       most_popular: true
     overview:
       data_collection:
