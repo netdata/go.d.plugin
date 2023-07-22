@@ -402,7 +402,7 @@ func (ks *KubeState) newNodeCharts(ns *nodeState) *module.Charts {
 
 func (ks *KubeState) newNodeChartLabels(ns *nodeState) []module.Label {
 	labels := []module.Label{
-		{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s},
+		{Key: labelKeyKind, Value: "node", Source: module.LabelSourceK8s}, // TODO: remove this label
 		{Key: labelKeyNodeName, Value: ns.name, Source: module.LabelSourceK8s},
 		{Key: labelKeyClusterID, Value: ks.kubeClusterID, Source: module.LabelSourceK8s},
 		{Key: labelKeyClusterName, Value: ks.kubeClusterName, Source: module.LabelSourceK8s},
@@ -598,8 +598,8 @@ func (ks *KubeState) newPodChartLabels(ps *podState) []module.Label {
 		{Key: labelKeyNamespace, Value: ps.namespace, Source: module.LabelSourceK8s},
 		{Key: labelKeyPodName, Value: ps.name, Source: module.LabelSourceK8s},
 		{Key: labelKeyNodeName, Value: ps.nodeName, Source: module.LabelSourceK8s},
-		{Key: labelKeyKind, Value: "pod", Source: module.LabelSourceK8s},
-		{Key: labelKeyPodUID, Value: ps.uid, Source: module.LabelSourceK8s},
+		{Key: labelKeyKind, Value: "pod", Source: module.LabelSourceK8s},    // TODO: remove
+		{Key: labelKeyPodUID, Value: ps.uid, Source: module.LabelSourceK8s}, // TODO: remove label
 		{Key: labelKeyQoSClass, Value: ps.qosClass, Source: module.LabelSourceK8s},
 		{Key: labelKeyControllerKind, Value: ps.controllerKind, Source: module.LabelSourceK8s},
 		{Key: labelKeyControllerName, Value: ps.controllerName, Source: module.LabelSourceK8s},
@@ -720,13 +720,13 @@ func (ks *KubeState) newContainerChartLabels(ps *podState, cs *containerState) [
 	labels := ks.newPodChartLabels(ps)
 	for i, v := range labels {
 		if v.Key == labelKeyKind {
-			labels[i].Value = "container"
+			labels[i].Value = "container" // TODO: remove
 			break
 		}
 	}
 	labels = append(labels, []module.Label{
 		{Key: labelKeyContainerName, Value: cs.name, Source: module.LabelSourceK8s},
-		{Key: labelKeyContainerID, Value: cs.uid, Source: module.LabelSourceK8s},
+		{Key: labelKeyContainerID, Value: cs.uid, Source: module.LabelSourceK8s}, // TODO: remove label
 	}...)
 	return labels
 }
