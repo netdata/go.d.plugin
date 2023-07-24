@@ -4,7 +4,7 @@ modules:
       plugin_name: go.d.plugin
       module_name: openvpn_status_log
       monitored_instance:
-        name: OpenVPN
+        name: OpenVPN status log
         link: https://openvpn.net/
         icon_filename: openvpn.png
         categories:
