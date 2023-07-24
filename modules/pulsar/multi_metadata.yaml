@@ -169,7 +169,10 @@ modules:
       folding:
         title: Metrics
         enabled: false
-      description: ""
+      description: |
+        - topic_* metrics are available when `exposeTopicLevelMetricsInPrometheus` is set to true.
+        - subscription_* and namespace_subscription metrics are available when `exposeTopicLevelMetricsInPrometheus` si set to true.
+        - replication_* and namespace_replication_* metrics are available when replication is configured and `replicationMetricsEnabled` is set to true.
       availability: []
       scopes:
         - name: global
