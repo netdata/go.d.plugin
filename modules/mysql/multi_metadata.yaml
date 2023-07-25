@@ -53,7 +53,7 @@ modules:
             - /var/lib/mysql/mysql.sock
             - /tmp/mysql.sock
             - 127.0.0.1:3306
-            - [::1]:3306
+            - "[::1]:3306"
         limits:
           description: ""
         performance_impact:
