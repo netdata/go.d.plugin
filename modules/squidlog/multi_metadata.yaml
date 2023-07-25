@@ -87,11 +87,11 @@ modules:
               required: true
             - name: exclude_path
               description: Path to exclude.
-              default_value: "*.gz".
+              default_value: "*.gz"
               required: false
             - name: parser
               description: Log parser configuration.
-              default_value: "".
+              default_value: ""
               required: false
             - name: parser.log_type
               description: Log parser type.
