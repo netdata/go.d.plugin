@@ -4330,3 +4330,266 @@ modules:
             description: |
               Install [dnsbl-exporter](https://github.com/Luzilla/dnsbl_exporter/) by following the instructions mentioned in the exporter README.
 
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Bird Routing Daemon
+        link: https://github.com/czerwonk/bird_exporter
+        icon_filename: bird.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Bird Routing Daemon metrics for optimized network routing and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Bird Routing Daemon Exporter](https://github.com/czerwonk/bird_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Bird Routing Daemon Exporter](https://github.com/czerwonk/bird_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Elgato Key Light devices.
+        link: https://github.com/mdlayher/keylight_exporter
+        icon_filename: elgato.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Elgato Key Light metrics for optimized lighting control and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Elgato Key Light exporter](https://github.com/mdlayher/keylight_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Elgato Key Light exporter](https://github.com/mdlayher/keylight_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Energomera smart power meters
+        link: https://github.com/peak-load/energomera_exporter
+        icon_filename: energomera.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Energomera electricity meter metrics for efficient energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Energomera electricity meter exporter](https://github.com/peak-load/energomera_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [energomera-exporter Energomera electricity meter exporter](https://github.com/peak-load/energomera_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Excel spreadsheet
+        link: https://github.com/MarcusCalidus/excel-exporter
+        icon_filename: excel.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Export Prometheus metrics to Excel for versatile data analysis and reporting.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Excel Exporter](https://github.com/MarcusCalidus/excel-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Excel Exporter](https://github.com/MarcusCalidus/excel-exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Fastd
+        link: https://github.com/freifunk-darmstadt/fastd-exporter
+        icon_filename: fastd.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Fastd VPN metrics for efficient virtual private network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Fastd Exporter](https://github.com/freifunk-darmstadt/fastd-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Fastd Exporter](https://github.com/freifunk-darmstadt/fastd-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Freifunk network
+        link: https://github.com/xperimental/freifunk-exporter
+        icon_filename: freifunk.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Freifunk community network metrics for optimized network performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Freifunk Exporter](https://github.com/xperimental/freifunk-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Freifunk Exporter](https://github.com/xperimental/freifunk-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Fritzbox network devices
+        link: https://github.com/pdreker/fritz_exporter
+        icon_filename: avm.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track AVM Fritzbox router metrics for efficient home network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Fritzbox exporter](https://github.com/pdreker/fritz_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Fritzbox exporter](https://github.com/pdreker/fritz_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: FRRouting
+        link: https://github.com/tynany/frr_exporter
+        icon_filename: frrouting.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Free Range Routing  (FRR) metrics for optimized network routing and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [FRRouting Exporter](https://github.com/tynany/frr_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [FRRouting Exporter](https://github.com/tynany/frr_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Generic Command Line Output
+        link: https://github.com/MarioMartReq/generic-exporter
+        icon_filename: cli.jpeg
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track custom command line output metrics for tailored monitoring and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Generic Command Line Output Exporter](https://github.com/MarioMartReq/generic-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Generic Command Line Output Exporter](https://github.com/MarioMartReq/generic-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: GitHub API rate limit
+        link: https://github.com/lunarway/github-ratelimit-exporter
+        icon_filename: github.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor GitHub API rate limit metrics for efficient
+          API usage and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [GitHub API rate limit Exporter](https://github.com/lunarway/github-ratelimit-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [GitHub API rate limit Exporter](https://github.com/lunarway/github-ratelimit-exporter) by following the instructions mentioned in the exporter README.
