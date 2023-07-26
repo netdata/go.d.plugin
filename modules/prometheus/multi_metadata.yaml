@@ -5357,3 +5357,695 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [Machbase Exporter](https://github.com/MACHBASE/prometheus-machbase-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Maildir
+        link: https://github.com/cherti/mailexporter
+        icon_filename: mailexporter.png
+        categories:
+          - data-collection.mail-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track mail server metrics for optimized email management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [mailexporter](https://github.com/cherti/mailexporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [mailexporter](https://github.com/cherti/mailexporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Meilisearch
+        link: https://github.com/scottaglia/meilisearch_exporter
+        icon_filename: meilisearch.png
+        categories:
+          - data-collection.search-engines
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Meilisearch search engine metrics for efficient search performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Meilisearch Exporter](https://github.com/scottaglia/meilisearch_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Meilisearch Exporter](https://github.com/scottaglia/meilisearch_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Memcached
+        link: https://github.com/prometheus/memcached_exporter
+        icon_filename: Memcached-Logo.wine.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Memcached in-memory key-value store metrics for efficient caching performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Memcached exporter](https://github.com/prometheus/memcached_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Memcached exporter](https://github.com/prometheus/memcached_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Meraki dashboard
+        link: https://github.com/TheHolm/meraki-dashboard-promethus-exporter
+        icon_filename: meraki.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Cisco Meraki cloud-managed networking device metrics for efficient network management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Meraki dashboard data exporter using API](https://github.com/TheHolm/meraki-dashboard-promethus-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Meraki dashboard data exporter using API](https://github.com/TheHolm/meraki-dashboard-promethus-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Mesos
+        link: http://github.com/mesosphere/mesos_exporter
+        icon_filename: mesos.png
+        categories:
+          - data-collection.provisioning-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Apache Mesos cluster manager metrics for efficient resource management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Mesos exporter](http://github.com/mesosphere/mesos_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Mesos exporter](http://github.com/mesosphere/mesos_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Xiaomi Mi Flora
+        link: https://github.com/xperimental/flowercare-exporter
+        icon_filename: xiaomi.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on MiFlora plant monitor metrics for efficient plant care and growth management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [MiFlora / Flower Care Exporter](https://github.com/xperimental/flowercare-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [MiFlora / Flower Care Exporter](https://github.com/xperimental/flowercare-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Modbus protocol
+        link: https://github.com/dernasherbrezon/modbusrtu_exporter
+        icon_filename: modbus.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - database
+        - dbms
+        - data storage
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Modbus RTU protocol metrics for efficient industrial automation and control performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [modbusrtu_exporter](https://github.com/dernasherbrezon/modbusrtu_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [modbusrtu_exporter](https://github.com/dernasherbrezon/modbusrtu_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: MogileFS
+        link: https://github.com/KKBOX/mogilefs-exporter
+        icon_filename: mogilefs.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor MogileFS distributed file system metrics for efficient storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [MogileFS Exporter](https://github.com/KKBOX/mogilefs-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [MogileFS Exporter](https://github.com/KKBOX/mogilefs-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Monnit Sensors MQTT
+        link: https://github.com/braxton9460/monnit-mqtt-exporter
+        icon_filename: monnit.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Monnit sensor data via MQTT for efficient IoT device monitoring and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Monnit Sensors MQTT Exporter WIP](https://github.com/braxton9460/monnit-mqtt-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Monnit Sensors MQTT Exporter WIP](https://github.com/braxton9460/monnit-mqtt-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: mtail
+        link: https://github.com/google/mtail
+        icon_filename: mtail.png
+        categories:
+          - data-collection.logs-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor log data metrics using mtail log data extractor and parser.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [mtail](https://github.com/google/mtail).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [mtail](https://github.com/google/mtail) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Naemon
+        link: https://github.com/Griesbacher/Iapetos
+        icon_filename: naemon.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Naemon or Nagios network monitoring metrics for efficient IT infrastructure management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Naemon / Nagios Exporter](https://github.com/Griesbacher/Iapetos).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Naemon / Nagios Exporter](https://github.com/Griesbacher/Iapetos) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Nagios
+        link: https://github.com/wbollock/nagios_exporter
+        icon_filename: nagios.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Nagios network monitoring metrics for efficient
+          IT infrastructure management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Nagios exporter](https://github.com/wbollock/nagios_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Nagios exporter](https://github.com/wbollock/nagios_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Nature Remo E lite devices
+        link: https://github.com/kenfdev/remo-exporter
+        icon_filename: nature-remo.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Nature Remo E series smart home device metrics for efficient home automation and energy management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Nature Remo E series Exporter](https://github.com/kenfdev/remo-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Nature Remo E series Exporter](https://github.com/kenfdev/remo-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Netatmo sensors
+        link: https://github.com/xperimental/netatmo-exporter
+        icon_filename: netatmo.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Netatmo smart home device metrics for efficient home automation and energy management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Netatmo exporter](https://github.com/xperimental/netatmo-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Netatmo exporter](https://github.com/xperimental/netatmo-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NetFlow
+        link: https://github.com/paihu/netflow_exporter
+        icon_filename: netflow.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords:
+        - network monitoring
+        - network performance
+        - traffic analysis
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track NetFlow network traffic metrics for efficient network monitoring and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [netflow exporter](https://github.com/paihu/netflow_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [netflow exporter](https://github.com/paihu/netflow_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Nextcloud servers
+        link: https://github.com/xperimental/nextcloud-exporter
+        icon_filename: nextcloud.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords:
+        - cloud services
+        - cloud computing
+        - scalability
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Nextcloud cloud storage metrics for efficient file hosting and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Nextcloud exporter](https://github.com/xperimental/nextcloud-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Nextcloud exporter](https://github.com/xperimental/nextcloud-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NextDNS
+        link: https://github.com/raylas/nextdns-exporter
+        icon_filename: nextdns.png
+        categories:
+          - data-collection.dns-and-dhcp-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track NextDNS DNS resolver and security platform metrics for efficient DNS management and security.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [nextdns-exporter](https://github.com/raylas/nextdns-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [nextdns-exporter](https://github.com/raylas/nextdns-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: nftables
+        link: https://github.com/Sheridan/nftables_exporter
+        icon_filename: nftables.png
+        categories:
+          - data-collection.linux-systems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor nftables firewall metrics for efficient network security and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [nftables_exporter](https://github.com/Sheridan/nftables_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [nftables_exporter](https://github.com/Sheridan/nftables_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: IBM AIX systems Njmon
+        link: https://github.com/crooks/njmon_exporter
+        icon_filename: ibm-logo.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on NJmon system performance monitoring metrics for efficient IT infrastructure management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NJmon](https://github.com/crooks/njmon_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NJmon](https://github.com/crooks/njmon_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NRPE daemon
+        link: https://github.com/canonical/nrpe_exporter
+        icon_filename: nrpelinux.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Nagios Remote Plugin Executor (NRPE) metrics for efficient system and network monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NRPE exporter](https://github.com/canonical/nrpe_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NRPE exporter](https://github.com/canonical/nrpe_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: MikroTik devices
+        link: https://github.com/swoga/mikrotik-exporter
+        icon_filename: mikrotik.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on MikroTik RouterOS metrics for efficient network device management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [mikrotik-exporter](https://github.com/swoga/mikrotik-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [nshttpd/mikrotik-exporter, swoga/m](https://github.com/swoga/mikrotik-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NSX-T
+        link: https://github.com/jk8s/nsxt_exporter
+        icon_filename: vmware-nsx-t.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track VMware NSX-T software-defined networking metrics for efficient network virtualization and security management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NSX-T Exporter](https://github.com/jk8s/nsxt_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NSX-T Exporter](https://github.com/jk8s/nsxt_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NUT
+        link: https://github.com/HON95/prometheus-nut-exporter
+        icon_filename: nut_ups.png
+        categories:
+          - data-collection.ups
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Network UPS Tools (NUT) metrics for efficient uninterruptible power supply management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NUT Exporter](https://github.com/HON95/prometheus-nut-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NUT Exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: NVML
+        link: https://github.com/oko/nvml-exporter-rs
+        icon_filename: nvml.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on NVIDIA Management Library (NVML) GPU metrics for efficient GPU performance and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [NVML exporter](https://github.com/oko/nvml-exporter-rs).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [NVML exporter](https://github.com/oko/nvml-exporter-rs) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: OBS Studio
+        link: https://github.com/lukegb/obs_studio_exporter
+        icon_filename: obs-studio.png
+        categories:
+          - data-collection.media-streaming-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track OBS Studio live streaming and recording software metrics for efficient video production and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [OBS Studio Exporter](https://github.com/lukegb/obs_studio_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [OBS Studio Exporter](https://github.com/lukegb/obs_studio_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ODBC
+        link: https://github.com/MACHBASE/prometheus-odbc-exporter
+        icon_filename: odbc.png
+        categories:
+          - data-collection.database-servers
+      keywords:
+        - database
+        - dbms
+        - data storage
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Open Database Connectivity (ODBC) metrics for efficient database connection and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ODBC Exporter](https://github.com/MACHBASE/prometheus-odbc-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ODBC Exporter](https://github.com/MACHBASE/prometheus-odbc-exporter) by following the instructions mentioned in the exporter README.
