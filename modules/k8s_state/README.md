@@ -30,10 +30,9 @@ All metrics have "k8s_state." prefix.
 
 Labels per scope:
 
-- node: k8s_kind, k8s_cluster_id, k8s_cluster_name, k8s_node_name.
-- pod: all node scope labels + k8s_namespace, k8s_controller_kind, k8s_controller_name, k8s_pod_uid, k8s_pod_name,
-  k8s_qos_class.
-- container: all node/pod scope labels + k8s_container_id, k8s_container_name.
+- node: k8s_cluster_id, k8s_cluster_name, k8s_node_name.
+- pod: all node scope labels + k8s_namespace, k8s_controller_kind, k8s_controller_name, k8s_pod_name, k8s_qos_class.
+- container: all node/pod scope labels + k8s_container_name.
 
 > 'k8s_cluster_id' value is 'kube-system' namespace UID. 'k8s_cluster_name' currently only appears when running
 > on [GKE](https://cloud.google.com/kubernetes-engine).
