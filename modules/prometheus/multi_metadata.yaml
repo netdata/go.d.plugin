@@ -6267,3 +6267,629 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [P1Exporter - Dutch Electricity Smart Meter Exporter](https://github.com/TobiasDeBruijn/prometheus-p1-exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Patroni
+        link: https://github.com/gopaytech/patroni_exporter
+        icon_filename: patroni.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Patroni PostgreSQL high-availability metrics for efficient database management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Patroni Exporter](https://github.com/gopaytech/patroni_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Patroni Exporter](https://github.com/gopaytech/patroni_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Personal Weather Station
+        link: https://github.com/JohnOrthoefer/pws-exporter
+        icon_filename: wunderground.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track personal weather station metrics for efficient weather monitoring and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Personal Weather Station Exporter](https://github.com/JohnOrthoefer/pws-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Personal Weather Station Exporter](https://github.com/JohnOrthoefer/pws-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: pgBackRest
+        link: https://github.com/woblerr/pgbackrest_exporter
+        icon_filename: pgbackrest.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor pgBackRest PostgreSQL backup metrics for efficient database backup and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [pgBackRest Exporter](https://github.com/woblerr/pgbackrest_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [pgBackRest Exporter](https://github.com/woblerr/pgbackrest_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Pgpool-II
+        link: https://github.com/pgpool/pgpool2_exporter
+        icon_filename: pgpool2.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Pgpool-II PostgreSQL middleware metrics for efficient database connection management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Pgpool-II Exporter](https://github.com/pgpool/pgpool2_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Pgpool-II Exporter](https://github.com/pgpool/pgpool2_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Pimoroni Enviro+
+        link: https://github.com/terradolor/prometheus-enviro-exporter
+        icon_filename: pimorino.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Pimoroni Enviro+ air quality and environmental metrics for efficient environmental monitoring and analysis.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Pimoroni Enviro+ Exporter](https://github.com/terradolor/prometheus-enviro-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Pimoroni Enviro+ Exporter](https://github.com/terradolor/prometheus-enviro-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Pingdom
+        link: https://github.com/veepee-oss/pingdom_exporter
+        icon_filename: pingdom.png
+        categories:
+          - data-collection.synthetic-checks
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Pingdom website monitoring service metrics for efficient website performance management and diagnostics.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Pingdom Exporter](https://github.com/veepee-oss/pingdom_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Pingdom Exporter](https://github.com/veepee-oss/pingdom_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Dell PowerMax
+        link: https://github.com/kckecheng/powermax_exporter
+        icon_filename: powermax.png
+        categories:
+          - data-collection.storage-mount-points-and-filesystems
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Dell EMC PowerMax storage array metrics for efficient storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [PowerMax Exporter](https://github.com/kckecheng/powermax_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [PowerMax Exporter](https://github.com/kckecheng/powermax_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Powerpal devices
+        link: https://github.com/aashley/powerpal_exporter
+        icon_filename: powerpal.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Powerpal smart meter metrics for efficient energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Powerpal Exporter](https://github.com/aashley/powerpal_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Powerpal Exporter](https://github.com/aashley/powerpal_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ProFTPD
+        link: https://github.com/transnano/proftpd_exporter
+        icon_filename: proftpd.png
+        categories:
+          - data-collection.ftp-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor ProFTPD FTP server metrics for efficient file transfer and server performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ProFTPD Exporter](https://github.com/transnano/proftpd_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ProFTPD Exporter](https://github.com/transnano/proftpd_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Eaton UPS
+        link: https://github.com/psyinfra/prometheus-eaton-ups-exporter
+        icon_filename: eaton.jpg
+        categories:
+          - data-collection.ups
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Eaton uninterruptible power supply (UPS) metrics for efficient power management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Prometheus Eaton UPS Exporter](https://github.com/psyinfra/prometheus-eaton-ups-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Prometheus Eaton UPS Exporter](https://github.com/psyinfra/prometheus-eaton-ups-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Redis Queue
+        link: https://github.com/mdawar/rq-exporter
+        icon_filename: rq.png
+        categories:
+          - data-collection.message-brokers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Python RQ (Redis Queue) job queue metrics for efficient task management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Python RQ Exporter](https://github.com/mdawar/rq-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Python RQ Exporter](https://github.com/mdawar/rq-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Radio Thermostat
+        link: https://github.com/andrewlow/radio-thermostat-exporter
+        icon_filename: radiots.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Radio Thermostat smart thermostat metrics for efficient home automation and energy management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Radio Thermostat Exporter](https://github.com/andrewlow/radio-thermostat-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Radio Thermostat Exporter](https://github.com/andrewlow/radio-thermostat-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Rancher
+        link: https://github.com/infinityworksltd/prometheus-rancher-exporter
+        icon_filename: rancher.png
+        categories:
+          - data-collection.kubernetes
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Rancher container orchestration platform metrics for efficient container management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Rancher Exporter](https://github.com/infinityworksltd/prometheus-rancher-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Rancher Exporter](https://github.com/infinityworksltd/prometheus-rancher-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Raritan PDU
+        link: https://github.com/psyinfra/prometheus-raritan-pdu-exporter
+        icon_filename: raritan.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Raritan Power Distribution Unit (PDU) metrics for efficient power management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Raritan PDU Exporter](https://github.com/psyinfra/prometheus-raritan-pdu-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Raritan PDU Exporter](https://github.com/psyinfra/prometheus-raritan-pdu-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Mikrotik RouterOS devices
+        link: https://github.com/welbymcroberts/routeros_exporter
+        icon_filename: routeros.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track MikroTik RouterOS metrics for efficient network device management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [RouterOS exporter](https://github.com/welbymcroberts/routeros_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [RouterOS exporter](https://github.com/welbymcroberts/routeros_exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: SABnzbd
+        link: https://github.com/msroest/sabnzbd_exporter
+        icon_filename: sabnzbd.png
+        categories:
+          - data-collection.media-streaming-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor SABnzbd Usenet client metrics for efficient file downloads and resource management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [SABnzbd Exporter](https://github.com/msroest/sabnzbd_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [SABnzbd Exporter](https://github.com/msroest/sabnzbd_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Salicru EQX inverter
+        link: https://github.com/alejandroscf/prometheus_salicru_exporter
+        icon_filename: salicru.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Salicru EQX solar inverter metrics for efficient solar energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Salicru EQX inverter](https://github.com/alejandroscf/prometheus_salicru_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Salicru EQX inverter](https://github.com/alejandroscf/prometheus_salicru_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Sense Energy
+        link: https://github.com/ejsuncy/sense_energy_prometheus_exporter
+        icon_filename: sense.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep tabs on Sense Energy smart meter metrics for efficient energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Sense Energy exporter](https://github.com/ejsuncy/sense_energy_prometheus_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Sense Energy exporter](https://github.com/ejsuncy/sense_energy_prometheus_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: ServerTech
+        link: https://github.com/tynany/servertech_exporter
+        icon_filename: servertech.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Keep an eye on Server Technology power distribution unit (PDU) metrics for efficient power management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [ServerTech Exporter](https://github.com/tynany/servertech_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [ServerTech Exporter](https://github.com/tynany/servertech_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Shelly humidity sensor
+        link: https://github.com/aexel90/shelly_exporter
+        icon_filename: shelly.jpg
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Shelly smart home device metrics for efficient home automation and energy management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Shelly Exporter](https://github.com/aexel90/shelly_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Shelly Exporter](https://github.com/aexel90/shelly_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Sia
+        link: https://github.com/tbenz9/sia_exporter
+        icon_filename: sia.png
+        categories:
+          - data-collection.blockchain-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Sia decentralized storage platform metrics for efficient storage management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Sia Exporter](https://github.com/tbenz9/sia_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Sia Exporter](https://github.com/tbenz9/sia_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Siemens S7 PLC
+        link: https://github.com/MarcusCalidus/s7-plc-exporter
+        icon_filename: siemens.png
+        categories:
+          - data-collection.hardware-devices-and-sensors
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Siemens S7 Programmable Logic Controller (PLC) metrics for efficient industrial automation and control.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Siemens S7 PLC exporter](https://github.com/MarcusCalidus/s7-plc-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Siemens S7 PLC exporter](https://github.com/MarcusCalidus/s7-plc-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Site 24x7
+        link: https://github.com/svenstaro/site24x7_exporter
+        icon_filename: site247.png
+        categories:
+          - data-collection.synthetic-checks
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Site24x7 website and infrastructure monitoring metrics for efficient performance tracking and management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [site24x7 Exporter](https://github.com/svenstaro/site24x7_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [site24x7 Exporter](https://github.com/svenstaro/site24x7_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: SMA Inverters
+        link: https://github.com/dr0ps/sma_inverter_exporter
+        icon_filename: sma.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor SMA solar inverter metrics for efficient solar energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [sma-exporter](https://github.com/dr0ps/sma_inverter_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [sma-exporter](https://github.com/dr0ps/sma_inverter_exporter) by following the instructions mentioned in the exporter README.
