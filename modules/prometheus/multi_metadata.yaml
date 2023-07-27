@@ -7,7 +7,7 @@ modules:
       monitored_instance:
         name: Prometheus endpoint
         link: https://prometheus.io/
-        icon_filename: prometheus.png
+        icon_filename: prometheus.svg
         categories:
           - data-collection.apm
       keywords:
@@ -771,7 +771,7 @@ modules:
       monitored_instance:
         name: Blackbox
         link: https://github.com/prometheus/blackbox_exporter
-        icon_filename: prometheus.png
+        icon_filename: prometheus.svg
         categories:
           - data-collection.synthetic-checks
       keywords:
@@ -1255,7 +1255,7 @@ modules:
       monitored_instance:
         name: Dynatrace
         link: https://github.com/Apside-TOP/dynatrace_exporter
-        icon_filename: dynatrace.png
+        icon_filename: dynatrace.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -1456,7 +1456,7 @@ modules:
       monitored_instance:
         name: GitHub repository
         link: https://github.com/githubexporter/github-exporter
-        icon_filename: github.png
+        icon_filename: github.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -1790,7 +1790,7 @@ modules:
       monitored_instance:
         name: Jenkins
         link: https://www.jenkins.io/
-        icon_filename: jenkins.png
+        icon_filename: jenkins.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -1816,7 +1816,7 @@ modules:
       monitored_instance:
         name: JMX
         link: https://github.com/prometheus/jmx_exporter
-        icon_filename: jmx-exporter.png
+        icon_filename: java.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -2224,7 +2224,7 @@ modules:
       monitored_instance:
         name: New Relic
         link: https://github.com/jfindley/newrelic_exporter
-        icon_filename: newrelic.png
+        icon_filename: newrelic.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -2354,7 +2354,7 @@ modules:
       monitored_instance:
         name: Google Pagespeed
         link: https://github.com/foomo/pagespeed_exporter
-        icon_filename: google-pagespeed.png
+        icon_filename: google.svg
         categories:
           - data-collection.apm
       keywords:
@@ -2987,7 +2987,7 @@ modules:
       monitored_instance:
         name: VMWare
         link: https://github.com/pryorda/vmware_exporter
-        icon_filename: vmware.png
+        icon_filename: vmware.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -3013,7 +3013,7 @@ modules:
       monitored_instance:
         name: VSCode
         link: https://github.com/guicaulada/vscode-exporter
-        icon_filename: vscode.png
+        icon_filename: vscode.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -4574,7 +4574,7 @@ modules:
       monitored_instance:
         name: GitHub API rate limit
         link: https://github.com/lunarway/github-ratelimit-exporter
-        icon_filename: github.png
+        icon_filename: github.svg
         categories:
           - data-collection.generic-data-collection
       keywords: []
@@ -5846,7 +5846,7 @@ modules:
       monitored_instance:
         name: IBM AIX systems Njmon
         link: https://github.com/crooks/njmon_exporter
-        icon_filename: ibm-logo.png
+        icon_filename: ibm.svg
         categories:
           - data-collection.apm
       keywords: []
