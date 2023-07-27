@@ -7498,3 +7498,239 @@ modules:
           - title: Install OpenMetrics Exporter
             description: |
               Install [Tankerknig API Exporter](https://github.com/lukasmalkmus/tankerkoenig_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Tesla Wall Connector
+        link: https://github.com/benclapp/tesla_wall_connector_exporter
+        icon_filename: tesla.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Tesla Wall Connector charging station metrics for efficient electric vehicle charging management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Tesla Wall Connector Exporter](https://github.com/benclapp/tesla_wall_connector_exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Tesla Wall Connector Exporter](https://github.com/benclapp/tesla_wall_connector_exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: TP-Link P110
+        link: https://github.com/ijohanne/prometheus-tplink-p110-exporter
+        icon_filename: tplink.png
+        categories:
+          - data-collection.iot-devices
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track TP-Link P110 smart plug metrics for efficient energy management and monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [TP-Link P110 Exporter](https://github.com/ijohanne/prometheus-tplink-p110-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [TP-Link P110 Exporter](https://github.com/ijohanne/prometheus-tplink-p110-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Traceroute
+        link: https://github.com/jeanfabrice/prometheus-tcptraceroute-exporter
+        icon_filename: traceroute.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Export traceroute metrics for efficient network path analysis and performance monitoring.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [traceroute exporter](https://github.com/jeanfabrice/prometheus-tcptraceroute-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [traceroute exporter](https://github.com/jeanfabrice/prometheus-tcptraceroute-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: TwinCAT ADS Web Service
+        link: https://github.com/MarcusCalidus/twincat-ads-webservice-exporter
+        icon_filename: twincat.png
+        categories:
+          - data-collection.generic-data-collection
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor TwinCAT ADS (Automation Device Specification) Web Service metrics for efficient industrial automation and control.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [TwinCAT ADS Web Service exporter](https://github.com/MarcusCalidus/twincat-ads-webservice-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [TwinCAT ADS Web Service exporter](https://github.com/MarcusCalidus/twincat-ads-webservice-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Warp10
+        link: https://github.com/centreon/warp10-sensision-exporter
+        icon_filename: warp10.png
+        categories:
+          - data-collection.database-servers
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Warp 10 time-series database metrics for efficient time-series data management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Warp10 Exporter](https://github.com/centreon/warp10-sensision-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Warp10 Exporter](https://github.com/centreon/warp10-sensision-exporter) by following the instructions mentioned in the exporter README.
+
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: YOURLS URL Shortener
+        link: https://github.com/just1not2/prometheus-exporter-yourls
+        icon_filename: yourls.png
+        categories:
+          - data-collection.apm
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor YOURLS (Your Own URL Shortener) metrics for efficient URL shortening service management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [YOURLS exporter](https://github.com/just1not2/prometheus-exporter-yourls).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [YOURLS exporter](https://github.com/just1not2/prometheus-exporter-yourls) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Zerto
+        link: https://github.com/claranet/zerto-exporter
+        icon_filename: zerto.png
+        categories:
+          - data-collection.cloud-provider-managed
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Zerto disaster recovery and data protection metrics for efficient backup and recovery management.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Zerto Exporter](https://github.com/claranet/zerto-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Zerto Exporter](https://github.com/claranet/zerto-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Zulip
+        link: https://github.com/brokenpip3/zulip-exporter
+        icon_filename: zulip.png
+        categories:
+          - data-collection.notifications
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Monitor Zulip open-source group chat application metrics for efficient team communication management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Zulip Exporter](https://github.com/brokenpip3/zulip-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Zulip Exporter](https://github.com/brokenpip3/zulip-exporter) by following the instructions mentioned in the exporter README.
+  - <<: *module
+    meta:
+      <<: *meta
+      most_popular: false
+      community: true
+      monitored_instance:
+        name: Zyxel GS1200-8
+        link: https://github.com/robinelfrink/gs1200-exporter
+        icon_filename: zyxel.png
+        categories:
+          - data-collection.networking-stack-and-network-interfaces
+      keywords: []
+    overview:
+      <<: *overview
+      data_collection:
+        metrics_description: |
+          Track Zyxel GS1200 network switch metrics for efficient network device management and performance.
+        method_description: |
+          Metrics are gathered by periodically sending HTTP requests to [Zyxel GS1200 Exporter](https://github.com/robinelfrink/gs1200-exporter).
+    setup:
+      <<: *setup
+      prerequisites:
+        list:
+          - title: Install OpenMetrics Exporter
+            description: |
+              Install [Zyxel GS1200 Exporter](https://github.com/robinelfrink/gs1200-exporter) by following the instructions mentioned in the exporter README.
+
