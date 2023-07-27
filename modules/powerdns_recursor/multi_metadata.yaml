@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: PowerDNS Recursor
         link: https://doc.powerdns.com/recursor/
-        icon_filename: powerdns.jpeg
+        icon_filename: powerdns.svg
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords:
