@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: VMware vCenter Server
         link: https://www.vmware.com/products/vcenter-server.html
-        icon_filename: vmware.png
+        icon_filename: vmware.svg
         categories:
           - data-collection.containers-and-vms
       keywords:

@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Docker Hub repository
         link: https://hub.docker.com/
-        icon_filename: docker.png
+        icon_filename: docker.svg
         categories:
           - data-collection.containers-and-vms # FIXME
       keywords:

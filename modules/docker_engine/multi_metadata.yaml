@@ -9,7 +9,7 @@ modules:
         link: https://docs.docker.com/engine/
         categories:
           - data-collection.containers-and-vms
-        icon_filename: docker.png
+        icon_filename: docker.svg
       related_resources:
         integrations:
           list: []

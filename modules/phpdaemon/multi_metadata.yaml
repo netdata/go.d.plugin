@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: phpDaemon
         link: https://github.com/kakserpom/phpdaemon
-        icon_filename: php.png
+        icon_filename: php.svg
         categories:
           - data-collection.apm
       keywords:
