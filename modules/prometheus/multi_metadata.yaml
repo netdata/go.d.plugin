@@ -273,7 +273,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [A10-Networks Prometheus Exporter](https://github.com/a10networks/PrometheusExporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -299,7 +299,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Airflow exporter](https://github.com/shalb/airflow-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -328,7 +328,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Alibaba Cloud Exporter](https://github.com/aylei/aliyun-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -357,7 +357,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Apache Flink Metrics Reporter](https://github.com/matsumana/flink_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -386,7 +386,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Aruba Exporter](https://github.com/slashdoom/aruba_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -415,7 +415,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS EC2 Exporter](https://github.com/O1ahmad/aws_ec2_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -444,7 +444,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS ECS exporter](https://github.com/bevers222/ecs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -473,7 +473,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS Health Exporter](https://github.com/vladvasiliu/aws-health-exporter-rs) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -502,7 +502,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS instance health exporter](https://github.com/bobtfish/aws-instance-health-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -531,7 +531,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS S3 Exporter](https://github.com/ribbybibby/s3_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -560,7 +560,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS SQS Exporter](https://github.com/jmal98/sqs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -589,7 +589,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure App Secrets monitor](https://github.com/vladvasiliu/azure-app-secrets-monitor) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -618,7 +618,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure Elastic SQL Exporter](https://github.com/benclapp/azure_elastic_sql_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -647,7 +647,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure Monitor exporter](https://github.com/RobustPerception/azure_metrics_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -676,7 +676,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure Resources Exporter](https://github.com/FXinnovation/azure-resources-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -705,7 +705,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure Service Bus Exporter](https://github.com/marcinbudny/servicebus_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -734,7 +734,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Azure SQL exporter](https://github.com/iamseth/azure_sql_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -760,7 +760,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [BigQuery Exporter](https://github.com/m-lab/prometheus-bigquery-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -787,7 +787,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Blackbox exporter](https://github.com/prometheus/blackbox_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -813,7 +813,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Borg backup exporter](https://github.com/k0ral/borg-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -839,7 +839,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [cAdvisor](https://github.com/google/cadvisor) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -865,7 +865,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cilium Agent](https://github.com/cilium/cilium) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -891,7 +891,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cilium Operator](https://github.com/cilium/cilium) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -917,7 +917,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cilium Proxy](https://github.com/cilium/proxy) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -946,7 +946,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cisco ACI Exporter](https://github.com/RavuAlHemio/prometheus_aci_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -975,7 +975,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Citrix NetScaler Exporter](https://github.com/rokett/Citrix-NetScaler-Exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1030,7 +1030,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cloudflare exporter](https://github.com/wehkamp/docker-prometheus-cloudflare-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1059,7 +1059,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [CloudWatch exporter](https://github.com/prometheus/cloudwatch_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1137,7 +1137,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Dell EMC ECS Exporter](https://github.com/paychex/prometheus-emcecs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1163,7 +1163,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Dell EMC Isilon Exporter](https://github.com/paychex/prometheus-isilon-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1189,7 +1189,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [DigitalOcean Exporter](https://github.com/metalmatze/digitalocean_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1215,7 +1215,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Discourse Exporter](https://github.com/discourse/discourse-prometheus) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1244,7 +1244,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Network UPS Tools exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1270,7 +1270,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Dynatrace Exporter](https://github.com/Apside-TOP/dynatrace_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1296,7 +1296,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [EOS exporter](https://github.com/cern-eos/eos_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1341,7 +1341,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [fortigate_exporter](https://github.com/bluecmd/fortigate_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1367,7 +1367,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [FreeBSD NFS Exporter](https://github.com/Axcient/freebsd-nfs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1393,7 +1393,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [FreeBSD RCTL Exporter](https://github.com/yo000/rctl_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1419,7 +1419,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [GCP GCE Exporter](https://github.com/O1ahmad/gcp-gce-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1445,7 +1445,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [GCP Quota Exporter](https://github.com/mintel/gcp-quota-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1471,7 +1471,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [GitHub Exporter](https://github.com/githubexporter/github-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1545,7 +1545,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Google Cloud Platform Exporter](https://github.com/DazWilkin/gcp-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1574,7 +1574,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Google Stackdriver exporter](https://github.com/prometheus-community/stackdriver_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1646,7 +1646,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [HANA Exporter](https://github.com/jenningsloy318/hana_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1672,7 +1672,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Intrinsec honeypot_exporter](https://github.com/Intrinsec/honeypot_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1698,7 +1698,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [HP iLO Metrics Exporter](https://github.com/infinityworks/hpilo-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1750,7 +1750,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [IBM Spectrum Exporter](https://github.com/topine/ibm-spectrum-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1779,7 +1779,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [InfluxDB exporter](https://github.com/prometheus/influxdb_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1805,7 +1805,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Jenkins exporter](https://github.com/simplesurance/jenkins-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1831,7 +1831,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [JMX Exporter](https://github.com/prometheus/jmx_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1857,7 +1857,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [jolokia_exporter](https://github.com/aklinkert/jolokia_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1886,7 +1886,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kafka Consumer Lag Monitoring](https://github.com/omarsmak/kafka-consumer-lag-monitoring) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1915,7 +1915,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kafka Exporter](https://github.com/danielqsj/kafka_exporter/) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1944,7 +1944,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kafka ZooKeeper Exporter](https://github.com/cloudflare/kafka_zookeeper_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1970,7 +1970,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Linode Exporter](https://github.com/DazWilkin/linode-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -1996,7 +1996,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [loki_exporter](https://github.com/ricoberger/loki_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2022,7 +2022,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Minecraft Exporter](https://github.com/sladkoff/minecraft-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2048,7 +2048,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [mosquitto exporter](https://github.com/sapcc/mosquitto-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2074,7 +2074,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [MP707 exporter](https://github.com/nradchenko/mp707_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2100,7 +2100,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [MQ Exporter](https://github.com/agebhar1/mq_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2126,7 +2126,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [MQTT Blackbox Exporter](https://github.com/inovex/mqtt_blackbox_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2155,7 +2155,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Netapp ONTAP API Exporter](https://github.com/sapcc/netapp-api-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2184,7 +2184,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NetApp Solidfire Exporter](https://github.com/mjavier2k/solidfire-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2213,7 +2213,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NetMeter Exporter](https://github.com/ssbostan/netmeter-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2239,7 +2239,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [New Relic exporter](https://github.com/jfindley/newrelic_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2265,7 +2265,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Open vSwitch Exporter](https://github.com/digitalocean/openvswitch_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2291,7 +2291,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenLDAP Metrics Exporter](https://github.com/tomcz/openldap_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2317,7 +2317,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Openstack exporter](https://github.com/CanonicalLtd/prometheus-openstack-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2343,7 +2343,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenVAS exporter](https://github.com/ModeClearCode/openvas_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2372,7 +2372,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Pagespeed exporter](https://github.com/foomo/pagespeed_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2398,7 +2398,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Philips Hue Exporter](https://github.com/aexel90/hue_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2424,7 +2424,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [PODMAN exporter](https://github.com/containers/prometheus-podman-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2450,7 +2450,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Proxmox VE Exporter](https://github.com/prometheus-pve/prometheus-pve-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2476,7 +2476,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [RADIUS exporter](https://github.com/devon-mar/radius-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2505,7 +2505,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [rds_exporter](https://github.com/percona/rds_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2531,7 +2531,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [RIPE Atlas Exporter](https://github.com/czerwonk/atlas_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2557,7 +2557,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sentry Exporter](https://github.com/snakecharmer/sentry_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2583,7 +2583,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [slurm exporter](https://github.com/vpenso/prometheus-slurm-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2612,7 +2612,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SoundCloud IPMI Exporter (querying IPMI externally, blackbox-exporter style)](https://github.com/prometheus-community/ipmi_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2638,7 +2638,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Spacelift Exporter](https://github.com/spacelift-io/prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2664,7 +2664,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SSH Exporter](https://github.com/Nordstrom/ssh_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2690,7 +2690,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SSL Certificate exporter](https://github.com/ribbybibby/ssl_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2716,7 +2716,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Starlink Exporter (SpaceX)](https://github.com/danopstech/starlink_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2742,7 +2742,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [StatusPage Exporter](https://github.com/vladvasiliu/statuspage-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2768,7 +2768,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [TACACS Exporter](https://github.com/devon-mar/tacacs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2794,7 +2794,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Tesla exporter](https://github.com/wywywywy/tesla-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2820,7 +2820,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Tesla Powerwall Exporter](https://github.com/foogod/powerwall_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2846,7 +2846,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Twitch exporter](https://github.com/damoun/twitch_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2872,7 +2872,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ufiber-exporter](https://github.com/swoga/ufiber-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2898,7 +2898,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Uptimerobot Exporter](https://github.com/wosc/prometheus-uptimerobot) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2924,7 +2924,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Vault Assessment Prometheus Exporter](https://github.com/tomtom-international/vault-assessment-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2950,7 +2950,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Vault PKI Exporter](https://github.com/aarnaud/vault-pki-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -2976,7 +2976,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [vertica-prometheus-exporter](https://github.com/vertica/vertica-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3002,7 +3002,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [VMWare exporter](https://github.com/pryorda/vmware_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3028,7 +3028,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [VSCode Exporter](https://github.com/guicaulada/vscode-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3054,7 +3054,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Waveplus Radon Sensor Exporter](https://github.com/jeremybz/waveplus_exporter) by following the instructions mentioned in the exporter README.
 
@@ -3081,7 +3081,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [XMPP Server Exporter](https://github.com/horazont/xmpp-blackbox-exporter) by following the instructions mentioned in the exporter README.
 
@@ -3108,7 +3108,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [4D Server exporter](https://github.com/ThomasMaul/Prometheus_4D_Exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3134,7 +3134,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [8430FT Exporter](https://github.com/dernasherbrezon/8430ft_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3160,7 +3160,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [A2S Exporter](https://github.com/armsnyder/a2s-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3186,7 +3186,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Akamai Edge DNS Traffic Exporter](https://github.com/akamai/akamai-edgedns-traffic-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3212,7 +3212,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Akamai Global Traffic Management Metrics Exporter](https://github.com/akamai/akamai-gtm-metrics-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3238,7 +3238,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Alamos FE2 Exporter](https://github.com/codemonauts/prometheus-fe2-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3264,7 +3264,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Altaro Backup Exporter](https://github.com/raph2i/altaro_backup_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3290,7 +3290,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AMD SMI Exporter](https://github.com/amd/amd_smi_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3316,7 +3316,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Andrews & Arnold line status exporter](https://github.com/daveio/aaisp-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3342,7 +3342,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [APIcast](https://github.com/3scale/apicast) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3368,7 +3368,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Apple Time Machine Exporter](https://github.com/znerol/prometheus-timemachine-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3394,7 +3394,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ARM HWCPipe Exporter](https://github.com/ylz-at/arm-hwcpipe-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3423,7 +3423,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ArvanCloud exporter](https://github.com/arvancloud/ar-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3449,7 +3449,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Audisto exporter](https://github.com/ZeitOnline/audisto_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3475,7 +3475,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AuthLog Exporter](https://github.com/woblerr/authlog_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3504,7 +3504,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [AWS EC2 Spot Exporter](https://github.com/patcadelina/ec2-spot-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3533,7 +3533,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [aws_quota_exporter](https://github.com/emylincon/aws_quota_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3559,7 +3559,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Bobcat Exporter](https://github.com/pperzyna/bobcat_exporter) by following the instructions mentioned in the exporter README.
 
@@ -3586,7 +3586,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [BOSH exporter](https://github.com/bosh-prometheus/bosh_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3612,7 +3612,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [bpftrace exporter](https://github.com/andreasgerstmayr/bpftrace_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3638,7 +3638,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [BungeeCord Prometheus Exporter](https://github.com/weihao/bungeecord-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3664,7 +3664,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Celery Exporter](https://github.com/ZeitOnline/celery_redis_prometheus) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3690,7 +3690,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Checkpoint exporter](https://github.com/RespiroConsulting/CheckPointExporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3716,7 +3716,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Chia Exporter](https://github.com/chia-network/chia-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3742,7 +3742,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Christ Elektronik CLM5IP Exporter](https://github.com/christmann/clm5ip_exporter/) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3768,7 +3768,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ClamAV daemon stats exporter](https://github.com/sergeymakinen/clamav_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3794,7 +3794,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [clamscan-exporter](https://github.com/FortnoxAB/clamscan-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3820,7 +3820,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Clash exporter](https://github.com/elonzh/clash_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3849,7 +3849,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cloud Foundry exporter](https://github.com/bosh-prometheus/cf_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3878,7 +3878,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cloud Foundry Firehose exporter](https://github.com/bosh-prometheus/firehose_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3907,7 +3907,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cloudmonitor exporter](https://github.com/ExpressenAB/cloudmonitor_exporter) by following the instructions mentioned in the exporter README.
 
@@ -3934,7 +3934,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cluster Exporter](https://github.com/GSI-HPC/prometheus-cluster-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3960,7 +3960,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [CMON Exporter](https://github.com/severalnines/cmon_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -3986,7 +3986,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Collectd exporter](https://github.com/prometheus/collectd_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4012,7 +4012,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Command runner exporter](https://github.com/tomwilkie/prom-run) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4038,7 +4038,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [CraftBeerPi exporter](https://github.com/jo-hannes/craftbeerpi_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4064,7 +4064,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Crypto exporter](https://github.com/ix-ai/crypto-exporter) by following the instructions mentioned in the exporter README.
 
@@ -4091,7 +4091,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Cryptowat Exporter](https://github.com/nbarrientos/cryptowat_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4117,7 +4117,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [CS:GO Exporter](https://github.com/kinduff/csgo_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4144,7 +4144,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ct-exporter](https://github.com/Hsn723/ct-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4170,7 +4170,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Custom Exporter](https://github.com/orange-cloudfoundry/custom_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4196,7 +4196,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [CVMFS exporter](https://github.com/guilbaults/cvmfs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4222,7 +4222,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ddwrt-collector](https://github.com/camelusferus/ddwrt_collector) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4248,7 +4248,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Dell/EMC XtremIO Exporter](https://github.com/cthiel42/prometheus-xtremio-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4274,7 +4274,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Dependency-Track Exporter](https://github.com/jetstack/dependency-track-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4300,7 +4300,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [dmarc-metrics-exporter](https://github.com/jgosmann/dmarc-metrics-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4326,7 +4326,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [dnsbl-exporter](https://github.com/Luzilla/dnsbl_exporter/) by following the instructions mentioned in the exporter README.
 
@@ -4354,7 +4354,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Bird Routing Daemon Exporter](https://github.com/czerwonk/bird_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4380,7 +4380,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Elgato Key Light exporter](https://github.com/mdlayher/keylight_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4406,7 +4406,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [energomera-exporter Energomera electricity meter exporter](https://github.com/peak-load/energomera_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4432,7 +4432,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Excel Exporter](https://github.com/MarcusCalidus/excel-exporter) by following the instructions mentioned in the exporter README.
 
@@ -4459,7 +4459,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Fastd Exporter](https://github.com/freifunk-darmstadt/fastd-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4485,7 +4485,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Freifunk Exporter](https://github.com/xperimental/freifunk-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4511,7 +4511,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Fritzbox exporter](https://github.com/pdreker/fritz_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4537,7 +4537,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [FRRouting Exporter](https://github.com/tynany/frr_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4563,7 +4563,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Generic Command Line Output Exporter](https://github.com/MarioMartReq/generic-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4590,7 +4590,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [GitHub API rate limit Exporter](https://github.com/lunarway/github-ratelimit-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4616,7 +4616,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [gpsd exporter](https://github.com/natesales/gpsd-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4642,7 +4642,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [GTP Exporter](https://github.com/wmnsk/gtp_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4668,7 +4668,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Halon exporter](https://github.com/tobiasbp/halon_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4695,7 +4695,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Hasura Exporter](https://github.com/zolamk/hasura-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4721,7 +4721,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [HDSentinel Exporter](https://github.com/qusielle/hdsentinel-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4747,7 +4747,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Helium hotspot exporter](https://github.com/tedder/helium_hotspot_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4773,7 +4773,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Helium miner (validator) exporter](https://github.com/tedder/miner_exporter) by following the instructions mentioned in the exporter README.
 
@@ -4801,7 +4801,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [HHVM Exporter](https://github.com/wikimedia/operations-software-hhvm_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4827,7 +4827,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Huawei Hilink exporter](https://github.com/eliecharra/hilink-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4853,7 +4853,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Hitron CGNV4 exporter](https://github.com/yrro/hitron-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4879,7 +4879,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Hitron CODA Cable Modem Exporter](https://github.com/hairyhenderson/hitron_coda_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4905,7 +4905,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Homebridge Prometheus Exporter](https://github.com/lstrojny/homebridge-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4931,7 +4931,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Homey Exporter](https://github.com/rickardp/homey-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4957,7 +4957,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [IBM Z CEX Device Plugin Prometheus Exporter](https://github.com/ibm-s390-cloud/k8s-cex-dev-plugin) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -4983,7 +4983,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [IBM Z HMC Exporter](https://github.com/zhmcclient/zhmc-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5009,7 +5009,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [IOTA Exporter](https://github.com/crholliday/iota-prom-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5035,7 +5035,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [IQair Exporter](https://github.com/Packetslave/iqair_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5061,7 +5061,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Jarvis Standing Desk Exporter](https://github.com/hairyhenderson/jarvis_exporter/) by following the instructions mentioned in the exporter README.
 
@@ -5088,7 +5088,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [jbod - Generic storage enclosure tool](https://github.com/Gandi/jbod-rs) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5114,7 +5114,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [JetBrains Floating License Server Export](https://github.com/mkreu/jetbrains-fls-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5140,7 +5140,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [journald-exporter](https://github.com/dead-claudia/journald-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5169,7 +5169,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kafka Connect exporter](https://github.com/findelabs/kafka-connect-exporter-rs) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5195,7 +5195,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kannel Exporter](https://github.com/apostvav/kannel_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5221,7 +5221,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Keepalived Exporter](https://github.com/gen2brain/keepalived_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5250,7 +5250,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Kubernetes Cloud Cost Exporter](https://github.com/agilestacks/korral) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5276,7 +5276,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Lagerist Disk latency exporter](https://github.com/Svedrin/lagerist) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5302,7 +5302,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [LDAP Exporter](https://github.com/titisan/ldap_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5328,7 +5328,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [lynis_exporter](https://github.com/MauveSoftware/lynis_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5354,7 +5354,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Machbase Exporter](https://github.com/MACHBASE/prometheus-machbase-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5380,7 +5380,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [mailexporter](https://github.com/cherti/mailexporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5406,7 +5406,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Meilisearch Exporter](https://github.com/scottaglia/meilisearch_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5432,7 +5432,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Memcached exporter](https://github.com/prometheus/memcached_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5458,7 +5458,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Meraki dashboard data exporter using API](https://github.com/TheHolm/meraki-dashboard-promethus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5484,7 +5484,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Mesos exporter](http://github.com/mesosphere/mesos_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5510,7 +5510,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [MiFlora / Flower Care Exporter](https://github.com/xperimental/flowercare-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5539,7 +5539,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [modbusrtu_exporter](https://github.com/dernasherbrezon/modbusrtu_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5565,7 +5565,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [MogileFS Exporter](https://github.com/KKBOX/mogilefs-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5591,7 +5591,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Monnit Sensors MQTT Exporter WIP](https://github.com/braxton9460/monnit-mqtt-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5617,7 +5617,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [mtail](https://github.com/google/mtail) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5643,7 +5643,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Naemon / Nagios Exporter](https://github.com/Griesbacher/Iapetos) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5670,7 +5670,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Nagios exporter](https://github.com/wbollock/nagios_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5696,7 +5696,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Nature Remo E series Exporter](https://github.com/kenfdev/remo-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5725,7 +5725,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Netatmo exporter](https://github.com/xperimental/netatmo-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5754,7 +5754,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [netflow exporter](https://github.com/paihu/netflow_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5783,7 +5783,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Nextcloud exporter](https://github.com/xperimental/nextcloud-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5809,7 +5809,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [nextdns-exporter](https://github.com/raylas/nextdns-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5835,7 +5835,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [nftables_exporter](https://github.com/Sheridan/nftables_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5861,7 +5861,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NJmon](https://github.com/crooks/njmon_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5887,7 +5887,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NRPE exporter](https://github.com/canonical/nrpe_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5913,7 +5913,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [nshttpd/mikrotik-exporter, swoga/m](https://github.com/swoga/mikrotik-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5939,7 +5939,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NSX-T Exporter](https://github.com/jk8s/nsxt_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5965,7 +5965,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NUT Exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -5991,7 +5991,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [NVML exporter](https://github.com/oko/nvml-exporter-rs) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6017,7 +6017,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OBS Studio Exporter](https://github.com/lukegb/obs_studio_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6046,7 +6046,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ODBC Exporter](https://github.com/MACHBASE/prometheus-odbc-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6072,7 +6072,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenHAB exporter](https://github.com/pdreker/openhab_exporter) by following the instructions mentioned in the exporter README.
 
@@ -6100,7 +6100,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [openrc-exporter](https://git.sr.ht/~tomleb/openrc-exporter) by following the instructions mentioned in the exporter README.
 
@@ -6127,7 +6127,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenRCT2 Prometheus Exporter](https://github.com/terinjokes/openrct2-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6156,7 +6156,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenROADM NETCONF Exporter WIP](https://github.com/utdal/openroadm_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6182,7 +6182,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OpenWeatherMap Exporter](https://github.com/Tenzer/openweathermap-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6212,7 +6212,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Oracle DB Exporter](https://github.com/iamseth/oracledb_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6238,7 +6238,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [OTRS Exporter](https://github.com/JulianDroste/otrs_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6264,7 +6264,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [P1Exporter - Dutch Electricity Smart Meter Exporter](https://github.com/TobiasDeBruijn/prometheus-p1-exporter) by following the instructions mentioned in the exporter README.
 
@@ -6291,7 +6291,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Patroni Exporter](https://github.com/gopaytech/patroni_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6317,7 +6317,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Personal Weather Station Exporter](https://github.com/JohnOrthoefer/pws-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6343,7 +6343,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [pgBackRest Exporter](https://github.com/woblerr/pgbackrest_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6369,7 +6369,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Pgpool-II Exporter](https://github.com/pgpool/pgpool2_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6395,7 +6395,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Pimoroni Enviro+ Exporter](https://github.com/terradolor/prometheus-enviro-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6421,7 +6421,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Pingdom Exporter](https://github.com/veepee-oss/pingdom_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6447,7 +6447,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [PowerMax Exporter](https://github.com/kckecheng/powermax_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6473,7 +6473,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Powerpal Exporter](https://github.com/aashley/powerpal_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6499,7 +6499,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ProFTPD Exporter](https://github.com/transnano/proftpd_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6525,7 +6525,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Prometheus Eaton UPS Exporter](https://github.com/psyinfra/prometheus-eaton-ups-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6551,7 +6551,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Python RQ Exporter](https://github.com/mdawar/rq-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6577,7 +6577,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Radio Thermostat Exporter](https://github.com/andrewlow/radio-thermostat-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6603,7 +6603,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Rancher Exporter](https://github.com/infinityworksltd/prometheus-rancher-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6629,7 +6629,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Raritan PDU Exporter](https://github.com/psyinfra/prometheus-raritan-pdu-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6655,7 +6655,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [RouterOS exporter](https://github.com/welbymcroberts/routeros_exporter) by following the instructions mentioned in the exporter README.
 
@@ -6682,7 +6682,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SABnzbd Exporter](https://github.com/msroest/sabnzbd_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6708,7 +6708,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Salicru EQX inverter](https://github.com/alejandroscf/prometheus_salicru_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6734,7 +6734,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sense Energy exporter](https://github.com/ejsuncy/sense_energy_prometheus_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6760,7 +6760,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [ServerTech Exporter](https://github.com/tynany/servertech_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6786,7 +6786,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Shelly Exporter](https://github.com/aexel90/shelly_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6812,7 +6812,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sia Exporter](https://github.com/tbenz9/sia_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6838,7 +6838,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Siemens S7 PLC exporter](https://github.com/MarcusCalidus/s7-plc-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6864,7 +6864,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [site24x7 Exporter](https://github.com/svenstaro/site24x7_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6890,7 +6890,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [sma-exporter](https://github.com/dr0ps/sma_inverter_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6916,7 +6916,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [smartrg808ac_exporter](https://github.com/AdamIsrael/smartrg808ac_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6942,7 +6942,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SML Exporter](https://github.com/mweinelt/sml-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6968,7 +6968,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SoftEther Exporter](https://github.com/dalance/softether_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -6994,7 +6994,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Solar logging stick exporter](https://gitlab.com/bhavin192/lsx-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7020,7 +7020,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SolarEdge Exporter](https://github.com/dave92082/SolarEdge-Exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7046,7 +7046,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Solis Exporter](https://github.com/candlerb/solis_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7072,7 +7072,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SONiC Exporter](https://github.com/kamelnetworks/sonic_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7098,7 +7098,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [spectrum_virtualize_exporter](https://github.com/bluecmd/spectrum_virtualize_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7124,7 +7124,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Speedify Exporter](https://github.com/willshen/speedify_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7150,7 +7150,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sphinx Exporter](https://github.com/foxdalas/sphinx_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7179,7 +7179,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [SQL Exporter](https://github.com/free/sql_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7205,7 +7205,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Starwind vSAN Exporter](https://github.com/evoicefire/starwind-vsan-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7231,7 +7231,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Steam Exporter (A2S_INFO)](https://github.com/xperimental/steam-exporter) by following the instructions mentioned in the exporter README.
 
@@ -7258,7 +7258,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Storidge exporter](https://github.com/Storidge/cio-user-docs/blob/master/integrations/prometheus.md) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7284,7 +7284,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Stream exporter](https://github.com/carlpett/stream_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7310,7 +7310,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [strongSwan/IPSec/vici Exporter](https://github.com/jlti-dev/ipsec_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7336,7 +7336,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sunspec Solar Energy Exporter](https://github.com/inosion/prometheus-sunspec-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7362,7 +7362,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Suricata Exporter](https://github.com/corelight/suricata_exporter) by following the instructions mentioned in the exporter README.
 
@@ -7390,7 +7390,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Synology ActiveBackup Exporter](https://github.com/codemonauts/activebackup-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7416,7 +7416,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Sysload Exporter](https://github.com/egmc/sysload_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7442,7 +7442,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [T-Rex NVIDIA GPU Miner Exporter](https://github.com/dennisstritzke/trex_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7468,7 +7468,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Tado Exporter](https://github.com/eko/tado-exporter) by following the instructions mentioned in the exporter README.
 
@@ -7495,7 +7495,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Tankerknig API Exporter](https://github.com/lukasmalkmus/tankerkoenig_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7521,7 +7521,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Tesla Wall Connector Exporter](https://github.com/benclapp/tesla_wall_connector_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7547,7 +7547,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [TP-Link P110 Exporter](https://github.com/ijohanne/prometheus-tplink-p110-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7573,7 +7573,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [traceroute exporter](https://github.com/jeanfabrice/prometheus-tcptraceroute-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7599,7 +7599,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [TwinCAT ADS Web Service exporter](https://github.com/MarcusCalidus/twincat-ads-webservice-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7625,7 +7625,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Warp10 Exporter](https://github.com/centreon/warp10-sensision-exporter) by following the instructions mentioned in the exporter README.
 
@@ -7652,7 +7652,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [YOURLS exporter](https://github.com/just1not2/prometheus-exporter-yourls) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7678,7 +7678,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Zerto Exporter](https://github.com/claranet/zerto-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7704,7 +7704,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Zulip Exporter](https://github.com/brokenpip3/zulip-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
@@ -7730,7 +7730,7 @@ modules:
       <<: *setup
       prerequisites:
         list:
-          - title: Install OpenMetrics Exporter
+          - title: Install Exporter
             description: |
               Install [Zyxel GS1200 Exporter](https://github.com/robinelfrink/gs1200-exporter) by following the instructions mentioned in the exporter README.
 
