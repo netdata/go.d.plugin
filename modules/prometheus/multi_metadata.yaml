@@ -310,7 +310,7 @@ modules:
       monitored_instance:
         name: Alibaba Cloud
         link: https://github.com/aylei/aliyun-exporter # FIXME: This repository has been archived by the owner on Oct 28, 2019
-        icon_filename: alibaba-cloud.png
+        icon_filename: alibaba-cloud.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -455,7 +455,7 @@ modules:
       monitored_instance:
         name: AWS Health events
         link: https://github.com/vladvasiliu/aws-health-exporter-rs
-        icon_filename: aws.png
+        icon_filename: aws.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -484,7 +484,7 @@ modules:
       monitored_instance:
         name: AWS instance health
         link: https://github.com/bobtfish/aws-instance-health-exporter
-        icon_filename: aws.png
+        icon_filename: aws.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -1012,7 +1012,7 @@ modules:
       monitored_instance:
         name: Cloudflare PCAP
         link: https://github.com/wehkamp/docker-prometheus-cloudflare-exporter
-        icon_filename: cloudflare.png
+        icon_filename: cloudflare.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -1122,7 +1122,7 @@ modules:
       monitored_instance:
         name: Dell EMC ECS cluster
         link: https://github.com/paychex/prometheus-emcecs-exporter
-        icon_filename: dell-emc-ecs.png
+        icon_filename: dell.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -1148,7 +1148,7 @@ modules:
       monitored_instance:
         name: Dell EMC Isilon cluster
         link: https://github.com/paychex/prometheus-isilon-exporter
-        icon_filename: dell-emc-isilon.png
+        icon_filename: dell.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -1404,7 +1404,7 @@ modules:
       monitored_instance:
         name: GCP GCE
         link: https://github.com/O1ahmad/gcp-gce-exporter
-        icon_filename: gcp-gce.png
+        icon_filename: gcp-gce.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -1556,7 +1556,7 @@ modules:
       monitored_instance:
         name: Google Stackdriver
         link: https://github.com/prometheus-community/stackdriver_exporter
-        icon_filename: gcp-stackdriver.png
+        icon_filename: gcp-stackdriver.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -1955,7 +1955,7 @@ modules:
       monitored_instance:
         name: Linode
         link: https://github.com/DazWilkin/linode-exporter
-        icon_filename: linode.png
+        icon_filename: linode.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -2276,7 +2276,7 @@ modules:
       monitored_instance:
         name: OpenLDAP
         link: https://github.com/tomcz/openldap_exporter
-        icon_filename: openldap.png
+        icon_filename: openldap.svg
         categories:
           - data-collection.authentication-and-authorization
       keywords: []
@@ -2302,7 +2302,7 @@ modules:
       monitored_instance:
         name: OpenStack
         link: https://github.com/CanonicalLtd/prometheus-openstack-exporter
-        icon_filename: openstack.png
+        icon_filename: openstack.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -2675,7 +2675,7 @@ modules:
       monitored_instance:
         name: SSL Certificate
         link: https://github.com/ribbybibby/ssl_exporter
-        icon_filename: ssl.png
+        icon_filename: ssl.svg
         categories:
           - data-collection.authentication-and-authorization
       keywords: []
@@ -2909,7 +2909,7 @@ modules:
       monitored_instance:
         name: HashiCorp Vault secrets
         link: https://github.com/tomtom-international/vault-assessment-prometheus-exporter
-        icon_filename: vault.png
+        icon_filename: vault.svg
         categories:
           - data-collection.authentication-and-authorization
       keywords: []
@@ -2935,7 +2935,7 @@ modules:
       monitored_instance:
         name: Vault PKI
         link: https://github.com/aarnaud/vault-pki-exporter
-        icon_filename: vault.png
+        icon_filename: vault.svg
         categories:
           - data-collection.authentication-and-authorization
       keywords: []
@@ -3171,7 +3171,7 @@ modules:
       monitored_instance:
         name: Akamai Edge DNS Traffic
         link: https://github.com/akamai/akamai-edgedns-traffic-exporter
-        icon_filename: akamai.png
+        icon_filename: akamai.svg
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords: []
@@ -3197,7 +3197,7 @@ modules:
       monitored_instance:
         name: Akamai Global Traffic Management
         link: https://github.com/akamai/akamai-gtm-metrics-exporter
-        icon_filename: akamai.png
+        icon_filename: akamai.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -3515,7 +3515,7 @@ modules:
       monitored_instance:
         name: AWS Quota
         link: https://github.com/emylincon/aws_quota_exporter
-        icon_filename: aws.png
+        icon_filename: aws.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -3831,7 +3831,7 @@ modules:
       monitored_instance:
         name: Cloud Foundry
         link: https://github.com/bosh-prometheus/cf_exporter
-        icon_filename: cloud-foundry.png
+        icon_filename: cloud-foundry.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -3860,7 +3860,7 @@ modules:
       monitored_instance:
         name: Cloud Foundry Firehose
         link: https://github.com/bosh-prometheus/firehose_exporter
-        icon_filename: cloud-foundry.png
+        icon_filename: cloud-foundry.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -3889,7 +3889,7 @@ modules:
       monitored_instance:
         name: Akami Cloudmonitor
         link: https://github.com/ExpressenAB/cloudmonitor_exporter
-        icon_filename: akamai.png
+        icon_filename: akamai.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords:
@@ -4233,7 +4233,7 @@ modules:
       monitored_instance:
         name: Dell EMC XtremIO cluster
         link: https://github.com/cthiel42/prometheus-xtremio-exporter
-        icon_filename: dell-emc.png
+        icon_filename: dell.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -4994,7 +4994,7 @@ modules:
       monitored_instance:
         name: IOTA full node
         link: https://github.com/crholliday/iota-prom-exporter
-        icon_filename: iota.png
+        icon_filename: iota.svg
         categories:
           - data-collection.blockchain-servers
       keywords: []
@@ -5924,7 +5924,7 @@ modules:
       monitored_instance:
         name: NSX-T
         link: https://github.com/jk8s/nsxt_exporter
-        icon_filename: vmware-nsx-t.png
+        icon_filename: vmware-nsx.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []

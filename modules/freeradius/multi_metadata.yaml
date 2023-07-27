@@ -8,7 +8,7 @@ modules:
         link: https://freeradius.org/
         categories:
           - data-collection.authentication-and-authorization
-        icon_filename: freeradius.png
+        icon_filename: freeradius.svg
       keywords:
         - freeradius
         - radius
