@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Solr
         link: https://lucene.apache.org/solr/
-        icon_filename: solr.png
+        icon_filename: solr.svg
         categories:
           - data-collection.search-engines
       keywords:

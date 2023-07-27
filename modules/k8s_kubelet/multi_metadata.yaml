@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Kubelet
         link: https://kubernetes.io/docs/concepts/overview/components/#kubelet
-        icon_filename: k8s.png
+        icon_filename: kubernetes.svg
         categories:
           - data-collection.kubernetes
       keywords:

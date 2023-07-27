@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: PowerDNS Authoritative Server
         link: https://doc.powerdns.com/authoritative/
-        icon_filename: powerdns.jpeg
+        icon_filename: powerdns.svg
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords:

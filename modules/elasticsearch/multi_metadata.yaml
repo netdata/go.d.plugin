@@ -7,7 +7,7 @@ modules:
       monitored_instance:
         name: Elasticsearch
         link: https://www.elastic.co/elasticsearch/
-        icon_filename: elastic.png
+        icon_filename: elasticsearch.svg
         categories:
           - data-collection.search-engines
       keywords:
@@ -627,6 +627,6 @@ modules:
       monitored_instance:
         name: OpenSearch
         link: https://opensearch.org/
-        icon_filename: elastic.png
+        icon_filename: opensearch.svg
         categories:
           - data-collection.search-engines

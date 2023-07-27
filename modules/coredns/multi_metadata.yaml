@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: CoreDNS
         link: https://coredns.io/
-        icon_filename: coredns.png
+        icon_filename: coredns.svg
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords:

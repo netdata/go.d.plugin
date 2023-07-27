@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Logstash
         link: https://www.elastic.co/products/logstash
-        icon_filename: elastic.png
+        icon_filename: elastic-logstash.svg
         categories:
           - data-collection.logs-servers
       keywords:

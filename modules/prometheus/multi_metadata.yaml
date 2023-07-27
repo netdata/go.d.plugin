@@ -928,7 +928,7 @@ modules:
       monitored_instance:
         name: Cisco ACI
         link: https://github.com/RavuAlHemio/prometheus_aci_exporter
-        icon_filename: cisco.png
+        icon_filename: cisco.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords:
@@ -957,7 +957,7 @@ modules:
       monitored_instance:
         name: Citrix NetScaler
         link: https://github.com/rokett/Citrix-NetScaler-Exporter
-        icon_filename: netscaler.png
+        icon_filename: citrix.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords:
@@ -1326,7 +1326,7 @@ modules:
       monitored_instance:
         name: Fortigate firewall
         link: https://github.com/bluecmd/fortigate_exporter
-        icon_filename: fortinet.png
+        icon_filename: fortinet.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -1352,7 +1352,7 @@ modules:
       monitored_instance:
         name: FreeBSD NFS
         link: https://github.com/Axcient/freebsd-nfs-exporter
-        icon_filename: freebsd.jpg
+        icon_filename: freebsd.svg
         categories:
           - data-collection.freebsd-systems
       keywords: []
@@ -1378,7 +1378,7 @@ modules:
       monitored_instance:
         name: FreeBSD RCTL/RACCT
         link: https://github.com/yo000/rctl_exporter
-        icon_filename: freebsd.jpg
+        icon_filename: freebsd.svg
         categories:
           - data-collection.freebsd-systems
       keywords: []
@@ -1604,7 +1604,7 @@ modules:
       monitored_instance:
         name: Graylog Server
         link: https://github.com/Graylog2/graylog2-server/
-        icon_filename: graylog.png
+        icon_filename: graylog.svg
         categories:
           - data-collection.logs-servers
       keywords: []
@@ -2383,7 +2383,7 @@ modules:
       monitored_instance:
         name: Philips Hue
         link: https://github.com/aexel90/hue_exporter
-        icon_filename: hue.png
+        icon_filename: hue.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -2516,7 +2516,7 @@ modules:
       monitored_instance:
         name: RIPE Atlas
         link: https://github.com/czerwonk/atlas_exporter
-        icon_filename: ripe.png
+        icon_filename: ripe.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -2701,7 +2701,7 @@ modules:
       monitored_instance:
         name: Starlink (SpaceX)
         link: https://github.com/danopstech/starlink_exporter
-        icon_filename: starlink.png
+        icon_filename: starlink.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -2831,7 +2831,7 @@ modules:
       monitored_instance:
         name: Twitch
         link: https://github.com/damoun/twitch_exporter
-        icon_filename: twitch.png
+        icon_filename: twitch.svg
         categories:
           - data-collection.media-streaming-servers
       keywords: []
@@ -3039,7 +3039,7 @@ modules:
       monitored_instance:
         name: Airthings Waveplus air sensor
         link: https://github.com/jeremybz/waveplus_exporter
-        icon_filename: airthings.png
+        icon_filename: airthings.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -3119,7 +3119,7 @@ modules:
       monitored_instance:
         name: 8430FT modem
         link: https://github.com/dernasherbrezon/8430ft_exporter
-        icon_filename: 8430ft.png
+        icon_filename: mtc.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -3353,7 +3353,7 @@ modules:
       monitored_instance:
         name: Apple Time Machine
         link: https://github.com/znerol/prometheus-timemachine-exporter
-        icon_filename: apple.png
+        icon_filename: apple.svg
         categories:
           - data-collection.macos-systems
       keywords: []
@@ -3997,7 +3997,7 @@ modules:
       monitored_instance:
         name: Shell command
         link: https://github.com/tomwilkie/prom-run
-        icon_filename: crunner.png
+        icon_filename: crunner.svg
         categories:
           - data-collection.generic-data-collection
       keywords: []
@@ -4365,7 +4365,7 @@ modules:
       monitored_instance:
         name: Elgato Key Light devices.
         link: https://github.com/mdlayher/keylight_exporter
-        icon_filename: elgato.png
+        icon_filename: elgato.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4548,7 +4548,7 @@ modules:
       monitored_instance:
         name: Generic Command Line Output
         link: https://github.com/MarioMartReq/generic-exporter
-        icon_filename: cli.jpeg
+        icon_filename: cli.svg
         categories:
           - data-collection.generic-data-collection
       keywords: []
@@ -4653,7 +4653,7 @@ modules:
       monitored_instance:
         name: Halon
         link: https://github.com/tobiasbp/halon_exporter
-        icon_filename: halon.png
+        icon_filename: halon.svg
         categories:
           - data-collection.mail-servers
       keywords: []
@@ -4732,7 +4732,7 @@ modules:
       monitored_instance:
         name: Helium hotspot
         link: https://github.com/tedder/helium_hotspot_exporter
-        icon_filename: helium.png
+        icon_filename: helium.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4758,7 +4758,7 @@ modules:
       monitored_instance:
         name: Helium miner (validator)
         link: https://github.com/tedder/miner_exporter
-        icon_filename: helium.png
+        icon_filename: helium.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4812,7 +4812,7 @@ modules:
       monitored_instance:
         name: Huawei devices
         link: https://github.com/eliecharra/hilink-exporter
-        icon_filename: Huawei-hilink.png
+        icon_filename: huawei.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4890,7 +4890,7 @@ modules:
       monitored_instance:
         name: Homebridge
         link: https://github.com/lstrojny/homebridge-prometheus-exporter
-        icon_filename: homebridge.png
+        icon_filename: homebridge.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4916,7 +4916,7 @@ modules:
       monitored_instance:
         name: Homey
         link: https://github.com/rickardp/homey-prometheus-exporter
-        icon_filename: homey.png
+        icon_filename: homey.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -5020,7 +5020,7 @@ modules:
       monitored_instance:
         name: iqAir AirVisual air quality monitors
         link: https://github.com/Packetslave/iqair_exporter
-        icon_filename: iqair.png
+        icon_filename: iqair.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -5232,7 +5232,7 @@ modules:
       monitored_instance:
         name: Kubernetes Cluster Cloud Cost
         link: https://github.com/agilestacks/korral
-        icon_filename: kubernetes.png
+        icon_filename: kubernetes.svg
         categories:
           - data-collection.kubernetes
       keywords:
@@ -5391,7 +5391,7 @@ modules:
       monitored_instance:
         name: Meilisearch
         link: https://github.com/scottaglia/meilisearch_exporter
-        icon_filename: meilisearch.png
+        icon_filename: meilisearch.svg
         categories:
           - data-collection.search-engines
       keywords: []
@@ -5469,7 +5469,7 @@ modules:
       monitored_instance:
         name: Mesos
         link: http://github.com/mesosphere/mesos_exporter
-        icon_filename: mesos.png
+        icon_filename: mesos.svg
         categories:
           - data-collection.provisioning-systems
       keywords: []
@@ -5521,7 +5521,7 @@ modules:
       monitored_instance:
         name: Modbus protocol
         link: https://github.com/dernasherbrezon/modbusrtu_exporter
-        icon_filename: modbus.png
+        icon_filename: modbus.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords:
@@ -5576,7 +5576,7 @@ modules:
       monitored_instance:
         name: Monnit Sensors MQTT
         link: https://github.com/braxton9460/monnit-mqtt-exporter
-        icon_filename: monnit.png
+        icon_filename: monnit.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -6167,7 +6167,7 @@ modules:
       monitored_instance:
         name: OpenWeatherMap
         link: https://github.com/Tenzer/openweathermap-exporter
-        icon_filename: openweathermap.png
+        icon_filename: openweathermap.svg
         categories:
           - data-collection.generic-data-collection
       keywords: []
