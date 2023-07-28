@@ -761,7 +761,7 @@
     monitored_instance:
       name: Kafka Configs
       link: https://github.com/EladLeev/kafka-config-metrics
-      icon_filename: kafka.png
+      icon_filename: kafka.svg
       categories:
         - data-collection.message-brokers
     keywords:

@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Nvidia GPU
         link: https://www.nvidia.com/en-us/
-        icon_filename: nvidia.png
+        icon_filename: nvidia.svg
         categories:
           - data-collection.hardware-devices-and-sensors
       keywords:
