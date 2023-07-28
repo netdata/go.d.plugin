@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: NGINX VTS
         link: https://www.nginx.com/
-        icon_filename: nginx.png
+        icon_filename: nginx.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:

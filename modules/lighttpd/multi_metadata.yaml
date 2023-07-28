@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Lighttpd
         link: https://www.lighttpd.net/
-        icon_filename: lighttpd.png
+        icon_filename: lighttpd.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:

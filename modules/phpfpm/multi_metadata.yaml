@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: PHP-FPM
         link: https://php-fpm.org/
-        icon_filename: phpfpm.png
+        icon_filename: php.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:

@@ -7,7 +7,7 @@ modules:
       monitored_instance:
         name: Apache
         link: https://httpd.apache.org/
-        icon_filename: apache.png
+        icon_filename: apache.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:
@@ -295,6 +295,6 @@ modules:
       monitored_instance:
         name: HTTPD
         link: https://httpd.apache.org/
-        icon_filename: apache.png
+        icon_filename: apache.svg
         categories:
           - data-collection.web-servers-and-web-proxies
