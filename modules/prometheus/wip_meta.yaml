@@ -6,7 +6,7 @@
     monitored_instance:
       name: NetApp Trident
       link: https://github.com/NetApp/trident
-      icon_filename: netapp.png
+      icon_filename: netapp.svg
       categories:
         - data-collection.storage-mount-points-and-filesystems
     keywords:

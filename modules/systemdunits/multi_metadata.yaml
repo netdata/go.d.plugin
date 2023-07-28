@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Systemd
         link: https://www.freedesktop.org/wiki/Software/systemd/
-        icon_filename: systemd.png
+        icon_filename: systemd.svg
         categories:
           - data-collection.systemd
       keywords:

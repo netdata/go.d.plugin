@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: OpenVPN status log
         link: https://openvpn.net/
-        icon_filename: openvpn.png
+        icon_filename: openvpn.svg
         categories:
           - data-collection.vpns
       keywords:

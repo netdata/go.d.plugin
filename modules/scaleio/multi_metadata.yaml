@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Dell EMC ScaleIO
         link: https://www.dell.com/en-ca/dt/storage/scaleio/scaleioreadynode.htm
-        icon_filename: scaleio.png
+        icon_filename: dell.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords:
