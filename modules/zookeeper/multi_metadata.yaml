@@ -8,7 +8,7 @@ modules:
         link: https://zookeeper.apache.org/
         categories:
           - data-collection.service-discovery-registry
-        icon_filename: zookeeper.png
+        icon_filename: zookeeper.svg
       keywords:
         - zookeeper
       most_popular: false

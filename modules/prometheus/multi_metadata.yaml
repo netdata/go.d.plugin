@@ -798,7 +798,7 @@ modules:
       monitored_instance:
         name: Borg backup
         link: https://github.com/k0ral/borg-exporter
-        icon_filename: borg.png
+        icon_filename: borg.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -1233,6 +1233,7 @@ modules:
         - network monitoring
         - network performance
         - traffic analysis
+        - nut
     overview:
       <<: *overview
       data_collection:
@@ -1307,7 +1308,7 @@ modules:
       monitored_instance:
         name: etcd
         link: https://etcd.io/
-        icon_filename: etcd.png
+        icon_filename: etcd.svg
         categories:
           - data-collection.service-discovery-registry
       keywords: []
@@ -1657,7 +1658,7 @@ modules:
       monitored_instance:
         name: Honeypot
         link: https://github.com/Intrinsec/honeypot_exporter
-        icon_filename: intrinsec
+        icon_filename: intrinsec.svg
         categories:
           - data-collection.security-systems
       keywords: []
@@ -1735,7 +1736,7 @@ modules:
       monitored_instance:
         name: IBM Spectrum
         link: https://github.com/topine/ibm-spectrum-exporter
-        icon_filename: ibm-spectrum.png
+        icon_filename: ibm.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -2111,7 +2112,7 @@ modules:
       monitored_instance:
         name: MQTT Blackbox
         link: https://github.com/inovex/mqtt_blackbox_exporter
-        icon_filename: mqtt.png
+        icon_filename: mqtt.svg
         categories:
           - data-collection.synthetic-checks
       keywords: []
@@ -2137,7 +2138,7 @@ modules:
       monitored_instance:
         name: Netapp ONTAP API
         link: https://github.com/sapcc/netapp-api-exporter
-        icon_filename: netapp.png
+        icon_filename: netapp.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords:
@@ -2166,7 +2167,7 @@ modules:
       monitored_instance:
         name: NetApp Solidfire
         link: https://github.com/mjavier2k/solidfire-exporter
-        icon_filename: netapp.png
+        icon_filename: netapp.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords:
@@ -2883,7 +2884,7 @@ modules:
       monitored_instance:
         name: Uptimerobot
         link: https://github.com/wosc/prometheus-uptimerobot
-        icon_filename: uptimerobot.png
+        icon_filename: uptimerobot.svg
         categories:
           - data-collection.synthetic-checks
       keywords: []
@@ -3249,7 +3250,7 @@ modules:
       monitored_instance:
         name: Altaro Backup
         link: https://github.com/raph2i/altaro_backup_exporter
-        icon_filename: altaro.png
+        icon_filename: altaro.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -4706,7 +4707,7 @@ modules:
       monitored_instance:
         name: HDSentinel
         link: https://github.com/qusielle/hdsentinel-exporter
-        icon_filename: hdsentinel.png
+        icon_filename: harddisk.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -5550,7 +5551,7 @@ modules:
       monitored_instance:
         name: MogileFS
         link: https://github.com/KKBOX/mogilefs-exporter
-        icon_filename: mogilefs.png
+        icon_filename: filesystem.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -5942,32 +5943,6 @@ modules:
           - title: Install Exporter
             description: |
               Install [NSX-T Exporter](https://github.com/jk8s/nsxt_exporter) by following the instructions mentioned in the exporter README.
-  - <<: *module
-    meta:
-      <<: *meta
-      most_popular: false
-      community: true
-      monitored_instance:
-        name: NUT
-        link: https://github.com/HON95/prometheus-nut-exporter
-        icon_filename: nut_ups.png
-        categories:
-          - data-collection.ups
-      keywords: []
-    overview:
-      <<: *overview
-      data_collection:
-        metrics_description: |
-          Monitor Network UPS Tools (NUT) metrics for efficient uninterruptible power supply management and monitoring.
-        method_description: |
-          Metrics are gathered by periodically sending HTTP requests to [NUT Exporter](https://github.com/HON95/prometheus-nut-exporter).
-    setup:
-      <<: *setup
-      prerequisites:
-        list:
-          - title: Install Exporter
-            description: |
-              Install [NUT Exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
       <<: *meta
@@ -6406,7 +6381,7 @@ modules:
       monitored_instance:
         name: Pingdom
         link: https://github.com/veepee-oss/pingdom_exporter
-        icon_filename: pingdom.png
+        icon_filename: solarwinds.svg
         categories:
           - data-collection.synthetic-checks
       keywords: []
@@ -6510,7 +6485,7 @@ modules:
       monitored_instance:
         name: Eaton UPS
         link: https://github.com/psyinfra/prometheus-eaton-ups-exporter
-        icon_filename: eaton.jpg
+        icon_filename: eaton.svg
         categories:
           - data-collection.ups
       keywords: []
@@ -6849,7 +6824,7 @@ modules:
       monitored_instance:
         name: Site 24x7
         link: https://github.com/svenstaro/site24x7_exporter
-        icon_filename: site247.png
+        icon_filename: site24x7.svg
         categories:
           - data-collection.synthetic-checks
       keywords: []
@@ -6953,7 +6928,7 @@ modules:
       monitored_instance:
         name: SoftEther VPN Server
         link: https://github.com/dalance/softether_exporter
-        icon_filename: softether.png
+        icon_filename: softether.svg
         categories:
           - data-collection.vpns
       keywords: []
@@ -7083,7 +7058,7 @@ modules:
       monitored_instance:
         name: IBM Spectrum Virtualize
         link: https://github.com/bluecmd/spectrum_virtualize_exporter
-        icon_filename: spectrumv.png
+        icon_filename: ibm.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
@@ -7295,7 +7270,7 @@ modules:
       monitored_instance:
         name: strongSwan
         link: https://github.com/jlti-dev/ipsec_exporter
-        icon_filename: strongswan.png
+        icon_filename: strongswan.svg
         categories:
           - data-collection.vpns
       keywords: []
