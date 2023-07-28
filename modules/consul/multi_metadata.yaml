@@ -8,7 +8,7 @@ modules:
         link: https://www.consul.io/
         categories:
           - data-collection.service-discovery-registry
-        icon_filename: consul.png
+        icon_filename: consul.svg
       alternative_monitored_instances: []
       related_resources:
         integrations:

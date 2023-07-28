@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: NVMe devices
         link: ""
-        icon_filename: nvme.png
+        icon_filename: nvme.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords:
