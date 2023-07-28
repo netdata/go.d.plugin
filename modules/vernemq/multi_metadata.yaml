@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: VerneMQ
         link: https://vernemq.com
-        icon_filename: vernemq.png
+        icon_filename: vernemq.svg
         categories:
           - data-collection.message-brokers
       keywords:
