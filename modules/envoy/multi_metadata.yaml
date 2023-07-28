@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Envoy
         link: https://www.envoyproxy.io/
-        icon_filename: netdata.png
+        icon_filename: envoy.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:

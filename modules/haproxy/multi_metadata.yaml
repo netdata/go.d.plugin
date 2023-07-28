@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: HAProxy
         link: https://www.haproxy.org/
-        icon_filename: haproxy.png
+        icon_filename: haproxy.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:

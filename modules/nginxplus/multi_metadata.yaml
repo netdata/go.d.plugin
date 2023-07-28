@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: NGINX Plus
         link: https://www.nginx.com/products/nginx/
-        icon_filename: nginxplus.png
+        icon_filename: nginxplus.svg
         categories:
           - data-collection.web-servers-and-web-proxies
       keywords:
