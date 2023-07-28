@@ -986,7 +986,7 @@ modules:
       monitored_instance:
         name: ClickHouse
         link: https://github.com/ClickHouse/ClickHouse
-        icon_filename: clickhouse.png
+        icon_filename: clickhouse.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -1631,7 +1631,7 @@ modules:
       monitored_instance:
         name: HANA
         link: https://github.com/jenningsloy318/hana_exporter
-        icon_filename: sap.png
+        icon_filename: sap.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -1761,7 +1761,7 @@ modules:
       monitored_instance:
         name: InfluxDB
         link: https://github.com/prometheus/influxdb_exporter
-        icon_filename: influxDB.png
+        icon_filename: influxdb.svg
         categories:
           - data-collection.database-servers
       keywords:
@@ -2487,7 +2487,7 @@ modules:
       monitored_instance:
         name: AWS RDS
         link: https://github.com/percona/rds_exporter
-        icon_filename: rds.png
+        icon_filename: aws-rds.svg
         categories:
           - data-collection.database-servers
       keywords:
@@ -2961,7 +2961,7 @@ modules:
       monitored_instance:
         name: Vertica
         link: https://github.com/vertica/vertica-prometheus-exporter
-        icon_filename: vertica.png
+        icon_filename: vertica.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -3945,7 +3945,7 @@ modules:
       monitored_instance:
         name: ClusterControl CMON
         link: https://github.com/severalnines/cmon_exporter
-        icon_filename: severalnines.png
+        icon_filename: cluster-control.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -4679,7 +4679,7 @@ modules:
       monitored_instance:
         name: Hasura GraphQL Server
         link: https://github.com/zolamk/hasura-exporter
-        icon_filename: hasura.png
+        icon_filename: hasura.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -5417,7 +5417,7 @@ modules:
       monitored_instance:
         name: Memcached
         link: https://github.com/prometheus/memcached_exporter
-        icon_filename: Memcached-Logo.wine.png
+        icon_filename: memcached.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -6193,7 +6193,7 @@ modules:
       monitored_instance:
         name: Oracle DB
         link: https://github.com/iamseth/oracledb_exporter
-        icon_filename: oracledb.png
+        icon_filename: oracledb.svg
         categories:
           - data-collection.database-servers
       keywords:
@@ -6328,7 +6328,7 @@ modules:
       monitored_instance:
         name: pgBackRest
         link: https://github.com/woblerr/pgbackrest_exporter
-        icon_filename: pgbackrest.png
+        icon_filename: postegres.svg
         categories:
           - data-collection.database-servers
       keywords: []
@@ -7161,7 +7161,7 @@ modules:
       monitored_instance:
         name: SQL Database agnostic
         link: https://github.com/free/sql_exporter
-        icon_filename: sql.png
+        icon_filename: sql.svg
         categories:
           - data-collection.database-servers
       keywords:
@@ -7610,7 +7610,7 @@ modules:
       monitored_instance:
         name: Warp10
         link: https://github.com/centreon/warp10-sensision-exporter
-        icon_filename: warp10.png
+        icon_filename: warp10.svg
         categories:
           - data-collection.database-servers
       keywords: []

@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Couchbase
         link: https://www.couchbase.com/
-        icon_filename: couchbase.png
+        icon_filename: couchbase.svg
         categories:
           - data-collection.database-servers
       keywords:

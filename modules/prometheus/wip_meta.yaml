@@ -1380,7 +1380,7 @@
     monitored_instance:
       name: ClickHouse
       link: https://github.com/ClickHouse/ClickHouse
-      icon_filename: clickhouse.png
+      icon_filename: clickhouse.svg
       categories:
         - data-collection.database-servers
     keywords: []

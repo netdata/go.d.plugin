@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Pika
         link: https://github.com/OpenAtomFoundation/pika
-        icon_filename: pika.png
+        icon_filename: pika.svg
         categories:
           - data-collection.database-servers
       keywords:

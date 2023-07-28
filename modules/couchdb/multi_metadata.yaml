@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: CouchDB
         link: https://couchdb.apache.org/
-        icon_filename: couchdb.png
+        icon_filename: couchdb.svg
         categories:
           - data-collection.database-servers
       keywords:

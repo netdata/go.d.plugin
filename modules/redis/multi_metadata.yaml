@@ -8,7 +8,7 @@ modules:
         link: https://redis.com/
         categories:
           - data-collection.database-servers
-        icon_filename: redis.png
+        icon_filename: redis.svg
       related_resources:
         integrations:
           list:
