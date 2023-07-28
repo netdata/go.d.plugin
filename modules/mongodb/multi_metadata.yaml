@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: MongoDB
         link: https://www.mongodb.com/
-        icon_filename: mongodb.png
+        icon_filename: mongodb.svg
         categories:
           - data-collection.database-servers
       keywords:

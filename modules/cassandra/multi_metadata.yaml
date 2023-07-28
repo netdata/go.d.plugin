@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         categories:
           - data-collection.database-servers
-        icon_filename: cassandra.png
+        icon_filename: cassandra.svg
         name: Cassandra
         link: https://cassandra.apache.org/_/index.html
       alternative_monitored_instances: []
