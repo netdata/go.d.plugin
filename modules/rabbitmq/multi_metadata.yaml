@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: RabbitMQ
         link: https://www.rabbitmq.com/
-        icon_filename: rabbitmq.png
+        icon_filename: rabbitmq.svg
         categories:
           - data-collection.message-brokers
       keywords:
