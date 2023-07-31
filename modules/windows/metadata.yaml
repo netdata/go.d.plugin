@@ -2098,7 +2098,7 @@ modules:
         - database
         - db
       monitored_instance:
-        name: MSSQL
+        name: MS SQL Server
         link: https://www.microsoft.com/en-us/sql-server/
         icon_filename: mssql.svg
         categories:
@@ -2130,7 +2130,7 @@ modules:
       monitored_instance:
         name: MS Exchange
         link: https://www.microsoft.com/en-us/microsoft-365/exchange/email
-        icon_filename: windows.svg
+        icon_filename: exchange.svg
         categories:
           - data-collection.windows-systems
   - <<: *module
@@ -2161,6 +2161,6 @@ modules:
       monitored_instance:
         name: NET Framework
         link: https://dotnet.microsoft.com/en-us/download/dotnet-framework
-        icon_filename: windows.svg
+        icon_filename: dotnet.svg
         categories:
           - data-collection.windows-systems
