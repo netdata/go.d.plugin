@@ -3544,8 +3544,7 @@ modules:
       community: true
       monitored_instance:
         name: Bobcat Miner 300
-        link: https://gith
-        ub.com/pperzyna/bobcat_exporter
+        link: https://github.com/pperzyna/bobcat_exporter
         icon_filename: bobcat.jpg
         categories:
           - data-collection.iot-devices
