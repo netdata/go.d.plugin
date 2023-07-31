@@ -1258,7 +1258,7 @@ modules:
         link: https://github.com/Apside-TOP/dynatrace_exporter
         icon_filename: dynatrace.svg
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -1588,7 +1588,7 @@ modules:
         link: https://grafana.com/
         icon_filename: grafana.png
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -2008,7 +2008,7 @@ modules:
       monitored_instance:
         name: Minecraft
         link: https://github.com/sladkoff/minecraft-prometheus-exporter
-        icon_filename: bukkit-minecraft.png
+        icon_filename: minecraft.png
         categories:
           - data-collection.gaming
       keywords: []
@@ -2227,7 +2227,7 @@ modules:
         link: https://github.com/jfindley/newrelic_exporter
         icon_filename: newrelic.svg
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -2517,7 +2517,7 @@ modules:
       monitored_instance:
         name: RIPE Atlas
         link: https://github.com/czerwonk/atlas_exporter
-        icon_filename: ripe.svg
+        icon_filename: ripe.png
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -3144,7 +3144,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: A2S
+        name: Steam 
         link: https://github.com/armsnyder/a2s-exporter
         icon_filename: a2s.png
         categories:
@@ -3545,7 +3545,7 @@ modules:
       monitored_instance:
         name: Bobcat Miner 300
         link: https://github.com/pperzyna/bobcat_exporter
-        icon_filename: bobber.svg
+        icon_filename: bobcat.jpg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -4103,7 +4103,7 @@ modules:
       monitored_instance:
         name: CS:GO
         link: https://github.com/kinduff/csgo_exporter
-        icon_filename: csgo.png
+        icon_filename: csgo.svg
         categories:
           - data-collection.gaming
       keywords: []
@@ -4764,7 +4764,7 @@ modules:
         link: https://github.com/tedder/miner_exporter
         icon_filename: helium.svg
         categories:
-          - data-collection.iot-devices
+          - data-collection.blockchain-servers
       keywords: []
     overview:
       <<: *overview
@@ -5369,7 +5369,7 @@ modules:
       monitored_instance:
         name: Maildir
         link: https://github.com/cherti/mailexporter
-        icon_filename: mailexporter.png
+        icon_filename: mailserver.svg
         categories:
           - data-collection.mail-servers
       keywords: []
@@ -5634,7 +5634,7 @@ modules:
         link: https://github.com/Griesbacher/Iapetos
         icon_filename: naemon.svg
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -5660,7 +5660,7 @@ modules:
         link: https://github.com/wbollock/nagios_exporter
         icon_filename: nagios.png
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -6145,7 +6145,7 @@ modules:
       monitored_instance:
         name: OpenWeatherMap
         link: https://github.com/Tenzer/openweathermap-exporter
-        icon_filename: openweathermap.svg
+        icon_filename: openweather.png
         categories:
           - data-collection.generic-data-collection
       keywords: []
@@ -6566,7 +6566,7 @@ modules:
       monitored_instance:
         name: Rancher
         link: https://github.com/infinityworksltd/prometheus-rancher-exporter
-        icon_filename: rancher.png
+        icon_filename: rancher.svg
         categories:
           - data-collection.kubernetes
       keywords: []
@@ -7035,7 +7035,7 @@ modules:
       monitored_instance:
         name: SONiC NOS
         link: https://github.com/kamelnetworks/sonic_exporter
-        icon_filename: sonic.jpg
+        icon_filename: sonic.png
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -7192,7 +7192,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: Steam  (A2S_INFO)
+        name: Steam (A2S_INFO)
         link: https://github.com/xperimental/steam-exporter
         icon_filename: steam.png
         categories:
