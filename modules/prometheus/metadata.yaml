@@ -3435,7 +3435,7 @@ modules:
       monitored_instance:
         name: Audisto
         link: https://github.com/ZeitOnline/audisto_exporter
-        icon_filename: audisto.png
+        icon_filename: audisto.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -4289,8 +4289,11 @@ modules:
         link: https://github.com/jgosmann/dmarc-metrics-exporter
         icon_filename: dmarc.png
         categories:
-          - data-collection.mail-servers
-      keywords: []
+          - data-collection.authentication-and-authorization
+      keywords:
+        - email authentication
+        - policy
+        - reporting
     overview:
       <<: *overview
       data_collection:
@@ -6169,7 +6172,7 @@ modules:
       monitored_instance:
         name: Oracle DB
         link: https://github.com/iamseth/oracledb_exporter
-        icon_filename: oracledb.svg
+        icon_filename: oracle.svg
         categories:
           - data-collection.database-servers
       keywords:
@@ -7166,7 +7169,7 @@ modules:
       monitored_instance:
         name: Starwind VSAN VSphere Edition
         link: https://github.com/evoicefire/starwind-vsan-exporter
-        icon_filename: starwind.png
+        icon_filename: starwind.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
