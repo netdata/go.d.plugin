@@ -5077,7 +5077,7 @@ modules:
       monitored_instance:
         name: Generic storage enclosure tool
         link: https://github.com/Gandi/jbod-rs
-        icon_filename: jbod.png
+        icon_filename: storage-enclosure.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
