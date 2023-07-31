@@ -1174,7 +1174,7 @@ modules:
       monitored_instance:
         name: DigitalOcean
         link: https://github.com/metalmatze/digitalocean_exporter
-        icon_filename: digitalocean.png
+        icon_filename: digitalocean.svg
         categories:
           - data-collection.cloud-provider-managed
       keywords: []
@@ -3380,7 +3380,7 @@ modules:
       monitored_instance:
         name: ARM HWCPipe
         link: https://github.com/ylz-at/arm-hwcpipe-exporter
-        icon_filename: arm.png
+        icon_filename: arm.svg
         categories:
           - data-collection.hardware-devices-and-sensors
       keywords: []
@@ -5632,7 +5632,7 @@ modules:
       monitored_instance:
         name: Naemon
         link: https://github.com/Griesbacher/Iapetos
-        icon_filename: naemon.png
+        icon_filename: naemon.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -6006,7 +6006,7 @@ modules:
       monitored_instance:
         name: ODBC
         link: https://github.com/MACHBASE/prometheus-odbc-exporter
-        icon_filename: odbc.png
+        icon_filename: odbc.svg
         categories:
           - data-collection.database-servers
       keywords:
