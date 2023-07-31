@@ -4288,8 +4288,11 @@ modules:
         link: https://github.com/jgosmann/dmarc-metrics-exporter
         icon_filename: dmarc.png
         categories:
-          - data-collection.mail-servers
-      keywords: []
+          - data-collection.authentication-and-authorization
+      keywords:
+        - email authentication
+        - policy
+        - reporting
     overview:
       <<: *overview
       data_collection:
