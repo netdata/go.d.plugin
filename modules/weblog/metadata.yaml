@@ -8,7 +8,7 @@ modules:
         link: ""
         categories:
           - data-collection.web-servers-and-web-proxies
-        icon_filename: nginx_apache.png
+        icon_filename: webservers.svg 
       keywords:
         - webserver
         - apache
