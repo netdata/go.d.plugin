@@ -7168,7 +7168,7 @@ modules:
       monitored_instance:
         name: Starwind VSAN VSphere Edition
         link: https://github.com/evoicefire/starwind-vsan-exporter
-        icon_filename: starwind.png
+        icon_filename: starwind.svg
         categories:
           - data-collection.storage-mount-points-and-filesystems
       keywords: []
