@@ -8,7 +8,7 @@ modules:
         link: https://www.nginx.com/
         categories:
           - data-collection.web-servers-and-web-proxies
-        icon_filename: TODO
+        icon_filename: nginx.svg
       related_resources:
         integrations:
           list:

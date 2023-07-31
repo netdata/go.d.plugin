@@ -368,7 +368,7 @@ modules:
       monitored_instance:
         name: Aruba devices
         link: https://github.com/slashdoom/aruba_exporter
-        icon_filename: aruba.png
+        icon_filename: aruba.svg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords:
@@ -3435,7 +3435,7 @@ modules:
       monitored_instance:
         name: Audisto
         link: https://github.com/ZeitOnline/audisto_exporter
-        icon_filename: audisto.png
+        icon_filename: audisto.svg
         categories:
           - data-collection.apm
       keywords: []
@@ -3545,7 +3545,7 @@ modules:
       monitored_instance:
         name: Bobcat Miner 300
         link: https://github.com/pperzyna/bobcat_exporter
-        icon_filename: bobber.png
+        icon_filename: bobber.svg
         categories:
           - data-collection.iot-devices
       keywords: []
@@ -6168,7 +6168,7 @@ modules:
       monitored_instance:
         name: Oracle DB
         link: https://github.com/iamseth/oracledb_exporter
-        icon_filename: oracledb.svg
+        icon_filename: oracle.svg
         categories:
           - data-collection.database-servers
       keywords:
