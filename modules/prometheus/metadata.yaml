@@ -1355,7 +1355,7 @@ modules:
         link: https://github.com/Axcient/freebsd-nfs-exporter
         icon_filename: freebsd.svg
         categories:
-          - data-collection.freebsd-systems
+          - data-collection.freebsd
       keywords: []
     overview:
       <<: *overview
@@ -1381,7 +1381,7 @@ modules:
         link: https://github.com/yo000/rctl_exporter
         icon_filename: freebsd.svg
         categories:
-          - data-collection.freebsd-systems
+          - data-collection.freebsd
       keywords: []
     overview:
       <<: *overview
@@ -4288,8 +4288,11 @@ modules:
         link: https://github.com/jgosmann/dmarc-metrics-exporter
         icon_filename: dmarc.png
         categories:
-          - data-collection.mail-servers
-      keywords: []
+          - data-collection.authentication-and-authorization
+      keywords:
+        - email authentication
+        - policy
+        - reporting
     overview:
       <<: *overview
       data_collection:
