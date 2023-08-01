@@ -56,7 +56,7 @@ modules:
         list: []
       configuration:
         file:
-          name: ""
+          name: go.d/redis.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
