@@ -2114,7 +2114,7 @@ modules:
         link: https://github.com/inovex/mqtt_blackbox_exporter
         icon_filename: mqtt.svg
         categories:
-          - data-collection.synthetic-checks
+          - data-collection.message-brokers
       keywords: []
     overview:
       <<: *overview
