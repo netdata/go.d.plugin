@@ -1793,7 +1793,7 @@ modules:
         link: https://www.jenkins.io/
         icon_filename: jenkins.svg
         categories:
-          - data-collection.apm
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -1929,7 +1929,7 @@ modules:
         link: https://github.com/cloudflare/kafka_zookeeper_exporter
         icon_filename: kafka.svg
         categories:
-          - data-collection.message-brokers
+          - data-collection.service-discovery-registry
       keywords:
         - big data
         - stream processing
