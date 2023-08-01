@@ -1793,7 +1793,7 @@ modules:
         link: https://www.jenkins.io/
         icon_filename: jenkins.svg
         categories:
-          - data-collection.apm
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -1871,7 +1871,7 @@ modules:
         link: https://github.com/omarsmak/kafka-consumer-lag-monitoring
         icon_filename: kafka.svg
         categories:
-          - data-collection.message-brokers
+          - data-collection.service-discovery-registry
       keywords:
         - big data
         - stream processing
@@ -2571,7 +2571,7 @@ modules:
         link: https://github.com/vpenso/prometheus-slurm-exporter
         icon_filename: slurm.png
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -5475,7 +5475,7 @@ modules:
         link: http://github.com/mesosphere/mesos_exporter
         icon_filename: mesos.svg
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
