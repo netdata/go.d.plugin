@@ -4315,7 +4315,7 @@ modules:
       monitored_instance:
         name: DNSBL
         link: https://github.com/Luzilla/dnsbl_exporter/
-        icon_filename: dns.png
+        icon_filename: dnsbl.png
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords: []
