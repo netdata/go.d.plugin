@@ -4791,7 +4791,7 @@ modules:
         link: https://github.com/wikimedia/operations-software-hhvm_exporter
         icon_filename: hhvm.svg
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.containers-and-vms
       keywords: []
     overview:
       <<: *overview
