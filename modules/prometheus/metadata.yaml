@@ -2571,7 +2571,7 @@ modules:
         link: https://github.com/vpenso/prometheus-slurm-exporter
         icon_filename: slurm.png
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -5475,7 +5475,7 @@ modules:
         link: http://github.com/mesosphere/mesos_exporter
         icon_filename: mesos.svg
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
