@@ -9,7 +9,7 @@ modules:
         link: https://prometheus.io/
         icon_filename: prometheus.svg
         categories:
-          - data-collection.apm
+          - data-collection.generic-data-collection
       keywords:
         - prometheus
       related_resources:
@@ -1098,7 +1098,7 @@ modules:
         link: https://docs.crowdsec.net/docs/observability/prometheus
         icon_filename: crowdsec.png
         categories:
-          - data-collection.apm
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -1202,7 +1202,7 @@ modules:
         link: https://github.com/discourse/discourse-prometheus
         icon_filename: discourse.svg
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.media-streaming-servers
       keywords: []
     overview:
       <<: *overview
@@ -1871,7 +1871,7 @@ modules:
         link: https://github.com/omarsmak/kafka-consumer-lag-monitoring
         icon_filename: kafka.svg
         categories:
-          - data-collection.message-brokers
+          - data-collection.service-discovery-registry
       keywords:
         - big data
         - stream processing
@@ -2114,7 +2114,7 @@ modules:
         link: https://github.com/inovex/mqtt_blackbox_exporter
         icon_filename: mqtt.svg
         categories:
-          - data-collection.synthetic-checks
+          - data-collection.message-brokers
       keywords: []
     overview:
       <<: *overview
@@ -2571,7 +2571,7 @@ modules:
         link: https://github.com/vpenso/prometheus-slurm-exporter
         icon_filename: slurm.png
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -3302,7 +3302,7 @@ modules:
       monitored_instance:
         name: Andrews & Arnold line status
         link: https://github.com/daveio/aaisp-exporter
-        icon_filename: andrews-and-arnold.png
+        icon_filename: andrewsarnold.jpg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -3756,7 +3756,7 @@ modules:
         link: https://github.com/sergeymakinen/clamav_exporter
         icon_filename: clamav.png
         categories:
-          - data-collection.mail-servers
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -3782,7 +3782,7 @@ modules:
         link: https://github.com/FortnoxAB/clamscan-exporter
         icon_filename: clamav.png
         categories:
-          - data-collection.mail-servers
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -4315,7 +4315,7 @@ modules:
       monitored_instance:
         name: DNSBL
         link: https://github.com/Luzilla/dnsbl_exporter/
-        icon_filename: dns.png
+        icon_filename: dnsbl.png
         categories:
           - data-collection.dns-and-dhcp-servers
       keywords: []
@@ -4450,7 +4450,7 @@ modules:
         link: https://github.com/freifunk-darmstadt/fastd-exporter
         icon_filename: fastd.png
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.vpns
       keywords: []
     overview:
       <<: *overview
@@ -5475,7 +5475,7 @@ modules:
         link: http://github.com/mesosphere/mesos_exporter
         icon_filename: mesos.svg
         categories:
-          - data-collection.provisioning-systems
+          - data-collection.ci-cd-systems
       keywords: []
     overview:
       <<: *overview
@@ -7669,7 +7669,7 @@ modules:
         link: https://github.com/brokenpip3/zulip-exporter
         icon_filename: zulip.png
         categories:
-          - data-collection.notifications
+          - data-collection.media-streaming-servers
       keywords: []
     overview:
       <<: *overview
