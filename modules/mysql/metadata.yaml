@@ -794,6 +794,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      most_popular: false
       monitored_instance:
         name: Percona MySQL
         link: https://www.percona.com/software/mysql-database/percona-server
