@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Ping
         link: ""
-        icon_filename: ping.png
+        icon_filename: globe.svg
         categories:
           - data-collection.synthetic-checks
       keywords:
