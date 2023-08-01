@@ -1459,7 +1459,7 @@ modules:
         link: https://github.com/githubexporter/github-exporter
         icon_filename: github.svg
         categories:
-          - data-collection.apm
+          - data-collection.other
       keywords: []
     overview:
       <<: *overview
@@ -2571,7 +2571,8 @@ modules:
         link: https://github.com/vpenso/prometheus-slurm-exporter
         icon_filename: slurm.png
         categories:
-          - data-collection.ci-cd-systems
+          - data-collection.task-queues
+          - data-collection.provisioning-systems
       keywords: []
     overview:
       <<: *overview
@@ -3974,7 +3975,7 @@ modules:
         link: https://github.com/prometheus/collectd_exporter
         icon_filename: collectd.png
         categories:
-          - data-collection.generic-data-collection
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
@@ -4580,7 +4581,7 @@ modules:
         link: https://github.com/lunarway/github-ratelimit-exporter
         icon_filename: github.svg
         categories:
-          - data-collection.generic-data-collection
+          - data-collection.other
       keywords: []
     overview:
       <<: *overview
@@ -5475,7 +5476,8 @@ modules:
         link: http://github.com/mesosphere/mesos_exporter
         icon_filename: mesos.svg
         categories:
-          - data-collection.ci-cd-systems
+          - data-collection.provisioning-systems
+          - data-collection.task-queues
       keywords: []
     overview:
       <<: *overview
