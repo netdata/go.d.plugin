@@ -3302,7 +3302,7 @@ modules:
       monitored_instance:
         name: Andrews & Arnold line status
         link: https://github.com/daveio/aaisp-exporter
-        icon_filename: andrews-and-arnold.png
+        icon_filename: andrewsarnold.jpg
         categories:
           - data-collection.networking-stack-and-network-interfaces
       keywords: []
@@ -4450,7 +4450,7 @@ modules:
         link: https://github.com/freifunk-darmstadt/fastd-exporter
         icon_filename: fastd.png
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.vpns
       keywords: []
     overview:
       <<: *overview
