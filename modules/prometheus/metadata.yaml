@@ -7669,7 +7669,7 @@ modules:
         link: https://github.com/brokenpip3/zulip-exporter
         icon_filename: zulip.png
         categories:
-          - data-collection.notifications
+          - data-collection.media-streaming-servers
       keywords: []
     overview:
       <<: *overview
