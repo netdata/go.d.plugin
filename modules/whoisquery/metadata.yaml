@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Domain expiration date
         link: ""
-        icon_filename: whois.png
+        icon_filename: globe.svg
         categories:
           - data-collection.synthetic-checks
       keywords:
