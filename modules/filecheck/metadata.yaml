@@ -6,7 +6,7 @@ modules:
       monitored_instance:
         name: Files and directories
         link: ""
-        icon_filename: netdata.png
+        icon_filename: 'filesystem.svg'
         categories:
           - data-collection.linux-systems
       keywords:
