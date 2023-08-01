@@ -6306,7 +6306,7 @@ modules:
       monitored_instance:
         name: pgBackRest
         link: https://github.com/woblerr/pgbackrest_exporter
-        icon_filename: postegres.svg
+        icon_filename: pgbackrest.png
         categories:
           - data-collection.database-servers
       keywords: []
@@ -6592,7 +6592,7 @@ modules:
       monitored_instance:
         name: Raritan PDU
         link: https://github.com/psyinfra/prometheus-raritan-pdu-exporter
-        icon_filename: raritan.png
+        icon_filename: raritan.svg
         categories:
           - data-collection.hardware-devices-and-sensors
       keywords: []
