@@ -1202,7 +1202,7 @@ modules:
         link: https://github.com/discourse/discourse-prometheus
         icon_filename: discourse.svg
         categories:
-          - data-collection.web-servers-and-web-proxies
+          - data-collection.media-streaming-servers
       keywords: []
     overview:
       <<: *overview
