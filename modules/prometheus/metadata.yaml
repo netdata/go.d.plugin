@@ -1014,7 +1014,7 @@ modules:
         link: https://github.com/wehkamp/docker-prometheus-cloudflare-exporter
         icon_filename: cloudflare.svg
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.web-servers-and-web-proxies
       keywords:
         - cloud services
         - cloud computing
@@ -1258,7 +1258,7 @@ modules:
         link: https://github.com/Apside-TOP/dynatrace_exporter
         icon_filename: dynatrace.svg
         categories:
-          - data-collection.observability
+          - data-collection.apm
       keywords: []
     overview:
       <<: *overview
@@ -2198,7 +2198,7 @@ modules:
         link: https://github.com/ssbostan/netmeter-exporter
         icon_filename: netmeter.png
         categories:
-          - data-collection.iot-devices
+          - data-collection.networking-stack-and-network-interfaces
       keywords:
         - network monitoring
         - network performance
@@ -2464,7 +2464,7 @@ modules:
         link: https://github.com/devon-mar/radius-exporter
         icon_filename: radius.png
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.authentication-and-authorization
       keywords: []
     overview:
       <<: *overview
@@ -2626,7 +2626,7 @@ modules:
         link: https://github.com/spacelift-io/prometheus-exporter
         icon_filename: spacelift.png
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.provisioning-systems
       keywords: []
     overview:
       <<: *overview
@@ -2678,7 +2678,7 @@ modules:
         link: https://github.com/ribbybibby/ssl_exporter
         icon_filename: ssl.svg
         categories:
-          - data-collection.authentication-and-authorization
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -2704,7 +2704,7 @@ modules:
         link: https://github.com/danopstech/starlink_exporter
         icon_filename: starlink.svg
         categories:
-          - data-collection.iot-devices
+          - data-collection.networking-stack-and-network-interfaces
       keywords: []
     overview:
       <<: *overview
@@ -2938,7 +2938,7 @@ modules:
         link: https://github.com/aarnaud/vault-pki-exporter
         icon_filename: vault.svg
         categories:
-          - data-collection.authentication-and-authorization
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -2990,7 +2990,7 @@ modules:
         link: https://github.com/pryorda/vmware_exporter
         icon_filename: vmware.svg
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.containers-and-vms
       keywords: []
     overview:
       <<: *overview
@@ -3122,7 +3122,7 @@ modules:
         link: https://github.com/dernasherbrezon/8430ft_exporter
         icon_filename: mtc.svg
         categories:
-          - data-collection.iot-devices
+          - data-collection.networking-stack-and-network-interfaces
       keywords: []
     overview:
       <<: *overview
@@ -3330,7 +3330,7 @@ modules:
         link: https://github.com/3scale/apicast
         icon_filename: apicast.png
         categories:
-          - data-collection.api-gateways
+          - data-collection.web-servers-and-web-proxies
       keywords: []
     overview:
       <<: *overview
@@ -3574,7 +3574,7 @@ modules:
         link: https://github.com/bosh-prometheus/bosh_exporter
         icon_filename: bosh.png
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.provisioning-systems
       keywords: []
     overview:
       <<: *overview
@@ -3834,7 +3834,7 @@ modules:
         link: https://github.com/bosh-prometheus/cf_exporter
         icon_filename: cloud-foundry.svg
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.provisioning-systems
       keywords:
         - cloud services
         - cloud computing
@@ -3863,7 +3863,7 @@ modules:
         link: https://github.com/bosh-prometheus/firehose_exporter
         icon_filename: cloud-foundry.svg
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.provisioning-systems
       keywords:
         - cloud services
         - cloud computing
@@ -4288,7 +4288,7 @@ modules:
         link: https://github.com/jgosmann/dmarc-metrics-exporter
         icon_filename: dmarc.png
         categories:
-          - data-collection.authentication-and-authorization
+          - data-collection.mail-servers
       keywords:
         - email authentication
         - policy
@@ -4534,7 +4534,7 @@ modules:
       <<: *overview
       data_collection:
         metrics_description: |
-          Monitor Free Range Routing  (FRR) metrics for optimized network routing and management.
+          Monitor Free Range Routing (FRR) metrics for optimized network routing and management.
         method_description: |
           Metrics are gathered by periodically sending HTTP requests to [FRRouting Exporter](https://github.com/tynany/frr_exporter).
     setup:
@@ -4607,7 +4607,7 @@ modules:
         link: https://github.com/natesales/gpsd-exporter
         icon_filename: gpsd.png
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.apm
       keywords: []
     overview:
       <<: *overview
@@ -4818,7 +4818,7 @@ modules:
         link: https://github.com/eliecharra/hilink-exporter
         icon_filename: huawei.svg
         categories:
-          - data-collection.iot-devices
+          - data-collection.networking-stack-and-network-interfaces
       keywords: []
     overview:
       <<: *overview
@@ -4844,7 +4844,7 @@ modules:
         link: https://github.com/yrro/hitron-exporter
         icon_filename: hitron.svg
         categories:
-          - data-collection.hardware-devices-and-sensors
+          - data-collection.networking-stack-and-network-interfaces
       keywords: []
     overview:
       <<: *overview
@@ -4870,7 +4870,7 @@ modules:
         link: https://github.com/hairyhenderson/hitron_coda_exporter
         icon_filename: hitron.svg
         categories:
-          - data-collection.hardware-devices-and-sensors
+          - data-collection.networking-stack-and-network-interfaces
       keywords: []
     overview:
       <<: *overview
@@ -5131,7 +5131,7 @@ modules:
         link: https://github.com/dead-claudia/journald-exporter
         icon_filename: linux.png
         categories:
-          - data-collection.linux-systems
+          - data-collection.logs-servers
       keywords: []
     overview:
       <<: *overview
@@ -5319,7 +5319,7 @@ modules:
         link: https://github.com/MauveSoftware/lynis_exporter
         icon_filename: lynis.png
         categories:
-          - data-collection.linux-systems
+          - data-collection.security-systems
       keywords: []
     overview:
       <<: *overview
@@ -5501,7 +5501,7 @@ modules:
         link: https://github.com/xperimental/flowercare-exporter
         icon_filename: xiaomi.svg
         categories:
-          - data-collection.hardware-devices-and-sensors
+          - data-collection.iot-devices
       keywords: []
     overview:
       <<: *overview
@@ -5527,7 +5527,7 @@ modules:
         link: https://github.com/dernasherbrezon/modbusrtu_exporter
         icon_filename: modbus.svg
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.iot-devices
       keywords:
         - database
         - dbms
@@ -5713,7 +5713,7 @@ modules:
         link: https://github.com/xperimental/netatmo-exporter
         icon_filename: netatmo.svg
         categories:
-          - data-collection.hardware-devices-and-sensors
+          - data-collection.iot-devices
       keywords:
         - network monitoring
         - network performance
@@ -5826,7 +5826,7 @@ modules:
         link: https://github.com/Sheridan/nftables_exporter
         icon_filename: nftables.png
         categories:
-          - data-collection.linux-systems
+          - data-collection.linux-systems.firewall-metrics
       keywords: []
     overview:
       <<: *overview
@@ -5930,7 +5930,7 @@ modules:
         link: https://github.com/jk8s/nsxt_exporter
         icon_filename: vmware-nsx.svg
         categories:
-          - data-collection.cloud-provider-managed
+          - data-collection.containers-and-vms
       keywords: []
     overview:
       <<: *overview
@@ -6037,7 +6037,7 @@ modules:
         link: https://github.com/pdreker/openhab_exporter
         icon_filename: openhab.svg
         categories:
-          - data-collection.hardware-devices-and-sensors
+          - data-collection.iot-devices
       keywords: []
     overview:
       <<: *overview
@@ -7089,7 +7089,7 @@ modules:
         link: https://github.com/willshen/speedify_exporter
         icon_filename: speedify.png
         categories:
-          - data-collection.networking-stack-and-network-interfaces
+          - data-collection.vpns
       keywords: []
     overview:
       <<: *overview
