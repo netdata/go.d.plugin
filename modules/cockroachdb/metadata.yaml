@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-cockroachdb
       plugin_name: go.d.plugin
       module_name: cockroachdb
       monitored_instance:

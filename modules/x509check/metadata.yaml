@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-x509check
       plugin_name: go.d.plugin
       module_name: x509check
       monitored_instance:

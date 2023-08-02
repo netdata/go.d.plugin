@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-energid
       module_name: apache
       plugin_name: energid
       monitored_instance:

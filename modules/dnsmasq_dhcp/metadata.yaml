@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-dnsmasq_dhcp
       plugin_name: go.d.plugin
       module_name: dnsmasq_dhcp
       monitored_instance:

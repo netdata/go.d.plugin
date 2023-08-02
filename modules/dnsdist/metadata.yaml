@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-dnsdist
       plugin_name: go.d.plugin
       module_name: dnsdist
       monitored_instance:

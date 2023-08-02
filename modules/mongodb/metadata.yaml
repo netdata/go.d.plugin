@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-mongodb
       plugin_name: go.d.plugin
       module_name: mongodb
       monitored_instance:

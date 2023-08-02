@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-k8s_kubelet
       plugin_name: go.d.plugin
       module_name: k8s_kubelet
       monitored_instance:

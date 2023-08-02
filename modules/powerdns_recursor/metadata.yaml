@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-powerdns_recursor
       plugin_name: go.d.plugin
       module_name: powerdns_recursor
       monitored_instance:

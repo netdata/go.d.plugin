@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-activemq
       module_name: activemq
       plugin_name: go.d.plugin
       monitored_instance:

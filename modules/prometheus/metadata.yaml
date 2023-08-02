@@ -2,6 +2,7 @@ plugin_name: go.d.plugin
 modules:
   - &module
     meta: &meta
+      id: collector-go.d.plugin-prometheus-generic
       module_name: prometheus
       plugin_name: go.d.plugin
       monitored_instance:
@@ -250,6 +251,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-a10-acos
       most_popular: false
       community: true
       monitored_instance:
@@ -279,6 +281,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-airflow
       most_popular: false
       community: true
       monitored_instance:
@@ -307,6 +310,7 @@ modules:
       <<: *meta
       most_popular: false
       community: true
+      id: collector-go.d.plugin-prometheus-alibaba-cloud
       monitored_instance:
         name: Alibaba Cloud
         link: https://github.com/aylei/aliyun-exporter # FIXME: This repository has been archived by the owner on Oct 28, 2019
@@ -334,6 +338,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-flink
       most_popular: false
       community: true
       monitored_instance:
@@ -365,6 +370,7 @@ modules:
       <<: *meta
       most_popular: false
       community: true
+      id: collector-go.d.plugin-prometheus-aruba
       monitored_instance:
         name: Aruba devices
         link: https://github.com/slashdoom/aruba_exporter
@@ -392,6 +398,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_ec2
       most_popular: false
       community: true
       monitored_instance:
@@ -421,6 +428,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_ecs
       most_popular: false
       community: true
       monitored_instance:
@@ -450,6 +458,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_health
       most_popular: false
       community: true
       monitored_instance:
@@ -479,6 +488,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_instance_health
       most_popular: false
       community: true
       monitored_instance:
@@ -508,6 +518,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_s3
       most_popular: false
       community: true
       monitored_instance:
@@ -537,6 +548,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_sqs
       most_popular: false
       community: true
       monitored_instance:
@@ -566,6 +578,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_ad_app_passwords
       most_popular: false
       community: true
       monitored_instance:
@@ -595,6 +608,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_elastic_sql
       most_popular: false
       community: true
       monitored_instance:
@@ -624,6 +638,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_app
       most_popular: false
       community: true
       monitored_instance:
@@ -653,6 +668,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_res
       most_popular: false
       community: true
       monitored_instance:
@@ -682,6 +698,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_service_bus
       most_popular: false
       community: true
       monitored_instance:
@@ -711,6 +728,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-azure_sql
       most_popular: false
       community: true
       monitored_instance:
@@ -740,6 +758,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-bigquery
       most_popular: false
       community: true
       monitored_instance:
@@ -766,6 +785,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-blackbox
       most_popular: false
       community: true
       monitored_instance:
@@ -793,6 +813,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-borg
       most_popular: false
       community: true
       monitored_instance:
@@ -819,6 +840,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cadvisor
       most_popular: false
       community: true
       monitored_instance:
@@ -845,6 +867,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cilium_agent
       most_popular: false
       community: true
       monitored_instance:
@@ -871,6 +894,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cilium_operator
       most_popular: false
       community: true
       monitored_instance:
@@ -897,6 +921,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cilium_proxy
       most_popular: false
       community: true
       monitored_instance:
@@ -923,6 +948,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cisco_aci
       most_popular: false
       community: true
       monitored_instance:
@@ -952,6 +978,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-citrix_netscaler
       most_popular: false
       community: true
       monitored_instance:
@@ -981,6 +1008,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-clickhouse
       most_popular: false
       community: true
       monitored_instance:
@@ -1007,6 +1035,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cloudflare_pcap
       most_popular: false
       community: true
       monitored_instance:
@@ -1035,6 +1064,7 @@ modules:
               Install [Cloudflare exporter](https://github.com/wehkamp/docker-prometheus-cloudflare-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-aws_cloudwatch
       <<: *meta
       most_popular: false
       community: true
@@ -1065,6 +1095,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-concourse
       most_popular: false
       community: true
       monitored_instance:
@@ -1091,6 +1122,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-crowdsec
       most_popular: false
       community: true
       monitored_instance:
@@ -1117,6 +1149,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dell_emc_ecs
       most_popular: false
       community: true
       monitored_instance:
@@ -1143,6 +1176,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dell_emc_isilon
       most_popular: false
       community: true
       monitored_instance:
@@ -1169,6 +1203,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-digitalocean
       most_popular: false
       community: true
       monitored_instance:
@@ -1195,6 +1230,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-discourse
       most_popular: false
       community: true
       monitored_instance:
@@ -1221,6 +1257,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nut
       most_popular: false
       community: true
       monitored_instance:
@@ -1251,6 +1288,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dynatrace
       most_popular: false
       community: true
       monitored_instance:
@@ -1277,6 +1315,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-eos_web
       most_popular: false
       community: true
       monitored_instance:
@@ -1303,6 +1342,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-etcd
       most_popular: false
       community: true
       monitored_instance:
@@ -1322,6 +1362,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-fortigate
       most_popular: false
       community: true
       monitored_instance:
@@ -1348,6 +1389,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-freebsd_nfs
       most_popular: false
       community: true
       monitored_instance:
@@ -1374,6 +1416,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-freebsd_rctl
       most_popular: false
       community: true
       monitored_instance:
@@ -1400,6 +1443,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gcp_gce
       most_popular: false
       community: true
       monitored_instance:
@@ -1426,6 +1470,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gcp_quota
       most_popular: false
       community: true
       monitored_instance:
@@ -1452,6 +1497,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-github_repo
       most_popular: false
       community: true
       monitored_instance:
@@ -1478,6 +1524,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gitlab_runner
       most_popular: false
       community: true
       monitored_instance:
@@ -1504,6 +1551,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gobetween
       most_popular: false
       community: true
       monitored_instance:
@@ -1523,6 +1571,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gcp
       most_popular: false
       community: true
       monitored_instance:
@@ -1552,6 +1601,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gcp_stackdriver
       most_popular: false
       community: true
       monitored_instance:
@@ -1581,6 +1631,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-grafana
       most_popular: false
       community: true
       monitored_instance:
@@ -1600,6 +1651,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-graylog
       most_popular: false
       community: true
       monitored_instance:
@@ -1627,6 +1679,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hana
       most_popular: false
       community: true
       monitored_instance:
@@ -1653,6 +1706,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-honeypot
       most_popular: false
       community: true
       monitored_instance:
@@ -1679,6 +1733,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hp_ilo
       most_popular: false
       community: true
       monitored_instance:
@@ -1705,6 +1760,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hubble
       most_popular: false
       community: true
       monitored_instance:
@@ -1731,6 +1787,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_spectrum
       most_popular: false
       community: true
       monitored_instance:
@@ -1757,6 +1814,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-influxdb
       most_popular: false
       community: true
       monitored_instance:
@@ -1786,6 +1844,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-jenkins
       most_popular: false
       community: true
       monitored_instance:
@@ -1812,6 +1871,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-jmx
       most_popular: false
       community: true
       monitored_instance:
@@ -1838,6 +1898,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-jolokia
       most_popular: false
       community: true
       monitored_instance:
@@ -1864,6 +1925,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-kafka_consumer_lag
       most_popular: false
       community: true
       monitored_instance:
@@ -1893,6 +1955,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-kafka
       most_popular: false
       community: true
       monitored_instance:
@@ -1922,6 +1985,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-kafka_zookeeper
       most_popular: false
       community: true
       monitored_instance:
@@ -1951,6 +2015,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-linode
       most_popular: false
       community: true
       monitored_instance:
@@ -1977,6 +2042,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-loki
       most_popular: false
       community: true
       monitored_instance:
@@ -2003,6 +2069,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-minecraft
       most_popular: false
       community: true
       monitored_instance:
@@ -2029,6 +2096,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mosquitto
       most_popular: false
       community: true
       monitored_instance:
@@ -2055,6 +2123,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mp707
       most_popular: false
       community: true
       monitored_instance:
@@ -2081,6 +2150,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_mq
       most_popular: false
       community: true
       monitored_instance:
@@ -2107,6 +2177,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mqtt_blackbox
       most_popular: false
       community: true
       monitored_instance:
@@ -2133,6 +2204,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-netapp_ontap
       most_popular: false
       community: true
       monitored_instance:
@@ -2162,6 +2234,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-netapp_solidfire
       most_popular: false
       community: true
       monitored_instance:
@@ -2191,6 +2264,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-netmeter
       most_popular: false
       community: true
       monitored_instance:
@@ -2220,6 +2294,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-newrelic
       most_popular: false
       community: true
       monitored_instance:
@@ -2246,6 +2321,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openvswitch
       most_popular: false
       community: true
       monitored_instance:
@@ -2272,6 +2348,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openldap
       most_popular: false
       community: true
       monitored_instance:
@@ -2298,6 +2375,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openstack
       most_popular: false
       community: true
       monitored_instance:
@@ -2324,6 +2402,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openvas
       most_popular: false
       community: true
       monitored_instance:
@@ -2350,6 +2429,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-google_pagespeed
       most_popular: false
       community: true
       monitored_instance:
@@ -2378,6 +2458,7 @@ modules:
               Install [Pagespeed exporter](https://github.com/foomo/pagespeed_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-philips_hue
       <<: *meta
       most_popular: false
       community: true
@@ -2405,6 +2486,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-podman
       most_popular: false
       community: true
       monitored_instance:
@@ -2431,6 +2513,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-proxmox
       most_popular: false
       community: true
       monitored_instance:
@@ -2457,6 +2540,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-radius
       most_popular: false
       community: true
       monitored_instance:
@@ -2483,6 +2567,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_rds
       most_popular: false
       community: true
       monitored_instance:
@@ -2512,6 +2597,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ripe_atlas
       most_popular: false
       community: true
       monitored_instance:
@@ -2538,6 +2624,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sentry
       most_popular: false
       community: true
       monitored_instance:
@@ -2564,6 +2651,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-slurm
       most_popular: false
       community: true
       monitored_instance:
@@ -2591,6 +2679,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ipmi
       most_popular: false
       community: true
       monitored_instance:
@@ -2620,6 +2709,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-spacelift
       most_popular: false
       community: true
       monitored_instance:
@@ -2646,6 +2736,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ssh
       most_popular: false
       community: true
       monitored_instance:
@@ -2672,6 +2763,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ssl
       most_popular: false
       community: true
       monitored_instance:
@@ -2698,6 +2790,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-starlink
       most_popular: false
       community: true
       monitored_instance:
@@ -2724,6 +2817,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-statuspage
       most_popular: false
       community: true
       monitored_instance:
@@ -2750,6 +2844,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tacas
       most_popular: false
       community: true
       monitored_instance:
@@ -2776,6 +2871,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tesla_vehicle
       most_popular: false
       community: true
       monitored_instance:
@@ -2802,6 +2898,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tesla_powerwall
       most_popular: false
       community: true
       monitored_instance:
@@ -2828,6 +2925,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-twitch
       most_popular: false
       community: true
       monitored_instance:
@@ -2854,6 +2952,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ubiquity_ufiber
       most_popular: false
       community: true
       monitored_instance:
@@ -2880,6 +2979,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-uptimerobot
       most_popular: false
       community: true
       monitored_instance:
@@ -2906,6 +3006,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hashicorp_vault
       most_popular: false
       community: true
       monitored_instance:
@@ -2932,6 +3033,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-vault_pki
       most_popular: false
       community: true
       monitored_instance:
@@ -2958,6 +3060,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-vertica
       most_popular: false
       community: true
       monitored_instance:
@@ -2984,6 +3087,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-vmware
       most_popular: false
       community: true
       monitored_instance:
@@ -3010,6 +3114,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-vscode
       most_popular: false
       community: true
       monitored_instance:
@@ -3036,6 +3141,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-airthings_waveplus
       most_popular: false
       community: true
       monitored_instance:
@@ -3063,6 +3169,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-xmpp_blackbox
       most_popular: false
       community: true
       monitored_instance:
@@ -3090,6 +3197,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-4d_server
       most_popular: false
       community: true
       monitored_instance:
@@ -3116,6 +3224,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-8430ft-modem
       most_popular: false
       community: true
       monitored_instance:
@@ -3142,6 +3251,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-steam_a2s
       most_popular: false
       community: true
       monitored_instance:
@@ -3168,6 +3278,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-akami_edgedns
       most_popular: false
       community: true
       monitored_instance:
@@ -3194,6 +3305,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-akami_gtm
       most_popular: false
       community: true
       monitored_instance:
@@ -3220,6 +3332,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-alamos_fe2
       most_popular: false
       community: true
       monitored_instance:
@@ -3246,6 +3359,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-altaro_backup
       most_popular: false
       community: true
       monitored_instance:
@@ -3272,6 +3386,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-amd_smi
       most_popular: false
       community: true
       monitored_instance:
@@ -3298,6 +3413,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aaisp
       most_popular: false
       community: true
       monitored_instance:
@@ -3324,6 +3440,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-apicast
       most_popular: false
       community: true
       monitored_instance:
@@ -3350,6 +3467,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-apple_timemachine
       most_popular: false
       community: true
       monitored_instance:
@@ -3376,6 +3494,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-arm_hwcpipe
       most_popular: false
       community: true
       monitored_instance:
@@ -3402,6 +3521,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-arvancloud_cdn
       most_popular: false
       community: true
       monitored_instance:
@@ -3431,6 +3551,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-audisto
       most_popular: false
       community: true
       monitored_instance:
@@ -3457,6 +3578,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-authlog
       most_popular: false
       community: true
       monitored_instance:
@@ -3483,6 +3605,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_ec2_spot
       most_popular: false
       community: true
       monitored_instance:
@@ -3512,6 +3635,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-aws_quota
       most_popular: false
       community: true
       monitored_instance:
@@ -3541,6 +3665,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-bobcat
       most_popular: false
       community: true
       monitored_instance:
@@ -3568,6 +3693,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-bosh
       most_popular: false
       community: true
       monitored_instance:
@@ -3594,6 +3720,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-bpftrace
       most_popular: false
       community: true
       monitored_instance:
@@ -3620,6 +3747,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-bungeecord
       most_popular: false
       community: true
       monitored_instance:
@@ -3646,6 +3774,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-celery
       most_popular: false
       community: true
       monitored_instance:
@@ -3672,6 +3801,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-checkpoint
       most_popular: false
       community: true
       monitored_instance:
@@ -3698,6 +3828,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-chia
       most_popular: false
       community: true
       monitored_instance:
@@ -3724,6 +3855,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-clm5ip
       most_popular: false
       community: true
       monitored_instance:
@@ -3750,6 +3882,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-clamd
       most_popular: false
       community: true
       monitored_instance:
@@ -3776,6 +3909,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-clamscan
       most_popular: false
       community: true
       monitored_instance:
@@ -3802,6 +3936,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-clash
       most_popular: false
       community: true
       monitored_instance:
@@ -3828,6 +3963,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cloud_foundry
       most_popular: false
       community: true
       monitored_instance:
@@ -3857,6 +3993,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cloud_foundry_firebase
       most_popular: false
       community: true
       monitored_instance:
@@ -3886,6 +4023,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-akami_cloudmonitor
       most_popular: false
       community: true
       monitored_instance:
@@ -3916,6 +4054,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-lustre
       most_popular: false
       community: true
       monitored_instance:
@@ -3942,6 +4081,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cmon
       most_popular: false
       community: true
       monitored_instance:
@@ -3968,6 +4108,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-collectd
       most_popular: false
       community: true
       monitored_instance:
@@ -3994,6 +4135,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-shell_cmd
       most_popular: false
       community: true
       monitored_instance:
@@ -4020,6 +4162,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ftbeerpi
       most_popular: false
       community: true
       monitored_instance:
@@ -4046,6 +4189,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-crypto
       most_popular: false
       community: true
       monitored_instance:
@@ -4072,6 +4216,7 @@ modules:
 
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-cryptowatch
       <<: *meta
       most_popular: false
       community: true
@@ -4099,6 +4244,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-csgo
       most_popular: false
       community: true
       monitored_instance:
@@ -4125,6 +4271,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-certificate_transparency
       most_popular: false
       community: true
       monitored_instance:
@@ -4152,6 +4299,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-custom
       most_popular: false
       community: true
       monitored_instance:
@@ -4178,6 +4326,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-cvmfs
       most_popular: false
       community: true
       monitored_instance:
@@ -4204,6 +4353,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ddwrt
       most_popular: false
       community: true
       monitored_instance:
@@ -4229,6 +4379,7 @@ modules:
               Install [ddwrt-collector](https://github.com/camelusferus/ddwrt_collector) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-dell_emc_xtremio
       <<: *meta
       most_popular: false
       community: true
@@ -4256,6 +4407,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dependency_track
       most_popular: false
       community: true
       monitored_instance:
@@ -4281,6 +4433,7 @@ modules:
               Install [Dependency-Track Exporter](https://github.com/jetstack/dependency-track-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-dmarc
       <<: *meta
       most_popular: false
       community: true
@@ -4310,6 +4463,7 @@ modules:
               Install [dmarc-metrics-exporter](https://github.com/jgosmann/dmarc-metrics-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-dnsbl
       <<: *meta
       most_popular: false
       community: true
@@ -4338,6 +4492,7 @@ modules:
 
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-bird
       <<: *meta
       most_popular: false
       community: true
@@ -4365,6 +4520,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-elgato_keylight
       most_popular: false
       community: true
       monitored_instance:
@@ -4391,6 +4547,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-energomera
       most_popular: false
       community: true
       monitored_instance:
@@ -4417,6 +4574,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-excel
       most_popular: false
       community: true
       monitored_instance:
@@ -4444,6 +4602,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-fastd
       most_popular: false
       community: true
       monitored_instance:
@@ -4470,6 +4629,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-freifunk
       most_popular: false
       community: true
       monitored_instance:
@@ -4496,6 +4656,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-fritzbox
       most_popular: false
       community: true
       monitored_instance:
@@ -4522,6 +4683,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-frrouting
       most_popular: false
       community: true
       monitored_instance:
@@ -4548,6 +4710,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-generic_cli
       most_popular: false
       community: true
       monitored_instance:
@@ -4574,6 +4737,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-github_ratelimit
       most_popular: false
       community: true
       monitored_instance:
@@ -4601,6 +4765,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gpsd
       most_popular: false
       community: true
       monitored_instance:
@@ -4627,6 +4792,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-gtp
       most_popular: false
       community: true
       monitored_instance:
@@ -4653,6 +4819,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-halon
       most_popular: false
       community: true
       monitored_instance:
@@ -4679,6 +4846,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hasura_graphql
       most_popular: false
       community: true
       monitored_instance:
@@ -4706,6 +4874,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hdsentinel
       most_popular: false
       community: true
       monitored_instance:
@@ -4732,6 +4901,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-helium_hotspot
       most_popular: false
       community: true
       monitored_instance:
@@ -4758,6 +4928,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-helium_miner
       most_popular: false
       community: true
       monitored_instance:
@@ -4785,6 +4956,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hhvm
       most_popular: false
       community: true
       monitored_instance:
@@ -4812,6 +4984,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hilink
       most_popular: false
       community: true
       monitored_instance:
@@ -4838,6 +5011,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hitron_cgm
       most_popular: false
       community: true
       monitored_instance:
@@ -4864,6 +5038,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-hitron_coda
       most_popular: false
       community: true
       monitored_instance:
@@ -4890,6 +5065,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-homebridge
       most_popular: false
       community: true
       monitored_instance:
@@ -4916,6 +5092,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-homey
       most_popular: false
       community: true
       monitored_instance:
@@ -4942,6 +5119,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_cex
       most_popular: false
       community: true
       monitored_instance:
@@ -4968,6 +5146,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_zhmc
       most_popular: false
       community: true
       monitored_instance:
@@ -4994,6 +5173,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-iota
       most_popular: false
       community: true
       monitored_instance:
@@ -5020,6 +5200,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-iqair
       most_popular: false
       community: true
       monitored_instance:
@@ -5046,6 +5227,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-jarvis
       most_popular: false
       community: true
       monitored_instance:
@@ -5073,6 +5255,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-enclosure
       most_popular: false
       community: true
       monitored_instance:
@@ -5099,6 +5282,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-jetbrains_fls
       most_popular: false
       community: true
       monitored_instance:
@@ -5125,6 +5309,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-journald
       most_popular: false
       community: true
       monitored_instance:
@@ -5151,6 +5336,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-kafka_connect
       most_popular: false
       community: true
       monitored_instance:
@@ -5180,6 +5366,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-kannel
       most_popular: false
       community: true
       monitored_instance:
@@ -5206,6 +5393,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-keepalived
       most_popular: false
       community: true
       monitored_instance:
@@ -5232,6 +5420,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-korral
       most_popular: false
       community: true
       monitored_instance:
@@ -5261,6 +5450,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-lagerist
       most_popular: false
       community: true
       monitored_instance:
@@ -5287,6 +5477,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ldap
       most_popular: false
       community: true
       monitored_instance:
@@ -5313,6 +5504,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-lynis
       most_popular: false
       community: true
       monitored_instance:
@@ -5339,6 +5531,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-machbase
       most_popular: false
       community: true
       monitored_instance:
@@ -5365,6 +5558,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-maildir
       most_popular: false
       community: true
       monitored_instance:
@@ -5391,6 +5585,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-meilisearch
       most_popular: false
       community: true
       monitored_instance:
@@ -5417,6 +5612,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-memcached
       most_popular: false
       community: true
       monitored_instance:
@@ -5442,6 +5638,7 @@ modules:
               Install [Memcached exporter](https://github.com/prometheus/memcached_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-meraki
       <<: *meta
       most_popular: false
       community: true
@@ -5469,6 +5666,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mesos
       most_popular: false
       community: true
       monitored_instance:
@@ -5496,6 +5694,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-xiaomi_mi_flora
       most_popular: false
       community: true
       monitored_instance:
@@ -5522,6 +5721,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-modbus_rtu
       most_popular: false
       community: true
       monitored_instance:
@@ -5551,6 +5751,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mogilefs
       most_popular: false
       community: true
       monitored_instance:
@@ -5577,6 +5778,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-monnit_mqtt
       most_popular: false
       community: true
       monitored_instance:
@@ -5603,6 +5805,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mtail
       most_popular: false
       community: true
       monitored_instance:
@@ -5629,6 +5832,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-naemon
       most_popular: false
       community: true
       monitored_instance:
@@ -5655,6 +5859,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nagios
       most_popular: false
       community: true
       monitored_instance:
@@ -5682,6 +5887,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nature_remo
       most_popular: false
       community: true
       monitored_instance:
@@ -5708,6 +5914,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-netatmo
       most_popular: false
       community: true
       monitored_instance:
@@ -5737,6 +5944,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-netflow
       most_popular: false
       community: true
       monitored_instance:
@@ -5766,6 +5974,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nextcloud
       most_popular: false
       community: true
       monitored_instance:
@@ -5795,6 +6004,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nextdns
       most_popular: false
       community: true
       monitored_instance:
@@ -5821,6 +6031,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nftables
       most_popular: false
       community: true
       monitored_instance:
@@ -5847,6 +6058,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_aix_njmon
       most_popular: false
       community: true
       monitored_instance:
@@ -5873,6 +6085,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nrpe
       most_popular: false
       community: true
       monitored_instance:
@@ -5899,6 +6112,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-mikrotik
       most_popular: false
       community: true
       monitored_instance:
@@ -5925,6 +6139,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-nsxt
       most_popular: false
       community: true
       monitored_instance:
@@ -5950,6 +6165,7 @@ modules:
               Install [NSX-T Exporter](https://github.com/jk8s/nsxt_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-nvml
       <<: *meta
       most_popular: false
       community: true
@@ -5977,6 +6193,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-obs_studio
       most_popular: false
       community: true
       monitored_instance:
@@ -6003,6 +6220,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-odbc
       most_popular: false
       community: true
       monitored_instance:
@@ -6032,6 +6250,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openhab
       most_popular: false
       community: true
       monitored_instance:
@@ -6060,6 +6279,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openrc
       most_popular: false
       community: true
       monitored_instance:
@@ -6087,6 +6307,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openrct2
       most_popular: false
       community: true
       monitored_instance:
@@ -6113,6 +6334,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openroadm
       most_popular: false
       community: true
       monitored_instance:
@@ -6142,6 +6364,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-openweathermap
       most_popular: false
       community: true
       monitored_instance:
@@ -6168,6 +6391,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-oracledb
       most_popular: false
       community: true
       monitored_instance:
@@ -6198,6 +6422,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-otrs
       most_popular: false
       community: true
       monitored_instance:
@@ -6224,6 +6449,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dutch_electricity_smart_meter
       most_popular: false
       community: true
       monitored_instance:
@@ -6251,6 +6477,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-patroni
       most_popular: false
       community: true
       monitored_instance:
@@ -6277,6 +6504,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-pws
       most_popular: false
       community: true
       monitored_instance:
@@ -6303,6 +6531,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-pgbackrest
       most_popular: false
       community: true
       monitored_instance:
@@ -6329,6 +6558,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-pgpool2
       most_popular: false
       community: true
       monitored_instance:
@@ -6355,6 +6585,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-pimoroni_enviro_plus
       most_popular: false
       community: true
       monitored_instance:
@@ -6381,6 +6612,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-pingdom
       most_popular: false
       community: true
       monitored_instance:
@@ -6407,6 +6639,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-dell_powermax
       most_popular: false
       community: true
       monitored_instance:
@@ -6433,6 +6666,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-powerpal
       most_popular: false
       community: true
       monitored_instance:
@@ -6459,6 +6693,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-proftpd
       most_popular: false
       community: true
       monitored_instance:
@@ -6485,6 +6720,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-eaton_ups
       most_popular: false
       community: true
       monitored_instance:
@@ -6511,6 +6747,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-redis_queue
       most_popular: false
       community: true
       monitored_instance:
@@ -6537,6 +6774,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-radio_thermostat
       most_popular: false
       community: true
       monitored_instance:
@@ -6563,6 +6801,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-rancher
       most_popular: false
       community: true
       monitored_instance:
@@ -6589,6 +6828,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-raritan_pdu
       most_popular: false
       community: true
       monitored_instance:
@@ -6615,6 +6855,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-routeros
       most_popular: false
       community: true
       monitored_instance:
@@ -6642,6 +6883,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sabnzbd
       most_popular: false
       community: true
       monitored_instance:
@@ -6668,6 +6910,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-salicru_eqx
       most_popular: false
       community: true
       monitored_instance:
@@ -6694,6 +6937,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sense_energy
       most_popular: false
       community: true
       monitored_instance:
@@ -6720,6 +6964,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-servertech
       most_popular: false
       community: true
       monitored_instance:
@@ -6746,6 +6991,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-shelly
       most_popular: false
       community: true
       monitored_instance:
@@ -6772,6 +7018,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sia
       most_popular: false
       community: true
       monitored_instance:
@@ -6798,6 +7045,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-s7_plc
       most_popular: false
       community: true
       monitored_instance:
@@ -6824,6 +7072,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-site24x7
       most_popular: false
       community: true
       monitored_instance:
@@ -6850,6 +7099,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sma_inverter
       most_popular: false
       community: true
       monitored_instance:
@@ -6876,6 +7126,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-smartrg808ac
       most_popular: false
       community: true
       monitored_instance:
@@ -6902,6 +7153,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sml
       most_popular: false
       community: true
       monitored_instance:
@@ -6928,6 +7180,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-softether
       most_popular: false
       community: true
       monitored_instance:
@@ -6954,6 +7207,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-lsx
       most_popular: false
       community: true
       monitored_instance:
@@ -6980,6 +7234,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-solaredge
       most_popular: false
       community: true
       monitored_instance:
@@ -7006,6 +7261,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-solis
       most_popular: false
       community: true
       monitored_instance:
@@ -7032,6 +7288,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sonic
       most_popular: false
       community: true
       monitored_instance:
@@ -7058,6 +7315,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-ibm_spectrum_virtualize
       most_popular: false
       community: true
       monitored_instance:
@@ -7084,6 +7342,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-speedify
       most_popular: false
       community: true
       monitored_instance:
@@ -7110,6 +7369,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sphinx
       most_popular: false
       community: true
       monitored_instance:
@@ -7136,6 +7396,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-sql
       most_popular: false
       community: true
       monitored_instance:
@@ -7165,6 +7426,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-starwind_vsan
       most_popular: false
       community: true
       monitored_instance:
@@ -7191,6 +7453,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-storidge
       most_popular: false
       community: true
       monitored_instance:
@@ -7217,6 +7480,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-stream_generic
       most_popular: false
       community: true
       monitored_instance:
@@ -7243,6 +7507,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-strongswan
       most_popular: false
       community: true
       monitored_instance:
@@ -7268,6 +7533,7 @@ modules:
               Install [strongSwan/IPSec/vici Exporter](https://github.com/jlti-dev/ipsec_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-sunspec
       <<: *meta
       most_popular: false
       community: true
@@ -7295,6 +7561,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-suricata
       most_popular: false
       community: true
       monitored_instance:
@@ -7323,6 +7590,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-synology_activebackup
       most_popular: false
       community: true
       monitored_instance:
@@ -7348,6 +7616,7 @@ modules:
               Install [Synology ActiveBackup Exporter](https://github.com/codemonauts/activebackup-prometheus-exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-sysload
       <<: *meta
       most_popular: false
       community: true
@@ -7375,6 +7644,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-trex
       most_popular: false
       community: true
       monitored_instance:
@@ -7400,6 +7670,7 @@ modules:
               Install [T-Rex NVIDIA GPU Miner Exporter](https://github.com/dennisstritzke/trex_exporter) by following the instructions mentioned in the exporter README.
   - <<: *module
     meta:
+      id: collector-go.d.plugin-prometheus-tado
       <<: *meta
       most_popular: false
       community: true
@@ -7428,6 +7699,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tankerkoenig
       most_popular: false
       community: true
       monitored_instance:
@@ -7454,6 +7726,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tesla_wall_connector
       most_popular: false
       community: true
       monitored_instance:
@@ -7480,6 +7753,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-tplink_p110
       most_popular: false
       community: true
       monitored_instance:
@@ -7506,6 +7780,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-traceroute
       most_popular: false
       community: true
       monitored_instance:
@@ -7532,6 +7807,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-twincat_ads_webservice
       most_popular: false
       community: true
       monitored_instance:
@@ -7558,6 +7834,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-warp10
       most_popular: false
       community: true
       monitored_instance:
@@ -7585,6 +7862,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-yourls
       most_popular: false
       community: true
       monitored_instance:
@@ -7611,6 +7889,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-zerto
       most_popular: false
       community: true
       monitored_instance:
@@ -7637,6 +7916,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-zulip
       most_popular: false
       community: true
       monitored_instance:
@@ -7663,6 +7943,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-prometheus-zyxel_gs1200
       most_popular: false
       community: true
       monitored_instance:
