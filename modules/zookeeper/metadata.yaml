@@ -17,8 +17,7 @@ modules:
       related_resources:
         integrations:
           list:
-            - plugin_name: apps.plugin
-              module_name: apps
+            - id: collector-apps.plugin-apps
     overview:
       data_collection:
         metrics_description: ""
