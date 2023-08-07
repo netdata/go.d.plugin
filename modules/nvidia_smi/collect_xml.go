@@ -60,7 +60,11 @@ func (nv *NvidiaSMI) collectGPUInfoXML(mx map[string]int64) error {
 		addMetric(mx, px+"video_clock", gpu.Clocks.VideoClock, 0)
 		addMetric(mx, px+"sm_clock", gpu.Clocks.SmClock, 0)
 		addMetric(mx, px+"mem_clock", gpu.Clocks.MemClock, 0)
-		addMetric(mx, px+"power_draw", gpu.PowerReadings.PowerDraw, 0)
+		if gpu.PowerReadings != nil {
+			addMetric(mx, px+"power_draw", gpu.PowerReadings.PowerDraw, 0)
+		} else if gpu.GPUPowerReadings != nil {
+			addMetric(mx, px+"power_draw", gpu.GPUPowerReadings.PowerDraw, 0)
+		}
 		addMetric(mx, px+"voltage", gpu.Voltage.GraphicsVolt, 0)
 		for i := 0; i < 16; i++ {
 			s := "P" + strconv.Itoa(i)
@@ -204,17 +208,9 @@ type (
 			MemClock      string `xml:"mem_clock"`
 			VideoClock    string `xml:"video_clock"`
 		} `xml:"clocks"`
-		PowerReadings struct {
-			PowerState         string `xml:"power_state"`
-			PowerManagement    string `xml:"power_management"`
-			PowerDraw          string `xml:"power_draw"`
-			PowerLimit         string `xml:"power_limit"`
-			DefaultPowerLimit  string `xml:"default_power_limit"`
-			EnforcedPowerLimit string `xml:"enforced_power_limit"`
-			MinPowerLimit      string `xml:"min_power_limit"`
-			MaxPowerLimit      string `xml:"max_power_limit"`
-		} `xml:"power_readings"`
-		Voltage struct {
+		PowerReadings    *xmlPowerReadings `xml:"power_readings"`
+		GPUPowerReadings *xmlPowerReadings `xml:"gpu_power_readings"`
+		Voltage          struct {
 			GraphicsVolt string `xml:"graphics_volt"`
 		} `xml:"voltage"`
 		Processes struct {
@@ -224,6 +220,17 @@ type (
 				UsedMemory  string `xml:"used_memory"`
 			} `sml:"process_info"`
 		} `xml:"processes"`
+	}
+
+	xmlPowerReadings struct {
+		//PowerState         string `xml:"power_state"`
+		//PowerManagement    string `xml:"power_management"`
+		PowerDraw string `xml:"power_draw"`
+		//PowerLimit         string `xml:"power_limit"`
+		//DefaultPowerLimit  string `xml:"default_power_limit"`
+		//EnforcedPowerLimit string `xml:"enforced_power_limit"`
+		//MinPowerLimit      string `xml:"min_power_limit"`
+		//MaxPowerLimit      string `xml:"max_power_limit"`
 	}
 
 	xmlMIGDeviceInfo struct {
