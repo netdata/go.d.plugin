@@ -293,7 +293,8 @@ func (nv *NvidiaSMI) addGPUXMLCharts(gpu xmlGPUInfo) {
 	if !isValidValue(gpu.FanSpeed) {
 		_ = charts.Remove(gpuFanSpeedPercChartTmpl.ID)
 	}
-	if !isValidValue(gpu.PowerReadings.PowerDraw) {
+	if (gpu.PowerReadings == nil || !isValidValue(gpu.PowerReadings.PowerDraw)) &&
+		(gpu.GPUPowerReadings == nil || !isValidValue(gpu.GPUPowerReadings.PowerDraw)) {
 		_ = charts.Remove(gpuPowerDrawChartTmpl.ID)
 	}
 	if !isValidValue(gpu.Voltage.GraphicsVolt) {

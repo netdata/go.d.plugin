@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	dataXMLRTX2080Win, _ = os.ReadFile("testdata/rtx-2080-win.xml")
-	dataXMLRTX3060, _    = os.ReadFile("testdata/rtx-3060.xml")
-	dataXMLTeslaP100, _  = os.ReadFile("testdata/tesla-p100.xml")
+	dataXMLRTX2080Win, _       = os.ReadFile("testdata/rtx-2080-win.xml")
+	dataXMLRTX4090Driver535, _ = os.ReadFile("testdata/rtx-4090-driver-535.xml")
+	dataXMLRTX3060, _          = os.ReadFile("testdata/rtx-3060.xml")
+	dataXMLTeslaP100, _        = os.ReadFile("testdata/tesla-p100.xml")
 
 	dataXMLA100SXM4MIG, _ = os.ReadFile("testdata/a100-sxm4-mig.xml")
 
@@ -25,9 +26,10 @@ var (
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataXMLRTX2080Win": dataXMLRTX2080Win,
-		"dataXMLRTX3060":    dataXMLRTX3060,
-		"dataXMLTeslaP100":  dataXMLTeslaP100,
+		"dataXMLRTX2080Win":       dataXMLRTX2080Win,
+		"dataXMLRTX4090Driver535": dataXMLRTX4090Driver535,
+		"dataXMLRTX3060":          dataXMLRTX3060,
+		"dataXMLTeslaP100":        dataXMLTeslaP100,
 
 		"dataXMLA100SXM4MIG": dataXMLA100SXM4MIG,
 
@@ -184,6 +186,56 @@ func TestNvidiaSMI_Collect(t *testing.T) {
 						"mig_instance_2_gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_free":     20916994048,
 						"mig_instance_2_gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_reserved": 0,
 						"mig_instance_2_gpu_GPU-27b94a00-ed54-5c24-b1fd-1054085de32a_frame_buffer_memory_usage_used":     19922944,
+					}
+
+					assert.Equal(t, expected, mx)
+				},
+			},
+		},
+		"success RTX 4090 Driver 535 [XML]": {
+			{
+				prepare: prepareCaseRTX4090Driver535formatXML,
+				check: func(t *testing.T, nv *NvidiaSMI) {
+					mx := nv.Collect()
+
+					expected := map[string]int64{
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_bar1_memory_usage_free":             267386880,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_bar1_memory_usage_used":             1048576,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_decoder_utilization":                0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_encoder_utilization":                0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_fan_speed_perc":                     0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_frame_buffer_memory_usage_free":     25390219264,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_frame_buffer_memory_usage_reserved": 362807296,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_frame_buffer_memory_usage_used":     2097152,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_gpu_utilization":                    0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_graphics_clock":                     210,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_mem_clock":                          405,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_mem_utilization":                    0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_pcie_bandwidth_usage_rx":            0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_pcie_bandwidth_usage_tx":            0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_pcie_bandwidth_utilization_rx":      0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_pcie_bandwidth_utilization_tx":      0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P0":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P1":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P10":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P11":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P12":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P13":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P14":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P15":              0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P2":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P3":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P4":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P5":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P6":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P7":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P8":               1,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_performance_state_P9":               0,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_power_draw":                         26,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_sm_clock":                           210,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_temperature":                        40,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_video_clock":                        1185,
+						"gpu_GPU-71d1acc2-662d-2166-bf9f-65272d2fc437_voltage":                            880,
 					}
 
 					assert.Equal(t, expected, mx)
@@ -462,6 +514,11 @@ func prepareCaseMIGA100formatXML(nv *NvidiaSMI) {
 func prepareCaseRTX3060formatXML(nv *NvidiaSMI) {
 	nv.UseCSVFormat = false
 	nv.exec = &mockNvidiaSMI{gpuInfoXML: dataXMLRTX3060}
+}
+
+func prepareCaseRTX4090Driver535formatXML(nv *NvidiaSMI) {
+	nv.UseCSVFormat = false
+	nv.exec = &mockNvidiaSMI{gpuInfoXML: dataXMLRTX4090Driver535}
 }
 
 func prepareCaseTeslaP100formatXML(nv *NvidiaSMI) {
