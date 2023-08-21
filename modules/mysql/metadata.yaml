@@ -2,6 +2,7 @@ plugin_name: go.d.plugin
 modules:
   - &module
     meta: &meta
+      id: collector-go.d.plugin-mysql
       plugin_name: go.d.plugin
       module_name: mysql
       monitored_instance:
@@ -785,6 +786,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-mariadb
       monitored_instance:
         name: MariaDB
         link: https://mariadb.org/
@@ -794,6 +796,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-percona_mysql
       most_popular: false
       monitored_instance:
         name: Percona MySQL

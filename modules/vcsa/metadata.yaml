@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-vcsa
       plugin_name: go.d.plugin
       module_name: vcsa
       monitored_instance:

@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-supervisord
       plugin_name: go.d.plugin
       module_name: supervisord
       monitored_instance:

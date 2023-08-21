@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-openvpn_status_log
       plugin_name: go.d.plugin
       module_name: openvpn_status_log
       monitored_instance:

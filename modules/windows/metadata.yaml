@@ -2,6 +2,7 @@ plugin_name: go.d.plugin
 modules:
   - &module
     meta: &meta
+      id: collector-go.d.plugin-windows
       plugin_name: go.d.plugin
       module_name: windows
       monitored_instance:
@@ -2090,6 +2091,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-windows-mssql
       most_popular: false
       keywords:
         - windows
@@ -2106,6 +2108,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-windows-hyperv
       most_popular: false
       keywords:
         - windows
@@ -2122,6 +2125,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-windows-msexchange
       most_popular: false
       keywords:
         - windows
@@ -2136,6 +2140,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-windows-ad
       most_popular: false
       keywords:
         - windows
@@ -2153,6 +2158,7 @@ modules:
   - <<: *module
     meta:
       <<: *meta
+      id: collector-go.d.plugin-windows-dotnet
       most_popular: false
       keywords:
         - windows

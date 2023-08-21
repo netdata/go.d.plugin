@@ -1,6 +1,7 @@
 plugin_name: go.d.plugin
 modules:
   - meta:
+      id: collector-go.d.plugin-fluentd
       plugin_name: go.d.plugin
       module_name: fluentd
       monitored_instance:
