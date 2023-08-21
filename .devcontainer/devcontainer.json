@@ -1,14 +1,16 @@
 {
-    "image": "netdata/devenv", 
-    "extensions":[
-		"golang.go",
-		"exiasr.hadolint",
-		"ms-python.python",
-		"timonwong.shellcheck",
-		"redhat.vscode-yaml",
-		"dbaeumer.vscode-eslint",
-		"jasonnutter.search-node-modules",
-		"mgmcdermott.vscode-language-babel"
+	"image": "netdata/devenv",
+	"forwardPorts": [
+		19999
 	],
-    "forwardPorts": [19999]
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go",
+				"exiasr.hadolint",
+				"timonwong.shellcheck",
+				"redhat.vscode-yaml"
+			]
+		}
+	}
 }
