@@ -18,8 +18,10 @@ modules:
       related_resources:
         integrations:
           list:
-            - id: collector-go.d.plugin-httpcheck
-            - id: collector-apps.plugin-apps
+            - plugin_name: go.d.plugin
+              module_name: httpcheck
+            - plugin_name: apps.plugin
+              module_name: apps
     overview:
       data_collection:
         metrics_description: This collector monitors ActiveMQ queues and topics.

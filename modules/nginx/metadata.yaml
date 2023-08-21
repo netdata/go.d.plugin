@@ -12,10 +12,14 @@ modules:
       related_resources:
         integrations:
           list:
-            - id: collector-go.d.plugin-web_log
-            - id: collector-go.d.plugin-httpcheck
-            - id: collector-apps.plugin-apps
-            - id: collector-cgroups.plugin-cgroup
+            - plugin_name: go.d.plugin
+              module_name: httpcheck
+            - plugin_name: go.d.plugin
+              module_name: web_log
+            - plugin_name: apps.plugin
+              module_name: apps
+            - plugin_name: cgroups.plugin
+              module_name: cgroups
       alternative_monitored_instances: []
       info_provided_to_referring_integrations:
         description: ""

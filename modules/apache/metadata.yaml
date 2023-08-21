@@ -15,9 +15,12 @@ modules:
       related_resources:
         integrations:
           list:
-            - id: collector-go.d.plugin-web_log
-            - id: collector-go.d.plugin-httpcheck
-            - id: collector-apps.plugin-apps
+            - plugin_name: go.d.plugin
+              module_name: weblog
+            - plugin_name: go.d.plugin
+              module_name: httpcheck
+            - plugin_name: apps.plugin
+              module_name: apps
       info_provided_to_referring_integrations:
         description: ""
       most_popular: true
