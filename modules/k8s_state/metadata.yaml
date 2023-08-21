@@ -4,7 +4,7 @@ modules:
       plugin_name: go.d.plugin
       module_name: k8s_state
       monitored_instance:
-        name: Kubernetes
+        name: Kubernetes Cluster State
         link: https://kubernetes.io/
         icon_filename: kubernetes.svg
         categories:
