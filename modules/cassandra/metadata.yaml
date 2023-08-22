@@ -3,7 +3,7 @@ modules:
   - meta:
       id: collector-go.d.plugin-cassandra
       module_name: cassandra
-      plugin_name: go
+      plugin_name: go.d.plugin
       monitored_instance:
         categories:
           - data-collection.database-servers
