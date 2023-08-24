@@ -2049,7 +2049,7 @@ modules:
       community: true
       monitored_instance:
         name: loki
-        link: https://github.com/ricoberger/loki_exporter
+        link: https://github.com/grafana/loki
         icon_filename: loki.png
         categories:
           - data-collection.logs-servers
@@ -2058,16 +2058,16 @@ modules:
       <<: *overview
       data_collection:
         metrics_description: |
-          Track Loki log aggregation metrics for efficient log management and analysis.
+          Track Loki metrics.
         method_description: |
-          Metrics are gathered by periodically sending HTTP requests to [loki_exporter](https://github.com/ricoberger/loki_exporter).
+          Metrics are gathered by periodically sending HTTP requests to [loki](https://github.com/grafana/loki).
     setup:
       <<: *setup
       prerequisites:
         list:
-          - title: Install Exporter
+          - title: Install Loki
             description: |
-              Install [loki_exporter](https://github.com/ricoberger/loki_exporter) by following the instructions mentioned in the exporter README.
+              Install [loki](https://github.com/grafana/loki) according to its documentation.
   - <<: *module
     meta:
       <<: *meta
