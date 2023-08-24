@@ -11,8 +11,10 @@ modules:
         icon_filename: prometheus.svg
         categories:
           - data-collection.generic-data-collection
+          - data-collection.apm
       keywords:
         - prometheus
+        - openmetrics
       related_resources:
         integrations:
           list: []
