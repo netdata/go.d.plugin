@@ -18,7 +18,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Go mod download
         run: go mod download
       - name: Compile
