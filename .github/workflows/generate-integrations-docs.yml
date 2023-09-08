@@ -1,10 +1,10 @@
 ---
-  # CI workflow used to generate documentation from netdata/netdata/integrations/integrations.js.
+  # CI workflow used to generate documentation from integrations/integrations.js.
 
 name: Generate Go Integrations Documentation
 on:
   schedule:
-    - cron: '* 10 * * *'
+    - cron: '0 10 * * *'
   workflow_dispatch: null
 concurrency: # This keeps multiple instances of the job from running concurrently for the same ref.
   group: generate-go-integrations-docs-${{ github.ref }}
