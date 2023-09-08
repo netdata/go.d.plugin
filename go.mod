@@ -23,8 +23,8 @@ require (
 	github.com/ilyam8/hashstructure v1.1.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/likexian/whois v1.15.0
-	github.com/likexian/whois-parser v1.24.8
+	github.com/likexian/whois v1.15.1
+	github.com/likexian/whois-parser v1.24.9
 	github.com/mattn/go-isatty v0.0.19
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.55
