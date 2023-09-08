@@ -18,7 +18,7 @@ jobs:
       yamllint: ${{ steps.yamllint.outputs.run }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check files for actionlint
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run actionlint
         uses: reviewdog/action-actionlint@v1
         with:
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run hadolint
         uses: reviewdog/action-hadolint@v1
         with:
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run shellcheck
         uses: reviewdog/action-shellcheck@v1
         with:
@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run yamllint
         uses: reviewdog/action-yamllint@v1
         with:
