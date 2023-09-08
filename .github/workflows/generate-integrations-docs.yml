@@ -31,6 +31,9 @@ jobs:
         id: generate
         run: |
           python3 integrations/gen_docs_integrations.py
+      - name: Remove integrations dir
+        run: |
+          rm -rf integrations/
       - name: Create PR
         id: create-pr
         uses: peter-evans/create-pull-request@v5
