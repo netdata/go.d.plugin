@@ -5,7 +5,7 @@ modules:
       plugin_name: go.d.plugin
       module_name: systemdunits
       monitored_instance:
-        name: Systemd
+        name: Systemd Units
         link: https://www.freedesktop.org/wiki/Software/systemd/
         icon_filename: systemd.svg
         categories:
