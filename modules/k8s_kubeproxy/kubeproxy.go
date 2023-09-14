@@ -3,6 +3,7 @@
 package k8s_kubeproxy
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus"
@@ -16,16 +17,18 @@ const (
 	defaultHTTPTimeout = time.Second * 2
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("k8s_kubeproxy", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			// NETDATA_CHART_PRIO_CGROUPS_CONTAINERS        40000
 			Priority: 50000,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("k8s_kubeproxy", creator)
+	})
 }
 
 // New creates KubeProxy with default values.

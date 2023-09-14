@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/netdata/go.d.plugin/agent/job/vnode"
 	"github.com/netdata/go.d.plugin/agent/netdataapi"
+	"github.com/netdata/go.d.plugin/agent/vnodes"
 	"github.com/netdata/go.d.plugin/logger"
 )
 
@@ -32,8 +32,6 @@ func shouldObsoleteCharts() bool {
 	defer obsoleteLock.Unlock()
 	return obsoleteCharts
 }
-
-var writeLock = &sync.Mutex{}
 
 var reSpace = regexp.MustCompile(`\s+`)
 
@@ -264,7 +262,7 @@ func (j *Job) Cleanup() {
 		return
 	}
 
-	if !vnode.Disabled {
+	if !vnodes.Disabled {
 		if !j.vnodeCreated && j.vnodeGUID != "" {
 			_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
 			j.vnodeCreated = true
@@ -286,9 +284,7 @@ func (j *Job) Cleanup() {
 	}
 
 	if j.buf.Len() > 0 {
-		writeLock.Lock()
 		_, _ = io.Copy(j.out, j.buf)
-		writeLock.Unlock()
 	}
 }
 
@@ -342,9 +338,7 @@ func (j *Job) runOnce() {
 		j.retries++
 	}
 
-	writeLock.Lock()
 	_, _ = io.Copy(j.out, j.buf)
-	writeLock.Unlock()
 	j.buf.Reset()
 }
 
@@ -363,7 +357,7 @@ func (j *Job) collect() (result map[string]int64) {
 }
 
 func (j *Job) processMetrics(metrics map[string]int64, startTime time.Time, sinceLastRun int) bool {
-	if !vnode.Disabled {
+	if !vnodes.Disabled {
 		if !j.vnodeCreated && j.vnodeGUID != "" {
 			_ = j.api.HOSTINFO(j.vnodeGUID, j.vnodeHostname, j.vnodeLabels)
 			j.vnodeCreated = true

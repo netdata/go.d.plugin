@@ -3,14 +3,19 @@
 package nvidia_smi
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("nvidia_smi", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			Disabled:    true,
 			UpdateEvery: 10,

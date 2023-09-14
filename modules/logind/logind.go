@@ -6,14 +6,19 @@
 package logind
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("logind", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			Priority: 59999, // copied from the python collector
 		},

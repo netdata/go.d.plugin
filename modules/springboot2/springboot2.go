@@ -3,6 +3,7 @@
 package springboot2
 
 import (
+	_ "embed"
 	"strings"
 	"time"
 
@@ -16,9 +17,13 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("springboot2", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

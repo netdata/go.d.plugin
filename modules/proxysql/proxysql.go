@@ -4,6 +4,7 @@ package proxysql
 
 import (
 	"database/sql"
+	_ "embed"
 	_ "github.com/go-sql-driver/mysql"
 	"sync"
 	"time"
@@ -12,9 +13,13 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("proxysql", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

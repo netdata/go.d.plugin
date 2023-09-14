@@ -3,6 +3,7 @@
 package tengine
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -10,12 +11,14 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("tengine", creator)
+func init() {
+	module.Register("tengine", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 const (

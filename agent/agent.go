@@ -11,15 +11,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/netdata/go.d.plugin/agent/job/build"
-	"github.com/netdata/go.d.plugin/agent/job/confgroup"
-	"github.com/netdata/go.d.plugin/agent/job/discovery"
-	"github.com/netdata/go.d.plugin/agent/job/registry"
-	"github.com/netdata/go.d.plugin/agent/job/run"
-	"github.com/netdata/go.d.plugin/agent/job/state"
-	"github.com/netdata/go.d.plugin/agent/job/vnode"
+	"github.com/netdata/go.d.plugin/agent/confgroup"
+	"github.com/netdata/go.d.plugin/agent/discovery"
+	"github.com/netdata/go.d.plugin/agent/discovery/dyncfg"
+	"github.com/netdata/go.d.plugin/agent/filelock"
+	"github.com/netdata/go.d.plugin/agent/filestatus"
+	"github.com/netdata/go.d.plugin/agent/functions"
+	"github.com/netdata/go.d.plugin/agent/jobmgr"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/agent/netdataapi"
+	"github.com/netdata/go.d.plugin/agent/safewriter"
+	"github.com/netdata/go.d.plugin/agent/vnodes"
 	"github.com/netdata/go.d.plugin/logger"
 	"github.com/netdata/go.d.plugin/pkg/multipath"
 
@@ -44,6 +46,8 @@ type Config struct {
 
 // Agent represents orchestrator.
 type Agent struct {
+	*logger.Logger
+
 	Name              string
 	ConfDir           multipath.MultiPath
 	ModulesConfDir    multipath.MultiPath
@@ -55,8 +59,8 @@ type Agent struct {
 	MinUpdateEvery    int
 	ModuleRegistry    module.Registry
 	Out               io.Writer
-	api               *netdataapi.API
-	*logger.Logger
+
+	api *netdataapi.API
 }
 
 // New creates a new Agent.
@@ -72,7 +76,7 @@ func New(cfg Config) *Agent {
 		RunModule:         cfg.RunModule,
 		MinUpdateEvery:    cfg.MinUpdateEvery,
 		ModuleRegistry:    module.DefaultRegistry,
-		Out:               os.Stdout,
+		Out:               safewriter.New(os.Stdout),
 	}
 
 	logger.Prefix = p.Name
@@ -163,7 +167,7 @@ func (a *Agent) run(ctx context.Context) {
 
 	discCfg := a.buildDiscoveryConf(enabled)
 
-	discoverer, err := discovery.NewManager(discCfg)
+	discoveryManager, err := discovery.NewManager(discCfg)
 	if err != nil {
 		a.Error(err)
 		if isTerminal {
@@ -172,32 +176,42 @@ func (a *Agent) run(ctx context.Context) {
 		return
 	}
 
-	runner := run.NewManager()
+	functionsManager := functions.NewManager()
 
-	builder := build.NewManager()
-	builder.Runner = runner
-	builder.PluginName = a.Name
-	builder.Out = a.Out
-	builder.Modules = enabled
+	dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
+		PluginName:       a.Name,
+		Out:              a.Out,
+		Modules:          enabled,
+		ModuleDefaults:   discCfg.Registry,
+		FunctionRegistry: functionsManager,
+	})
+
+	discoveryManager.Add(dyncfgDiscovery)
+
+	jobsManager := jobmgr.NewManager()
+	jobsManager.Dyncfg = dyncfgDiscovery
+	jobsManager.PluginName = a.Name
+	jobsManager.Out = a.Out
+	jobsManager.Modules = enabled
 
 	if reg := a.setupVnodeRegistry(); reg == nil || reg.Len() == 0 {
-		vnode.Disabled = true
+		vnodes.Disabled = true
 	} else {
-		builder.VNodeRegistry = reg
+		jobsManager.Vnodes = reg
 	}
 
 	if a.LockDir != "" {
-		builder.Registry = registry.NewFileLockRegistry(a.LockDir)
+		jobsManager.FileLock = filelock.New(a.LockDir)
 	}
 
-	var saver *state.Manager
+	var statusSaveManager *filestatus.Manager
 	if !isTerminal && a.StateFile != "" {
-		saver = state.NewManager(a.StateFile)
-		builder.CurState = saver
-		if store, err := state.Load(a.StateFile); err != nil {
+		statusSaveManager = filestatus.NewManager(a.StateFile)
+		jobsManager.StatusSaver = statusSaveManager
+		if store, err := filestatus.LoadStore(a.StateFile); err != nil {
 			a.Warningf("couldn't load state file: %v", err)
 		} else {
-			builder.PrevState = store
+			jobsManager.StatusStore = store
 		}
 	}
 
@@ -205,22 +219,21 @@ func (a *Agent) run(ctx context.Context) {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go func() { defer wg.Done(); runner.Run(ctx) }()
+	go func() { defer wg.Done(); functionsManager.Run(ctx) }()
 
 	wg.Add(1)
-	go func() { defer wg.Done(); builder.Run(ctx, in) }()
+	go func() { defer wg.Done(); jobsManager.Run(ctx, in) }()
 
 	wg.Add(1)
-	go func() { defer wg.Done(); discoverer.Run(ctx, in) }()
+	go func() { defer wg.Done(); discoveryManager.Run(ctx, in) }()
 
-	if saver != nil {
+	if statusSaveManager != nil {
 		wg.Add(1)
-		go func() { defer wg.Done(); saver.Run(ctx) }()
+		go func() { defer wg.Done(); statusSaveManager.Run(ctx) }()
 	}
 
 	wg.Wait()
 	<-ctx.Done()
-	runner.Cleanup()
 }
 
 func (a *Agent) keepAlive() {

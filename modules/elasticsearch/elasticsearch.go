@@ -3,6 +3,7 @@
 package elasticsearch
 
 import (
+	_ "embed"
 	"net/http"
 	"sync"
 	"time"
@@ -12,8 +13,12 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("elasticsearch", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},

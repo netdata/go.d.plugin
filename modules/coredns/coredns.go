@@ -3,6 +3,7 @@
 package coredns
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -18,12 +19,14 @@ const (
 	defaultHTTPTimeout = time.Second * 2
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("coredns", creator)
+func init() {
+	module.Register("coredns", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 // New creates CoreDNS with default values.

@@ -3,13 +3,18 @@
 package example
 
 import (
+	_ "embed"
 	"math/rand"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("example", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery:        module.UpdateEvery,
 			AutoDetectionRetry: module.AutoDetectionRetry,

@@ -4,6 +4,7 @@ package zookeeper
 
 import (
 	"crypto/tls"
+	_ "embed"
 	"fmt"
 	"time"
 
@@ -14,12 +15,14 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("zookeeper", creator)
+func init() {
+	module.Register("zookeeper", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 // Config is the Zookeeper module configuration.

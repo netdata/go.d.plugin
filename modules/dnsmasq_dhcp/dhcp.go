@@ -3,6 +3,7 @@
 package dnsmasq_dhcp
 
 import (
+	_ "embed"
 	"net"
 	"time"
 
@@ -10,12 +11,14 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/iprange"
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("dnsmasq_dhcp", creator)
+func init() {
+	module.Register("dnsmasq_dhcp", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 func New() *DnsmasqDHCP {

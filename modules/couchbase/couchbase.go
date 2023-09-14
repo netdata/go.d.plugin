@@ -3,6 +3,7 @@
 package couchbase
 
 import (
+	_ "embed"
 	"net/http"
 	"time"
 
@@ -10,8 +11,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("couchbase", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},

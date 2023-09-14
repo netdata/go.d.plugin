@@ -3,6 +3,7 @@
 package dockerhub
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -17,15 +18,17 @@ const (
 	defaultUpdateEvery = 5
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("dockerhub", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: defaultUpdateEvery,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("dockerhub", creator)
+	})
 }
 
 // New creates DockerHub with default values.

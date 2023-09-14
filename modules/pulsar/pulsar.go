@@ -3,6 +3,7 @@
 package pulsar
 
 import (
+	_ "embed"
 	"errors"
 	"sync"
 	"time"
@@ -14,14 +15,17 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("pulsar", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 60,
 		},
 		Create: func() module.Module { return New() },
-	}
-	module.Register("pulsar", creator)
+	})
 }
 
 func New() *Pulsar {
