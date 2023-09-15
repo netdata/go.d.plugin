@@ -6,413 +6,484 @@ import (
 	"fmt"
 	"strings"
 
-	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
-
 	"github.com/netdata/go.d.plugin/agent/module"
-)
-
-type (
-	// Charts is an alias for module.Charts
-	Charts = module.Charts
-	// Chart is an alias for module.Chart
-	Chart = module.Chart
-	// Dims is an alias for module.Dims
-	Dims = module.Dims
+	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 )
 
 const (
-	hostPrio = module.Priority
-	vmPrio   = hostPrio + 200
+	prioVMCPUUtilization = module.Priority + iota
+	prioVmMemoryUtilization
+	prioVmMemoryUsage
+	prioVmMemorySwapUsage
+	prioVmMemorySwapIO
+	prioVmDiskIO
+	prioVmDiskMaxLatency
+	prioVmNetworkTraffic
+	prioVmNetworkPackets
+	prioVmNetworkDrops
+	prioVmOverallStatus
+	prioVmSystemUptime
+
+	prioHostCPUUtilization
+	prioHostMemoryUtilization
+	prioHostMemoryUsage
+	prioHostMemorySwapIO
+	prioHostDiskIO
+	prioHostDiskMaxLatency
+	prioHostNetworkTraffic
+	prioHostNetworkPackets
+	prioHostNetworkDrops
+	prioHostNetworkErrors
+	prioHostOverallStatus
+	prioHostSystemUptime
 )
 
 var (
-	vmCharts = func() Charts {
-		cs := Charts{}
-		panicIf(cs.Add(vmCPUCharts...))
-		panicIf(cs.Add(vmMemCharts...))
-		panicIf(cs.Add(vmNetCharts...))
-		panicIf(cs.Add(vmDiskCharts...))
-		panicIf(cs.Add(vmSystemCharts...))
-		return cs
-	}()
+	vmChartsTmpl = module.Charts{
+		vmCPUUtilizationChartTmpl.Copy(),
 
-	vmCPUCharts = Charts{
-		{
-			ID:    "%s_cpu_usage_total",
-			Title: "Cpu Usage Total",
-			Units: "percentage",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_cpu_usage_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
-			},
+		vmMemoryUtilizationChartTmpl.Copy(),
+		vmMemoryUsageChartTmpl.Copy(),
+		vmMemorySwapUsageChartTmpl.Copy(),
+		vmMemorySwapIOChartTmpl.Copy(),
+
+		vmDiskIOChartTmpl.Copy(),
+		vmDiskMaxLatencyChartTmpl.Copy(),
+
+		vmNetworkTrafficChartTmpl.Copy(),
+		vmNetworkPacketsChartTmpl.Copy(),
+		vmNetworkDropsChartTmpl.Copy(),
+
+		vmOverallStatusChartTmpl.Copy(),
+
+		vmSystemUptimeChartTmpl.Copy(),
+	}
+
+	vmCPUUtilizationChartTmpl = module.Chart{
+		ID:       "%s_cpu_utilization",
+		Title:    "Virtual Machine CPU utilization",
+		Units:    "percentage",
+		Fam:      "vm cpu",
+		Ctx:      "vsphere.vm_cpu_utilization",
+		Priority: prioVMCPUUtilization,
+		Dims: module.Dims{
+			{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
 		},
 	}
+
 	// Ref: https://www.vmware.com/support/developer/converter-sdk/conv51_apireference/memory_counters.html
-	vmMemCharts = Charts{
-		{
-			ID:    "%s_mem_usage_percentage",
-			Title: "Memory Usage Percentage",
-			Units: "percentage",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_mem_usage_percentage",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_mem.usage.average", Name: "used", Div: 100},
-			},
-		},
-		{
-			ID:    "%s_mem_usage",
-			Title: "Memory Usage",
-			Units: "KiB",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_mem_usage",
-			Dims: Dims{
-				{ID: "%s_mem.granted.average", Name: "granted"},
-				{ID: "%s_mem.consumed.average", Name: "consumed"},
-				{ID: "%s_mem.active.average", Name: "active"},
-				{ID: "%s_mem.shared.average", Name: "shared"},
-			},
-		},
-		{
-			ID:    "%s_mem_swap_rate",
-			Title: "VMKernel Memory Swap Rate",
-			Units: "KiB/s",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_mem_swap_rate",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_mem.swapinRate.average", Name: "in"},
-				{ID: "%s_mem.swapoutRate.average", Name: "out"},
-			},
-		},
-		{
-			ID:    "%s_mem_swap",
-			Title: "VMKernel Memory Swap",
-			Units: "KiB",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_mem_swap",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_mem.swapped.average", Name: "swapped"},
-			},
+	vmMemoryUtilizationChartTmpl = module.Chart{
+		ID:       "%s_mem_utilization",
+		Title:    "Virtual Machine memory utilization",
+		Units:    "percentage",
+		Fam:      "vm mem",
+		Ctx:      "vsphere.vm_mem_utilization",
+		Priority: prioVmMemoryUtilization,
+		Dims: module.Dims{
+			{ID: "%s_mem.usage.average", Name: "used", Div: 100},
 		},
 	}
-	vmNetCharts = Charts{
-		{
-			ID:    "%s_net_bandwidth_total",
-			Title: "Network Bandwidth Total",
-			Units: "KiB/s",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_bandwidth_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_net.bytesRx.average", Name: "rx"},
-				{ID: "%s_net.bytesTx.average", Name: "tx", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_net_packets_total",
-			Title: "Network Packets Total",
-			Units: "packets",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_packets_total",
-			Dims: Dims{
-				{ID: "%s_net.packetsRx.summation", Name: "rx"},
-				{ID: "%s_net.packetsTx.summation", Name: "tx", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_net_drops_total",
-			Title: "Network Drops Total",
-			Units: "packets",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_net_drops_total",
-			Dims: Dims{
-				{ID: "%s_net.droppedRx.summation", Name: "rx"},
-				{ID: "%s_net.droppedTx.summation", Name: "tx", Mul: -1},
-			},
+	vmMemoryUsageChartTmpl = module.Chart{
+		ID:       "%s_mem_usage",
+		Title:    "Virtual Machine memory usage",
+		Units:    "KiB",
+		Fam:      "vm mem",
+		Ctx:      "vsphere.vm_mem_usage",
+		Priority: prioVmMemoryUsage,
+		Dims: module.Dims{
+			{ID: "%s_mem.granted.average", Name: "granted"},
+			{ID: "%s_mem.consumed.average", Name: "consumed"},
+			{ID: "%s_mem.active.average", Name: "active"},
+			{ID: "%s_mem.shared.average", Name: "shared"},
 		},
 	}
-	vmDiskCharts = Charts{
-		{
-			ID:    "%s_disk_usage_total",
-			Title: "Disk Usage Total",
-			Units: "KiB/s",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_disk_usage_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_disk.read.average", Name: "read"},
-				{ID: "%s_disk.write.average", Name: "write", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_disk_max_latency",
-			Title: "Disk Max Latency",
-			Units: "ms",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_disk_max_latency",
-			Dims: Dims{
-				{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
-			},
+	vmMemorySwapUsageChartTmpl = module.Chart{
+		ID:       "%s_mem_swap_usage",
+		Title:    "Virtual Machine VMKernel memory swap usage",
+		Units:    "KiB",
+		Fam:      "vm mem",
+		Ctx:      "vsphere.vm_mem_swap_usage",
+		Priority: prioVmMemorySwapUsage,
+		Dims: module.Dims{
+			{ID: "%s_mem.swapped.average", Name: "swapped"},
 		},
 	}
-	vmSystemCharts = Charts{
-		{
-			ID:    "%s_overall_status",
-			Title: "Overall Alarm Status",
-			Units: "status",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_overall_status",
-			Dims: Dims{
-				{ID: "%s_overall.status", Name: "status"},
-			},
+	vmMemorySwapIOChartTmpl = module.Chart{
+		ID:       "%s_mem_swap_io_rate",
+		Title:    "Virtual Machine VMKernel memory swap IO",
+		Units:    "KiB/s",
+		Fam:      "vm mem",
+		Ctx:      "vsphere.vm_mem_swap_io",
+		Type:     module.Area,
+		Priority: prioVmMemorySwapIO,
+		Dims: module.Dims{
+			{ID: "%s_mem.swapinRate.average", Name: "in"},
+			{ID: "%s_mem.swapoutRate.average", Name: "out"},
 		},
-		{
-			ID:    "%s_system_uptime",
-			Title: "System Uptime",
-			Units: "seconds",
-			Fam:   "vm %s (%s)",
-			Ctx:   "vsphere.vm_system_uptime",
-			Dims: Dims{
-				{ID: "%s_sys.uptime.latest", Name: "time"},
-			},
+	}
+
+	vmDiskIOChartTmpl = module.Chart{
+		ID:       "%s_disk_io",
+		Title:    "Virtual Machine disk IO",
+		Units:    "KiB/s",
+		Fam:      "vm disk",
+		Ctx:      "vsphere.vm_disk_io",
+		Type:     module.Area,
+		Priority: prioVmDiskIO,
+		Dims: module.Dims{
+			{ID: "%s_disk.read.average", Name: "read"},
+			{ID: "%s_disk.write.average", Name: "write", Mul: -1},
+		},
+	}
+	vmDiskMaxLatencyChartTmpl = module.Chart{
+		ID:       "%s_disk_max_latency",
+		Title:    "Virtual Machine disk max latency",
+		Units:    "milliseconds",
+		Fam:      "vm disk",
+		Ctx:      "vsphere.vm_disk_max_latency",
+		Priority: prioVmDiskMaxLatency,
+		Dims: module.Dims{
+			{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
+		},
+	}
+
+	vmNetworkTrafficChartTmpl = module.Chart{
+		ID:       "%s_net_traffic",
+		Title:    "Virtual Machine network traffic",
+		Units:    "KiB/s",
+		Fam:      "vm net",
+		Ctx:      "vsphere.vm_net_traffic",
+		Type:     module.Area,
+		Priority: prioVmNetworkTraffic,
+		Dims: module.Dims{
+			{ID: "%s_net.bytesRx.average", Name: "received"},
+			{ID: "%s_net.bytesTx.average", Name: "sent", Mul: -1},
+		},
+	}
+	vmNetworkPacketsChartTmpl = module.Chart{
+		ID:       "%s_net_packets",
+		Title:    "Virtual Machine network packets",
+		Units:    "packets",
+		Fam:      "vm net",
+		Ctx:      "vsphere.vm_net_packets",
+		Priority: prioVmNetworkPackets,
+		Dims: module.Dims{
+			{ID: "%s_net.packetsRx.summation", Name: "received"},
+			{ID: "%s_net.packetsTx.summation", Name: "sent", Mul: -1},
+		},
+	}
+	vmNetworkDropsChartTmpl = module.Chart{
+		ID:       "%s_net_drops",
+		Title:    "Virtual Machine network dropped packets",
+		Units:    "drops",
+		Fam:      "vm net",
+		Ctx:      "vsphere.vm_net_drops",
+		Priority: prioVmNetworkDrops,
+		Dims: module.Dims{
+			{ID: "%s_net.droppedRx.summation", Name: "received"},
+			{ID: "%s_net.droppedTx.summation", Name: "sent", Mul: -1},
+		},
+	}
+
+	vmOverallStatusChartTmpl = module.Chart{
+		ID:       "%s_overall_status",
+		Title:    "Virtual Machine overall alarm status",
+		Units:    "status",
+		Fam:      "vm status",
+		Ctx:      "vsphere.vm_overall_status",
+		Priority: prioVmOverallStatus,
+		Dims: module.Dims{
+			{ID: "%s_overall.status.green", Name: "green"},
+			{ID: "%s_overall.status.red", Name: "red"},
+			{ID: "%s_overall.status.yellow", Name: "yellow"},
+			{ID: "%s_overall.status.gray", Name: "gray"},
+		},
+	}
+
+	vmSystemUptimeChartTmpl = module.Chart{
+		ID:       "%s_system_uptime",
+		Title:    "Virtual Machine system uptime",
+		Units:    "seconds",
+		Fam:      "vm uptime",
+		Ctx:      "vsphere.vm_system_uptime",
+		Priority: prioVmSystemUptime,
+		Dims: module.Dims{
+			{ID: "%s_sys.uptime.latest", Name: "uptime"},
 		},
 	}
 )
 
 var (
-	hostCharts = func() Charts {
-		cs := Charts{}
-		panicIf(cs.Add(hostCPUCharts...))
-		panicIf(cs.Add(hostMemCharts...))
-		panicIf(cs.Add(hostNetCharts...))
-		panicIf(cs.Add(hostDiskCharts...))
-		panicIf(cs.Add(hostSystemCharts...))
-		return cs
-	}()
-	hostCPUCharts = Charts{
-		{
-			ID:    "%s_cpu_usage_total",
-			Title: "Cpu Usage Total",
-			Units: "percentage",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_cpu_usage_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
-			},
+	hostChartsTmpl = module.Charts{
+		hostCPUUtilizationChartTmpl.Copy(),
+
+		hostMemUtilizationChartTmpl.Copy(),
+		hostMemUsageChartTmpl.Copy(),
+		hostMemSwapIOChartTmpl.Copy(),
+
+		hostDiskIOChartTmpl.Copy(),
+		hostDiskMaxLatencyChartTmpl.Copy(),
+
+		hostNetworkTraffic.Copy(),
+		hostNetworkPacketsChartTmpl.Copy(),
+		hostNetworkDropsChartTmpl.Copy(),
+		hostNetworkErrorsChartTmpl.Copy(),
+
+		hostOverallStatusChartTmpl.Copy(),
+
+		hostSystemUptimeChartTmpl.Copy(),
+	}
+	hostCPUUtilizationChartTmpl = module.Chart{
+		ID:       "%s_cpu_usage_total",
+		Title:    "ESXi Host CPU utilization",
+		Units:    "percentage",
+		Fam:      "host cpu",
+		Ctx:      "vsphere.host_cpu_utilization",
+		Priority: prioHostCPUUtilization,
+		Dims: module.Dims{
+			{ID: "%s_cpu.usage.average", Name: "used", Div: 100},
 		},
 	}
-	// Ref: https://www.vmware.com/support/developer/converter-sdk/conv51_apireference/memory_counters.html
-	hostMemCharts = Charts{
-		{
-			ID:    "%s_mem_usage_percentage",
-			Title: "Memory Usage Percentage",
-			Units: "percentage",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_mem_usage_percentage",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_mem.usage.average", Name: "used", Div: 100},
-			},
-		},
-		{
-			ID:    "%s_mem_usage",
-			Title: "Memory Usage",
-			Units: "KiB",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_mem_usage",
-			Dims: Dims{
-				{ID: "%s_mem.granted.average", Name: "granted"},
-				{ID: "%s_mem.consumed.average", Name: "consumed"},
-				{ID: "%s_mem.active.average", Name: "active"},
-				{ID: "%s_mem.shared.average", Name: "shared"},
-				{ID: "%s_mem.sharedcommon.average", Name: "sharedcommon"},
-			},
-		},
-		{
-			ID:    "%s_mem_swap_rate",
-			Title: "VMKernel Memory Swap Rate",
-			Units: "KiB/s",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_mem_swap_rate",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_mem.swapinRate.average", Name: "in"},
-				{ID: "%s_mem.swapoutRate.average", Name: "out"},
-			},
+	hostMemUtilizationChartTmpl = module.Chart{
+		ID:       "%s_mem_utilization",
+		Title:    "ESXi Host memory utilization",
+		Units:    "percentage",
+		Fam:      "host mem",
+		Ctx:      "vsphere.host_mem_utilization",
+		Priority: prioHostMemoryUtilization,
+		Dims: module.Dims{
+			{ID: "%s_mem.usage.average", Name: "used", Div: 100},
 		},
 	}
-	hostNetCharts = Charts{
-		{
-			ID:    "%s_net_bandwidth_total",
-			Title: "Network Bandwidth Total",
-			Units: "KiB/s",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_bandwidth_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_net.bytesRx.average", Name: "rx"},
-				{ID: "%s_net.bytesTx.average", Name: "tx", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_net_packets_total",
-			Title: "Network Packets Total",
-			Units: "packets",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_packets_total",
-			Dims: Dims{
-				{ID: "%s_net.packetsRx.summation", Name: "rx"},
-				{ID: "%s_net.packetsTx.summation", Name: "tx", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_net_drops_total",
-			Title: "Network Drops Total",
-			Units: "packets",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_drops_total",
-			Dims: Dims{
-				{ID: "%s_net.droppedRx.summation", Name: "rx"},
-				{ID: "%s_net.droppedTx.summation", Name: "tx", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_net_errors_total",
-			Title: "Network Errors Total",
-			Units: "errors",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_net_errors_total",
-			Dims: Dims{
-				{ID: "%s_net.errorsRx.summation", Name: "rx"},
-				{ID: "%s_net.errorsTx.summation", Name: "tx", Mul: -1},
-			},
+	hostMemUsageChartTmpl = module.Chart{
+		ID:       "%s_mem_usage",
+		Title:    "ESXi Host memory usage",
+		Units:    "KiB",
+		Fam:      "host mem",
+		Ctx:      "vsphere.host_mem_usage",
+		Priority: prioHostMemoryUsage,
+		Dims: module.Dims{
+			{ID: "%s_mem.granted.average", Name: "granted"},
+			{ID: "%s_mem.consumed.average", Name: "consumed"},
+			{ID: "%s_mem.active.average", Name: "active"},
+			{ID: "%s_mem.shared.average", Name: "shared"},
+			{ID: "%s_mem.sharedcommon.average", Name: "sharedcommon"},
 		},
 	}
-	hostDiskCharts = Charts{
-		{
-			ID:    "%s_disk_usage_total",
-			Title: "Disk Usage Total",
-			Units: "KiB/s",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_disk_usage_total",
-			Type:  module.Area,
-			Dims: Dims{
-				{ID: "%s_disk.read.average", Name: "read"},
-				{ID: "%s_disk.write.average", Name: "write", Mul: -1},
-			},
-		},
-		{
-			ID:    "%s_disk_max_latency",
-			Title: "Disk Max Latency",
-			Units: "ms",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_disk_max_latency",
-			Dims: Dims{
-				{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
-			},
+	hostMemSwapIOChartTmpl = module.Chart{
+		ID:       "%s_mem_swap_rate",
+		Title:    "ESXi Host VMKernel memory swap IO",
+		Units:    "KiB/s",
+		Fam:      "host mem",
+		Ctx:      "vsphere.host_mem_swap_io",
+		Type:     module.Area,
+		Priority: prioHostMemorySwapIO,
+		Dims: module.Dims{
+			{ID: "%s_mem.swapinRate.average", Name: "in"},
+			{ID: "%s_mem.swapoutRate.average", Name: "out"},
 		},
 	}
-	hostSystemCharts = Charts{
-		{
-			ID:    "%s_overall_status",
-			Title: "Overall Alarm Status",
-			Units: "status",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_overall_status",
-			Dims: Dims{
-				{ID: "%s_overall.status", Name: "status"},
-			},
+
+	hostDiskIOChartTmpl = module.Chart{
+		ID:       "%s_disk_io",
+		Title:    "ESXi Host disk IO",
+		Units:    "KiB/s",
+		Fam:      "host disk",
+		Ctx:      "vsphere.host_disk_io",
+		Type:     module.Area,
+		Priority: prioHostDiskIO,
+		Dims: module.Dims{
+			{ID: "%s_disk.read.average", Name: "read"},
+			{ID: "%s_disk.write.average", Name: "write", Mul: -1},
 		},
-		{
-			ID:    "%s_system_uptime",
-			Title: "System Uptime",
-			Units: "seconds",
-			Fam:   "host %s",
-			Ctx:   "vsphere.host_system_uptime",
-			Dims: Dims{
-				{ID: "%s_sys.uptime.latest", Name: "time"},
-			},
+	}
+	hostDiskMaxLatencyChartTmpl = module.Chart{
+		ID:       "%s_disk_max_latency",
+		Title:    "ESXi Host disk max latency",
+		Units:    "milliseconds",
+		Fam:      "host disk",
+		Ctx:      "vsphere.host_disk_max_latency",
+		Priority: prioHostDiskMaxLatency,
+		Dims: module.Dims{
+			{ID: "%s_disk.maxTotalLatency.latest", Name: "latency"},
+		},
+	}
+
+	hostNetworkTraffic = module.Chart{
+		ID:       "%s_net_traffic",
+		Title:    "ESXi Host network traffic",
+		Units:    "KiB/s",
+		Fam:      "host net",
+		Ctx:      "vsphere.host_net_traffic",
+		Type:     module.Area,
+		Priority: prioHostNetworkTraffic,
+		Dims: module.Dims{
+			{ID: "%s_net.bytesRx.average", Name: "received"},
+			{ID: "%s_net.bytesTx.average", Name: "sent", Mul: -1},
+		},
+	}
+	hostNetworkPacketsChartTmpl = module.Chart{
+		ID:       "%s_net_packets",
+		Title:    "ESXi Host network packets",
+		Units:    "packets",
+		Fam:      "host net",
+		Ctx:      "vsphere.host_net_packets",
+		Priority: prioHostNetworkPackets,
+		Dims: module.Dims{
+			{ID: "%s_net.packetsRx.summation", Name: "received"},
+			{ID: "%s_net.packetsTx.summation", Name: "sent", Mul: -1},
+		},
+	}
+	hostNetworkDropsChartTmpl = module.Chart{
+		ID:       "%s_net_drops_total",
+		Title:    "ESXi Host network drops",
+		Units:    "drops",
+		Fam:      "host net",
+		Ctx:      "vsphere.host_net_drops",
+		Priority: prioHostNetworkDrops,
+		Dims: module.Dims{
+			{ID: "%s_net.droppedRx.summation", Name: "received"},
+			{ID: "%s_net.droppedTx.summation", Name: "sent", Mul: -1},
+		},
+	}
+	hostNetworkErrorsChartTmpl = module.Chart{
+		ID:       "%s_net_errors",
+		Title:    "ESXi Host network errors",
+		Units:    "errors",
+		Fam:      "host net",
+		Ctx:      "vsphere.host_net_errors",
+		Priority: prioHostNetworkErrors,
+		Dims: module.Dims{
+			{ID: "%s_net.errorsRx.summation", Name: "received"},
+			{ID: "%s_net.errorsTx.summation", Name: "sent", Mul: -1},
+		},
+	}
+
+	hostOverallStatusChartTmpl = module.Chart{
+		ID:       "%s_overall_status",
+		Title:    "ESXi Host overall alarm status",
+		Units:    "status",
+		Fam:      "host status",
+		Ctx:      "vsphere.host_overall_status",
+		Priority: prioHostOverallStatus,
+		Dims: module.Dims{
+			{ID: "%s_overall.status.green", Name: "green"},
+			{ID: "%s_overall.status.red", Name: "red"},
+			{ID: "%s_overall.status.yellow", Name: "yellow"},
+			{ID: "%s_overall.status.gray", Name: "gray"},
+		},
+	}
+	hostSystemUptimeChartTmpl = module.Chart{
+		ID:       "%s_system_uptime",
+		Title:    "ESXi Host system uptime",
+		Units:    "seconds",
+		Fam:      "host uptime",
+		Ctx:      "vsphere.host_system_uptime",
+		Priority: prioHostSystemUptime,
+		Dims: module.Dims{
+			{ID: "%s_sys.uptime.latest", Name: "uptime"},
 		},
 	}
 )
 
-func (vs *VSphere) updateHostsCharts(collected map[string]string) {
-	for id, userID := range collected {
-		if vs.charted[userID] {
-			continue
-		}
-		h := vs.resources.Hosts.Get(id)
-		if h == nil {
-			continue
-		}
-		vs.charted[userID] = true
+const failedUpdatesLimit = 10
 
-		cs := newHostCharts(h, userID)
-		if err := vs.charts.Add(*cs...); err != nil {
+func (vs *VSphere) updateCharts() {
+	for id, fails := range vs.discoveredHosts {
+		if fails >= failedUpdatesLimit {
+			vs.removeFromCharts(id)
+			delete(vs.charted, id)
+			delete(vs.discoveredHosts, id)
+			continue
+		}
+
+		host := vs.resources.Hosts.Get(id)
+		if host == nil || vs.charted[id] || fails != 0 {
+			continue
+		}
+
+		vs.charted[id] = true
+		charts := newHostCharts(host)
+		if err := vs.Charts().Add(*charts...); err != nil {
 			vs.Error(err)
 		}
 	}
-}
 
-func newHostCharts(host *rs.Host, userID string) *Charts {
-	cs := hostCharts.Copy()
-	for i, c := range *cs {
-		setHostChart(c, host, userID, hostPrio+i)
-	}
-	return cs
-}
-
-func setHostChart(chart *Chart, host *rs.Host, userID string, prio int) {
-	chart.Priority = prio
-	chart.ID = fmt.Sprintf(chart.ID, userID)
-	chart.Fam = fmt.Sprintf(chart.Fam, host.Name)
-	for _, d := range chart.Dims {
-		d.ID = fmt.Sprintf(d.ID, host.ID)
-	}
-}
-
-func (vs *VSphere) updateVMsCharts(collected map[string]string) {
-	for id, userID := range collected {
-		if vs.charted[userID] {
+	for id, fails := range vs.discoveredVMs {
+		if fails >= failedUpdatesLimit {
+			vs.removeFromCharts(id)
+			delete(vs.charted, id)
+			delete(vs.discoveredVMs, id)
 			continue
 		}
+
 		vm := vs.resources.VMs.Get(id)
-		if vm == nil {
+		if vm == nil || vs.charted[id] || fails != 0 {
 			continue
 		}
-		vs.charted[userID] = true
 
-		cs := newVMCHarts(vm, userID)
-		if err := vs.charts.Add(*cs...); err != nil {
+		vs.charted[id] = true
+		charts := newVMCHarts(vm)
+		if err := vs.Charts().Add(*charts...); err != nil {
 			vs.Error(err)
 		}
 	}
 }
 
-func newVMCHarts(vm *rs.VM, userID string) *Charts {
-	cs := vmCharts.Copy()
-	for i, c := range *cs {
-		setVMChart(c, vm, userID, vmPrio+i)
+func newVMCHarts(vm *rs.VM) *module.Charts {
+	charts := vmChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, vm.ID)
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: vm.Hier.DC.Name},
+			{Key: "cluster", Value: getVMClusterName(vm)},
+			{Key: "host", Value: vm.Hier.Host.Name},
+			{Key: "vm", Value: vm.Name},
+		}
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, vm.ID)
+		}
 	}
-	return cs
+
+	return charts
 }
 
-func setVMChart(chart *Chart, vm *rs.VM, userID string, prio int) {
-	chart.Priority = prio
-	chart.ID = fmt.Sprintf(chart.ID, userID)
-	chart.Fam = fmt.Sprintf(chart.Fam, vm.Name, vm.Hier.Host.Name)
-	for _, d := range chart.Dims {
-		d.ID = fmt.Sprintf(d.ID, vm.ID)
+func getVMClusterName(vm *rs.VM) string {
+	if vm.Hier.Cluster.Name == vm.Hier.Host.Name {
+		return ""
 	}
+	return vm.Hier.Cluster.Name
+}
+
+func newHostCharts(host *rs.Host) *module.Charts {
+	charts := hostChartsTmpl.Copy()
+
+	for _, chart := range *charts {
+		chart.ID = fmt.Sprintf(chart.ID, host.ID)
+		chart.Labels = []module.Label{
+			{Key: "datacenter", Value: host.Hier.DC.Name},
+			{Key: "cluster", Value: getHostClusterName(host)},
+			{Key: "host", Value: host.Name},
+		}
+
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, host.ID)
+		}
+	}
+
+	return charts
+}
+
+func getHostClusterName(host *rs.Host) string {
+	if host.Hier.Cluster.Name == host.Name {
+		return ""
+	}
+	return host.Hier.Cluster.Name
 }
 
 func (vs *VSphere) removeFromCharts(prefix string) {
-	for _, c := range *vs.charts {
+	for _, c := range *vs.Charts() {
 		if strings.HasPrefix(c.ID, prefix) {
 			c.MarkRemove()
 			c.MarkNotCreated()
@@ -433,9 +504,3 @@ func (vs *VSphere) removeFromCharts(prefix string) {
 //	}
 //	return ms[from:until]
 //}
-
-func panicIf(err error) {
-	if err != nil {
-		panic(err)
-	}
-}

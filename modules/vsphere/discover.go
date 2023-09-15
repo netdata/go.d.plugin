@@ -26,5 +26,6 @@ func (vs *VSphere) discoverOnce() error {
 	vs.collectionLock.Lock()
 	vs.resources = res
 	vs.collectionLock.Unlock()
+
 	return nil
 }

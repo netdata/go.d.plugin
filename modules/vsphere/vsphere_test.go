@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-
 package vsphere
 
 import (
@@ -119,7 +118,6 @@ func TestVSphere_Collect(t *testing.T) {
 	defer teardown()
 
 	require.True(t, vSphere.Init())
-	require.True(t, vSphere.Check())
 
 	vSphere.scraper = mockScraper{vSphere.scraper}
 
@@ -144,7 +142,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"host-20_net.errorsTx.summation":      100,
 		"host-20_net.packetsRx.summation":     100,
 		"host-20_net.packetsTx.summation":     100,
-		"host-20_overall.status":              0,
+		"host-20_overall.status.gray":         1,
+		"host-20_overall.status.green":        0,
+		"host-20_overall.status.red":          0,
+		"host-20_overall.status.yellow":       0,
 		"host-20_sys.uptime.latest":           100,
 		"host-32_cpu.usage.average":           100,
 		"host-32_disk.maxTotalLatency.latest": 100,
@@ -166,7 +167,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"host-32_net.errorsTx.summation":      100,
 		"host-32_net.packetsRx.summation":     100,
 		"host-32_net.packetsTx.summation":     100,
-		"host-32_overall.status":              0,
+		"host-32_overall.status.gray":         1,
+		"host-32_overall.status.green":        0,
+		"host-32_overall.status.red":          0,
+		"host-32_overall.status.yellow":       0,
 		"host-32_sys.uptime.latest":           100,
 		"host-39_cpu.usage.average":           100,
 		"host-39_disk.maxTotalLatency.latest": 100,
@@ -188,7 +192,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"host-39_net.errorsTx.summation":      100,
 		"host-39_net.packetsRx.summation":     100,
 		"host-39_net.packetsTx.summation":     100,
-		"host-39_overall.status":              0,
+		"host-39_overall.status.gray":         1,
+		"host-39_overall.status.green":        0,
+		"host-39_overall.status.red":          0,
+		"host-39_overall.status.yellow":       0,
 		"host-39_sys.uptime.latest":           100,
 		"host-46_cpu.usage.average":           100,
 		"host-46_disk.maxTotalLatency.latest": 100,
@@ -210,7 +217,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"host-46_net.errorsTx.summation":      100,
 		"host-46_net.packetsRx.summation":     100,
 		"host-46_net.packetsTx.summation":     100,
-		"host-46_overall.status":              0,
+		"host-46_overall.status.gray":         1,
+		"host-46_overall.status.green":        0,
+		"host-46_overall.status.red":          0,
+		"host-46_overall.status.yellow":       0,
 		"host-46_sys.uptime.latest":           100,
 		"vm-53_cpu.usage.average":             200,
 		"vm-53_disk.maxTotalLatency.latest":   200,
@@ -230,7 +240,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"vm-53_net.droppedTx.summation":       200,
 		"vm-53_net.packetsRx.summation":       200,
 		"vm-53_net.packetsTx.summation":       200,
-		"vm-53_overall.status":                1,
+		"vm-53_overall.status.gray":           0,
+		"vm-53_overall.status.green":          1,
+		"vm-53_overall.status.red":            0,
+		"vm-53_overall.status.yellow":         0,
 		"vm-53_sys.uptime.latest":             200,
 		"vm-56_cpu.usage.average":             200,
 		"vm-56_disk.maxTotalLatency.latest":   200,
@@ -250,7 +263,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"vm-56_net.droppedTx.summation":       200,
 		"vm-56_net.packetsRx.summation":       200,
 		"vm-56_net.packetsTx.summation":       200,
-		"vm-56_overall.status":                1,
+		"vm-56_overall.status.gray":           0,
+		"vm-56_overall.status.green":          1,
+		"vm-56_overall.status.red":            0,
+		"vm-56_overall.status.yellow":         0,
 		"vm-56_sys.uptime.latest":             200,
 		"vm-59_cpu.usage.average":             200,
 		"vm-59_disk.maxTotalLatency.latest":   200,
@@ -270,7 +286,10 @@ func TestVSphere_Collect(t *testing.T) {
 		"vm-59_net.droppedTx.summation":       200,
 		"vm-59_net.packetsRx.summation":       200,
 		"vm-59_net.packetsTx.summation":       200,
-		"vm-59_overall.status":                1,
+		"vm-59_overall.status.gray":           0,
+		"vm-59_overall.status.green":          1,
+		"vm-59_overall.status.red":            0,
+		"vm-59_overall.status.yellow":         0,
 		"vm-59_sys.uptime.latest":             200,
 		"vm-62_cpu.usage.average":             200,
 		"vm-62_disk.maxTotalLatency.latest":   200,
@@ -290,17 +309,22 @@ func TestVSphere_Collect(t *testing.T) {
 		"vm-62_net.droppedTx.summation":       200,
 		"vm-62_net.packetsRx.summation":       200,
 		"vm-62_net.packetsTx.summation":       200,
-		"vm-62_overall.status":                1,
+		"vm-62_overall.status.gray":           0,
+		"vm-62_overall.status.green":          1,
+		"vm-62_overall.status.red":            0,
+		"vm-62_overall.status.yellow":         0,
 		"vm-62_sys.uptime.latest":             200,
 	}
 
 	collected := vSphere.Collect()
-	assert.Equal(t, expected, collected)
+	require.Equal(t, expected, collected)
+
 	count := model.Count()
 	assert.Len(t, vSphere.discoveredHosts, count.Host)
 	assert.Len(t, vSphere.discoveredVMs, count.Machine)
 	assert.Len(t, vSphere.charted, count.Host+count.Machine)
-	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
+
+	assert.Len(t, *vSphere.Charts(), count.Host*len(hostChartsTmpl)+count.Machine*len(vmChartsTmpl))
 	ensureCollectedHasAllChartsDimsVarsIDs(t, vSphere, collected)
 }
 
@@ -325,7 +349,7 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 
 	host := vSphere.resources.Hosts.Get(okHostID)
 	for k, v := range vSphere.discoveredHosts {
-		if k == vSphere.hostID(host) {
+		if k == host.ID {
 			assert.Equal(t, 0, v)
 		} else {
 			assert.Equal(t, numOfRuns, v)
@@ -334,7 +358,7 @@ func TestVSphere_Collect_RemoveHostsVMsInRuntime(t *testing.T) {
 
 	vm := vSphere.resources.VMs.Get(okVMID)
 	for id, fails := range vSphere.discoveredVMs {
-		if id == vSphere.vmID(vm) {
+		if id == vm.ID {
 			assert.Equal(t, 0, fails)
 		} else {
 			assert.Equal(t, numOfRuns, fails)
@@ -379,50 +403,7 @@ func TestVSphere_Collect_Run(t *testing.T) {
 	assert.Len(t, vSphere.discoveredHosts, count.Host)
 	assert.Len(t, vSphere.discoveredVMs, count.Machine)
 	assert.Len(t, vSphere.charted, count.Host+count.Machine)
-	assert.Len(t, *vSphere.charts, count.Host*len(hostCharts)+count.Machine*len(vmCharts))
-}
-
-func TestVSphere_chartIDsHasAllHierarchyData(t *testing.T) {
-	vSphere, _, teardown := prepareVSphereSim(t)
-	defer teardown()
-
-	vSphere.VMMetrics.Name = true
-	vSphere.VMMetrics.Host = true
-	vSphere.VMMetrics.Cluster = true
-	vSphere.VMMetrics.DataCenter = true
-	vSphere.HostMetrics.Name = true
-	vSphere.HostMetrics.Cluster = true
-	vSphere.HostMetrics.DataCenter = true
-
-	require.True(t, vSphere.Init())
-	require.True(t, vSphere.Check())
-	vSphere.Collect()
-
-	ensureChartsHasCorrectIDs(t, vSphere)
-}
-
-func ensureChartsHasCorrectIDs(t *testing.T, vSphere *VSphere) {
-	for _, vm := range vSphere.resources.VMs {
-		id := vSphere.vmID(vm)
-		var i int
-		for _, chart := range *vSphere.Charts() {
-			if strings.HasPrefix(chart.ID, id) {
-				i++
-			}
-		}
-		assert.Truef(t, i > 0, "zero charts for vm id: %s", id)
-	}
-
-	for _, host := range vSphere.resources.Hosts {
-		id := vSphere.hostID(host)
-		var i int
-		for _, chart := range *vSphere.Charts() {
-			if strings.HasPrefix(chart.ID, id) {
-				i++
-			}
-		}
-		assert.Truef(t, i > 0, "zero charts for host id: %s", id)
-	}
+	assert.Len(t, *vSphere.charts, count.Host*len(hostChartsTmpl)+count.Machine*len(vmChartsTmpl))
 }
 
 func ensureCollectedHasAllChartsDimsVarsIDs(t *testing.T, vSphere *VSphere, collected map[string]int64) {
