@@ -18,7 +18,7 @@ func (vs *VSphere) goDiscovery() {
 }
 
 func (vs *VSphere) discoverOnce() error {
-	res, err := vs.Discover()
+	res, err := vs.discoverer.Discover()
 	if err != nil {
 		return err
 	}
@@ -26,5 +26,6 @@ func (vs *VSphere) discoverOnce() error {
 	vs.collectionLock.Lock()
 	vs.resources = res
 	vs.collectionLock.Unlock()
+
 	return nil
 }

@@ -5,13 +5,15 @@ package vsphere
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	rs "github.com/netdata/go.d.plugin/modules/vsphere/resources"
 
 	"github.com/vmware/govmomi/performance"
 )
+
+// ManagedEntityStatus
+var overallStatuses = []string{"green", "red", "yellow", "gray"}
 
 func (vs *VSphere) collect() (map[string]int64, error) {
 	vs.collectionLock.Lock()
@@ -41,65 +43,54 @@ func (vs *VSphere) collectHosts(mx map[string]int64) error {
 		return nil
 	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
-	metrics := vs.ScrapeHosts(vs.resources.Hosts)
+	metrics := vs.scraper.ScrapeHosts(vs.resources.Hosts)
 	if len(metrics) == 0 {
 		return errors.New("failed to scrape hosts metrics")
 	}
 
 	hosts := vs.collectHostsMetrics(mx, metrics)
+
 	vs.updateDiscoveredHosts(hosts)
 	vs.updateHostsCharts(hosts)
+
 	return nil
 }
 
-func (vs *VSphere) collectHostsMetrics(mx map[string]int64, metrics []performance.EntityMetric) map[string]string {
-	hosts := make(map[string]string)
-	for _, m := range metrics {
-		host := vs.resources.Hosts.Get(m.Entity.Value)
+func (vs *VSphere) collectHostsMetrics(mx map[string]int64, metrics []performance.EntityMetric) map[string]bool {
+	hosts := make(map[string]bool)
+	for _, metric := range metrics {
+		host := vs.resources.Hosts.Get(metric.Entity.Value)
 		if host == nil {
 			continue
 		}
-		writeHostMetrics(mx, host, m.Value)
-		hosts[host.ID] = vs.hostID(host)
+		writeHostMetrics(mx, host, metric.Value)
+		hosts[host.ID] = true
 	}
 	return hosts
 }
 
 func writeHostMetrics(mx map[string]int64, host *rs.Host, metrics []performance.MetricSeries) {
-	for _, m := range metrics {
-		if len(m.Value) == 0 || m.Value[0] == -1 {
+	for _, metric := range metrics {
+		if len(metric.Value) == 0 || metric.Value[0] == -1 {
 			continue
 		}
-		key := fmt.Sprintf("%s_%s", host.ID, m.Name)
-		mx[key] = m.Value[0]
+		key := fmt.Sprintf("host_%s_%s", host.ID, metric.Name)
+		mx[key] = metric.Value[0]
 	}
-	key := fmt.Sprintf("%s_overall.status", host.ID)
-	mx[key] = overallStatusToInt(host.OverallStatus)
+	for _, v := range overallStatuses {
+		key := fmt.Sprintf("host_%s_overall.status.%s", host.ID, v)
+		mx[key] = boolToInt(host.OverallStatus == v)
+	}
 }
 
-func (vs *VSphere) updateDiscoveredHosts(collected map[string]string) {
+func (vs *VSphere) updateDiscoveredHosts(discoveredHosts map[string]bool) {
 	for _, h := range vs.resources.Hosts {
-		id := vs.hostID(h)
-		if v, ok := collected[h.ID]; !ok || id != v {
-			vs.discoveredHosts[id] += 1
+		if _, ok := discoveredHosts[h.ID]; !ok {
+			vs.discoveredHosts[h.ID] += 1
 		} else {
-			vs.discoveredHosts[id] = 0
+			vs.discoveredHosts[h.ID] = 0
 		}
 	}
-}
-
-func (vs VSphere) hostID(host *rs.Host) (id string) {
-	id = host.ID
-	if vs.HostMetrics.Name {
-		id = join(id, "name", host.Name)
-	}
-	if vs.HostMetrics.Cluster {
-		id = join(id, "cluster", host.Hier.Cluster.Name)
-	}
-	if vs.HostMetrics.DataCenter {
-		id = join(id, "datacenter", host.Hier.DC.Name)
-	}
-	return cleanID(id)
 }
 
 func (vs *VSphere) collectVMs(mx map[string]int64) error {
@@ -107,7 +98,7 @@ func (vs *VSphere) collectVMs(mx map[string]int64) error {
 		return nil
 	}
 	// NOTE: returns unsorted if at least one types.PerfMetricId Instance is not ""
-	ems := vs.ScrapeVMs(vs.resources.VMs)
+	ems := vs.scraper.ScrapeVMs(vs.resources.VMs)
 	if len(ems) == 0 {
 		return errors.New("failed to scrape vms metrics")
 	}
@@ -115,108 +106,72 @@ func (vs *VSphere) collectVMs(mx map[string]int64) error {
 	vms := vs.collectVMsMetrics(mx, ems)
 	vs.updateDiscoveredVMs(vms)
 	vs.updateVMsCharts(vms)
+
 	return nil
 }
 
-func (vs *VSphere) collectVMsMetrics(mx map[string]int64, ems []performance.EntityMetric) map[string]string {
-	vms := make(map[string]string)
-	for _, em := range ems {
-		vm := vs.resources.VMs.Get(em.Entity.Value)
+func (vs *VSphere) collectVMsMetrics(mx map[string]int64, metrics []performance.EntityMetric) map[string]bool {
+	vms := make(map[string]bool)
+	for _, metric := range metrics {
+		vm := vs.resources.VMs.Get(metric.Entity.Value)
 		if vm == nil {
 			continue
 		}
-		writeVMMetrics(mx, vm, em.Value)
-		vms[vm.ID] = vs.vmID(vm)
+
+		writeVMMetrics(mx, vm, metric.Value)
+		vms[vm.ID] = true
 	}
 	return vms
 }
 
 func writeVMMetrics(mx map[string]int64, vm *rs.VM, metrics []performance.MetricSeries) {
-	for _, m := range metrics {
-		if len(m.Value) == 0 || m.Value[0] == -1 {
+	for _, metric := range metrics {
+		if len(metric.Value) == 0 || metric.Value[0] == -1 {
 			continue
 		}
-		key := fmt.Sprintf("%s_%s", vm.ID, m.Name)
-		mx[key] = m.Value[0]
+		key := fmt.Sprintf("vm_%s_%s", vm.ID, metric.Name)
+		mx[key] = metric.Value[0]
 	}
-	key := fmt.Sprintf("%s_overall.status", vm.ID)
-	mx[key] = overallStatusToInt(vm.OverallStatus)
+	for _, v := range overallStatuses {
+		key := fmt.Sprintf("vm_%s_overall.status.%s", vm.ID, v)
+		mx[key] = boolToInt(vm.OverallStatus == v)
+	}
 }
 
-func (vs *VSphere) updateDiscoveredVMs(collected map[string]string) {
+func (vs *VSphere) updateDiscoveredVMs(discoveredVMs map[string]bool) {
 	for _, vm := range vs.resources.VMs {
-		id := vs.vmID(vm)
-		if v, ok := collected[vm.ID]; !ok || id != v {
-			vs.discoveredVMs[id] += 1
+		if _, ok := discoveredVMs[vm.ID]; !ok {
+			vs.discoveredVMs[vm.ID] += 1
 		} else {
-			vs.discoveredVMs[id] = 0
+			vs.discoveredVMs[vm.ID] = 0
 		}
 	}
-}
-
-func (vs VSphere) vmID(vm *rs.VM) (id string) {
-	id = vm.ID
-	if vs.VMMetrics.Name {
-		id = join(id, "name", vm.Name)
-	}
-	if vs.VMMetrics.Host {
-		id = join(id, "host", vm.Hier.Host.Name)
-	}
-	if vs.VMMetrics.Cluster {
-		id = join(id, "cluster", vm.Hier.Cluster.Name)
-	}
-	if vs.VMMetrics.DataCenter {
-		id = join(id, "datacenter", vm.Hier.DC.Name)
-	}
-	return cleanID(id)
 }
 
 const failedUpdatesLimit = 10
 
 func (vs *VSphere) removeStale() {
-	for userHostID, fails := range vs.discoveredHosts {
+	for hostID, fails := range vs.discoveredHosts {
 		if fails < failedUpdatesLimit {
 			continue
 		}
-		vs.removeFromCharts(userHostID)
-		delete(vs.charted, userHostID)
-		delete(vs.discoveredHosts, userHostID)
+		vs.removeFromCharts("host_" + hostID)
+		delete(vs.charted, hostID)
+		delete(vs.discoveredHosts, hostID)
 	}
-	for userVMID, fails := range vs.discoveredVMs {
+	for vmID, fails := range vs.discoveredVMs {
 		if fails < failedUpdatesLimit {
 			continue
 		}
-		vs.removeFromCharts(userVMID)
-		delete(vs.charted, userVMID)
-		delete(vs.discoveredVMs, userVMID)
+		vs.removeFromCharts("vm_" + vmID)
+		delete(vs.charted, vmID)
+		delete(vs.discoveredVMs, vmID)
 	}
 }
 
-func join(a, prefix, value string) string {
-	if value == "" {
-		value = "unknown"
-	}
-	return a + "_" + prefix + "-" + value
-}
-
-func cleanID(id string) string {
-	return r.Replace(id)
-}
-
-var r = strings.NewReplacer(" ", "_", ".", "_")
-
-func overallStatusToInt(status string) int64 {
-	// ManagedEntityStatus
-	switch status {
-	default:
-		return 0
-	case "grey":
-		return 0
-	case "green":
+func boolToInt(v bool) int64 {
+	if v {
 		return 1
-	case "yellow":
-		return 2
-	case "red":
-		return 3
 	}
+	return 0
 }

@@ -18,41 +18,76 @@ This module collects hosts and vms performance statistics from one or more `vCen
 > **Warning**: The `vsphere` collector cannot re-login and continue collecting metrics after a vCenter reboot.
 > go.d.plugin needs to be restarted.
 
-## Metrics
+## Collected metrics
 
-All metrics have "vsphere." prefix.
+Metrics grouped by *scope*.
 
-| Metric                    |      Scope      |                   Dimensions                    |   Units    |
-|---------------------------|:---------------:|:-----------------------------------------------:|:----------:|
-| vm_cpu_usage_total        | virtual machine |                      used                       | percentage |
-| vm_mem_usage_percentage   | virtual machine |                      used                       | percentage |
-| vm_mem_usage              | virtual machine |        granted, consumed, active, shared        |    KiB     |
-| vm_mem_swap_rate          | virtual machine |                     in, out                     |   KiB/s    |
-| vm_mem_swap               | virtual machine |                     swapped                     |    KiB     |
-| vm_net_bandwidth_total    | virtual machine |                     rx, tx                      |   KiB/s    |
-| vm_net_packets_total      | virtual machine |                     rx, tx                      |  packets   |
-| vm_net_drops_total        | virtual machine |                     rx, tx                      |  packets   |
-| vm_disk_usage_total       | virtual machine |                   read, write                   |   KiB/s    |
-| vm_disk_max_latency       | virtual machine |                     latency                     |     ms     |
-| vm_overall_status         | virtual machine |                     status                      |   status   |
-| vm_system_uptime          | virtual machine |                      time                       |  seconds   |
-| host_cpu_usage_total      |      host       |                      used                       | percentage |
-| host_mem_usage_percentage |      host       |                      used                       | percentage |
-| host_mem_usage            |      host       | granted, consumed, active, shared, sharedcommon |    KiB     |
-| host_mem_swap_rate        |      host       |                     in, out                     |   KiB/s    |
-| host_net_bandwidth_total  |      host       |                     rx, tx                      |   KiB/s    |
-| host_net_packets_total    |      host       |                     rx, tx                      |  packets   |
-| host_net_drops_total      |      host       |                     rx, tx                      |  packets   |
-| host_net_errors_total     |      host       |                     rx, tx                      |   errors   |
-| host_disk_usage_total     |      host       |                   read, write                   |   KiB/s    |
-| host_disk_max_latency     |      host       |                     latency                     |     ms     |
-| host_overall_status       |      host       |                     status                      |   status   |
-| host_system_uptime        |      host       |                      time                       |  seconds   |
+The scope defines the instance that the metric belongs to. An instance is uniquely identified by a set of labels.
+
+### Virtual Machine
+
+These metrics refer to the Virtual Machine.
+
+Labels:
+
+| Label      | Description          |
+|------------|----------------------|
+| datacenter | Datacenter name      |
+| cluster    | Cluster name         |
+| host       | Host name            |
+| vm         | Virtual Machine name |
+
+Metrics:
+
+| Metric                      |      Scope      |            Dimensions             |    Units     |
+|-----------------------------|:---------------:|:---------------------------------:|:------------:|
+| vsphere.vm_cpu_utilization  | virtual machine |               used                |  percentage  |
+| vsphere.vm_mem_utilization  | virtual machine |               used                |  percentage  |
+| vsphere.vm_mem_usage        | virtual machine | granted, consumed, active, shared |     KiB      |
+| vsphere.vm_mem_swap_usage   | virtual machine |              swapped              |     KiB      |
+| vsphere.vm_mem_swap_io      | virtual machine |              in, out              |    KiB/s     |
+| vsphere.vm_disk_io          | virtual machine |            read, write            |    KiB/s     |
+| vsphere.vm_disk_max_latency | virtual machine |              latency              | milliseconds |
+| vsphere.vm_net_traffic      | virtual machine |              rx, tx               |    KiB/s     |
+| vsphere.vm_net_packets      | virtual machine |              rx, tx               |   packets    |
+| vsphere.vm_net_drops        | virtual machine |              rx, tx               |   packets    |
+| vsphere.vm_overall_status   | virtual machine |     green, red, yellow, gray      |    status    |
+| vsphere.vm_system_uptime    | virtual machine |              uptime               |   seconds    |
+
+### Host
+
+These metrics refer to the ESXi host.
+
+Labels:
+
+| Label      | Description     |
+|------------|-----------------|
+| datacenter | Datacenter name |
+| cluster    | Cluster name    |
+| host       | Host name       |
+
+Metrics:
+
+| Metric                        | Scope |                   Dimensions                    |    Units     |
+|-------------------------------|:-----:|:-----------------------------------------------:|:------------:|
+| vsphere.host_cpu_utilization  | host  |                      used                       |  percentage  |
+| vsphere.host_mem_utilization  | host  |                      used                       |  percentage  |
+| vsphere.host_mem_usage        | host  | granted, consumed, active, shared, sharedcommon |     KiB      |
+| vsphere.host_mem_swap_io      | host  |                     in, out                     |    KiB/s     |
+| vsphere.host_disk_io          | host  |                   read, write                   |    KiB/s     |
+| vsphere.host_disk_max_latency | host  |                     latency                     | milliseconds |
+| vsphere.host_net_traffic      | host  |                 received, sent                  |    KiB/s     |
+| vsphere.host_net_packets      | host  |                 received, sent                  |   packets    |
+| vsphere.host_net_drops        | host  |                 received, sent                  |   packets    |
+| vsphere.host_net_errors       | host  |                 received, sent                  |    errors    |
+| vsphere.host_overall_status   | host  |            green, red, yellow, gray             |    status    |
+| vsphere.host_system_uptime    | host  |                     uptime                      |   seconds    |
 
 ## Configuration
 
 Edit the `go.d/vsphere.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
