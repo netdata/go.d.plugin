@@ -57,7 +57,7 @@ func (o *OpenVPNStatusLog) collectUsers(mx map[string]int64, clients []clientInf
 func numOfClients(clients []clientInfo) int64 {
 	var num int64
 	for _, v := range clients {
-		if v.commonName != "" {
+		if v.commonName != "" && v.commonName != "UNDEF" {
 			num++
 		}
 	}
