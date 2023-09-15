@@ -240,22 +240,6 @@ modules:
         metric: vsphere.host_mem_utilization
         info: ESXi Host memory utilization
         link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
-      - name: vsphere_host_net_drops_inbound_ratio
-        metric: vsphere.host_net_drops
-        info: ESXi Host inbound network drops ratio
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
-      - name: vsphere_host_net_drops_outbound_ratio
-        metric: vsphere.host_net_drops
-        info: ESXi Host outbound network drops ratio
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
-      - name: vsphere_host_net_errors_inbound_ratio
-        metric: vsphere.host_net_errors
-        info: ESXi Host inbound network errors ratio
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
-      - name: vsphere_host_net_errors_outbound_ratio
-        metric: vsphere.host_net_errors
-        info: ESXi Host outbound network errors ratio
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
     metrics:
       folding:
         title: Metrics
