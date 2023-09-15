@@ -23,35 +23,35 @@ These metrics refer to the entire monitored application.
 <summary>See health statuses</summary>
 Overall System Health:
 
-| Numeric |   Text    | Description                                                                                                              |
-|:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|
-|  `-1`   | `unknown` | Module failed to decode status.                                                                                          |
-|   `0`   |  `green`  | All components in the appliance are healthy.                                                                             |
-|   `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.                                                    |
-|   `2`   | `orange`  | One or more components in the appliance might be degraded.                                                               |
-|   `3`   |   `red`   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
-|   `4`   |  `gray`   | No health data is available.                                                                                             |
+| Status  | Description                                                                                                              |
+|:-------:|:-------------------------------------------------------------------------------------------------------------------------|
+|  green  | All components in the appliance are healthy.                                                                             |
+| yellow  | One or more components in the appliance might become overloaded soon.                                                    |
+| orange  | One or more components in the appliance might be degraded.                                                               |
+|   red   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
+|  gray   | No health data is available.                                                                                             |
+| unknown | Collector failed to decode status.                                                                                       |
 
 Components Health:
 
-| Numeric |   Text    | Description                                                  |
-|:-------:|:---------:|:-------------------------------------------------------------|
-|  `-1`   | `unknown` | Module failed to decode status.                              |
-|   `0`   |  `green`  | The component is healthy.                                    |
-|   `1`   | `yellow`  | The component is healthy, but may have some problems.        |
-|   `2`   | `orange`  | The component is degraded, and may have serious problems.    |
-|   `3`   |   `red`   | The component is unavailable, or will stop functioning soon. |
-|   `4`   |  `gray`   | No health data is available.                                 |
+| Status  | Description                                                  |
+|:-------:|:-------------------------------------------------------------|
+|  green  | The component is healthy.                                    |
+| yellow  | The component is healthy, but may have some problems.        |
+| orange  | The component is degraded, and may have serious problems.    |
+|   red   | The component is unavailable, or will stop functioning soon. |
+|  gray   | No health data is available.                                 |
+| unknown | Collector failed to decode status.                           |
 
 Software Updates Health:
 
-| Numeric |   Text    | Description                                          |
-|:-------:|:---------:|:-----------------------------------------------------|
-|  `-1`   | `unknown` | Module failed to decode status.                      |
-|   `0`   |  `green`  | No updates available.                                |
-|   `2`   | `orange`  | Non-security patches might be available.             |
-|   `3`   |   `red`   | Security patches might be available.                 |
-|   `4`   |  `gray`   | An error retrieving information on software updates. |
+| Status  | Description                                          |
+|:-------:|:-----------------------------------------------------|
+|  green  | No updates available.                                |
+| orange  | Non-security patches might be available.             |
+|   red   | Security patches might be available.                 |
+|  gray   | An error retrieving information on software updates. |
+| unknown | Collector failed to decode status.                   |
 
 </details>
 
@@ -60,11 +60,16 @@ This scope has no labels.
 
 Metrics:
 
-| Metric                       |                   Dimensions                   |  Unit  |
-|------------------------------|:----------------------------------------------:|:------:|
-| vcsa.system_health           |                     system                     | status |
-| vcsa.components_health       | applmgmt, database_storage, mem, storage, swap | status |
-| vcsa.software_updates_health |               software_packages                | status |
+| Metric                               |                Dimensions                 |  Unit  |
+|--------------------------------------|:-----------------------------------------:|:------:|
+| vcsa.system_health_status            | green, red, yellow, orange, gray, unknown | status |
+| vcsa.applmgmt_health_status          | green, red, yellow, orange, gray, unknown | status |
+| vcsa.load_health_status              | green, red, yellow, orange, gray, unknown | status |
+| vcsa.mem_health_status               | green, red, yellow, orange, gray, unknown | status |
+| vcsa.swap_health_status              | green, red, yellow, orange, gray, unknown | status |
+| vcsa.database_storage_health_status  | green, red, yellow, orange, gray, unknown | status |
+| vcsa.storage_health_status           | green, red, yellow, orange, gray, unknown | status |
+| vcsa.software_packages_health_status |     green, red, orange, gray, unknown     | status |
 
 ## Setup
 

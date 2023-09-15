@@ -51,11 +51,11 @@ modules:
           list:
             - name: update_every
               description: Data collection frequency.
-              default_value: 5
+              default_value: "5"
               required: false
             - name: autodetection_retry
               description: Recheck interval in seconds. Zero means no recheck will be scheduled.
-              default_value: 0
+              default_value: "0"
               required: false
             - name: url
               description: Server URL.
@@ -63,7 +63,7 @@ modules:
               required: true
             - name: timeout
               description: HTTP request timeout.
-              default_value: 1
+              default_value: "1"
               required: false
             - name: username
               description: Username for basic HTTP authentication.
@@ -87,7 +87,7 @@ modules:
               required: false
             - name: method
               description: HTTP request method.
-              default_value: GET
+              default_value: "GET"
               required: false
             - name: body
               description: HTTP request body.
@@ -99,11 +99,11 @@ modules:
               required: false
             - name: not_follow_redirects
               description: Redirect handling policy. Controls whether the client follows redirects.
-              default_value: false
+              default_value: "false"
               required: false
             - name: tls_skip_verify
               description: Server certificate chain and hostname validation policy. Controls whether the client performs this check.
-              default_value: false
+              default_value: "false"
               required: false
             - name: tls_ca
               description: Certification authority that the client uses when verifying the server's certificates.
@@ -196,58 +196,123 @@ modules:
             <summary>See health statuses</summary>
             Overall System Health:
             
-            | Numeric |   Text    | Description                                                                                                              |
-            |:-------:|:---------:|:-------------------------------------------------------------------------------------------------------------------------|
-            |  `-1`   | `unknown` | Module failed to decode status.                                                                                          |
-            |   `0`   |  `green`  | All components in the appliance are healthy.                                                                             |
-            |   `1`   | `yellow`  | One or more components in the appliance might become overloaded soon.                                                    |
-            |   `2`   | `orange`  | One or more components in the appliance might be degraded.                                                               |
-            |   `3`   |   `red`   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
-            |   `4`   |  `gray`   | No health data is available.                                                                                             |
+            | Status  | Description                                                                                                              |
+            |:-------:|:-------------------------------------------------------------------------------------------------------------------------|
+            |  green  | All components in the appliance are healthy.                                                                             |
+            | yellow  | One or more components in the appliance might become overloaded soon.                                                    |
+            | orange  | One or more components in the appliance might be degraded.                                                               |
+            |   red   | One or more components in the appliance might be in an unusable status and the appliance might become unresponsive soon. |
+            |  gray   | No health data is available.                                                                                             |
+            | unknown | Collector failed to decode status.                                                                                       |
             
             Components Health:
             
-            | Numeric |   Text    | Description                                                  |
-            |:-------:|:---------:|:-------------------------------------------------------------|
-            |  `-1`   | `unknown` | Module failed to decode status.                              |
-            |   `0`   |  `green`  | The component is healthy.                                    |
-            |   `1`   | `yellow`  | The component is healthy, but may have some problems.        |
-            |   `2`   | `orange`  | The component is degraded, and may have serious problems.    |
-            |   `3`   |   `red`   | The component is unavailable, or will stop functioning soon. |
-            |   `4`   |  `gray`   | No health data is available.                                 |
+            | Status  | Description                                                  |
+            |:-------:|:-------------------------------------------------------------|
+            |  green  | The component is healthy.                                    |
+            | yellow  | The component is healthy, but may have some problems.        |
+            | orange  | The component is degraded, and may have serious problems.    |
+            |   red   | The component is unavailable, or will stop functioning soon. |
+            |  gray   | No health data is available.                                 |
+            | unknown | Collector failed to decode status.                           |
             
             Software Updates Health:
             
-            | Numeric |   Text    | Description                                          |
-            |:-------:|:---------:|:-----------------------------------------------------|
-            |  `-1`   | `unknown` | Module failed to decode status.                      |
-            |   `0`   |  `green`  | No updates available.                                |
-            |   `2`   | `orange`  | Non-security patches might be available.             |
-            |   `3`   |   `red`   | Security patches might be available.                 |
-            |   `4`   |  `gray`   | An error retrieving information on software updates. |
+            | Status  | Description                                          |
+            |:-------:|:-----------------------------------------------------|
+            |  green  | No updates available.                                |
+            | orange  | Non-security patches might be available.             |
+            |   red   | Security patches might be available.                 |
+            |  gray   | An error retrieving information on software updates. |
+            | unknown | Collector failed to decode status.                   |
             
             </details>
           labels: []
           metrics:
-            - name: vcsa.system_health
-              description: Overall System Health
+            - name: vcsa.system_health_status
+              description: VCSA Overall System health status
               unit: status
               chart_type: line
               dimensions:
-                - name: system
-            - name: vcsa.components_health
-              description: Components Health
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.applmgmt_health_status
+              description: VCSA ApplMgmt health status
               unit: status
               chart_type: line
               dimensions:
-                - name: applmgmt
-                - name: database_storage
-                - name: mem
-                - name: storage
-                - name: swap
-            - name: vcsa.software_updates_health
-              description: Software Updates Health
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.load_health_status
+              description: VCSA Load health status
               unit: status
               chart_type: line
               dimensions:
-                - name: software_packages
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.mem_health_status
+              description: VCSA Memory health status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.swap_health_status
+              description: VCSA Swap health status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.database_storage_health_status
+              description: VCSA Database Storage health status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.storage_health_status
+              description: VCSA Storage health status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: green
+                - name: red
+                - name: yellow
+                - name: orange
+                - name: gray
+                - name: unknown
+            - name: vcsa.software_packages_health_status
+              description: VCSA Software Updates health status
+              unit: status
+              chart_type: line
+              dimensions:
+                - name: green
+                - name: red
+                - name: orange
+                - name: gray
+                - name: unknown
