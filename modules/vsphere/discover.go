@@ -18,7 +18,7 @@ func (vs *VSphere) goDiscovery() {
 }
 
 func (vs *VSphere) discoverOnce() error {
-	res, err := vs.discoverer.Discover()
+	res, err := vs.Discover()
 	if err != nil {
 		return err
 	}
