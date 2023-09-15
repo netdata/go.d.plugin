@@ -4,19 +4,20 @@ package vcsa
 
 import (
 	"sync"
-
-	"github.com/netdata/go.d.plugin/pkg/stm"
 )
 
-type healthMetrics struct {
-	ApplMgmt         *int `stm:"applmgmt"`
-	DatabaseStorage  *int `stm:"database_storage"`
-	Load             *int `stm:"load"`
-	Mem              *int `stm:"mem"`
-	SoftwarePackages *int `stm:"software_packages"`
-	Storage          *int `stm:"storage"`
-	Swap             *int `stm:"swap"`
-	System           *int `stm:"system"`
+var componentHealthStatuses = []string{"green", "red", "yellow", "orange", "gray"}
+var softwareHealthStatuses = []string{"green", "red", "orange", "gray"}
+
+type vcsaHealthStatus struct {
+	System           *string
+	ApplMgmt         *string
+	Load             *string
+	Mem              *string
+	Swap             *string
+	DatabaseStorage  *string
+	Storage          *string
+	SoftwarePackages *string
 }
 
 func (vc *VCSA) collect() (map[string]int64, error) {
@@ -25,145 +26,70 @@ func (vc *VCSA) collect() (map[string]int64, error) {
 		return nil, err
 	}
 
-	mx := &healthMetrics{}
-	vc.scrapeHealth(mx, true)
+	var status vcsaHealthStatus
+	vc.scrapeHealth(&status)
 
-	return stm.ToMap(mx), nil
+	mx := make(map[string]int64)
+
+	writeStatus(mx, "system", componentHealthStatuses, status.System)
+	writeStatus(mx, "applmgmt", componentHealthStatuses, status.ApplMgmt)
+	writeStatus(mx, "load", componentHealthStatuses, status.Load)
+	writeStatus(mx, "mem", componentHealthStatuses, status.Mem)
+	writeStatus(mx, "swap", componentHealthStatuses, status.Swap)
+	writeStatus(mx, "database_storage", componentHealthStatuses, status.DatabaseStorage)
+	writeStatus(mx, "storage", componentHealthStatuses, status.Storage)
+	writeStatus(mx, "software_packages", softwareHealthStatuses, status.SoftwarePackages)
+
+	return mx, nil
 }
 
-func (vc *VCSA) scrapeHealth(mx *healthMetrics, doConcurrently bool) {
-	type task func(*healthMetrics)
-
-	var tasks = []task{
-		vc.scrapeApplMgmt,
-		vc.scrapeDatabaseStorage,
-		vc.scrapeLoad,
-		vc.scrapeMem,
-		vc.scrapeSoftwarePackages,
-		vc.scrapeStorage,
-		vc.scrapeSwap,
-		vc.scrapeSystem,
-	}
-
+func (vc *VCSA) scrapeHealth(status *vcsaHealthStatus) {
 	wg := &sync.WaitGroup{}
-	wrap := func(call task) task {
-		return func(metrics *healthMetrics) {
-			call(metrics)
-			wg.Done()
+
+	scrape := func(fn func() (string, error), value **string) {
+		v, err := fn()
+		if err != nil {
+			vc.Error(err)
+			return
 		}
+		*value = &v
 	}
-	for _, task := range tasks {
-		if doConcurrently {
-			wg.Add(1)
-			task = wrap(task)
-			go task(mx)
-		} else {
-			task(mx)
-		}
+
+	for _, fn := range []func(){
+		func() { scrape(vc.client.System, &status.System) },
+		func() { scrape(vc.client.ApplMgmt, &status.ApplMgmt) },
+		func() { scrape(vc.client.Load, &status.Load) },
+		func() { scrape(vc.client.DatabaseStorage, &status.DatabaseStorage) },
+		func() { scrape(vc.client.Storage, &status.Storage) },
+		func() { scrape(vc.client.Mem, &status.Mem) },
+		func() { scrape(vc.client.Swap, &status.Swap) },
+		func() { scrape(vc.client.SoftwarePackages, &status.SoftwarePackages) },
+	} {
+		fn := fn
+
+		wg.Add(1)
+		go func() { defer wg.Done(); fn() }()
 	}
+
 	wg.Wait()
 }
 
-//	The vCenter Server Appliance API offers health status indicators for several key components of the appliance:
-//
-// - green  The component is healthy.
-// - yellow The component is healthy, but may have some problems.
-// - orange The component is degraded, and may have serious problems.
-// - red The component is unavailable, or will stop functioning soon.
-// - gray No health data is available.
-func decodeHealth(v string) int {
-	switch v {
-	default:
-		return -1
-	case "green":
-		return 0
-	case "yellow":
+func writeStatus(mx map[string]int64, key string, statuses []string, status *string) {
+	if status == nil {
+		return
+	}
+
+	var found bool
+	for _, s := range statuses {
+		mx[key+"_status_"+s] = boolToInt(s == *status)
+		found = found || s == *status
+	}
+	mx[key+"_status_unknown"] = boolToInt(!found)
+}
+
+func boolToInt(v bool) int64 {
+	if v {
 		return 1
-	case "orange":
-		return 2
-	case "red":
-		return 3
-	case "gray":
-		return 4
 	}
-}
-
-func (vc *VCSA) scrapeApplMgmt(mx *healthMetrics) {
-	v, err := vc.client.ApplMgmt()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.ApplMgmt = &i
-}
-
-func (vc *VCSA) scrapeDatabaseStorage(mx *healthMetrics) {
-	v, err := vc.client.DatabaseStorage()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.DatabaseStorage = &i
-}
-
-func (vc *VCSA) scrapeLoad(mx *healthMetrics) {
-	v, err := vc.client.Load()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.Load = &i
-}
-
-func (vc *VCSA) scrapeMem(mx *healthMetrics) {
-	v, err := vc.client.Mem()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.Mem = &i
-}
-
-func (vc *VCSA) scrapeSoftwarePackages(mx *healthMetrics) {
-	v, err := vc.client.SoftwarePackages()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.SoftwarePackages = &i
-}
-
-func (vc *VCSA) scrapeStorage(mx *healthMetrics) {
-	v, err := vc.client.Storage()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.Storage = &i
-}
-
-func (vc *VCSA) scrapeSwap(mx *healthMetrics) {
-	v, err := vc.client.Swap()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.Swap = &i
-}
-
-func (vc *VCSA) scrapeSystem(mx *healthMetrics) {
-	v, err := vc.client.System()
-	if err != nil {
-		vc.Error(err)
-		return
-	}
-	i := decodeHealth(v)
-	mx.System = &i
+	return 0
 }
