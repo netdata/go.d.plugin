@@ -99,12 +99,12 @@ func TestVCenter_Collect(t *testing.T) {
 	job.client = mock
 
 	expected := map[string]int64{
-		"apps_mgmt_status_gray":            0,
-		"apps_mgmt_status_green":           1,
-		"apps_mgmt_status_orange":          0,
-		"apps_mgmt_status_red":             0,
-		"apps_mgmt_status_unknown":         0,
-		"apps_mgmt_status_yellow":          0,
+		"applmgmt_status_gray":             0,
+		"applmgmt_status_green":            1,
+		"applmgmt_status_orange":           0,
+		"applmgmt_status_red":              0,
+		"applmgmt_status_unknown":          0,
+		"applmgmt_status_yellow":           0,
 		"database_storage_status_gray":     0,
 		"database_storage_status_green":    1,
 		"database_storage_status_orange":   0,
