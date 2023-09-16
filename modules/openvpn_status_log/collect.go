@@ -39,6 +39,9 @@ func (o *OpenVPNStatusLog) collectUsers(mx map[string]int64, clients []clientInf
 
 	for _, user := range clients {
 		name := user.commonName
+		if name == "UNDEF" {
+			continue
+		}
 		if !o.perUserMatcher.MatchString(name) {
 			continue
 		}

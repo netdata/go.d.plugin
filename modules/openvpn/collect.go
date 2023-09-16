@@ -49,13 +49,11 @@ func (o *OpenVPN) collectUsers(mx map[string]int64) error {
 	}
 
 	now := time.Now().Unix()
-	var name string
 
 	for _, user := range users {
-		if user.Username == "UNDEF" {
-			name = user.CommonName
-		} else {
-			name = user.Username
+		name := user.Username
+		if name == "UNDEF" {
+			continue
 		}
 
 		if !o.perUserMatcher.MatchString(name) {
