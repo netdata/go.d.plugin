@@ -33,9 +33,9 @@ var (
 	}
 	applMgmtHealthChart = module.Chart{
 		ID:    "applmgmt_health_status",
-		Title: "VCSA ApplMgmt health status",
+		Title: "VCSA Appliance Management Service (applmgmt) health status",
 		Units: "status",
-		Fam:   "appl mgmt",
+		Fam:   "appliance mgmt service",
 		Ctx:   "vcsa.applmgmt_health_status",
 		Dims: module.Dims{
 			{ID: "applmgmt_status_green", Name: "green"},
