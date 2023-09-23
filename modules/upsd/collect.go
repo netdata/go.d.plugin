@@ -119,7 +119,7 @@ func writeUpsLoadUsage(mx map[string]int64, ups upsUnit) {
 		return
 	}
 	nomPower, err := strconv.ParseFloat(ups.vars[varUpsRealPowerNominal], 64)
-	if err != nil {
+	if err != nil || nomPower == 0 {
 		return
 	}
 	mx[prefix(ups)+"ups.load.usage"] = int64((load / 100 * nomPower) * varPrecision)
