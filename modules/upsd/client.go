@@ -141,7 +141,7 @@ func (c *nutClient) sendCommand(cmd string) ([]string, error) {
 		return nil, err
 	}
 	if errMsg != "" {
-		return nil, fmt.Errorf("%w: %s (cmd: '%s')", errNutCommand, err, cmd)
+		return nil, fmt.Errorf("%w: %s (cmd: '%s')", errNutCommand, errMsg, cmd)
 	}
 
 	return resp, nil
