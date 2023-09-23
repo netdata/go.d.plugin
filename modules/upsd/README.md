@@ -2,7 +2,8 @@
 
 ## Overview
 
-This collector monitors Uninterruptible Power Supplies by polling the UPS daemon using the NUT network protocol.
+This collector monitors Uninterruptible Power Supplies by polling the UPS daemon using
+the [NUT](https://networkupstools.org/) network protocol.
 
 ## Collected metrics
 
