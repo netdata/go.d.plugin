@@ -11,9 +11,6 @@ import (
 
 func init() {
 	module.Register("upsd", module.Creator{
-		Defaults: module.Defaults{
-			UpdateEvery: 5,
-		},
 		Create: func() module.Module { return New() },
 	})
 }
@@ -21,8 +18,7 @@ func init() {
 func New() *Upsd {
 	return &Upsd{
 		Config: Config{
-			//Address: "127.0.0.1:3493",
-			Address: "192.168.1.200:3493",
+			Address: "127.0.0.1:3493",
 			Timeout: web.Duration{Duration: time.Second * 2},
 		},
 		newNutConn: newNutConn,

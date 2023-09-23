@@ -60,7 +60,7 @@ modules:
               required: false
             - name: address
               description: UPS daemon address in IP:PORT format.
-              default_value: 127.0.0.1:3494
+              default_value: 127.0.0.1:3493
               required: true
             - name: timeout
               description: Connection/read/write timeout in seconds. The timeout includes name resolution, if required.
@@ -76,7 +76,7 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    address: 127.0.0.1:3494
+                    address: 127.0.0.1:3493
             - name: Multi-instance
               description: |
                 > **Note**: When you define multiple jobs, their names must be unique.
@@ -85,10 +85,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    address: 127.0.0.1:3494
+                    address: 127.0.0.1:3493
                 
                   - name: remote
-                    address: 203.0.113.0:3494
+                    address: 203.0.113.0:3493
     troubleshooting:
       problems:
         list: []
