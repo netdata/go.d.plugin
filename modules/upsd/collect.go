@@ -57,6 +57,7 @@ func (u *Upsd) collectUPSUnits(mx map[string]int64, upsUnits []upsUnit) {
 
 	for _, ups := range upsUnits {
 		seen[ups.name] = true
+		u.Debugf("collecting metrics UPS '%s'", ups.name)
 
 		if !u.upsUnits[ups.name] {
 			u.upsUnits[ups.name] = true

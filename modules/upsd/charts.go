@@ -65,7 +65,7 @@ var (
 	upsLoadChartTmpl = module.Chart{
 		IDSep:    true,
 		ID:       "%s.load_percentage",
-		Title:    "UPS load percentage",
+		Title:    "UPS load",
 		Units:    "percentage",
 		Fam:      "ups",
 		Ctx:      "upsd.ups_load",
@@ -78,7 +78,7 @@ var (
 	upsLoadUsageChartTmpl = module.Chart{
 		IDSep:    true,
 		ID:       "%s.load_usage",
-		Title:    "UPS load usage",
+		Title:    "UPS load usage (power output)",
 		Units:    "Watts",
 		Fam:      "ups",
 		Ctx:      "upsd.ups_load_usage",
@@ -131,10 +131,10 @@ var (
 	upsBatteryChargePercentChartTmpl = module.Chart{
 		IDSep:    true,
 		ID:       "%s.battery_charge_percentage",
-		Title:    "UPS Battery charge percentage",
+		Title:    "UPS Battery charge",
 		Units:    "percentage",
 		Fam:      "battery",
-		Ctx:      "upsd.battery_charge",
+		Ctx:      "upsd.ups_battery_charge",
 		Priority: prioBatteryCharge,
 		Type:     module.Area,
 		Dims: module.Dims{
@@ -147,7 +147,7 @@ var (
 		Title:    "UPS Battery estimated runtime",
 		Units:    "seconds",
 		Fam:      "battery",
-		Ctx:      "upsd.battery_estimated_runtime",
+		Ctx:      "upsd.ups_battery_estimated_runtime",
 		Priority: prioBatteryEstimatedRuntime,
 		Dims: module.Dims{
 			{ID: "ups_%s_battery.runtime", Name: "runtime", Div: varPrecision},
@@ -159,7 +159,7 @@ var (
 		Title:    "UPS Battery voltage",
 		Units:    "Volts",
 		Fam:      "battery",
-		Ctx:      "upsd.battery_voltage",
+		Ctx:      "upsd.ups_battery_voltage",
 		Priority: prioBatteryVoltage,
 		Dims: module.Dims{
 			{ID: "ups_%s_battery.voltage", Name: "voltage", Div: varPrecision},
@@ -171,10 +171,10 @@ var (
 		Title:    "UPS Battery voltage nominal",
 		Units:    "Volts",
 		Fam:      "battery",
-		Ctx:      "upsd.battery_voltage_nominal",
+		Ctx:      "upsd.ups_battery_voltage_nominal",
 		Priority: prioBatteryVoltageNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_battery.voltage.nominal", Name: "voltage", Div: varPrecision},
+			{ID: "ups_%s_battery.voltage.nominal", Name: "nominal_voltage", Div: varPrecision},
 		},
 	}
 )
@@ -186,7 +186,7 @@ var (
 		Title:    "UPS Input voltage",
 		Units:    "Volts",
 		Fam:      "input",
-		Ctx:      "upsd.input_voltage",
+		Ctx:      "upsd.ups_input_voltage",
 		Priority: prioInputVoltage,
 		Dims: module.Dims{
 			{ID: "ups_%s_input.voltage", Name: "voltage", Div: varPrecision},
@@ -198,10 +198,10 @@ var (
 		Title:    "UPS Input voltage nominal",
 		Units:    "Volts",
 		Fam:      "input",
-		Ctx:      "upsd.input_voltage_nominal",
+		Ctx:      "upsd.ups_input_voltage_nominal",
 		Priority: prioInputVoltageNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_input.voltage.nominal", Name: "voltage", Div: varPrecision},
+			{ID: "ups_%s_input.voltage.nominal", Name: "nominal_voltage", Div: varPrecision},
 		},
 	}
 	upsInputCurrentChartTmpl = module.Chart{
@@ -210,7 +210,7 @@ var (
 		Title:    "UPS Input current",
 		Units:    "Ampere",
 		Fam:      "input",
-		Ctx:      "upsd.input_current",
+		Ctx:      "upsd.ups_input_current",
 		Priority: prioInputCurrent,
 		Dims: module.Dims{
 			{ID: "ups_%s_input.current", Name: "current", Div: varPrecision},
@@ -222,10 +222,10 @@ var (
 		Title:    "UPS Input current nominal",
 		Units:    "Ampere",
 		Fam:      "input",
-		Ctx:      "upsd.input_current_nominal",
+		Ctx:      "upsd.ups_input_current_nominal",
 		Priority: prioInputCurrentNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_input.current.nominal", Name: "current", Div: varPrecision},
+			{ID: "ups_%s_input.current.nominal", Name: "nominal_current", Div: varPrecision},
 		},
 	}
 	upsInputFrequencyChartTmpl = module.Chart{
@@ -234,7 +234,7 @@ var (
 		Title:    "UPS Input frequency",
 		Units:    "Hz",
 		Fam:      "input",
-		Ctx:      "upsd.input_frequency",
+		Ctx:      "upsd.ups_input_frequency",
 		Priority: prioInputFrequency,
 		Dims: module.Dims{
 			{ID: "ups_%s_input.frequency", Name: "frequency", Div: varPrecision},
@@ -246,10 +246,10 @@ var (
 		Title:    "UPS Input frequency nominal",
 		Units:    "Hz",
 		Fam:      "input",
-		Ctx:      "upsd.input_frequency_nominal",
+		Ctx:      "upsd.ups_input_frequency_nominal",
 		Priority: prioInputFrequencyNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_input.frequency.nominal", Name: "frequency", Div: varPrecision},
+			{ID: "ups_%s_input.frequency.nominal", Name: "nominal_frequency", Div: varPrecision},
 		},
 	}
 )
@@ -261,7 +261,7 @@ var (
 		Title:    "UPS Output voltage",
 		Units:    "Volts",
 		Fam:      "output",
-		Ctx:      "upsd.output_voltage",
+		Ctx:      "upsd.ups_output_voltage",
 		Priority: prioOutputVoltage,
 		Dims: module.Dims{
 			{ID: "ups_%s_output.voltage", Name: "voltage", Div: varPrecision},
@@ -273,10 +273,10 @@ var (
 		Title:    "UPS Output voltage nominal",
 		Units:    "Volts",
 		Fam:      "output",
-		Ctx:      "upsd.output_voltage_nominal",
+		Ctx:      "upsd.ups_output_voltage_nominal",
 		Priority: prioOutputVoltageNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_output.voltage.nominal", Name: "voltage", Div: varPrecision},
+			{ID: "ups_%s_output.voltage.nominal", Name: "nominal_voltage", Div: varPrecision},
 		},
 	}
 	upsOutputCurrentChartTmpl = module.Chart{
@@ -285,7 +285,7 @@ var (
 		Title:    "UPS Output current",
 		Units:    "Ampere",
 		Fam:      "output",
-		Ctx:      "upsd.output_current",
+		Ctx:      "upsd.ups_output_current",
 		Priority: prioOutputCurrent,
 		Dims: module.Dims{
 			{ID: "ups_%s_output.current", Name: "current", Div: varPrecision},
@@ -297,10 +297,10 @@ var (
 		Title:    "UPS Output current nominal",
 		Units:    "Ampere",
 		Fam:      "output",
-		Ctx:      "upsd.output_current_nominal",
+		Ctx:      "upsd.ups_output_current_nominal",
 		Priority: prioOutputCurrentNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_output.current.nominal", Name: "current", Div: varPrecision},
+			{ID: "ups_%s_output.current.nominal", Name: "nominal_current", Div: varPrecision},
 		},
 	}
 	upsOutputFrequencyChartTmpl = module.Chart{
@@ -309,7 +309,7 @@ var (
 		Title:    "UPS Output frequency",
 		Units:    "Hz",
 		Fam:      "output",
-		Ctx:      "upsd.output_frequency",
+		Ctx:      "upsd.ups_output_frequency",
 		Priority: prioOutputFrequency,
 		Dims: module.Dims{
 			{ID: "ups_%s_output.frequency", Name: "frequency", Div: varPrecision},
@@ -321,10 +321,10 @@ var (
 		Title:    "UPS Output frequency nominal",
 		Units:    "Hz",
 		Fam:      "output",
-		Ctx:      "upsd.output_frequency_nominal",
+		Ctx:      "upsd.ups_output_frequency_nominal",
 		Priority: prioOutputFrequencyNominal,
 		Dims: module.Dims{
-			{ID: "ups_%s_output.frequency.nominal", Name: "frequency", Div: varPrecision},
+			{ID: "ups_%s_output.frequency.nominal", Name: "nominal_frequency", Div: varPrecision},
 		},
 	}
 )
