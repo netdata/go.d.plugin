@@ -116,6 +116,7 @@ see the appropriate collector readme.
 | [systemdunits](https://github.com/netdata/go.d.plugin/tree/master/modules/systemdunits)             |      Systemd unit state       |
 | [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)                       |            Tengine            |
 | [traefik](https://github.com/netdata/go.d.plugin/tree/master/modules/traefik)                       |            Traefik            |
+| [upsd](https://github.com/netdata/go.d.plugin/tree/master/modules/upsd)                             |          UPSd (Nut)           |
 | [unbound](https://github.com/netdata/go.d.plugin/tree/master/modules/unbound)                       |            Unbound            |
 | [vcsa](https://github.com/netdata/go.d.plugin/tree/master/modules/vcsa)                             |   vCenter Server Appliance    |
 | [vernemq](https://github.com/netdata/go.d.plugin/tree/master/modules/vernemq)                       |            VerneMQ            |
