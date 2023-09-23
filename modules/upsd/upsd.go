@@ -18,8 +18,8 @@ func init() {
 	})
 }
 
-func New() *Nut {
-	return &Nut{
+func New() *Upsd {
+	return &Upsd{
 		Config: Config{
 			//Address: "127.0.0.1:3493",
 			Address: "192.168.1.200:3493",
@@ -39,7 +39,7 @@ type Config struct {
 }
 
 type (
-	Nut struct {
+	Upsd struct {
 		module.Base
 
 		Config `yaml:",inline"`
@@ -60,27 +60,27 @@ type (
 	}
 )
 
-func (n *Nut) Init() bool {
-	if n.Address == "" {
-		n.Error("config: 'address' not set")
+func (u *Upsd) Init() bool {
+	if u.Address == "" {
+		u.Error("config: 'address' not set")
 		return false
 	}
 
 	return true
 }
 
-func (n *Nut) Check() bool {
-	return len(n.Collect()) > 0
+func (u *Upsd) Check() bool {
+	return len(u.Collect()) > 0
 }
 
-func (n *Nut) Charts() *module.Charts {
-	return n.charts
+func (u *Upsd) Charts() *module.Charts {
+	return u.charts
 }
 
-func (n *Nut) Collect() map[string]int64 {
-	mx, err := n.collect()
+func (u *Upsd) Collect() map[string]int64 {
+	mx, err := u.collect()
 	if err != nil {
-		n.Error(err)
+		u.Error(err)
 	}
 
 	if len(mx) == 0 {
@@ -89,12 +89,12 @@ func (n *Nut) Collect() map[string]int64 {
 	return mx
 }
 
-func (n *Nut) Cleanup() {
-	if n.conn != nil {
+func (u *Upsd) Cleanup() {
+	if u.conn == nil {
 		return
 	}
-	if err := n.conn.disconnect(); err != nil {
-		n.Warningf("error on disconnect: %v", err)
+	if err := u.conn.disconnect(); err != nil {
+		u.Warningf("error on disconnect: %v", err)
 	}
-	n.conn = nil
+	u.conn = nil
 }

@@ -8,42 +8,43 @@ import (
 	"strings"
 )
 
-func (n *Nut) collect() (map[string]int64, error) {
-	if n.conn == nil {
-		conn, err := n.establishConnection()
+func (u *Upsd) collect() (map[string]int64, error) {
+	if u.conn == nil {
+		conn, err := u.establishConnection()
 		if err != nil {
 			return nil, err
 		}
-		n.conn = conn
+		u.conn = conn
 	}
 
-	upsUnits, err := n.conn.upsUnits()
+	upsUnits, err := u.conn.upsUnits()
 	if err != nil {
 		if !errors.Is(err, errNutCommand) {
-			_ = n.conn.disconnect()
-			n.conn = nil
+			_ = u.conn.disconnect()
+			u.conn = nil
 		}
 		return nil, err
 	}
 
-	n.Debugf("found %d UPS units", len(upsUnits))
+	u.Debugf("found %d UPS units", len(upsUnits))
 
 	mx := make(map[string]int64)
 
-	n.collectUPSUnits(mx, upsUnits)
+	u.collectUPSUnits(mx, upsUnits)
 
 	return mx, nil
 }
 
-func (n *Nut) establishConnection() (nutConn, error) {
-	conn := n.newNutConn(n.Config)
+func (u *Upsd) establishConnection() (nutConn, error) {
+	conn := u.newNutConn(u.Config)
 
 	if err := conn.connect(); err != nil {
 		return nil, err
 	}
 
-	if u, p := n.Username, n.Password; u != "" && p != "" {
-		if err := conn.authenticate(u, p); err != nil {
+	if u.Username != "" && u.Password != "" {
+		if err := conn.authenticate(u.Username, u.Password); err != nil {
+			_ = conn.disconnect()
 			return nil, err
 		}
 	}
@@ -51,15 +52,15 @@ func (n *Nut) establishConnection() (nutConn, error) {
 	return conn, nil
 }
 
-func (n *Nut) collectUPSUnits(mx map[string]int64, upsUnits []upsUnit) {
+func (u *Upsd) collectUPSUnits(mx map[string]int64, upsUnits []upsUnit) {
 	seen := make(map[string]bool)
 
 	for _, ups := range upsUnits {
 		seen[ups.name] = true
 
-		if !n.upsUnits[ups.name] {
-			n.upsUnits[ups.name] = true
-			n.addUPSCharts(ups)
+		if !u.upsUnits[ups.name] {
+			u.upsUnits[ups.name] = true
+			u.addUPSCharts(ups)
 		}
 
 		writeVar(mx, ups, varBatteryCharge)
@@ -88,10 +89,10 @@ func (n *Nut) collectUPSUnits(mx map[string]int64, upsUnits []upsUnit) {
 		writeUpsStatus(mx, ups)
 	}
 
-	for name := range n.upsUnits {
+	for name := range u.upsUnits {
 		if !seen[name] {
-			delete(n.upsUnits, name)
-			n.removeUPSCharts(name)
+			delete(u.upsUnits, name)
+			u.removeUPSCharts(name)
 		}
 	}
 }
