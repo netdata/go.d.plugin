@@ -19,7 +19,7 @@ func (u *Upsd) collect() (map[string]int64, error) {
 
 	upsUnits, err := u.conn.upsUnits()
 	if err != nil {
-		if !errors.Is(err, errNutCommand) {
+		if !errors.Is(err, errUpsdCommand) {
 			_ = u.conn.disconnect()
 			u.conn = nil
 		}
@@ -35,8 +35,8 @@ func (u *Upsd) collect() (map[string]int64, error) {
 	return mx, nil
 }
 
-func (u *Upsd) establishConnection() (nutConn, error) {
-	conn := u.newNutConn(u.Config)
+func (u *Upsd) establishConnection() (upsdConn, error) {
+	conn := u.newUpsdConn(u.Config)
 
 	if err := conn.connect(); err != nil {
 		return nil, err

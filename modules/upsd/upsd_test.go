@@ -11,13 +11,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNut_Cleanup(t *testing.T) {
+func TestUpsd_Cleanup(t *testing.T) {
 	upsd := New()
 
 	require.NotPanics(t, upsd.Cleanup)
 
 	mock := prepareMockConnOK()
-	upsd.newNutConn = func(Config) nutConn { return mock }
+	upsd.newUpsdConn = func(Config) upsdConn { return mock }
 
 	require.True(t, upsd.Init())
 	_ = upsd.Collect()
@@ -25,7 +25,7 @@ func TestNut_Cleanup(t *testing.T) {
 	assert.True(t, mock.calledDisconnect)
 }
 
-func TestNut_Init(t *testing.T) {
+func TestUpsd_Init(t *testing.T) {
 	tests := map[string]struct {
 		config   Config
 		wantFail bool
@@ -54,10 +54,10 @@ func TestNut_Init(t *testing.T) {
 	}
 }
 
-func TestNut_Check(t *testing.T) {
+func TestUpsd_Check(t *testing.T) {
 	tests := map[string]struct {
 		prepareUpsd func() *Upsd
-		prepareMock func() *mockNutConn
+		prepareMock func() *mockUpsdConn
 		wantFail    bool
 	}{
 		"successful data collection": {
@@ -90,7 +90,7 @@ func TestNut_Check(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			upsd := test.prepareUpsd()
-			upsd.newNutConn = func(Config) nutConn { return test.prepareMock() }
+			upsd.newUpsdConn = func(Config) upsdConn { return test.prepareMock() }
 
 			require.True(t, upsd.Init())
 
@@ -103,16 +103,16 @@ func TestNut_Check(t *testing.T) {
 	}
 }
 
-func TestNut_Charts(t *testing.T) {
+func TestUpsd_Charts(t *testing.T) {
 	upsd := New()
 	require.True(t, upsd.Init())
 	assert.NotNil(t, upsd.Charts())
 }
 
-func TestNut_Collect(t *testing.T) {
+func TestUpsd_Collect(t *testing.T) {
 	tests := map[string]struct {
 		prepareUpsd          func() *Upsd
-		prepareMock          func() *mockNutConn
+		prepareMock          func() *mockUpsdConn
 		wantCollected        map[string]int64
 		wantCharts           int
 		wantConnConnect      bool
@@ -228,7 +228,7 @@ func TestNut_Collect(t *testing.T) {
 			require.True(t, upsd.Init())
 
 			mock := test.prepareMock()
-			upsd.newNutConn = func(Config) nutConn { return mock }
+			upsd.newUpsdConn = func(Config) upsdConn { return mock }
 
 			mx := upsd.Collect()
 
@@ -260,27 +260,27 @@ func ensureCollectedHasAllChartsDims(t *testing.T, upsd *Upsd, mx map[string]int
 	}
 }
 
-func prepareMockConnOK() *mockNutConn {
-	return &mockNutConn{}
+func prepareMockConnOK() *mockUpsdConn {
+	return &mockUpsdConn{}
 }
 
-func prepareMockConnErrOnConnect() *mockNutConn {
-	return &mockNutConn{errOnConnect: true}
+func prepareMockConnErrOnConnect() *mockUpsdConn {
+	return &mockUpsdConn{errOnConnect: true}
 }
 
-func prepareMockConnErrOnAuthenticate() *mockNutConn {
-	return &mockNutConn{errOnAuthenticate: true}
+func prepareMockConnErrOnAuthenticate() *mockUpsdConn {
+	return &mockUpsdConn{errOnAuthenticate: true}
 }
 
-func prepareMockConnErrOnUpsUnits() *mockNutConn {
-	return &mockNutConn{errOnUpsUnits: true}
+func prepareMockConnErrOnUpsUnits() *mockUpsdConn {
+	return &mockUpsdConn{errOnUpsUnits: true}
 }
 
-func prepareMockConnCommandErrOnUpsUnits() *mockNutConn {
-	return &mockNutConn{commandErrOnUpsUnits: true}
+func prepareMockConnCommandErrOnUpsUnits() *mockUpsdConn {
+	return &mockUpsdConn{commandErrOnUpsUnits: true}
 }
 
-type mockNutConn struct {
+type mockUpsdConn struct {
 	errOnConnect         bool
 	errOnDisconnect      bool
 	errOnAuthenticate    bool
@@ -292,7 +292,7 @@ type mockNutConn struct {
 	calledAuthenticate bool
 }
 
-func (m *mockNutConn) connect() error {
+func (m *mockUpsdConn) connect() error {
 	m.calledConnect = true
 	if m.errOnConnect {
 		return errors.New("mock error on connect()")
@@ -300,7 +300,7 @@ func (m *mockNutConn) connect() error {
 	return nil
 }
 
-func (m *mockNutConn) disconnect() error {
+func (m *mockUpsdConn) disconnect() error {
 	m.calledDisconnect = true
 	if m.errOnDisconnect {
 		return errors.New("mock error on disconnect()")
@@ -308,7 +308,7 @@ func (m *mockNutConn) disconnect() error {
 	return nil
 }
 
-func (m *mockNutConn) authenticate(_, _ string) error {
+func (m *mockUpsdConn) authenticate(_, _ string) error {
 	m.calledAuthenticate = true
 	if m.errOnAuthenticate {
 		return errors.New("mock error on authenticate()")
@@ -316,12 +316,12 @@ func (m *mockNutConn) authenticate(_, _ string) error {
 	return nil
 }
 
-func (m *mockNutConn) upsUnits() ([]upsUnit, error) {
+func (m *mockUpsdConn) upsUnits() ([]upsUnit, error) {
 	if m.errOnUpsUnits {
 		return nil, errors.New("mock error on upsUnits()")
 	}
 	if m.commandErrOnUpsUnits {
-		return nil, fmt.Errorf("%w: mock command error on upsUnits()", errNutCommand)
+		return nil, fmt.Errorf("%w: mock command error on upsUnits()", errUpsdCommand)
 	}
 
 	upsUnits := []upsUnit{
