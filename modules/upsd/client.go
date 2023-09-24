@@ -19,15 +19,15 @@ const (
 	commandLogout   = "LOGOUT"
 )
 
-var errNutCommand = errors.New("nut command error")
+var errUpsdCommand = errors.New("upsd command error")
 
 type upsUnit struct {
 	name string
 	vars map[string]string
 }
 
-func newNutConn(conf Config) nutConn {
-	return &nutClient{conn: socket.New(socket.Config{
+func newUpsdConn(conf Config) upsdConn {
+	return &upsdClient{conn: socket.New(socket.Config{
 		ConnectTimeout: conf.Timeout.Duration,
 		ReadTimeout:    conf.Timeout.Duration,
 		WriteTimeout:   conf.Timeout.Duration,
@@ -35,20 +35,20 @@ func newNutConn(conf Config) nutConn {
 	})}
 }
 
-type nutClient struct {
+type upsdClient struct {
 	conn socket.Client
 }
 
-func (c *nutClient) connect() error {
+func (c *upsdClient) connect() error {
 	return c.conn.Connect()
 }
 
-func (c *nutClient) disconnect() error {
+func (c *upsdClient) disconnect() error {
 	_, _ = c.sendCommand(commandLogout)
 	return c.conn.Disconnect()
 }
 
-func (c *nutClient) authenticate(username, password string) error {
+func (c *upsdClient) authenticate(username, password string) error {
 	cmd := fmt.Sprintf(commandUsername, username)
 	resp, err := c.sendCommand(cmd)
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *nutClient) authenticate(username, password string) error {
 	return nil
 }
 
-func (c *nutClient) upsUnits() ([]upsUnit, error) {
+func (c *upsdClient) upsUnits() ([]upsUnit, error) {
 	resp, err := c.sendCommand(commandListUPS)
 	if err != nil {
 		return nil, err
@@ -122,7 +122,7 @@ func (c *nutClient) upsUnits() ([]upsUnit, error) {
 	return upsUnits, nil
 }
 
-func (c *nutClient) sendCommand(cmd string) ([]string, error) {
+func (c *upsdClient) sendCommand(cmd string) ([]string, error) {
 	var resp []string
 	var errMsg string
 	endLine := getEndLine(cmd)
@@ -141,7 +141,7 @@ func (c *nutClient) sendCommand(cmd string) ([]string, error) {
 		return nil, err
 	}
 	if errMsg != "" {
-		return nil, fmt.Errorf("%w: %s (cmd: '%s')", errNutCommand, errMsg, cmd)
+		return nil, fmt.Errorf("%w: %s (cmd: '%s')", errUpsdCommand, errMsg, cmd)
 	}
 
 	return resp, nil

@@ -21,9 +21,9 @@ func New() *Upsd {
 			Address: "127.0.0.1:3493",
 			Timeout: web.Duration{Duration: time.Second * 2},
 		},
-		newNutConn: newNutConn,
-		charts:     &module.Charts{},
-		upsUnits:   make(map[string]bool),
+		newUpsdConn: newUpsdConn,
+		charts:      &module.Charts{},
+		upsUnits:    make(map[string]bool),
 	}
 }
 
@@ -42,13 +42,13 @@ type (
 
 		charts *module.Charts
 
-		newNutConn func(Config) nutConn
-		conn       nutConn
+		newUpsdConn func(Config) upsdConn
+		conn        upsdConn
 
 		upsUnits map[string]bool
 	}
 
-	nutConn interface {
+	upsdConn interface {
 		connect() error
 		disconnect() error
 		authenticate(string, string) error
