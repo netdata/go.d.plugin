@@ -90,12 +90,47 @@ func (w *WebLog) createCustomTimeFields() error {
 	return nil
 }
 
+func (w *WebLog) createCustomNumericFields() error {
+	if len(w.CustomNumericFields) == 0 {
+		w.Debug("no custom time fields provided")
+		return nil
+	}
+
+	w.Debugf("creating custom numeric fields for '%+v'", w.CustomNumericFields)
+
+	w.customNumericFields = make(map[string]bool)
+
+	for i := range w.CustomNumericFields {
+		v := w.CustomNumericFields[i]
+		if v.Name == "" {
+			return fmt.Errorf("custom numeric field (%d): 'name' not set", i+1)
+		}
+		if v.Units == "" {
+			return fmt.Errorf("custom numeric field (%s): 'units' not set", v.Name)
+		}
+		if v.Multiplier <= 0 {
+			v.Multiplier = 1
+		}
+		if v.Divisor <= 0 {
+			v.Divisor = 1
+		}
+		w.CustomNumericFields[i] = v
+		w.customNumericFields[v.Name] = true
+	}
+
+	return nil
+}
+
 func (w *WebLog) createLogLine() {
 	w.line = newEmptyLogLine()
+
 	for v := range w.customFields {
 		w.line.custom.fields[v] = struct{}{}
 	}
 	for v := range w.customTimeFields {
+		w.line.custom.fields[v] = struct{}{}
+	}
+	for v := range w.customNumericFields {
 		w.line.custom.fields[v] = struct{}{}
 	}
 }

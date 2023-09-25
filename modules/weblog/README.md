@@ -10,7 +10,8 @@ learn_rel_path: "Integrations/Monitor/Quantify logs to metrics"
 
 # Web server log (Apache, NGINX, IIS) collector
 
-This module parses [`Apache`](https://httpd.apache.org/), [`NGINX`](https://nginx.org/en/) and [Microsoft IIS](https://www.iis.net/) web servers logs.
+This module parses [`Apache`](https://httpd.apache.org/), [`NGINX`](https://nginx.org/en/)
+and [Microsoft IIS](https://www.iis.net/) web servers logs.
 
 ## Metrics
 
@@ -296,10 +297,29 @@ info from them.
         histogram: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10] # optional field
 ```
 
+## Custom numeric fields feature
+
+Similar to "Custom time fields feature" but can be used for any numeric values. By default, it created a chart with
+min/avg/max values for every numeric field.
+
+```yaml
+  - name: nginx_csv_custom_fields_example
+    path: /path/to/file.log
+    log_type: csv
+    csv_config:
+      format: '- - $remote_addr - - [$time_local] "$request" $status $body_bytes_sent $request_length $http_magic_number'
+    custom_numeric_fields:
+      - name: 'request_length'
+        units: bytes
+      - name: 'http_magic_number'
+        units: number
+```
+
 ## Configuration
 
 Edit the `go.d/web_log.conf` configuration file using `edit-config` from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically at `/etc/netdata`.
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md), which is typically
+at `/etc/netdata`.
 
 ```bash
 cd /etc/netdata # Replace this path with your Netdata config directory
