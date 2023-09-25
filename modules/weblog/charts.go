@@ -51,7 +51,9 @@ const (
 	prioReqCustomTimeField     // chart per custom time field, alphabetical order
 	prioReqCustomTimeFieldHist // histogram chart per custom time field
 	prioReqURLPattern
-	prioURLPatternStats // 3 charts per url pattern, alphabetical order
+	prioURLPatternStats
+
+	prioReqCustomNumericFieldSummary // 3 charts per url pattern, alphabetical order
 )
 
 // NOTE: inconsistency with python web_log
@@ -389,6 +391,22 @@ var (
 	}
 )
 
+var (
+	customNumericFieldSummaryChartTmpl = Chart{
+		ID:       "custom_numeric_field_%s_summary",
+		Title:    "Custom Numeric Field Summary",
+		Units:    "",
+		Fam:      "custom numeric fields",
+		Ctx:      "web_log.custom_numeric_field_%s_summary",
+		Priority: prioReqCustomNumericFieldSummary,
+		Dims: Dims{
+			{ID: "custom_numeric_field_%s_summary_min", Name: "min"},
+			{ID: "custom_numeric_field_%s_summary_max", Name: "max"},
+			{ID: "custom_numeric_field_%s_summary_avg", Name: "avg"},
+		},
+	}
+)
+
 // URL pattern stats
 var (
 	urlPatternRespCodes = Chart{
@@ -690,21 +708,25 @@ func (w *WebLog) createCharts(line *logLine) error {
 		}
 	}
 	if line.hasCustomFields() {
-
 		if len(w.CustomFields) > 0 {
 			if err := addCustomFieldsCharts(charts, w.CustomFields); err != nil {
 				return err
 			}
 		}
-
 		if len(w.CustomTimeFields) > 0 {
 			if err := addCustomTimeFieldsCharts(charts, w.CustomTimeFields); err != nil {
 				return err
 			}
 		}
-
+		if len(w.CustomNumericFields) > 0 {
+			if err := addCustomNumericFieldsCharts(charts, w.CustomNumericFields); err != nil {
+				return err
+			}
+		}
 	}
+
 	w.charts = charts
+
 	return nil
 }
 
@@ -846,4 +868,23 @@ func addCustomTimeFieldsCharts(charts *Charts, fields []customTimeField) error {
 		return err
 	}
 	return charts.Add(cs...)
+}
+
+func addCustomNumericFieldsCharts(charts *module.Charts, fields []customNumericField) error {
+	for _, f := range fields {
+		chart := customNumericFieldSummaryChartTmpl.Copy()
+		chart.ID = fmt.Sprintf(chart.ID, f.Name)
+		chart.Units = f.Units
+		chart.Ctx = fmt.Sprintf(chart.Ctx, f.Name)
+		for _, dim := range chart.Dims {
+			dim.ID = fmt.Sprintf(dim.ID, f.Name)
+			dim.Div = f.Divisor
+		}
+
+		if err := charts.Add(chart); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

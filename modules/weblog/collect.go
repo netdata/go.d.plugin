@@ -15,7 +15,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func (w WebLog) logPanicStackIfAny() {
+func (w *WebLog) logPanicStackIfAny() {
 	err := recover()
 	if err == nil {
 		return
@@ -321,6 +321,8 @@ func (w *WebLog) collectCustomFields() {
 	}
 
 	for _, cv := range w.line.custom.values {
+		_, _ = cv.name, cv.value
+
 		if patterns, ok := w.customFields[cv.name]; ok {
 			for _, pattern := range patterns {
 				if !pattern.MatchString(cv.value) {
@@ -347,7 +349,17 @@ func (w *WebLog) collectCustomFields() {
 			if histogram != nil {
 				v.TimeHist.Observe(ctf * timeMultiplier(cv.value))
 			}
-
+		} else if w.customNumericFields[cv.name] {
+			m, ok := w.mx.ReqCustomNumericField[cv.name]
+			if !ok {
+				continue
+			}
+			v, err := strconv.ParseFloat(cv.value, 64)
+			if err != nil {
+				continue
+			}
+			v *= float64(m.multiplier)
+			m.Summary.Observe(v)
 		}
 	}
 }

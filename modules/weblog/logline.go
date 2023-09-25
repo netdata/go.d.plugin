@@ -385,7 +385,7 @@ func (l *logLine) assignCustom(field, value string) error {
 	return nil
 }
 
-func (l logLine) verify() error {
+func (l *logLine) verify() error {
 	if l.empty() {
 		return fmt.Errorf("verify: %w", errEmptyLine)
 	}
@@ -434,37 +434,37 @@ func (l logLine) verify() error {
 	return nil
 }
 
-func (l logLine) empty() bool                 { return !l.hasWebFields() && !l.hasCustomFields() }
-func (l logLine) hasCustomFields() bool       { return len(l.custom.values) > 0 }
-func (l logLine) hasWebFields() bool          { return l.web != emptyWebFields }
-func (l logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
-func (l logLine) hasPort() bool               { return !isEmptyString(l.port) }
-func (l logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
-func (l logLine) hasReqClient() bool          { return !isEmptyString(l.reqClient) }
-func (l logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
-func (l logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
-func (l logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
-func (l logLine) hasRespCode() bool           { return !isEmptyNumber(l.respCode) }
-func (l logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
-func (l logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
-func (l logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
-func (l logLine) hasUpsRespTime() bool        { return !isEmptyNumber(int(l.upsRespTime)) }
-func (l logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
-func (l logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
-func (l logLine) isVhostValid() bool          { return reVhost.MatchString(l.vhost) }
-func (l logLine) isPortValid() bool           { return isPortValid(l.port) }
-func (l logLine) isSchemeValid() bool         { return isSchemeValid(l.reqScheme) }
-func (l logLine) isClientValid() bool         { return reClient.MatchString(l.reqClient) }
-func (l logLine) isMethodValid() bool         { return isReqMethodValid(l.reqMethod) }
-func (l logLine) isURLValid() bool            { return !isEmptyString(l.reqURL) }
-func (l logLine) isProtoValid() bool          { return isReqProtoVerValid(l.reqProto) }
-func (l logLine) isRespCodeValid() bool       { return isRespCodeValid(l.respCode) }
-func (l logLine) isReqSizeValid() bool        { return isSizeValid(l.reqSize) }
-func (l logLine) isRespSizeValid() bool       { return isSizeValid(l.respSize) }
-func (l logLine) isReqProcTimeValid() bool    { return isTimeValid(l.reqProcTime) }
-func (l logLine) isUpsRespTimeValid() bool    { return isTimeValid(l.upsRespTime) }
-func (l logLine) isSSLProtoValid() bool       { return isSSLProtoValid(l.sslProto) }
-func (l logLine) isSSLCipherSuiteValid() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
+func (l *logLine) empty() bool                 { return !l.hasWebFields() && !l.hasCustomFields() }
+func (l *logLine) hasCustomFields() bool       { return len(l.custom.values) > 0 }
+func (l *logLine) hasWebFields() bool          { return l.web != emptyWebFields }
+func (l *logLine) hasVhost() bool              { return !isEmptyString(l.vhost) }
+func (l *logLine) hasPort() bool               { return !isEmptyString(l.port) }
+func (l *logLine) hasReqScheme() bool          { return !isEmptyString(l.reqScheme) }
+func (l *logLine) hasReqClient() bool          { return !isEmptyString(l.reqClient) }
+func (l *logLine) hasReqMethod() bool          { return !isEmptyString(l.reqMethod) }
+func (l *logLine) hasReqURL() bool             { return !isEmptyString(l.reqURL) }
+func (l *logLine) hasReqProto() bool           { return !isEmptyString(l.reqProto) }
+func (l *logLine) hasRespCode() bool           { return !isEmptyNumber(l.respCode) }
+func (l *logLine) hasReqSize() bool            { return !isEmptyNumber(l.reqSize) }
+func (l *logLine) hasRespSize() bool           { return !isEmptyNumber(l.respSize) }
+func (l *logLine) hasReqProcTime() bool        { return !isEmptyNumber(int(l.reqProcTime)) }
+func (l *logLine) hasUpsRespTime() bool        { return !isEmptyNumber(int(l.upsRespTime)) }
+func (l *logLine) hasSSLProto() bool           { return !isEmptyString(l.sslProto) }
+func (l *logLine) hasSSLCipherSuite() bool     { return !isEmptyString(l.sslCipherSuite) }
+func (l *logLine) isVhostValid() bool          { return reVhost.MatchString(l.vhost) }
+func (l *logLine) isPortValid() bool           { return isPortValid(l.port) }
+func (l *logLine) isSchemeValid() bool         { return isSchemeValid(l.reqScheme) }
+func (l *logLine) isClientValid() bool         { return reClient.MatchString(l.reqClient) }
+func (l *logLine) isMethodValid() bool         { return isReqMethodValid(l.reqMethod) }
+func (l *logLine) isURLValid() bool            { return !isEmptyString(l.reqURL) }
+func (l *logLine) isProtoValid() bool          { return isReqProtoVerValid(l.reqProto) }
+func (l *logLine) isRespCodeValid() bool       { return isRespCodeValid(l.respCode) }
+func (l *logLine) isReqSizeValid() bool        { return isSizeValid(l.reqSize) }
+func (l *logLine) isRespSizeValid() bool       { return isSizeValid(l.respSize) }
+func (l *logLine) isReqProcTimeValid() bool    { return isTimeValid(l.reqProcTime) }
+func (l *logLine) isUpsRespTimeValid() bool    { return isTimeValid(l.upsRespTime) }
+func (l *logLine) isSSLProtoValid() bool       { return isSSLProtoValid(l.sslProto) }
+func (l *logLine) isSSLCipherSuiteValid() bool { return reCipherSuite.MatchString(l.sslCipherSuite) }
 
 func (l *logLine) reset() {
 	l.web = emptyWebFields
@@ -472,7 +472,7 @@ func (l *logLine) reset() {
 }
 
 var (
-	// TODO: reClient doesnt work with %h when HostnameLookups is On.
+	// TODO: reClient doesn't work with %h when HostnameLookups is On.
 	reVhost       = regexp.MustCompile(`^[a-zA-Z0-9-:.]+$`)
 	reClient      = regexp.MustCompile(`^([\da-f:.]+|localhost)$`)
 	reCipherSuite = regexp.MustCompile(`^[A-Z0-9-_]+$`) // openssl -v

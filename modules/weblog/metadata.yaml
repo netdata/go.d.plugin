@@ -9,7 +9,7 @@ modules:
         link: ""
         categories:
           - data-collection.web-servers-and-web-proxies
-        icon_filename: webservers.svg 
+        icon_filename: webservers.svg
       keywords:
         - webserver
         - apache
@@ -488,6 +488,18 @@ modules:
               chart_type: line
               dimensions:
                 - name: a dimension per bucket
+        - name: custom numeric field
+          description: TBD
+          labels: []
+          metrics:
+            - name: web_log.custom_numeric_field_{{field_name}}_summary
+              description: Custom Numeric Field Summary
+              unit: '{{units}}'
+              chart_type: line
+              dimensions:
+                - name: min
+                - name: max
+                - name: avg
         - name: URL pattern
           description: TBD
           labels: []

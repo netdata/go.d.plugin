@@ -66,11 +66,18 @@ type (
 		ReqCustomField  map[string]metrics.CounterVec `stm:"custom_field"`
 		URLPatternStats map[string]*patternMetrics    `stm:"url_ptn"`
 
-		ReqCustomTimeField map[string]*customTimeFieldMetrics `stm:"custom_time_field"`
+		ReqCustomTimeField    map[string]*customTimeFieldMetrics    `stm:"custom_time_field"`
+		ReqCustomNumericField map[string]*customNumericFieldMetrics `stm:"custom_numeric_field"`
 	}
 	customTimeFieldMetrics struct {
 		Time     metrics.Summary   `stm:"time"`
 		TimeHist metrics.Histogram `stm:"time_hist"`
+	}
+	customNumericFieldMetrics struct {
+		Summary metrics.Summary `stm:"summary"`
+
+		multiplier int
+		divisor    int
 	}
 	patternMetrics struct {
 		RespCode      metrics.CounterVec `stm:"resp_code"`
@@ -83,23 +90,24 @@ type (
 
 func newMetricsData(config Config) *metricsData {
 	return &metricsData{
-		ReqVhost:           metrics.NewCounterVec(),
-		ReqPort:            metrics.NewCounterVec(),
-		ReqMethod:          metrics.NewCounterVec(),
-		ReqVersion:         metrics.NewCounterVec(),
-		RespCode:           metrics.NewCounterVec(),
-		ReqSSLProto:        metrics.NewCounterVec(),
-		ReqSSLCipherSuite:  metrics.NewCounterVec(),
-		ReqProcTime:        newWebLogSummary(),
-		ReqProcTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
-		UpsRespTime:        newWebLogSummary(),
-		UpsRespTimeHist:    metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
-		UniqueIPv4:         metrics.NewUniqueCounter(true),
-		UniqueIPv6:         metrics.NewUniqueCounter(true),
-		ReqURLPattern:      newCounterVecFromPatterns(config.URLPatterns),
-		ReqCustomField:     newReqCustomField(config.CustomFields),
-		URLPatternStats:    newURLPatternStats(config.URLPatterns),
-		ReqCustomTimeField: newReqCustomTimeField(config.CustomTimeFields),
+		ReqVhost:              metrics.NewCounterVec(),
+		ReqPort:               metrics.NewCounterVec(),
+		ReqMethod:             metrics.NewCounterVec(),
+		ReqVersion:            metrics.NewCounterVec(),
+		RespCode:              metrics.NewCounterVec(),
+		ReqSSLProto:           metrics.NewCounterVec(),
+		ReqSSLCipherSuite:     metrics.NewCounterVec(),
+		ReqProcTime:           newWebLogSummary(),
+		ReqProcTimeHist:       metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
+		UpsRespTime:           newWebLogSummary(),
+		UpsRespTimeHist:       metrics.NewHistogram(convHistOptionsToMicroseconds(config.Histogram)),
+		UniqueIPv4:            metrics.NewUniqueCounter(true),
+		UniqueIPv6:            metrics.NewUniqueCounter(true),
+		ReqURLPattern:         newCounterVecFromPatterns(config.URLPatterns),
+		ReqCustomField:        newReqCustomField(config.CustomFields),
+		URLPatternStats:       newURLPatternStats(config.URLPatterns),
+		ReqCustomTimeField:    newReqCustomTimeField(config.CustomTimeFields),
+		ReqCustomNumericField: newReqCustomNumericField(config.CustomNumericFields),
 	}
 }
 
@@ -113,6 +121,9 @@ func (m *metricsData) reset() {
 	}
 	for _, v := range m.ReqCustomTimeField {
 		v.Time.Reset()
+	}
+	for _, v := range m.ReqCustomNumericField {
+		v.Summary.Reset()
 	}
 }
 
@@ -153,6 +164,18 @@ func newReqCustomTimeField(fields []customTimeField) map[string]*customTimeField
 		}
 	}
 	return cf
+}
+
+func newReqCustomNumericField(fields []customNumericField) map[string]*customNumericFieldMetrics {
+	rv := make(map[string]*customNumericFieldMetrics)
+	for _, f := range fields {
+		rv[f.Name] = &customNumericFieldMetrics{
+			Summary:    newWebLogSummary(),
+			multiplier: f.Multiplier,
+			divisor:    f.Divisor,
+		}
+	}
+	return rv
 }
 
 // convert histogram options to microseconds (second => us)
