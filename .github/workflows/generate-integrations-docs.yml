@@ -3,7 +3,7 @@
 
 name: Generate Go Integrations Documentation
 on: 
-  workflow_dispatch:
+  workflow_dispatch: null
 concurrency: # This keeps multiple instances of the job from running concurrently for the same ref.
   group: generate-go-integrations-docs-${{ github.ref }}
   cancel-in-progress: true
