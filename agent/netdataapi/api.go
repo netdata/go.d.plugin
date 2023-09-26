@@ -170,7 +170,7 @@ func (a *API) DynCfgReportJobStatus(moduleName, jobName, status, reason string) 
 func (a *API) FunctionResultSuccess(uid, contentType, payload string) error {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 0 %s 0\n", uid, contentType))
+	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 1 %s 0\n", uid, contentType))
 	if payload != "" {
 		s.WriteString(payload + "\n")
 	}
@@ -183,7 +183,7 @@ func (a *API) FunctionResultSuccess(uid, contentType, payload string) error {
 func (a *API) FunctionResultReject(uid, contentType, payload string) error {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 1 %s 5\n", uid, contentType))
+	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 0 %s 0\n", uid, contentType))
 	if payload != "" {
 		s.WriteString(payload + "\n")
 	}
