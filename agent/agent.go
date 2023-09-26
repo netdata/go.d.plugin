@@ -65,7 +65,10 @@ type Agent struct {
 
 // New creates a new Agent.
 func New(cfg Config) *Agent {
-	p := &Agent{
+	logger.Prefix = cfg.Name
+
+	return &Agent{
+		Logger:            logger.New("main", "main"),
 		Name:              cfg.Name,
 		ConfDir:           cfg.ConfDir,
 		ModulesConfDir:    cfg.ModulesConfDir,
@@ -76,14 +79,9 @@ func New(cfg Config) *Agent {
 		RunModule:         cfg.RunModule,
 		MinUpdateEvery:    cfg.MinUpdateEvery,
 		ModuleRegistry:    module.DefaultRegistry,
-		Out:               safewriter.New(os.Stdout),
+		Out:               safewriter.Stdout,
+		api:               netdataapi.New(safewriter.Stdout),
 	}
-
-	logger.Prefix = p.Name
-	p.Logger = logger.New("main", "main")
-	p.api = netdataapi.New(p.Out)
-
-	return p
 }
 
 // Run starts the Agent.
@@ -92,7 +90,7 @@ func (a *Agent) Run() {
 	serve(a)
 }
 
-func serve(p *Agent) {
+func serve(a *Agent) {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 	var wg sync.WaitGroup
@@ -103,13 +101,13 @@ func serve(p *Agent) {
 		ctx, cancel := context.WithCancel(context.Background())
 
 		wg.Add(1)
-		go func() { defer wg.Done(); p.run(ctx) }()
+		go func() { defer wg.Done(); a.run(ctx) }()
 
 		switch sig := <-ch; sig {
 		case syscall.SIGHUP:
-			p.Infof("received %s signal (%d). Restarting running instance", sig, sig)
+			a.Infof("received %s signal (%d). Restarting running instance", sig, sig)
 		default:
-			p.Infof("received %s signal (%d). Terminating...", sig, sig)
+			a.Infof("received %s signal (%d). Terminating...", sig, sig)
 			module.DontObsoleteCharts()
 			exit = true
 		}
@@ -126,7 +124,7 @@ func serve(p *Agent) {
 
 			select {
 			case <-t.C:
-				p.Errorf("stopping all goroutines timed out after %s. Exiting...", timeout)
+				a.Errorf("stopping all goroutines timed out after %s. Exiting...", timeout)
 				os.Exit(0)
 			case <-done:
 			}
@@ -146,6 +144,7 @@ func (a *Agent) run(ctx context.Context) {
 
 	cfg := a.loadPluginConfig()
 	a.Infof("using config: %s", cfg.String())
+
 	if !cfg.Enabled {
 		a.Info("plugin is disabled in the configuration file, exiting...")
 		if isTerminal {
@@ -155,8 +154,8 @@ func (a *Agent) run(ctx context.Context) {
 		return
 	}
 
-	enabled := a.loadEnabledModules(cfg)
-	if len(enabled) == 0 {
+	enabledModules := a.loadEnabledModules(cfg)
+	if len(enabledModules) == 0 {
 		a.Info("no modules to run")
 		if isTerminal {
 			os.Exit(0)
@@ -165,7 +164,7 @@ func (a *Agent) run(ctx context.Context) {
 		return
 	}
 
-	discCfg := a.buildDiscoveryConf(enabled)
+	discCfg := a.buildDiscoveryConf(enabledModules)
 
 	discoveryManager, err := discovery.NewManager(discCfg)
 	if err != nil {
@@ -181,7 +180,7 @@ func (a *Agent) run(ctx context.Context) {
 	dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
 		PluginName:       a.Name,
 		Out:              a.Out,
-		Modules:          enabled,
+		Modules:          enabledModules,
 		ModuleDefaults:   discCfg.Registry,
 		FunctionRegistry: functionsManager,
 	})
@@ -192,7 +191,7 @@ func (a *Agent) run(ctx context.Context) {
 	jobsManager.Dyncfg = dyncfgDiscovery
 	jobsManager.PluginName = a.Name
 	jobsManager.Out = a.Out
-	jobsManager.Modules = enabled
+	jobsManager.Modules = enabledModules
 
 	if reg := a.setupVnodeRegistry(); reg == nil || reg.Len() == 0 {
 		vnodes.Disabled = true

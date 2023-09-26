@@ -4,22 +4,25 @@ package safewriter
 
 import (
 	"io"
+	"os"
 	"sync"
 )
 
+var Stdout = New(os.Stdout)
+
 func New(w io.Writer) io.Writer {
-	return &Writer{
+	return &writer{
 		mx: &sync.Mutex{},
 		w:  w,
 	}
 }
 
-type Writer struct {
+type writer struct {
 	mx *sync.Mutex
 	w  io.Writer
 }
 
-func (w *Writer) Write(p []byte) (n int, err error) {
+func (w *writer) Write(p []byte) (n int, err error) {
 	w.mx.Lock()
 	n, err = w.w.Write(p)
 	w.mx.Unlock()
