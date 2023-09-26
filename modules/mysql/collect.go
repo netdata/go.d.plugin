@@ -68,25 +68,15 @@ func (m *MySQL) collect() (map[string]int64, error) {
 	// TODO: perhaps make a decisions based on privileges? (SHOW GRANTS FOR CURRENT_USER();)
 	if m.doSlaveStatus {
 		if err := m.collectSlaveStatus(mx); err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				m.Warning("Deadline exceeded during slave status collection")
-			} else {
-				m.Errorf("error on collecting slave status: %v", err)
-				// TODO: shouldn't disable on any error
-				m.doSlaveStatus = false
-			}
+			m.Warningf("error on collecting slave status: %v", err)
+			m.doSlaveStatus = errors.Is(err, context.DeadlineExceeded)
 		}
 	}
 
 	if m.doUserStatistics {
 		if err := m.collectUserStatistics(mx); err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				m.Warning("Deadline exceeded during user statistics collection")
-			} else {
-				m.Errorf("error on collecting user statistics: %v", err)
-				// TODO: shouldn't disable on any error
-				m.doUserStatistics = false
-			}
+			m.Warningf("error on collecting user statistics: %v", err)
+			m.doUserStatistics = errors.Is(err, context.DeadlineExceeded)
 		}
 	}
 
