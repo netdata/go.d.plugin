@@ -92,7 +92,7 @@ The following options can be defined globally: update_every, autodetection_retry
 |:-------------------:|----------------------------------------------------------------------------------------------|:--------------:|:--------:|
 |    update_every     | Data collection frequency.                                                                   |       1        |          |
 | autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                           |       0        |          |
-|       address       | UPS daemon address in IP:PORT format.                                                        | 127.0.0.1:3494 |   yes    |
+|       address       | UPS daemon address in IP:PORT format.                                                        | 127.0.0.1:3493 |   yes    |
 |       timeout       | Connection/write/read timeout in seconds. The timeout includes name resolution, if required. |       2        |          |
 
 </details>
@@ -108,7 +108,7 @@ A basic example configuration.
 ```yaml
 jobs:
   - name: local
-    address: 127.0.0.1:3494
+    address: 127.0.0.1:3493
 ```
 
 </details>
@@ -125,10 +125,10 @@ Collecting metrics from local and remote instances.
 ```yaml
 jobs:
   - name: local
-    address: 127.0.0.1:3494
+    address: 127.0.0.1:3493
 
   - name: remote
-    address: 203.0.113.0:3494
+    address: 203.0.113.0:3493
 ```
 
 </details>
