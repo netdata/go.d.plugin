@@ -19,7 +19,7 @@ func (m *Manager) runRunningJobsHandling(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case clock := <-tk.C:
-			m.Debugf("tick %d", clock)
+			//m.Debugf("tick %d", clock)
 			m.notifyRunningJobs(clock)
 		}
 	}

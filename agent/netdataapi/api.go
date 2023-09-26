@@ -171,7 +171,9 @@ func (a *API) FunctionResultSuccess(uid, contentType, payload string) error {
 	var s strings.Builder
 
 	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 0 %s 0\n", uid, contentType))
-	s.WriteString(payload + "\n")
+	if payload != "" {
+		s.WriteString(payload + "\n")
+	}
 	s.WriteString("FUNCTION_RESULT_END\n\n")
 
 	_, err := fmt.Fprintf(a, s.String())
@@ -182,7 +184,9 @@ func (a *API) FunctionResultReject(uid, contentType, payload string) error {
 	var s strings.Builder
 
 	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 1 %s 5\n", uid, contentType))
-	s.WriteString(payload + "\n")
+	if payload != "" {
+		s.WriteString(payload + "\n")
+	}
 	s.WriteString("FUNCTION_RESULT_END\n\n")
 
 	_, err := fmt.Fprintf(a, s.String())

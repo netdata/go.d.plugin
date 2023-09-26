@@ -27,7 +27,7 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 
 	mgr := &Discovery{
 		Logger:            logger.New("dyncfg", "manager"),
-		PluginName:        "",
+		PluginName:        cfg.PluginName,
 		API:               netdataapi.New(cfg.Out),
 		ModuleRegistry:    cfg.Modules,
 		ConfGroupRegistry: nil,

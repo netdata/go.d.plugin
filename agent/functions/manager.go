@@ -9,8 +9,12 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/netdata/go.d.plugin/logger"
+
+	"github.com/mattn/go-isatty"
+	"github.com/muesli/cancelreader"
 )
 
 const (
@@ -39,39 +43,58 @@ func (m *Manager) Register(name string, fn func(Function)) {
 	m.FunctionRegistry[name] = fn
 }
 
+var isTerminal = isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsTerminal(os.Stdin.Fd())
+
 func (m *Manager) Run(ctx context.Context) {
 	m.Info("instance is started")
 	defer func() { m.Info("instance is stopped") }()
 
-	go func() {
-		sc := bufio.NewScanner(m.Input)
+	if !isTerminal {
+		var wg sync.WaitGroup
 
-		for sc.Scan() {
-			text := sc.Text()
-
-			var fn *Function
-			var err error
-
-			switch {
-			case strings.HasPrefix(text, apiKeyFunction+" "):
-				fn, err = m.parseFunction(text)
-			case strings.HasPrefix(text, apiKeyFunctionPayload+" "):
-				fn, err = m.parseFunctionWithPayload(text, sc)
-			default:
-				m.Warningf("unexpected line: '%s'", text)
-				continue
-			}
-
-			if err != nil {
-				m.Warningf("parse function: %v ('%s')", err, text)
-				continue
-			}
-
-			m.runFunction(fn)
+		r, err := cancelreader.NewReader(m.Input)
+		if err != nil {
+			m.Errorf("fail to create cancel reader: %v", err)
+			return
 		}
-	}()
+
+		go func() { <-ctx.Done(); r.Cancel() }()
+
+		wg.Add(1)
+		go func() { defer wg.Done(); m.run(r) }()
+
+		wg.Wait()
+	}
 
 	<-ctx.Done()
+}
+
+func (m *Manager) run(r io.Reader) {
+	sc := bufio.NewScanner(r)
+
+	for sc.Scan() {
+		text := sc.Text()
+
+		var fn *Function
+		var err error
+
+		switch {
+		case strings.HasPrefix(text, apiKeyFunction+" "):
+			fn, err = m.parseFunction(text)
+		case strings.HasPrefix(text, apiKeyFunctionPayload+" "):
+			fn, err = m.parseFunctionWithPayload(text, sc)
+		default:
+			m.Warningf("unexpected line: '%s'", text)
+			continue
+		}
+
+		if err != nil {
+			m.Warningf("parse function: %v ('%s')", err, text)
+			continue
+		}
+
+		m.runFunction(fn)
+	}
 }
 
 func (m *Manager) parseFunction(text string) (*Function, error) {

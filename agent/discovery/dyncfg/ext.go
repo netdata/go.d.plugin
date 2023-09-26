@@ -2,6 +2,8 @@ package dyncfg
 
 import (
 	"errors"
+	"os"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 
@@ -10,7 +12,9 @@ import (
 
 func (d *Discovery) Register(cfg confgroup.Config) {
 	name := cfgJobName(cfg)
-	_ = d.API.DynCfgRegisterJob(cfg.Module(), name, "stock")
+	if cfg.Provider() != dynCfg {
+		_ = d.API.DynCfgRegisterJob(cfg.Module(), name, "stock")
+	}
 
 	key := cfg.Module() + "_" + name
 	d.addConfig(key, cfg)
@@ -54,4 +58,13 @@ func (d *Discovery) getConfigBytes(key string) ([]byte, error) {
 	}
 
 	return bs, nil
+}
+
+var envNDStockConfigDir = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
+
+func isStock(cfg confgroup.Config) bool {
+	if envNDStockConfigDir == "" {
+		return false
+	}
+	return strings.HasPrefix(cfg.Source(), envNDStockConfigDir)
 }
