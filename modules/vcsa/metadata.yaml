@@ -253,8 +253,10 @@ modules:
             |   red   | Security patches might be available.                 |
             |  gray   | An error retrieving information on software updates. |
             | unknown | Collector failed to decode status.                   |
+
             
             </details>
+            
           labels: []
           metrics:
             - name: vcsa.system_health_status
