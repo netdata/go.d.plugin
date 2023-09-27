@@ -48,7 +48,7 @@ func (m *Manager) stopJob(name string) {
 	defer m.queueMux.Unlock()
 
 	idx := slices.IndexFunc(m.queue, func(job Job) bool {
-		return job.Name() == name
+		return job.FullName() == name
 	})
 
 	if idx != -1 {
