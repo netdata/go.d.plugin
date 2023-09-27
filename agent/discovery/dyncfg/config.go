@@ -3,19 +3,26 @@
 package dyncfg
 
 import (
-	"io"
-
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/agent/functions"
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
 type Config struct {
-	PluginName       string
-	Out              io.Writer
-	FunctionRegistry FunctionRegistry
-	Modules          module.Registry
-	ModuleDefaults   confgroup.Registry
+	Plugin               string
+	API                  NetdataDyncfgAPI
+	Functions            FunctionRegistry
+	Modules              module.Registry
+	ModuleConfigDefaults confgroup.Registry
+}
+
+type NetdataDyncfgAPI interface {
+	DynCfgEnable(string) error
+	DyncCfgRegisterModule(string) error
+	DynCfgRegisterJob(_, _, _ string) error
+	DynCfgReportJobStatus(_, _, _, _ string) error
+	FunctionResultSuccess(_, _, _ string) error
+	FunctionResultReject(_, _, _ string) error
 }
 
 type FunctionRegistry interface {

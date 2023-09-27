@@ -12,7 +12,6 @@ import (
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/agent/functions"
 	"github.com/netdata/go.d.plugin/agent/module"
-	"github.com/netdata/go.d.plugin/agent/netdataapi"
 	"github.com/netdata/go.d.plugin/logger"
 
 	"gopkg.in/yaml.v2"
@@ -26,16 +25,16 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 	}
 
 	mgr := &Discovery{
-		Logger:            logger.New("dyncfg", "manager"),
-		PluginName:        cfg.PluginName,
-		API:               netdataapi.New(cfg.Out),
-		ModuleRegistry:    cfg.Modules,
-		ConfGroupRegistry: nil,
-		mux:               &sync.Mutex{},
-		configs:           make(map[string]confgroup.Config),
+		Logger:               logger.New("dyncfg", "manager"),
+		Plugin:               cfg.Plugin,
+		API:                  cfg.API,
+		Modules:              cfg.Modules,
+		ModuleConfigDefaults: nil,
+		mux:                  &sync.Mutex{},
+		configs:              make(map[string]confgroup.Config),
 	}
 
-	mgr.registerFunctions(cfg.FunctionRegistry)
+	mgr.registerFunctions(cfg.Functions)
 
 	return mgr, nil
 }
@@ -43,10 +42,10 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 type Discovery struct {
 	*logger.Logger
 
-	PluginName        string
-	API               *netdataapi.API
-	ModuleRegistry    module.Registry
-	ConfGroupRegistry confgroup.Registry
+	Plugin               string
+	API                  NetdataDyncfgAPI
+	Modules              module.Registry
+	ModuleConfigDefaults confgroup.Registry
 
 	in chan<- []*confgroup.Group
 
@@ -68,9 +67,9 @@ func (d *Discovery) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 
 	d.in = in
 
-	_ = d.API.DynCfgEnable(d.PluginName)
+	_ = d.API.DynCfgEnable(d.Plugin)
 
-	for k := range d.ModuleRegistry {
+	for k := range d.Modules {
 		_ = d.API.DyncCfgRegisterModule(k)
 	}
 
@@ -125,7 +124,7 @@ func (d *Discovery) getJobConfigSchema(fn functions.Function) {
 
 	name := fn.Args[0]
 
-	v, ok := d.ModuleRegistry[name]
+	v, ok := d.Modules[name]
 	if !ok {
 		msg := jsonErrorf("module %s is not registered", name)
 		d.apiReject(fn, msg)
@@ -148,7 +147,7 @@ func (d *Discovery) setJobConfig(fn functions.Function) {
 	}
 
 	modName, jobName := fn.Args[0], fn.Args[1]
-	def, _ := d.ConfGroupRegistry.Lookup(modName)
+	def, _ := d.ModuleConfigDefaults.Lookup(modName)
 	src := source(modName, jobName)
 
 	cfg.SetProvider(dynCfg)

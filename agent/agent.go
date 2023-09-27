@@ -178,11 +178,11 @@ func (a *Agent) run(ctx context.Context) {
 	functionsManager := functions.NewManager()
 
 	dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
-		PluginName:       a.Name,
-		Out:              a.Out,
-		Modules:          enabledModules,
-		ModuleDefaults:   discCfg.Registry,
-		FunctionRegistry: functionsManager,
+		Plugin:               a.Name,
+		API:                  netdataapi.New(a.Out),
+		Modules:              enabledModules,
+		ModuleConfigDefaults: discCfg.Registry,
+		Functions:            functionsManager,
 	})
 
 	discoveryManager.Add(dyncfgDiscovery)
