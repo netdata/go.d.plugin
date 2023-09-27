@@ -58,10 +58,7 @@ type pingProber struct {
 func (p *pingProber) ping(host string) (*probing.Statistics, error) {
 	pr := probing.New(host)
 
-	switch p.network {
-	case "", "ip", "ip4", "ip6":
-		pr.SetNetwork(p.network)
-	}
+	pr.SetNetwork(p.network)
 
 	if err := pr.Resolve(); err != nil {
 		return nil, fmt.Errorf("DNS lookup '%s' : %v", host, err)
