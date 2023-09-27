@@ -249,7 +249,15 @@ modules:
       scopes:
         - name: virtual machine
           description: These metrics refer to the Virtual Machine.
-          labels: []
+          labels:
+            - name: datacenter
+              description: Datacenter name
+            - name: cluster
+              description: Cluster name
+            - name: host
+              description: Host name
+            - name: vm
+              description: Virtual Machine name
           metrics:
             - name: vsphere.vm_cpu_utilization
               description: Virtual Machine CPU utilization
@@ -336,7 +344,13 @@ modules:
                 - name: uptime
         - name: host
           description: These metrics refer to the ESXi host.
-          labels: []
+          labels:
+            - name: datacenter
+              description: Datacenter name
+            - name: cluster
+              description: Cluster name
+            - name: host
+              description: Host name
           metrics:
             - name: vsphere.host_cpu_utilization
               description: ESXi Host CPU utilization
