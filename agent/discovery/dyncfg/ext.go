@@ -13,6 +13,7 @@ import (
 func (d *Discovery) Register(cfg confgroup.Config) {
 	name := cfgJobName(cfg)
 	if cfg.Provider() != dynCfg {
+		// jobType handling in ND is not documented
 		_ = d.API.DynCfgRegisterJob(cfg.Module(), name, "stock")
 	}
 
@@ -41,6 +42,14 @@ func (d *Discovery) removeConfig(key string) {
 	defer d.mux.Unlock()
 
 	delete(d.configs, key)
+}
+
+func (d *Discovery) getConfig(key string) (confgroup.Config, bool) {
+	d.mux.Lock()
+	defer d.mux.Unlock()
+
+	v, ok := d.configs[key]
+	return v, ok
 }
 
 func (d *Discovery) getConfigBytes(key string) ([]byte, error) {

@@ -123,7 +123,7 @@ func main() {
 	}
 
 	cfg := httpproxy.FromEnvironment()
-	a.Infof("env HTTP_PROXY '%s', HTTPS_PROXY '%s' (both upper and lower case are respected)", cfg.HTTPProxy, cfg.HTTPSProxy)
+	a.Infof("env HTTP_PROXY '%s', HTTPS_PROXY '%s'", cfg.HTTPProxy, cfg.HTTPSProxy)
 
 	a.Run()
 }

@@ -150,6 +150,7 @@ func (m *Manager) cleanup() {
 	for name := range *m.runningJobs {
 		_ = m.FileLock.Unlock(name)
 	}
+	// TODO: m.Dyncfg.Register() ?
 	m.stopRunningJobs()
 }
 

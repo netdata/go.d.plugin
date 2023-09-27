@@ -174,6 +174,16 @@ func (d *Discovery) deleteJobName(fn functions.Function) {
 
 	modName, jobName := fn.Args[0], fn.Args[1]
 
+	cfg, ok := d.getConfig(modName + "_" + jobName)
+	if !ok {
+		d.apiReject(fn, jsonErrorf("module '%s' job '%s': not registered", modName, jobName))
+		return
+	}
+	if cfg.Provider() != dynCfg {
+		d.apiReject(fn, jsonErrorf("module '%s' job '%s': can't remove non Dyncfg job", modName, jobName))
+		return
+	}
+
 	d.in <- []*confgroup.Group{
 		{
 			Configs: []confgroup.Config{},
