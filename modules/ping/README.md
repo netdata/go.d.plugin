@@ -85,14 +85,15 @@ The following options can be defined globally: update_every, autodetection_retry
 <details>
 <summary>Config options</summary>
 
-|        Name         | Description                                                                            | Default | Required |
-|:-------------------:|----------------------------------------------------------------------------------------|:-------:|:--------:|
-|    update_every     | Data collection frequency.                                                             |    5    |          |
-| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                     |    0    |          |
-|        hosts        | Network hosts.                                                                         |         |   yes    |
-|     privileged      | Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping. |   yes   |          |
-|       packets       | Number of ping packets to send.                                                        |    5    |          |
-|      interval       | Timeout between sending ping packets.                                                  |  100ms  |          |
+|        Name         | Description                                                                                                                | Default | Required |
+|:-------------------:|----------------------------------------------------------------------------------------------------------------------------|:-------:|:--------:|
+|    update_every     | Data collection frequency.                                                                                                 |    5    |          |
+| autodetection_retry | Re-check interval in seconds. Zero means not to schedule re-check.                                                         |    0    |          |
+|        hosts        | Network hosts.                                                                                                             |         |   yes    |
+|       network       | Allows configuration of DNS resolution. Supported options: ip (select IPv4 or IPv6), ip4 (select IPv4), ip6 (select IPv6). |         |          |
+|     privileged      | Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping.                                     |   yes   |          |
+|       packets       | Number of ping packets to send.                                                                                            |    5    |          |
+|      interval       | Timeout between sending ping packets.                                                                                      |  100ms  |          |
 
 </details>
 
