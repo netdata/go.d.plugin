@@ -24,6 +24,7 @@ func init() {
 func New() *Ping {
 	return &Ping{
 		Config: Config{
+			Network:     "ip",
 			Privileged:  true,
 			SendPackets: 5,
 			Interval:    web.Duration{Duration: time.Millisecond * 100},
@@ -35,16 +36,15 @@ func New() *Ping {
 	}
 }
 
-type (
-	Config struct {
-		UpdateEvery int          `yaml:"update_every"`
-		Hosts       []string     `yaml:"hosts"`
-		Privileged  bool         `yaml:"privileged"`
-		SendPackets int          `yaml:"packets"`
-		Interval    web.Duration `yaml:"interval"`
-		Interface   string       `yaml:"interface"`
-	}
-)
+type Config struct {
+	UpdateEvery int          `yaml:"update_every"`
+	Hosts       []string     `yaml:"hosts"`
+	Network     string       `yaml:"network"`
+	Privileged  bool         `yaml:"privileged"`
+	SendPackets int          `yaml:"packets"`
+	Interval    web.Duration `yaml:"interval"`
+	Interface   string       `yaml:"interface"`
+}
 
 type (
 	Ping struct {

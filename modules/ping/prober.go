@@ -25,6 +25,7 @@ func newPingProber(conf pingProberConfig, log *logger.Logger) prober {
 	}
 
 	return &pingProber{
+		network:    conf.network,
 		privileged: conf.privileged,
 		packets:    conf.packets,
 		source:     source,
@@ -35,6 +36,7 @@ func newPingProber(conf pingProberConfig, log *logger.Logger) prober {
 }
 
 type pingProberConfig struct {
+	network    string
 	privileged bool
 	packets    int
 	iface      string
@@ -43,16 +45,20 @@ type pingProberConfig struct {
 }
 
 type pingProber struct {
+	*logger.Logger
+
+	network    string
 	privileged bool
 	packets    int
 	source     string
 	interval   time.Duration
 	deadline   time.Duration
-	*logger.Logger
 }
 
 func (p *pingProber) ping(host string) (*probing.Statistics, error) {
 	pr := probing.New(host)
+
+	pr.SetNetwork(p.network)
 
 	if err := pr.Resolve(); err != nil {
 		return nil, fmt.Errorf("DNS lookup '%s' : %v", host, err)
