@@ -36,7 +36,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.NETDATABOT_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Generate Integrations Documentation
           branch: integrations-docs
           title: Integrations Documentation
