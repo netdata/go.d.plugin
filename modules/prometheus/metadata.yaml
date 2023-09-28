@@ -1259,37 +1259,6 @@ modules:
   - <<: *module
     meta:
       <<: *meta
-      id: collector-go.d.plugin-prometheus-nut
-      most_popular: false
-      community: true
-      monitored_instance:
-        name: Network UPS Tools
-        link: https://github.com/HON95/prometheus-nut-exporter
-        icon_filename: nut.png
-        categories:
-          - data-collection.ups
-      keywords:
-        - network monitoring
-        - network performance
-        - traffic analysis
-        - nut
-    overview:
-      <<: *overview
-      data_collection:
-        metrics_description: |
-          Track Network UPS Tools (NUT) metrics for efficient uninterruptible power supply management and monitoring.
-        method_description: |
-          Metrics are gathered by periodically sending HTTP requests to [Network UPS Tools exporter](https://github.com/HON95/prometheus-nut-exporter).
-    setup:
-      <<: *setup
-      prerequisites:
-        list:
-          - title: Install Exporter
-            description: |
-              Install [Network UPS Tools exporter](https://github.com/HON95/prometheus-nut-exporter) by following the instructions mentioned in the exporter README.
-  - <<: *module
-    meta:
-      <<: *meta
       id: collector-go.d.plugin-prometheus-dynatrace
       most_popular: false
       community: true
@@ -3257,7 +3226,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: Steam 
+        name: Steam
         link: https://github.com/armsnyder/a2s-exporter
         icon_filename: a2s.png
         categories:
