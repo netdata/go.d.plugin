@@ -19,6 +19,7 @@ const (
 	commandLogout   = "LOGOUT"
 )
 
+// https://github.com/networkupstools/nut/blob/81fca30b2998fa73085ce4654f075605ff0b9e01/docs/net-protocol.txt#L647
 var errUpsdCommand = errors.New("upsd command error")
 
 type upsUnit struct {
