@@ -58,7 +58,7 @@ func (m *Manager) Run(ctx context.Context) {
 			return
 		}
 
-		go func() { <-ctx.Done(); r.Cancel() }()
+		go func() { <-ctx.Done(); r.Cancel(); _ = r.Close() }()
 
 		wg.Add(1)
 		go func() { defer wg.Done(); m.run(r) }()
