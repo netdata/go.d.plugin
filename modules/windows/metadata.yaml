@@ -51,7 +51,7 @@ modules:
               To install the Windows exporter, follow the [official installation guide](https://github.com/prometheus-community/windows_exporter#installation).
       configuration:
         file:
-          name: go.d/wireguard.conf
+          name: go.d/windows.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
