@@ -2,6 +2,8 @@
 
 package logger
 
+import "strings"
+
 var globalSeverity = INFO
 
 // Severity is a logging severity level
@@ -57,6 +59,21 @@ func (s Severity) ShortString() string {
 // SetSeverity sets global severity level
 func SetSeverity(severity Severity) {
 	globalSeverity = severity
+}
+
+func SetSeverityByName(severity string) {
+	switch strings.ToUpper(severity) {
+	case "CRIT", "CRITICAL":
+		globalSeverity = CRITICAL
+	case "ERR", "ERROR":
+		globalSeverity = ERROR
+	case "WARN", "WARNING":
+		globalSeverity = WARNING
+	case "INFO":
+		globalSeverity = INFO
+	case "DEBUG":
+		globalSeverity = DEBUG
+	}
 }
 
 func IsDebug() bool {
