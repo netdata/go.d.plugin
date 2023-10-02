@@ -3058,33 +3058,6 @@ modules:
   - <<: *module
     meta:
       <<: *meta
-      id: collector-go.d.plugin-prometheus-vmware
-      most_popular: false
-      community: true
-      monitored_instance:
-        name: VMWare
-        link: https://github.com/pryorda/vmware_exporter
-        icon_filename: vmware.svg
-        categories:
-          - data-collection.containers-and-vms
-      keywords: []
-    overview:
-      <<: *overview
-      data_collection:
-        metrics_description: |
-          Keep tabs on VMWare virtualization platform metrics for efficient virtual infrastructure management and performance.
-        method_description: |
-          Metrics are gathered by periodically sending HTTP requests to [VMWare exporter](https://github.com/pryorda/vmware_exporter).
-    setup:
-      <<: *setup
-      prerequisites:
-        list:
-          - title: Install Exporter
-            description: |
-              Install [VMWare exporter](https://github.com/pryorda/vmware_exporter) by following the instructions mentioned in the exporter README.
-  - <<: *module
-    meta:
-      <<: *meta
       id: collector-go.d.plugin-prometheus-vscode
       most_popular: false
       community: true
