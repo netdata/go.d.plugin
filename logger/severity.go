@@ -65,7 +65,7 @@ func SetSeverityByName(severity string) {
 	switch strings.ToUpper(severity) {
 	case "CRIT", "CRITICAL":
 		globalSeverity = CRITICAL
-	case "ERROR":
+	case "ERR", "ERROR":
 		globalSeverity = ERROR
 	case "WARN", "WARNING":
 		globalSeverity = WARNING
