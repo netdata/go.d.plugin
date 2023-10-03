@@ -4,6 +4,7 @@
 
 name: Generate Go Integrations Documentation
 on: 
+  workflow_dispatch: null
   schedule:
     - cron: "0 8-23/3 * * *" # every 3rd hour from 8 through 23
 concurrency: # This keeps multiple instances of the job from running concurrently for the same ref.
