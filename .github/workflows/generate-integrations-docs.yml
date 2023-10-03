@@ -22,9 +22,9 @@ jobs:
       - name: Get integrations.js
         run: |
           curl https://raw.githubusercontent.com/netdata/netdata/master/integrations/integrations.js --create-dirs -o ./integrations/integrations.js
-      - name: Get gen_docs_integrations.py
-        run: |
-          curl https://raw.githubusercontent.com/netdata/netdata/master/integrations/gen_docs_integrations.py --create-dirs -o ./integrations/gen_docs_integrations.py
+      # - name: Get gen_docs_integrations.py
+      #   run: |
+      #     curl https://raw.githubusercontent.com/netdata/netdata/master/integrations/gen_docs_integrations.py --create-dirs -o ./integrations/gen_docs_integrations.py
       - name: Generate Go Integrations Documentation
         id: generate
         run: |
