@@ -20,6 +20,7 @@ jobs:
         id: go-tag
         run: |
           tag="$(curl "https://github.com/netdata/go.d.plugin/releases/latest" -s -L -I -o /dev/null -w '%{url_effective}' | grep -m 1 -o '[^/]*$')"
+          echo "latest tag is ${tag}"
           echo "releasetag=${tag}" >> $GITHUB_ENV
       - name: Checkout Go repo
         id: checkout-go
