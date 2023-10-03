@@ -48,6 +48,7 @@ jobs:
           commit-message: Generate Integrations Documentation
           branch: integrations-docs
           title: Integrations Documentation
+          base: ${{ github.head_ref }}
           body: |
             Generate Documentation from `integrations/integrations.js` based on the latest code.
 
