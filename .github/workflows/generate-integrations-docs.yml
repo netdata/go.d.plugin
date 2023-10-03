@@ -1,9 +1,11 @@
 ---
   # CI workflow used to generate documentation from integrations/integrations.js.
 
+
 name: Generate Go Integrations Documentation
 on: 
-  workflow_dispatch: null
+  schedule:
+    - cron: "0 8-23/3 * * *" # every 3rd hour from 8 through 23
 concurrency: # This keeps multiple instances of the job from running concurrently for the same ref.
   group: generate-go-integrations-docs-${{ github.ref }}
   cancel-in-progress: true
@@ -13,12 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'netdata/go.d.plugin'
     steps:
+      - name: Get the latest go release tag
+        id: go-tag
+        run: |
+          echo "::set-output name=releasetag::$(curl "https://github.com/netdata/go.d.plugin/releases/latest" -s -L -I -o /dev/null -w '%{url_effective}' | grep -m 1 -o '[^/]*$')"
       - name: Checkout Go repo
         id: checkout-go
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: recursive
+          ref: ${{ steps.go-tag.outputs.releasetag }}
       - name: Get integrations.js
         run: |
           curl https://raw.githubusercontent.com/netdata/netdata/master/integrations/integrations.js --create-dirs -o ./integrations/integrations.js
