@@ -99,6 +99,18 @@ Metrics:
 | web_log.custom_time_field_summary | min, max, avg | milliseconds |
 | web_log.custom_time_field_histogram | a dimension per bucket | observations |
 
+### Per custom numeric field
+
+TBD
+
+This scope has no labels.
+
+Metrics:
+
+| Metric | Dimensions | Unit |
+|:------|:----------|:----|
+| web_log.custom_numeric_field_{{field_name}}_summary | min, max, avg | {{units}} |
+
 ### Per URL pattern
 
 TBD

@@ -97,7 +97,14 @@ The scope defines the instance that the metric belongs to. An instance is unique
 
 These metrics refer to the Virtual Machine.
 
-This scope has no labels.
+Labels:
+
+| Label      | Description     |
+|:-----------|:----------------|
+| datacenter | Datacenter name |
+| cluster | Cluster name |
+| host | Host name |
+| vm | Virtual Machine name |
 
 Metrics:
 
@@ -120,7 +127,13 @@ Metrics:
 
 These metrics refer to the ESXi host.
 
-This scope has no labels.
+Labels:
+
+| Label      | Description     |
+|:-----------|:----------------|
+| datacenter | Datacenter name |
+| cluster | Cluster name |
+| host | Host name |
 
 Metrics:
 
