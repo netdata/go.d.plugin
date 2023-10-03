@@ -19,7 +19,8 @@ jobs:
       - name: Get the latest go release tag
         id: go-tag
         run: |
-          echo "::set-output name=releasetag::$(curl "https://github.com/netdata/go.d.plugin/releases/latest" -s -L -I -o /dev/null -w '%{url_effective}' | grep -m 1 -o '[^/]*$')"
+          tag=$(curl "https://github.com/netdata/go.d.plugin/releases/latest" -s -L -I -o /dev/null -w '%{url_effective}' | grep -m 1 -o '[^/]*$')
+          echo "releasetag=${tag}" >> $GITHUB_ENV
       - name: Checkout Go repo
         id: checkout-go
         uses: actions/checkout@v4
