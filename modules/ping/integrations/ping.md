@@ -133,6 +133,7 @@ The following options can be defined globally: update_every, autodetection_retry
 | update_every | Data collection frequency. |  | False |
 | autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
 | hosts | Network hosts. |  | True |
+| network | Allows configuration of DNS resolution. Supported options: ip (select IPv4 or IPv6), ip4 (select IPv4), ip6 (select IPv6). |  | False |
 | privileged | Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping. |  | False |
 | packets | Number of ping packets to send. |  | False |
 | interval | Timeout between sending ping packets. |  | False |
