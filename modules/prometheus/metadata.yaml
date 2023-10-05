@@ -11,7 +11,7 @@ modules:
         icon_filename: prometheus.svg
         categories:
           - data-collection.generic-data-collection
-          - data-collection.apm
+          # - data-collection.apm
       keywords:
         - prometheus
         - openmetrics
@@ -2631,7 +2631,7 @@ modules:
         icon_filename: slurm.png
         categories:
           - data-collection.task-queues
-          - data-collection.provisioning-systems
+          #- data-collection.provisioning-systems
       keywords: []
     overview:
       <<: *overview
@@ -5618,7 +5618,7 @@ modules:
         link: http://github.com/mesosphere/mesos_exporter
         icon_filename: mesos.svg
         categories:
-          - data-collection.provisioning-systems
+          #- data-collection.provisioning-systems
           - data-collection.task-queues
       keywords: []
     overview:
