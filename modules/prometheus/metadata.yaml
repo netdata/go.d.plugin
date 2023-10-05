@@ -1267,7 +1267,7 @@ modules:
         link: https://github.com/Apside-TOP/dynatrace_exporter
         icon_filename: dynatrace.svg
         categories:
-          - data-collection.apm
+          - data-collection.observability
       keywords: []
     overview:
       <<: *overview
