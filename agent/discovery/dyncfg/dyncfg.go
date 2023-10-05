@@ -86,9 +86,9 @@ func (d *Discovery) registerFunctions(r FunctionRegistry) {
 	r.Register("set_module_config", d.setModuleConfig)
 
 	r.Register("get_job_config", d.getJobConfig)
-	r.Register("get_job_config_schema", d.getJobConfigSchema) // +
-	r.Register("set_job_config", d.setJobConfig)              // +
-	r.Register("delete_job", d.deleteJobName)                 // +
+	r.Register("get_job_config_schema", d.getJobConfigSchema)
+	r.Register("set_job_config", d.setJobConfig)
+	r.Register("delete_job", d.deleteJobName)
 }
 
 func (d *Discovery) getPluginConfig(fn functions.Function)       { d.notImplemented(fn) }

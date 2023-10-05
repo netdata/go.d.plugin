@@ -3,6 +3,8 @@
 package functions
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"strconv"
@@ -20,11 +22,11 @@ type Function struct {
 }
 
 func (f *Function) String() string {
-	return fmt.Sprintf("KEY: %s, UID: %s, TIMEOUT: %s, FUNCTION: %s, ARGS: %v, PAYLOAD: %s",
+	return fmt.Sprintf("key: %s, uid: %s, timeout: %s, function: %s, args: %v, payload: %s",
 		f.key, f.UID, f.Timeout, f.Name, f.Args, string(f.Payload))
 }
 
-func parseFunctionString(s string) (*Function, error) {
+func parseFunction(s string) (*Function, error) {
 	r := csv.NewReader(strings.NewReader(s))
 	r.Comma = ' '
 
@@ -36,12 +38,12 @@ func parseFunctionString(s string) (*Function, error) {
 		return nil, fmt.Errorf("unexpected number of words: want 4, got %d (%v)", len(parts), parts)
 	}
 
-	cmd := strings.Split(parts[3], " ")
-
 	timeout, err := strconv.ParseInt(parts[2], 10, 64)
 	if err != nil {
 		return nil, err
 	}
+
+	cmd := strings.Split(parts[3], " ")
 
 	fn := &Function{
 		key:     parts[0],
@@ -50,6 +52,26 @@ func parseFunctionString(s string) (*Function, error) {
 		Name:    cmd[0],
 		Args:    cmd[1:],
 	}
+
+	return fn, nil
+}
+
+func parseFunctionWithPayload(s string, sc *bufio.Scanner) (*Function, error) {
+	fn, err := parseFunction(s)
+	if err != nil {
+		return nil, err
+	}
+
+	var n int
+	var buf bytes.Buffer
+	for sc.Scan() && sc.Text() != "FUNCTION_PAYLOAD_END" {
+		if n++; n > 1 {
+			buf.WriteString("\n")
+		}
+		buf.WriteString(sc.Text())
+	}
+
+	fn.Payload = append(fn.Payload, buf.Bytes()...)
 
 	return fn, nil
 }

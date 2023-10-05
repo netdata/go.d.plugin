@@ -10,7 +10,7 @@ import (
 
 func TestNew(t *testing.T) {
 	assert.NotNil(t, New("testdata"))
-	//assert.NotNil(t, New("not_exist"))
+	assert.NotNil(t, New("not_exist"))
 }
 
 func TestVnodes_Lookup(t *testing.T) {

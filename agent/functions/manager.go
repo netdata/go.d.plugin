@@ -4,7 +4,6 @@ package functions
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"io"
 	"os"
@@ -17,16 +16,13 @@ import (
 	"github.com/muesli/cancelreader"
 )
 
-const (
-	apiKeyFunction           = "FUNCTION"
-	apiKeyFunctionPayload    = "FUNCTION_PAYLOAD"
-	apiKeyFunctionPayloadEnd = "FUNCTION_PAYLOAD_END"
-)
+var isTerminal = isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsTerminal(os.Stdin.Fd())
 
 func NewManager() *Manager {
 	return &Manager{
 		Logger:           logger.New("functions", "manager"),
 		Input:            os.Stdin,
+		mux:              &sync.Mutex{},
 		FunctionRegistry: make(map[string]func(Function)),
 	}
 }
@@ -35,15 +31,17 @@ type Manager struct {
 	*logger.Logger
 
 	Input            io.Reader
+	mux              *sync.Mutex
 	FunctionRegistry map[string]func(Function)
 }
 
 func (m *Manager) Register(name string, fn func(Function)) {
-	m.Infof("FUNCTION REGISTRATION: '%s'", name)
-	m.FunctionRegistry[name] = fn
+	if fn == nil {
+		m.Warningf("not registering '%s': nil function", name)
+		return
+	}
+	m.addFunction(name, fn)
 }
-
-var isTerminal = isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsTerminal(os.Stdin.Fd())
 
 func (m *Manager) Run(ctx context.Context) {
 	m.Info("instance is started")
@@ -79,10 +77,12 @@ func (m *Manager) run(r io.Reader) {
 		var err error
 
 		switch {
-		case strings.HasPrefix(text, apiKeyFunction+" "):
-			fn, err = m.parseFunction(text)
-		case strings.HasPrefix(text, apiKeyFunctionPayload+" "):
-			fn, err = m.parseFunctionWithPayload(text, sc)
+		case strings.HasPrefix(text, "FUNCTION "):
+			fn, err = parseFunction(text)
+		case strings.HasPrefix(text, "FUNCTION_PAYLOAD "):
+			fn, err = parseFunctionWithPayload(text, sc)
+		case text == "":
+			continue
 		default:
 			m.Warningf("unexpected line: '%s'", text)
 			continue
@@ -93,38 +93,37 @@ func (m *Manager) run(r io.Reader) {
 			continue
 		}
 
-		m.runFunction(fn)
+		function, ok := m.lookupFunction(fn.Name)
+		if !ok {
+			m.Infof("skipping execution of '%s': unregistered function", fn.Name)
+			continue
+		}
+		if function == nil {
+			m.Warningf("skipping execution of '%s': nil function registered", fn.Name)
+			continue
+		}
+
+		m.Debugf("executing function: '%s'", fn.String())
+		function(*fn)
 	}
 }
 
-func (m *Manager) parseFunction(text string) (*Function, error) {
-	return parseFunctionString(text)
+func (m *Manager) addFunction(name string, fn func(Function)) {
+	m.mux.Lock()
+	defer m.mux.Unlock()
+
+	if _, ok := m.FunctionRegistry[name]; !ok {
+		m.Debugf("registering function '%s'", name)
+	} else {
+		m.Warningf("re-registering function '%s'", name)
+	}
+	m.FunctionRegistry[name] = fn
 }
 
-func (m *Manager) parseFunctionWithPayload(text string, sc *bufio.Scanner) (*Function, error) {
-	fn, err := parseFunctionString(text)
-	if err != nil {
-		return nil, err
-	}
+func (m *Manager) lookupFunction(name string) (func(Function), bool) {
+	m.mux.Lock()
+	defer m.mux.Unlock()
 
-	var buf bytes.Buffer
-	for sc.Scan() && sc.Text() != apiKeyFunctionPayloadEnd {
-		buf.WriteString(sc.Text() + "\n")
-	}
-
-	fn.Payload = append(fn.Payload, buf.Bytes()...)
-
-	return fn, nil
-}
-
-func (m *Manager) runFunction(fn *Function) {
-	m.Infof("FUNCTION: '%s'", fn.String())
-
-	regFn, ok := m.FunctionRegistry[fn.Name]
-	if !ok {
-		m.Infof("UNREGISTERED FUNCTION: '%s'", fn.Name)
-		return
-	}
-
-	regFn(*fn)
+	f, ok := m.FunctionRegistry[name]
+	return f, ok
 }
