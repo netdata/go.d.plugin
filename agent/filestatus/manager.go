@@ -13,10 +13,11 @@ import (
 
 func NewManager(path string) *Manager {
 	return &Manager{
-		Logger:  logger.New("status save", "manager"),
-		path:    path,
-		store:   &Store{},
-		flushCh: make(chan struct{}, 1),
+		Logger:     logger.New("status save", "manager"),
+		path:       path,
+		store:      &Store{},
+		flushEvery: time.Second * 5,
+		flushCh:    make(chan struct{}, 1),
 	}
 }
 
@@ -25,15 +26,17 @@ type Manager struct {
 
 	path string
 
-	store   *Store
-	flushCh chan struct{}
+	store *Store
+
+	flushEvery time.Duration
+	flushCh    chan struct{}
 }
 
 func (m *Manager) Run(ctx context.Context) {
 	m.Info("instance is started")
 	defer func() { m.Info("instance is stopped") }()
 
-	tk := time.NewTicker(time.Second * 5)
+	tk := time.NewTicker(m.flushEvery)
 	defer tk.Stop()
 	defer m.flush()
 
