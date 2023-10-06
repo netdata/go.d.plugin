@@ -3,12 +3,17 @@
 package dyncfg
 
 import (
-	"errors"
+	"context"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
+	"github.com/netdata/go.d.plugin/agent/functions"
+	"github.com/netdata/go.d.plugin/agent/module"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewDiscovery(t *testing.T) {
@@ -18,7 +23,7 @@ func TestNewDiscovery(t *testing.T) {
 func TestDiscovery_Register(t *testing.T) {
 	tests := map[string]struct {
 		regConfigs   []confgroup.Config
-		wantApiStats *mockNetdataDyncfgAPI
+		wantApiStats *mockApi
 		wantConfigs  int
 	}{
 		"register jobs created by Dyncfg and other providers": {
@@ -35,7 +40,7 @@ func TestDiscovery_Register(t *testing.T) {
 				),
 			},
 			wantConfigs: 2,
-			wantApiStats: &mockNetdataDyncfgAPI{
+			wantApiStats: &mockApi{
 				callsDynCfgRegisterJob: 1,
 			},
 		},
@@ -43,7 +48,7 @@ func TestDiscovery_Register(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			var mock mockNetdataDyncfgAPI
+			var mock mockApi
 			d := &Discovery{
 				API:     &mock,
 				mux:     &sync.Mutex{},
@@ -64,12 +69,12 @@ func TestDiscovery_Unregister(t *testing.T) {
 	tests := map[string]struct {
 		regConfigs   []confgroup.Config
 		unregConfigs []confgroup.Config
-		wantApiStats *mockNetdataDyncfgAPI
+		wantApiStats *mockApi
 		wantConfigs  int
 	}{
 		"register/unregister jobs created by Dyncfg and other providers": {
 			wantConfigs: 0,
-			wantApiStats: &mockNetdataDyncfgAPI{
+			wantApiStats: &mockApi{
 				callsDynCfgRegisterJob: 1,
 			},
 			regConfigs: []confgroup.Config{
@@ -101,7 +106,7 @@ func TestDiscovery_Unregister(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			var mock mockNetdataDyncfgAPI
+			var mock mockApi
 			d := &Discovery{
 				API:     &mock,
 				mux:     &sync.Mutex{},
@@ -126,70 +131,98 @@ func TestDiscovery_UpdateStatus(t *testing.T) {
 }
 
 func TestDiscovery_Run(t *testing.T) {
+	tests := map[string]struct {
+		wantApiStats *mockApi
+	}{
+		"default run": {
+			wantApiStats: &mockApi{
+				callsDynCfgEnable:          1,
+				callsDyncCfgRegisterModule: 2,
+				callsRegister:              10,
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			var mock mockApi
+			d, err := NewDiscovery(Config{
+				Plugin:    "test",
+				API:       &mock,
+				Functions: &mock,
+				Modules: module.Registry{
+					"module1": module.Creator{},
+					"module2": module.Creator{},
+				},
+				ModuleConfigDefaults: nil,
+			})
+			require.Nil(t, err)
+
+			testTime := time.Second * 3
+			ctx, cancel := context.WithTimeout(context.Background(), testTime)
+			defer cancel()
+
+			in := make(chan<- []*confgroup.Group)
+			done := make(chan struct{})
+
+			go func() { defer close(done); d.Run(ctx, in) }()
+
+			timeout := testTime + time.Second*2
+			tk := time.NewTimer(timeout)
+			defer tk.Stop()
+
+			select {
+			case <-done:
+				assert.Equal(t, test.wantApiStats, &mock)
+			case <-tk.C:
+				t.Errorf("timed out after %s", timeout)
+			}
+		})
+	}
 }
 
-type mockNetdataDyncfgAPI struct {
-	errOnDynCfgEnable          bool
-	errOnDyncCfgRegisterModule bool
-	errOnDynCfgRegisterJob     bool
-	errOnDynCfgReportJobStatus bool
-	errOnFunctionResultSuccess bool
-	errOnFunctionResultReject  bool
-
+type mockApi struct {
 	callsDynCfgEnable          int
 	callsDyncCfgRegisterModule int
 	callsDynCfgRegisterJob     int
 	callsDynCfgReportJobStatus int
 	callsFunctionResultSuccess int
 	callsFunctionResultReject  int
+
+	callsRegister int
 }
 
-func (m *mockNetdataDyncfgAPI) DynCfgEnable(string) error {
+func (m *mockApi) Register(string, func(functions.Function)) {
+	m.callsRegister++
+}
+
+func (m *mockApi) DynCfgEnable(string) error {
 	m.callsDynCfgEnable++
-	if m.errOnDynCfgEnable {
-		return errors.New("mock error on DynCfgEnable()")
-	}
 	return nil
 }
 
-func (m *mockNetdataDyncfgAPI) DyncCfgRegisterModule(string) error {
+func (m *mockApi) DyncCfgRegisterModule(string) error {
 	m.callsDyncCfgRegisterModule++
-	if m.errOnDyncCfgRegisterModule {
-		return errors.New("mock error on DyncCfgRegisterModule()")
-	}
 	return nil
 }
 
-func (m *mockNetdataDyncfgAPI) DynCfgRegisterJob(_, _, _ string) error {
+func (m *mockApi) DynCfgRegisterJob(_, _, _ string) error {
 	m.callsDynCfgRegisterJob++
-	if m.errOnDynCfgRegisterJob {
-		return errors.New("mock error on DynCfgRegisterJob()")
-	}
 	return nil
 }
 
-func (m *mockNetdataDyncfgAPI) DynCfgReportJobStatus(_, _, _, _ string) error {
+func (m *mockApi) DynCfgReportJobStatus(_, _, _, _ string) error {
 	m.callsDynCfgReportJobStatus++
-	if m.errOnDynCfgReportJobStatus {
-		return errors.New("mock error on DynCfgReportJobStatus()")
-	}
 	return nil
 }
 
-func (m *mockNetdataDyncfgAPI) FunctionResultSuccess(_, _, _ string) error {
+func (m *mockApi) FunctionResultSuccess(_, _, _ string) error {
 	m.callsFunctionResultSuccess++
-	if m.errOnFunctionResultSuccess {
-		return errors.New("mock error on FunctionResultSuccess()")
-	}
 	return nil
 }
 
-func (m *mockNetdataDyncfgAPI) FunctionResultReject(_, _, _ string) error {
+func (m *mockApi) FunctionResultReject(_, _, _ string) error {
 	m.callsFunctionResultReject++
-	if m.errOnFunctionResultReject {
-		return errors.New("mock error on FunctionResultReject()")
-	}
 	return nil
 }
 
