@@ -102,26 +102,24 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| url | Server URL. |  | True |
-| webadmin | Webadmin root path. |  | True |
-| max_queues | Maximum number of concurrently collected queues. |  | False |
-| max_topics | Maximum number of concurrently collected topics. |  | False |
-| queues_filter | Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
- |  | False |
-| topics_filter | Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
- |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| url | Server URL. | http://localhost:8161 | True |
+| webadmin | Webadmin root path. | admin | True |
+| max_queues | Maximum number of concurrently collected queues. | 50 | False |
+| max_topics | Maximum number of concurrently collected topics. | 50 | False |
+| queues_filter | Queues filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |  | False |
+| topics_filter | Topics filter. Syntax is [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns). |  | False |
 | username | Username for basic HTTP authentication. |  | False |
 | password | Password for basic HTTP authentication. |  | False |
 | proxy_username | Username for proxy basic HTTP authentication. |  | False |
 | proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. |  | False |
-| timeout | HTTP request timeout. |  | False |
+| method | HTTP request method. | GET | False |
+| timeout | HTTP request timeout. | 1 | False |
 | body | HTTP request body. |  | False |
 | headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. |  | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |  | False |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | False | False |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
 | tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
 | tls_cert | Client TLS certificate. |  | False |
 | tls_key | Client TLS key. |  | False |

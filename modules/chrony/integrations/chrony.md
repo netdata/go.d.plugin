@@ -112,10 +112,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| address | Server address. The format is IP:PORT. |  | True |
-| timeout | Connection timeout. Zero means no timeout. |  | False |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| address | Server address. The format is IP:PORT. | 127.0.0.1:323 | True |
+| timeout | Connection timeout. Zero means no timeout. | 1 | False |
 
 </details>
 

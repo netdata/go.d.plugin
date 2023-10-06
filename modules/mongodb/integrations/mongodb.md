@@ -259,10 +259,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| uri | MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/). |  | True |
-| timeout | Query timeout in seconds. |  | False |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| uri | MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/). | mongodb://localhost:27017 | True |
+| timeout | Query timeout in seconds. | 2 | False |
 | databases | Databases selector. Determines which database metrics will be collected. |  | False |
 
 </details>

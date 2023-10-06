@@ -162,17 +162,17 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| url | Server URL. |  | True |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| url | Server URL. | http://127.0.0.1:7072/metrics | True |
 | username | Username for basic HTTP authentication. |  | False |
 | password | Password for basic HTTP authentication. |  | False |
 | proxy_url | Proxy URL. |  | False |
 | proxy_username | Username for proxy basic HTTP authentication. |  | False |
 | proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| timeout | HTTP request timeout. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. |  | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |  | False |
+| timeout | HTTP request timeout. | 2 | False |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | False | False |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
 | tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
 | tls_cert | Client TLS certificate. |  | False |
 | tls_key | Client TLS key. |  | False |

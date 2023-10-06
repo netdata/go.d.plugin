@@ -100,11 +100,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| address | Server address in `ip:port` format. |  | True |
-| protocol | DNS query transport protocol. Supported protocols: udp, tcp, tcp-tls. |  | False |
-| timeout | DNS query timeout (dial, write and read) in seconds. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| address | Server address in `ip:port` format. | 127.0.0.1:53 | True |
+| protocol | DNS query transport protocol. Supported protocols: udp, tcp, tcp-tls. | udp | False |
+| timeout | DNS query timeout (dial, write and read) in seconds. | 1 | False |
 
 </details>
 

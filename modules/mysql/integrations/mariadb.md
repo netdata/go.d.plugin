@@ -248,11 +248,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| dsn | MySQL server DSN (Data Source Name). See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name). |  | True |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| dsn | MySQL server DSN (Data Source Name). See [DSN syntax](https://github.com/go-sql-driver/mysql#dsn-data-source-name). | root@tcp(localhost:3306)/ | True |
 | my.cnf | Specifies the my.cnf file to read the connection settings from the [client] section. |  | False |
-| timeout | Query timeout in seconds. |  | False |
+| timeout | Query timeout in seconds. | 1 | False |
 
 </details>
 

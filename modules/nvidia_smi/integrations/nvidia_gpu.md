@@ -143,11 +143,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| binary_path | Path to nvidia_smi binary. The default is "nvidia_smi" and the executable is looked for in the directories specified in the PATH environment variable. |  | False |
-| timeout | nvidia_smi binary execution timeout. |  | False |
-| use_csv_format | Used format when requesting GPU information. XML is used if set to 'no'. |  | False |
+| update_every | Data collection frequency. | 10 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| binary_path | Path to nvidia_smi binary. The default is "nvidia_smi" and the executable is looked for in the directories specified in the PATH environment variable. | nvidia_smi | False |
+| timeout | nvidia_smi binary execution timeout. | 2 | False |
+| use_csv_format | Used format when requesting GPU information. XML is used if set to 'no'. | True | False |
 
 </details>
 

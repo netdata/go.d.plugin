@@ -109,14 +109,14 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
 | domains | Domain or subdomains to query. The collector will choose a random domain from the list on every iteration. |  | True |
 | servers | Servers to query. |  | True |
-| port | DNS server port. |  | False |
-| network | Network protocol name. Available options: udp, tcp, tcp-tls. |  | False |
-| record_types | Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV. |  | False |
-| timeout | Query read timeout. |  | False |
+| port | DNS server port. | 53 | False |
+| network | Network protocol name. Available options: udp, tcp, tcp-tls. | udp | False |
+| record_types | Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV. | A | False |
+| timeout | Query read timeout. | 2 | False |
 
 </details>
 
