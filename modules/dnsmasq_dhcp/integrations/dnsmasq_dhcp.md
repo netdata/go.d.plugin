@@ -127,11 +127,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| leases_path | Path to dnsmasq DHCP leases file. |  | False |
-| conf_path | Path to dnsmasq configuration file. |  | False |
-| conf_dir | Path to dnsmasq configuration directory. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| leases_path | Path to dnsmasq DHCP leases file. | /var/lib/misc/dnsmasq.leases | False |
+| conf_path | Path to dnsmasq configuration file. | /etc/dnsmasq.conf | False |
+| conf_dir | Path to dnsmasq configuration directory. | /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new | False |
 
 </details>
 

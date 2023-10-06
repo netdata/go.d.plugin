@@ -126,13 +126,13 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| address | Server address in IP:PORT format. |  | True |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| address | Server address in IP:PORT format. | 127.0.0.1:7505 | True |
 | per_user_stats | User selector. Determines which user metrics will be collected. |  | False |
-| connect_timeout | Connection timeout in seconds. The timeout includes name resolution, if required. |  | False |
-| read_timeout | Read timeout in seconds. Sets deadline for read calls. |  | False |
-| write_timeout | Write timeout in seconds. Sets deadline for write calls. |  | False |
+| connect_timeout | Connection timeout in seconds. The timeout includes name resolution, if required. | 2 | False |
+| read_timeout | Read timeout in seconds. Sets deadline for read calls. | 2 | False |
+| write_timeout | Write timeout in seconds. Sets deadline for write calls. | 2 | False |
 
 </details>
 

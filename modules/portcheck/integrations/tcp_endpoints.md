@@ -111,11 +111,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
 | host | Remote host address in IPv4, IPv6 format, or DNS name. |  | True |
 | ports | Remote host ports. Must be specified in numeric format. |  | True |
-| timeout | HTTP request timeout. |  | False |
+| timeout | HTTP request timeout. | 2 | False |
 
 </details>
 

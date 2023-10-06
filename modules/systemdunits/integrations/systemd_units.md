@@ -125,10 +125,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| include | Systemd units filter. |  | False |
-| timeout | System bus requests timeout. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| include | Systemd units filter. | *.service | False |
+| timeout | System bus requests timeout. | 1 | False |
 
 ##### include
 

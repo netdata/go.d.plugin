@@ -205,21 +205,21 @@ Notes:
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
 | path | Path to the web server log file. |  | True |
-| exclude_path | Path to exclude. |  | False |
-| url_patterns | List of URL patterns. |  | False |
+| exclude_path | Path to exclude. | *.gz | False |
+| url_patterns | List of URL patterns. | [] | False |
 | url_patterns.name | Used as a dimension name. |  | True |
 | url_patterns.pattern | Used to match against full original request URI. Pattern syntax in [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format). |  | True |
 | parser | Log parser configuration. |  | False |
-| parser.log_type | Log parser type. |  | False |
+| parser.log_type | Log parser type. | auto | False |
 | parser.csv_config | CSV log parser config. |  | False |
-| parser.csv_config.delimiter | CSV field delimiter. |  | False |
+| parser.csv_config.delimiter | CSV field delimiter. | , | False |
 | parser.csv_config.format | CSV log format. |  | False |
 | parser.ltsv_config | LTSV log parser config. |  | False |
-| parser.ltsv_config.field_delimiter | LTSV field delimiter. |  | False |
-| parser.ltsv_config.value_delimiter | LTSV value delimiter. |  | False |
+| parser.ltsv_config.field_delimiter | LTSV field delimiter. | \t | False |
+| parser.ltsv_config.value_delimiter | LTSV value delimiter. | : | False |
 | parser.ltsv_config.mapping | LTSV fields mapping to **known fields**. |  | True |
 | parser.json_config | JSON log parser config. |  | False |
 | parser.json_config.mapping | JSON fields mapping to **known fields**. |  | True |

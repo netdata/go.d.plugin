@@ -104,23 +104,23 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
 | url | Server URL. |  | True |
-| status_accepted | HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart. |  | False |
+| status_accepted | HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart. | [200] | False |
 | response_match | If the status code is accepted, the content of the response will be matched against this regular expression. |  | False |
 | cookie_file | Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat). |  | False |
-| timeout | HTTP request timeout. |  | False |
+| timeout | HTTP request timeout. | 1 | False |
 | username | Username for basic HTTP authentication. |  | False |
 | password | Password for basic HTTP authentication. |  | False |
 | proxy_url | Proxy URL. |  | False |
 | proxy_username | Username for proxy basic HTTP authentication. |  | False |
 | proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. |  | False |
+| method | HTTP request method. | GET | False |
 | body | HTTP request body. |  | False |
 | headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. |  | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. |  | False |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
 | tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
 | tls_cert | Client TLS certificate. |  | False |
 | tls_key | Client TLS key. |  | False |

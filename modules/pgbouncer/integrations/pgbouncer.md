@@ -161,10 +161,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| dsn | PgBouncer server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). |  | True |
-| timeout | Query timeout in seconds. |  | False |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| dsn | PgBouncer server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). | postgres://postgres:postgres@127.0.0.1:6432/pgbouncer | True |
+| timeout | Query timeout in seconds. | 1 | False |
 
 </details>
 

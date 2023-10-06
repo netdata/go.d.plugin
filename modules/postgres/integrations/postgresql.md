@@ -290,13 +290,13 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| dsn | Postgres server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). |  | True |
-| timeout | Query timeout in seconds. |  | False |
+| update_every | Data collection frequency. | 5 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| dsn | Postgres server DSN (Data Source Name). See [DSN syntax](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING). | postgres://postgres:postgres@127.0.0.1:5432/postgres | True |
+| timeout | Query timeout in seconds. | 2 | False |
 | collect_databases_matching | Databases selector. Determines which database metrics will be collected. Syntax is [simple patterns](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#simple-patterns-matcher). |  | False |
-| max_db_tables | Maximum number of tables in the database. Table metrics will not be collected for databases that have more tables than max_db_tables. 0 means no limit. |  | False |
-| max_db_indexes | Maximum number of indexes in the database. Index metrics will not be collected for databases that have more indexes than max_db_indexes. 0 means no limit. |  | False |
+| max_db_tables | Maximum number of tables in the database. Table metrics will not be collected for databases that have more tables than max_db_tables. 0 means no limit. | 50 | False |
+| max_db_indexes | Maximum number of indexes in the database. Index metrics will not be collected for databases that have more indexes than max_db_indexes. 0 means no limit. | 250 | False |
 
 </details>
 

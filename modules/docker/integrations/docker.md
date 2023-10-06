@@ -132,11 +132,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| address | Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port] |  | True |
-| timeout | Request timeout in seconds. |  | False |
-| collect_container_size | Whether to collect container writable layer size. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| address | Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port] | unix:///var/run/docker.sock | True |
+| timeout | Request timeout in seconds. | 1 | False |
+| collect_container_size | Whether to collect container writable layer size. | no | False |
 
 </details>
 

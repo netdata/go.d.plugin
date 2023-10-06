@@ -109,15 +109,15 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. |  | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. |  | False |
-| hostname | Target ipv4 address. |  | True |
-| community | SNMPv1/2 community string. |  | False |
-| options.version | SNMP version. Available versions: 1, 2, 3. |  | False |
-| options.port | Target port. |  | False |
-| options.retries | Retries to attempt. |  | False |
-| options.timeout | SNMP request/response timeout. |  | False |
-| options.max_request_size | Maximum number of OIDs allowed in one one SNMP request. |  | False |
+| update_every | Data collection frequency. | 1 | False |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
+| hostname | Target ipv4 address. | 127.0.0.1 | True |
+| community | SNMPv1/2 community string. | public | False |
+| options.version | SNMP version. Available versions: 1, 2, 3. | 2 | False |
+| options.port | Target port. | 161 | False |
+| options.retries | Retries to attempt. | 1 | False |
+| options.timeout | SNMP request/response timeout. | 10 | False |
+| options.max_request_size | Maximum number of OIDs allowed in one one SNMP request. | 60 | False |
 | user.name | SNMPv3 user name. |  | False |
 | user.name | Security level of SNMPv3 messages. |  | False |
 | user.auth_proto | Security level of SNMPv3 messages. |  | False |
@@ -125,20 +125,20 @@ The following options can be defined globally: update_every, autodetection_retry
 | user.auth_key | Authentication protocol pass phrase. |  | False |
 | user.priv_proto | Privacy protocol for SNMPv3 messages. |  | False |
 | user.priv_key | Privacy protocol pass phrase. |  | False |
-| charts | List of charts. |  | True |
+| charts | List of charts. | [] | True |
 | charts.id | Chart ID. Used to uniquely identify the chart. |  | True |
-| charts.title | Chart title. |  | False |
-| charts.units | Chart units. |  | False |
-| charts.family | Chart family. |  | False |
-| charts.type | Chart type (line, area, stacked). |  | False |
-| charts.priority | Chart priority. |  | False |
-| charts.multiply_range | Used when you need to define many charts using incremental OIDs. |  | False |
-| charts.dimensions | List of chart dimensions. |  | True |
+| charts.title | Chart title. | Untitled chart | False |
+| charts.units | Chart units. | num | False |
+| charts.family | Chart family. | charts.id | False |
+| charts.type | Chart type (line, area, stacked). | line | False |
+| charts.priority | Chart priority. | 70000 | False |
+| charts.multiply_range | Used when you need to define many charts using incremental OIDs. | [] | False |
+| charts.dimensions | List of chart dimensions. | [] | True |
 | charts.dimensions.oid | Collected metric OID. |  | True |
 | charts.dimensions.name | Dimension name. |  | True |
-| charts.dimensions.algorithm | Dimension algorithm (absolute, incremental). |  | False |
-| charts.dimensions.multiplier | Collected value multiplier, applied to convert it properly to units. |  | False |
-| charts.dimensions.divisor | Collected value divisor, applied to convert it properly to units. |  | False |
+| charts.dimensions.algorithm | Dimension algorithm (absolute, incremental). | absolute | False |
+| charts.dimensions.multiplier | Collected value multiplier, applied to convert it properly to units. | 1 | False |
+| charts.dimensions.divisor | Collected value divisor, applied to convert it properly to units. | 1 | False |
 
 ##### user.auth_proto
 
