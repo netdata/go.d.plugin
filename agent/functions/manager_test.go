@@ -142,6 +142,89 @@ FUNCTION_PAYLOAD_END
 				},
 			},
 		},
+		"valid function: multiple with payload": {
+			register: []string{"fn1", "fn2"},
+			input: `
+FUNCTION_PAYLOAD UID 1 "fn1 arg1 arg2"
+payload line1
+payload line2
+FUNCTION_PAYLOAD_END
+
+FUNCTION_PAYLOAD UID 1 "fn2 arg1 arg2"
+payload line3
+payload line4
+FUNCTION_PAYLOAD_END
+`,
+			expected: []Function{
+				{
+					key:     "FUNCTION_PAYLOAD",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn1",
+					Args:    []string{"arg1", "arg2"},
+					Payload: []byte("payload line1\npayload line2"),
+				},
+				{
+					key:     "FUNCTION_PAYLOAD",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn2",
+					Args:    []string{"arg1", "arg2"},
+					Payload: []byte("payload line3\npayload line4"),
+				},
+			},
+		},
+		"valid function: multiple with and without payload": {
+			register: []string{"fn1", "fn2", "fn3", "fn4"},
+			input: `
+FUNCTION_PAYLOAD UID 1 "fn1 arg1 arg2"
+payload line1
+payload line2
+FUNCTION_PAYLOAD_END
+
+FUNCTION UID 1 "fn2 arg1 arg2"
+FUNCTION UID 1 "fn3 arg1 arg2"
+
+FUNCTION_PAYLOAD UID 1 "fn4 arg1 arg2"
+payload line3
+payload line4
+FUNCTION_PAYLOAD_END
+`,
+			expected: []Function{
+				{
+					key:     "FUNCTION_PAYLOAD",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn1",
+					Args:    []string{"arg1", "arg2"},
+					Payload: []byte("payload line1\npayload line2"),
+				},
+				{
+					key:     "FUNCTION",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn2",
+					Args:    []string{"arg1", "arg2"},
+					Payload: nil,
+				},
+				{
+					key:     "FUNCTION",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn3",
+					Args:    []string{"arg1", "arg2"},
+					Payload: nil,
+				},
+				{
+					key:     "FUNCTION_PAYLOAD",
+					UID:     "UID",
+					Timeout: time.Second,
+					Name:    "fn4",
+					Args:    []string{"arg1", "arg2"},
+					Payload: []byte("payload line3\npayload line4"),
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {

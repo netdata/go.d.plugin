@@ -76,6 +76,8 @@ func (m *Manager) run(r io.Reader) {
 		var fn *Function
 		var err error
 
+		// FIXME:  if we are waiting for FUNCTION_PAYLOAD_END and a new FUNCTION* appears,
+		// we need to discard the current one and switch to the new one
 		switch {
 		case strings.HasPrefix(text, "FUNCTION "):
 			fn, err = parseFunction(text)
