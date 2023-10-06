@@ -155,15 +155,15 @@ FUNCTION_PAYLOAD_END
 				mgr.Register(v, mock.execute)
 			}
 
-			runTime := time.Second * 5
-			ctx, cancel := context.WithTimeout(context.Background(), runTime)
+			testTime := time.Second * 5
+			ctx, cancel := context.WithTimeout(context.Background(), testTime)
 			defer cancel()
 
 			done := make(chan struct{})
 
 			go func() { defer close(done); mgr.Run(ctx) }()
 
-			timeout := runTime + time.Second*2
+			timeout := testTime + time.Second*2
 			tk := time.NewTimer(timeout)
 			defer tk.Stop()
 
@@ -171,7 +171,7 @@ FUNCTION_PAYLOAD_END
 			case <-done:
 				assert.Equal(t, test.expected, mock.executed)
 			case <-tk.C:
-				t.Errorf("timed out afteter %s", timeout)
+				t.Errorf("timed out after %s", timeout)
 			}
 		})
 	}
