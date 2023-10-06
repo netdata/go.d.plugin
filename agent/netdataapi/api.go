@@ -3,9 +3,9 @@
 package netdataapi
 
 import (
+	"bytes"
 	"fmt"
 	"io"
-	"strings"
 )
 
 type (
@@ -168,27 +168,22 @@ func (a *API) DynCfgReportJobStatus(moduleName, jobName, status, reason string) 
 }
 
 func (a *API) FunctionResultSuccess(uid, contentType, payload string) error {
-	var s strings.Builder
-
-	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 1 %s 0\n", uid, contentType))
-	if payload != "" {
-		s.WriteString(payload + "\n")
-	}
-	s.WriteString("FUNCTION_RESULT_END\n\n")
-
-	_, err := fmt.Fprintf(a, s.String())
-	return err
+	return a.functionResult(uid, contentType, payload, 1)
 }
 
 func (a *API) FunctionResultReject(uid, contentType, payload string) error {
-	var s strings.Builder
+	return a.functionResult(uid, contentType, payload, 0)
+}
 
-	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 0 %s 0\n", uid, contentType))
+func (a *API) functionResult(uid, contentType, payload string, code int) error {
+	var buf bytes.Buffer
+
+	buf.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s %d %s 0\n", uid, code, contentType))
 	if payload != "" {
-		s.WriteString(payload + "\n")
+		buf.WriteString(payload + "\n")
 	}
-	s.WriteString("FUNCTION_RESULT_END\n\n")
+	buf.WriteString("FUNCTION_RESULT_END\n\n")
 
-	_, err := fmt.Fprintf(a, s.String())
+	_, err := buf.WriteTo(a)
 	return err
 }
