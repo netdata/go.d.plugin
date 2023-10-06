@@ -3,6 +3,7 @@
 package bind
 
 import (
+	_ "embed"
 	"fmt"
 	"strings"
 	"time"
@@ -13,12 +14,14 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("bind", creator)
+func init() {
+	module.Register("bind", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 const (

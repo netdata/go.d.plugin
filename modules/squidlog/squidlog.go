@@ -3,17 +3,20 @@
 package squidlog
 
 import (
-	"github.com/netdata/go.d.plugin/pkg/logs"
+	_ "embed"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/logs"
 )
 
-func init() {
-	creator := module.Creator{
-		Create: func() module.Module { return New() },
-	}
+//go:embed "config_schema.json"
+var configSchema string
 
-	module.Register("squidlog", creator)
+func init() {
+	module.Register("squidlog", module.Creator{
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
+	})
 }
 
 func New() *SquidLog {

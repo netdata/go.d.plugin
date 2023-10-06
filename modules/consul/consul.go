@@ -3,6 +3,7 @@
 package consul
 
 import (
+	_ "embed"
 	"net/http"
 	"sync"
 	"time"
@@ -14,8 +15,12 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("consul", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 1,
 		},

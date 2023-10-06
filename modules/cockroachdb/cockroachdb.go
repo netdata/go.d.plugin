@@ -3,6 +3,7 @@
 package cockroachdb
 
 import (
+	_ "embed"
 	"errors"
 	"time"
 
@@ -16,15 +17,17 @@ import (
 // https://github.com/cockroachdb/cockroach/blob/d5ffbf76fb4c4ef802836529188e4628476879bd/pkg/server/config.go#L56-L58
 const cockroachDBSamplingInterval = 10
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("cockroachdb", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: cockroachDBSamplingInterval,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("cockroachdb", creator)
+	})
 }
 
 func New() *CockroachDB {

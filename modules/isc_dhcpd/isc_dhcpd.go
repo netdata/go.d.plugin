@@ -3,13 +3,18 @@
 package isc_dhcpd
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("isc_dhcpd", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 1,
 		},

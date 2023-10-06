@@ -4,6 +4,7 @@ package docker
 
 import (
 	"context"
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -13,9 +14,13 @@ import (
 	docker "github.com/docker/docker/client"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("docker", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

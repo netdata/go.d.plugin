@@ -4,6 +4,7 @@ package redis
 
 import (
 	"context"
+	_ "embed"
 	"sync"
 	"time"
 
@@ -16,9 +17,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("redis", module.Creator{
-		Create: func() module.Module { return New() },
+		Create:          func() module.Module { return New() },
+		JobConfigSchema: configSchema,
 	})
 }
 

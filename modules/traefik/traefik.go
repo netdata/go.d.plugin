@@ -3,6 +3,7 @@
 package traefik
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -10,9 +11,13 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("traefik", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

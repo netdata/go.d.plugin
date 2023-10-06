@@ -4,6 +4,7 @@ package pgbouncer
 
 import (
 	"database/sql"
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -13,9 +14,13 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("pgbouncer", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

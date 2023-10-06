@@ -3,6 +3,7 @@
 package openvpn
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/modules/openvpn/client"
@@ -20,15 +21,17 @@ const (
 	defaultWriteTimeout   = time.Second * 2
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("openvpn", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			Disabled: true,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("openvpn", creator)
+	})
 }
 
 // New creates OpenVPN with default values.

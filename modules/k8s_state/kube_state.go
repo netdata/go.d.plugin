@@ -4,6 +4,7 @@ package k8s_state
 
 import (
 	"context"
+	_ "embed"
 	"sync"
 	"time"
 
@@ -12,8 +13,12 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("k8s_state", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			Disabled: true,
 		},

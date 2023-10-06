@@ -3,6 +3,7 @@
 package dnsquery
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -11,8 +12,12 @@ import (
 	"github.com/miekg/dns"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("dns_query", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},

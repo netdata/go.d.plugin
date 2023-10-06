@@ -3,6 +3,7 @@
 package ping
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
@@ -12,8 +13,12 @@ import (
 	probing "github.com/prometheus-community/pro-bing"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("ping", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 5,
 		},

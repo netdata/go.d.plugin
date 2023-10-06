@@ -3,6 +3,7 @@
 package vcsa
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -10,8 +11,12 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("vcsa", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 5, // VCSA health checks freq is 5 second.
 		},

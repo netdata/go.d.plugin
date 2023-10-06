@@ -3,6 +3,7 @@
 package k8s_kubelet
 
 import (
+	_ "embed"
 	"os"
 	"time"
 
@@ -12,16 +13,18 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("k8s_kubelet", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			// NETDATA_CHART_PRIO_CGROUPS_CONTAINERS        40000
 			Priority: 50000,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("k8s_kubelet", creator)
+	})
 }
 
 // New creates Kubelet with default values.

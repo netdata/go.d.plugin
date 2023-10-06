@@ -3,6 +3,7 @@
 package mongo
 
 import (
+	_ "embed"
 	"sync"
 	"time"
 
@@ -10,9 +11,13 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/matcher"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("mongodb", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

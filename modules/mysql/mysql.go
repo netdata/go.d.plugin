@@ -4,6 +4,7 @@ package mysql
 
 import (
 	"database/sql"
+	_ "embed"
 	"strings"
 	"sync"
 	"time"
@@ -16,9 +17,13 @@ import (
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("mysql", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

@@ -22,7 +22,8 @@ type (
 	// Creator is a Job builder.
 	Creator struct {
 		Defaults
-		Create func() Module
+		Create          func() Module
+		JobConfigSchema string
 	}
 	// Registry is a collection of Creators.
 	Registry map[string]Creator

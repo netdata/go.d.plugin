@@ -5,6 +5,7 @@ package netdataapi
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 type (
@@ -143,5 +144,51 @@ func (a *API) HOSTDEFINEEND() error {
 
 func (a *API) HOST(guid string) error {
 	_, err := fmt.Fprintf(a, "HOST '%s'\n\n", guid)
+	return err
+}
+
+func (a *API) DynCfgEnable(pluginName string) error {
+	_, err := fmt.Fprintf(a, "DYNCFG_ENABLE '%s'\n\n", pluginName)
+	return err
+}
+
+func (a *API) DyncCfgRegisterModule(moduleName string) error {
+	_, err := fmt.Fprintf(a, "DYNCFG_REGISTER_MODULE '%s' job_array\n\n", moduleName)
+	return err
+}
+
+func (a *API) DynCfgRegisterJob(moduleName, jobName, jobType string) error {
+	_, err := fmt.Fprintf(a, "DYNCFG_REGISTER_JOB '%s' '%s' '%s' 0\n\n", moduleName, jobName, jobType)
+	return err
+}
+
+func (a *API) DynCfgReportJobStatus(moduleName, jobName, status, reason string) error {
+	_, err := fmt.Fprintf(a, "REPORT_JOB_STATUS '%s' '%s' '%s' 0 '%s'\n\n", moduleName, jobName, status, reason)
+	return err
+}
+
+func (a *API) FunctionResultSuccess(uid, contentType, payload string) error {
+	var s strings.Builder
+
+	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 1 %s 0\n", uid, contentType))
+	if payload != "" {
+		s.WriteString(payload + "\n")
+	}
+	s.WriteString("FUNCTION_RESULT_END\n\n")
+
+	_, err := fmt.Fprintf(a, s.String())
+	return err
+}
+
+func (a *API) FunctionResultReject(uid, contentType, payload string) error {
+	var s strings.Builder
+
+	s.WriteString(fmt.Sprintf("FUNCTION_RESULT_BEGIN %s 0 %s 0\n", uid, contentType))
+	if payload != "" {
+		s.WriteString(payload + "\n")
+	}
+	s.WriteString("FUNCTION_RESULT_END\n\n")
+
+	_, err := fmt.Fprintf(a, s.String())
 	return err
 }

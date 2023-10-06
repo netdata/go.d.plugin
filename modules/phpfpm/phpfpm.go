@@ -3,6 +3,7 @@
 package phpfpm
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -10,9 +11,13 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	module.Register("phpfpm", module.Creator{
-		Create: func() module.Module { return New() },
+		JobConfigSchema: configSchema,
+		Create:          func() module.Module { return New() },
 	})
 }
 

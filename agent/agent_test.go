@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/agent/safewriter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,7 +32,7 @@ func TestAgent_Run(t *testing.T) {
 	})
 
 	var buf bytes.Buffer
-	a.Out = &buf
+	a.Out = safewriter.New(&buf)
 
 	var mux sync.Mutex
 	stats := make(map[string]int)

@@ -3,6 +3,7 @@
 package vsphere
 
 import (
+	_ "embed"
 	"sync"
 	"time"
 
@@ -14,15 +15,17 @@ import (
 	"github.com/vmware/govmomi/performance"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
-	creator := module.Creator{
+	module.Register("vsphere", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 20,
 		},
 		Create: func() module.Module { return New() },
-	}
-
-	module.Register("vsphere", creator)
+	})
 }
 
 func New() *VSphere {

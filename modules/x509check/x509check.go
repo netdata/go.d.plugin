@@ -3,6 +3,7 @@
 package x509check
 
 import (
+	_ "embed"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/tlscfg"
@@ -12,9 +13,13 @@ import (
 	"github.com/netdata/go.d.plugin/agent/module"
 )
 
+//go:embed "config_schema.json"
+var configSchema string
+
 func init() {
 	cfssllog.Level = cfssllog.LevelFatal
 	module.Register("x509check", module.Creator{
+		JobConfigSchema: configSchema,
 		Defaults: module.Defaults{
 			UpdateEvery: 60,
 		},
