@@ -2323,7 +2323,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: OpenLDAP
+        name: OpenLDAP (community)
         link: https://github.com/tomcz/openldap_exporter
         icon_filename: openldap.svg
         categories:
@@ -5560,7 +5560,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: Memcached
+        name: Memcached (community)
         link: https://github.com/prometheus/memcached_exporter
         icon_filename: memcached.svg
         categories:
@@ -6339,7 +6339,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: Oracle DB
+        name: Oracle DB (community)
         link: https://github.com/iamseth/oracledb_exporter
         icon_filename: oracle.svg
         categories:
