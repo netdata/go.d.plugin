@@ -5560,7 +5560,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: Memcached (Community)
+        name: Memcached (community)
         link: https://github.com/prometheus/memcached_exporter
         icon_filename: memcached.svg
         categories:
