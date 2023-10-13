@@ -9,6 +9,10 @@ endmeta-->
 
 # HHVM
 
+
+<img src="https://netdata.cloud/img/hhvm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

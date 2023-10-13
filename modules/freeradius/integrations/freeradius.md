@@ -9,6 +9,10 @@ endmeta-->
 
 # FreeRADIUS
 
+
+<img src="https://netdata.cloud/img/freeradius.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: freeradius
 

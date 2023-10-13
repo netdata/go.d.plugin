@@ -9,6 +9,10 @@ endmeta-->
 
 # Energi Core Wallet
 
+
+<img src="https://netdata.cloud/img/energi.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: apache
 

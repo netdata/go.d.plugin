@@ -9,6 +9,10 @@ endmeta-->
 
 # IBM Z Hardware Management Console
 
+
+<img src="https://netdata.cloud/img/ibm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

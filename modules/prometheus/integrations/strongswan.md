@@ -9,6 +9,10 @@ endmeta-->
 
 # strongSwan
 
+
+<img src="https://netdata.cloud/img/strongswan.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # PostgreSQL
 
+
+<img src="https://netdata.cloud/img/postgres.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: postgres
 

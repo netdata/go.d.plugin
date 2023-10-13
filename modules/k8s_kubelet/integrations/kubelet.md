@@ -9,6 +9,10 @@ endmeta-->
 
 # Kubelet
 
+
+<img src="https://netdata.cloud/img/kubernetes.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: k8s_kubelet
 

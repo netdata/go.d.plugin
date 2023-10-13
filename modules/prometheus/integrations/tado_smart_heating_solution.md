@@ -9,6 +9,10 @@ endmeta-->
 
 # Tado smart heating solution
 
+
+<img src="https://netdata.cloud/img/tado.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

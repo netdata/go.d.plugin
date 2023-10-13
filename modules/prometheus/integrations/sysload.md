@@ -9,6 +9,10 @@ endmeta-->
 
 # Sysload
 
+
+<img src="https://netdata.cloud/img/sysload.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

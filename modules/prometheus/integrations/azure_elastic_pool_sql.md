@@ -9,6 +9,10 @@ endmeta-->
 
 # Azure Elastic Pool SQL
 
+
+<img src="https://netdata.cloud/img/azure-elastic-sql.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Maildir
 
+
+<img src="https://netdata.cloud/img/mailserver.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

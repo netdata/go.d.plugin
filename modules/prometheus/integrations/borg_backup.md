@@ -9,6 +9,10 @@ endmeta-->
 
 # Borg backup
 
+
+<img src="https://netdata.cloud/img/borg.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

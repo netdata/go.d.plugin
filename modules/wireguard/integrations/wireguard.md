@@ -9,6 +9,10 @@ endmeta-->
 
 # WireGuard
 
+
+<img src="https://netdata.cloud/img/wireguard.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: wireguard
 

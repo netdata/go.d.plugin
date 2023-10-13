@@ -9,6 +9,10 @@ endmeta-->
 
 # Elgato Key Light devices.
 
+
+<img src="https://netdata.cloud/img/elgato.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

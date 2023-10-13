@@ -9,6 +9,10 @@ endmeta-->
 
 # Concourse
 
+
+<img src="https://netdata.cloud/img/concourse.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

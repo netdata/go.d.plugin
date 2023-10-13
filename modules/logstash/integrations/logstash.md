@@ -9,6 +9,10 @@ endmeta-->
 
 # Logstash
 
+
+<img src="https://netdata.cloud/img/elastic-logstash.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: logstash
 

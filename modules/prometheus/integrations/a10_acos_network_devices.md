@@ -9,6 +9,10 @@ endmeta-->
 
 # A10 ACOS network devices
 
+
+<img src="https://netdata.cloud/img/a10-networks.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

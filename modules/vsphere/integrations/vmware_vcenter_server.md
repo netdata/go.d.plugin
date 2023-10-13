@@ -9,6 +9,10 @@ endmeta-->
 
 # VMware vCenter Server
 
+
+<img src="https://netdata.cloud/img/vmware.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: vsphere
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Shelly humidity sensor
 
+
+<img src="https://netdata.cloud/img/shelly.jpg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

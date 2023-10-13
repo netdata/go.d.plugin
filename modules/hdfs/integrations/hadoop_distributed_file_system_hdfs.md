@@ -9,6 +9,10 @@ endmeta-->
 
 # Hadoop Distributed File System (HDFS)
 
+
+<img src="https://netdata.cloud/img/hadoop.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: hfs
 

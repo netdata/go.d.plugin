@@ -9,6 +9,10 @@ endmeta-->
 
 # Helium hotspot
 
+
+<img src="https://netdata.cloud/img/helium.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

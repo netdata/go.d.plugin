@@ -9,6 +9,10 @@ endmeta-->
 
 # NextDNS
 
+
+<img src="https://netdata.cloud/img/nextdns.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

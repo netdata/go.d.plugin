@@ -9,6 +9,10 @@ endmeta-->
 
 # Fluentd
 
+
+<img src="https://netdata.cloud/img/fluentd.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: fluentd
 

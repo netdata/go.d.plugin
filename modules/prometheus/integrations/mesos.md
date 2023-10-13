@@ -9,6 +9,10 @@ endmeta-->
 
 # Mesos
 
+
+<img src="https://netdata.cloud/img/mesos.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

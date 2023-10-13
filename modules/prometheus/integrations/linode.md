@@ -9,6 +9,10 @@ endmeta-->
 
 # Linode
 
+
+<img src="https://netdata.cloud/img/linode.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

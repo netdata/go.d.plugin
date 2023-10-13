@@ -9,6 +9,10 @@ endmeta-->
 
 # Steam
 
+
+<img src="https://netdata.cloud/img/a2s.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

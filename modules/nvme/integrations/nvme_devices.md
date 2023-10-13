@@ -9,6 +9,10 @@ endmeta-->
 
 # NVMe devices
 
+
+<img src="https://netdata.cloud/img/nvme.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: nvme
 

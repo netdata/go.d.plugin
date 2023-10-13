@@ -9,6 +9,10 @@ endmeta-->
 
 # MongoDB
 
+
+<img src="https://netdata.cloud/img/mongodb.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: mongodb
 

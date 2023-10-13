@@ -9,6 +9,10 @@ endmeta-->
 
 # Machbase
 
+
+<img src="https://netdata.cloud/img/machbase.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

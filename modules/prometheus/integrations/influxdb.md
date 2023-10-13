@@ -9,6 +9,10 @@ endmeta-->
 
 # InfluxDB
 
+
+<img src="https://netdata.cloud/img/influxdb.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

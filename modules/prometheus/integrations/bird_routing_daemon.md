@@ -9,6 +9,10 @@ endmeta-->
 
 # Bird Routing Daemon
 
+
+<img src="https://netdata.cloud/img/bird.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

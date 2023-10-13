@@ -9,6 +9,10 @@ endmeta-->
 
 # Docker Hub repository
 
+
+<img src="https://netdata.cloud/img/docker.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: dockerhub
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Zerto
 
+
+<img src="https://netdata.cloud/img/zerto.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

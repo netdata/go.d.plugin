@@ -9,6 +9,10 @@ endmeta-->
 
 # Lustre metadata
 
+
+<img src="https://netdata.cloud/img/lustre.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

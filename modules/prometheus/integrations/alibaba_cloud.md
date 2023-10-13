@@ -9,6 +9,10 @@ endmeta-->
 
 # Alibaba Cloud
 
+
+<img src="https://netdata.cloud/img/alibaba-cloud.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

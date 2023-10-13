@@ -9,6 +9,10 @@ endmeta-->
 
 # CraftBeerPi
 
+
+<img src="https://netdata.cloud/img/craftbeer.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

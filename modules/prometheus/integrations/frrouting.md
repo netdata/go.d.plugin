@@ -9,6 +9,10 @@ endmeta-->
 
 # FRRouting
 
+
+<img src="https://netdata.cloud/img/frrouting.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Minecraft
 
+
+<img src="https://netdata.cloud/img/minecraft.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

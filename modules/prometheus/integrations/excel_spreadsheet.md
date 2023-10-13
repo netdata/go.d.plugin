@@ -9,6 +9,10 @@ endmeta-->
 
 # Excel spreadsheet
 
+
+<img src="https://netdata.cloud/img/excel.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

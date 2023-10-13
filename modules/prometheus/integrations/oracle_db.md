@@ -9,6 +9,10 @@ endmeta-->
 
 # Oracle DB
 
+
+<img src="https://netdata.cloud/img/oracle.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

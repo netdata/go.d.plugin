@@ -9,6 +9,10 @@ endmeta-->
 
 # FreeBSD NFS
 
+
+<img src="https://netdata.cloud/img/freebsd.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

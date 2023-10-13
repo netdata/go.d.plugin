@@ -9,6 +9,10 @@ endmeta-->
 
 # Lynis audit reports
 
+
+<img src="https://netdata.cloud/img/lynis.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

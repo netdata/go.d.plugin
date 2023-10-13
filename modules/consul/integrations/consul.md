@@ -9,6 +9,10 @@ endmeta-->
 
 # Consul
 
+
+<img src="https://netdata.cloud/img/consul.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: consul
 

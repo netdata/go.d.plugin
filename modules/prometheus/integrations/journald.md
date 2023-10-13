@@ -9,6 +9,10 @@ endmeta-->
 
 # journald
 
+
+<img src="https://netdata.cloud/img/linux.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

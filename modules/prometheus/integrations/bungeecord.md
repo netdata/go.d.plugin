@@ -9,6 +9,10 @@ endmeta-->
 
 # BungeeCord
 
+
+<img src="https://netdata.cloud/img/bungee.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

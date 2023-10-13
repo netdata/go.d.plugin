@@ -9,6 +9,10 @@ endmeta-->
 
 # Sense Energy
 
+
+<img src="https://netdata.cloud/img/sense.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

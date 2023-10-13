@@ -9,6 +9,10 @@ endmeta-->
 
 # Speedify CLI
 
+
+<img src="https://netdata.cloud/img/speedify.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

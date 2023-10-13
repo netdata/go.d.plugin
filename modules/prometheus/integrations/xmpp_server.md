@@ -9,6 +9,10 @@ endmeta-->
 
 # XMPP Server
 
+
+<img src="https://netdata.cloud/img/xmpp.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

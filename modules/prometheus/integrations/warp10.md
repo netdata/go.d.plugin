@@ -9,6 +9,10 @@ endmeta-->
 
 # Warp10
 
+
+<img src="https://netdata.cloud/img/warp10.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

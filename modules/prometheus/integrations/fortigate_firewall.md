@@ -9,6 +9,10 @@ endmeta-->
 
 # Fortigate firewall
 
+
+<img src="https://netdata.cloud/img/fortinet.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

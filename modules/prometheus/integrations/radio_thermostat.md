@@ -9,6 +9,10 @@ endmeta-->
 
 # Radio Thermostat
 
+
+<img src="https://netdata.cloud/img/radiots.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

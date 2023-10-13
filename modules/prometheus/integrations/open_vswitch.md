@@ -9,6 +9,10 @@ endmeta-->
 
 # Open vSwitch
 
+
+<img src="https://netdata.cloud/img/ovs.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

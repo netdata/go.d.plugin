@@ -9,6 +9,10 @@ endmeta-->
 
 # JetBrains Floating License Server
 
+
+<img src="https://netdata.cloud/img/jetbrains.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenLDAP
 
+
+<img src="https://netdata.cloud/img/openldap.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

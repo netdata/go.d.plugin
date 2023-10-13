@@ -9,6 +9,10 @@ endmeta-->
 
 # ServerTech
 
+
+<img src="https://netdata.cloud/img/servertech.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

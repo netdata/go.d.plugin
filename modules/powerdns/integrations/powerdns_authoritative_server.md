@@ -9,6 +9,10 @@ endmeta-->
 
 # PowerDNS Authoritative Server
 
+
+<img src="https://netdata.cloud/img/powerdns.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: powerdns
 

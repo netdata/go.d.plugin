@@ -9,6 +9,10 @@ endmeta-->
 
 # Hasura GraphQL Server
 
+
+<img src="https://netdata.cloud/img/hasura.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

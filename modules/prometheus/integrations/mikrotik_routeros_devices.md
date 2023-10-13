@@ -9,6 +9,10 @@ endmeta-->
 
 # Mikrotik RouterOS devices
 
+
+<img src="https://netdata.cloud/img/routeros.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # NET Framework
 
+
+<img src="https://netdata.cloud/img/dotnet.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: windows
 

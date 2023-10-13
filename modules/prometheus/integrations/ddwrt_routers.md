@@ -9,6 +9,10 @@ endmeta-->
 
 # DDWRT Routers
 
+
+<img src="https://netdata.cloud/img/ddwrt.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

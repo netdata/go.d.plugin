@@ -9,6 +9,10 @@ endmeta-->
 
 # Jenkins
 
+
+<img src="https://netdata.cloud/img/jenkins.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

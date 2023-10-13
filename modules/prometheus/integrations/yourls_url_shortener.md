@@ -9,6 +9,10 @@ endmeta-->
 
 # YOURLS URL Shortener
 
+
+<img src="https://netdata.cloud/img/yourls.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

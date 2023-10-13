@@ -9,6 +9,10 @@ endmeta-->
 
 # Solis Ginlong 5G inverters
 
+
+<img src="https://netdata.cloud/img/solis.jpg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

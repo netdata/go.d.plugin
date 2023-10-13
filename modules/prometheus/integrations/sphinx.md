@@ -9,6 +9,10 @@ endmeta-->
 
 # Sphinx
 
+
+<img src="https://netdata.cloud/img/sphinx.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

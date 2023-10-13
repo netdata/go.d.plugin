@@ -9,6 +9,10 @@ endmeta-->
 
 # HAProxy
 
+
+<img src="https://netdata.cloud/img/haproxy.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: haproxy
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # ClamAV daemon
 
+
+<img src="https://netdata.cloud/img/clamav.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

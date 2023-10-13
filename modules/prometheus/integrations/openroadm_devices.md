@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenROADM devices
 
+
+<img src="https://netdata.cloud/img/openroadm.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # IBM Spectrum Virtualize
 
+
+<img src="https://netdata.cloud/img/ibm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

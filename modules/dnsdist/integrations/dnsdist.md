@@ -9,6 +9,10 @@ endmeta-->
 
 # DNSdist
 
+
+<img src="https://netdata.cloud/img/network-wired.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: dnsdist
 

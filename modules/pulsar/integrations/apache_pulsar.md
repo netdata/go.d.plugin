@@ -9,6 +9,10 @@ endmeta-->
 
 # Apache Pulsar
 
+
+<img src="https://netdata.cloud/img/pulsar.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: pulsar
 

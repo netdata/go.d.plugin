@@ -9,6 +9,10 @@ endmeta-->
 
 # NGINX Plus
 
+
+<img src="https://netdata.cloud/img/nginxplus.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: nginxplus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Google Pagespeed
 
+
+<img src="https://netdata.cloud/img/google.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

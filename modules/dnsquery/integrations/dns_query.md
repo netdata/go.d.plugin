@@ -9,6 +9,10 @@ endmeta-->
 
 # DNS query
 
+
+<img src="https://netdata.cloud/img/network-wired.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: dns_query
 

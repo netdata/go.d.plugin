@@ -9,6 +9,10 @@ endmeta-->
 
 # Dutch Electricity Smart Meter
 
+
+<img src="https://netdata.cloud/img/dutch-electricity.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Custom Exporter
 
+
+<img src="https://netdata.cloud/img/customdata.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Supervisor
 
+
+<img src="https://netdata.cloud/img/supervisord.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: supervisord
 

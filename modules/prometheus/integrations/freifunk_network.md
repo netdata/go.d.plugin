@@ -9,6 +9,10 @@ endmeta-->
 
 # Freifunk network
 
+
+<img src="https://netdata.cloud/img/freifunk.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

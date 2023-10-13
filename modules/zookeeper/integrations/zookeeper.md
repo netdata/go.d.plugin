@@ -9,6 +9,10 @@ endmeta-->
 
 # ZooKeeper
 
+
+<img src="https://netdata.cloud/img/zookeeper.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: zookeeper
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Generic Command Line Output
 
+
+<img src="https://netdata.cloud/img/cli.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

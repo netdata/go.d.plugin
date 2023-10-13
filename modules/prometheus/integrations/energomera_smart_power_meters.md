@@ -9,6 +9,10 @@ endmeta-->
 
 # Energomera smart power meters
 
+
+<img src="https://netdata.cloud/img/energomera.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # loki
 
+
+<img src="https://netdata.cloud/img/loki.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

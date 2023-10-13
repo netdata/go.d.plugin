@@ -9,6 +9,10 @@ endmeta-->
 
 # Akami Cloudmonitor
 
+
+<img src="https://netdata.cloud/img/akamai.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

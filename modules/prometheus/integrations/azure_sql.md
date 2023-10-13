@@ -9,6 +9,10 @@ endmeta-->
 
 # Azure SQL
 
+
+<img src="https://netdata.cloud/img/azure-sql.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

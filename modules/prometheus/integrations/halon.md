@@ -9,6 +9,10 @@ endmeta-->
 
 # Halon
 
+
+<img src="https://netdata.cloud/img/halon.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # APIcast
 
+
+<img src="https://netdata.cloud/img/apicast.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

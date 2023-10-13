@@ -9,6 +9,10 @@ endmeta-->
 
 # Zyxel GS1200-8
 
+
+<img src="https://netdata.cloud/img/zyxel.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

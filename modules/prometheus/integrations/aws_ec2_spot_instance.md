@@ -9,6 +9,10 @@ endmeta-->
 
 # AWS EC2 Spot Instance
 
+
+<img src="https://netdata.cloud/img/aws-ec2.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

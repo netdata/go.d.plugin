@@ -9,6 +9,10 @@ endmeta-->
 
 # Personal Weather Station
 
+
+<img src="https://netdata.cloud/img/wunderground.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

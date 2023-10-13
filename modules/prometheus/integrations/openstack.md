@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenStack
 
+
+<img src="https://netdata.cloud/img/openstack.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

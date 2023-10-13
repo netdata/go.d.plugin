@@ -9,6 +9,10 @@ endmeta-->
 
 # Google Stackdriver
 
+
+<img src="https://netdata.cloud/img/gcp-stackdriver.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Slurm
 
+
+<img src="https://netdata.cloud/img/slurm.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

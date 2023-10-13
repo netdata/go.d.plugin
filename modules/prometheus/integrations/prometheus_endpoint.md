@@ -9,6 +9,10 @@ endmeta-->
 
 # Prometheus endpoint
 
+
+<img src="https://netdata.cloud/img/prometheus.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

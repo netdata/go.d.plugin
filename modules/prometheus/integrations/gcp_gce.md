@@ -9,6 +9,10 @@ endmeta-->
 
 # GCP GCE
 
+
+<img src="https://netdata.cloud/img/gcp-gce.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

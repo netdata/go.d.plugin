@@ -9,6 +9,10 @@ endmeta-->
 
 # Pgpool-II
 
+
+<img src="https://netdata.cloud/img/pgpool2.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

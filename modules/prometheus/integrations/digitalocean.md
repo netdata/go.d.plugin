@@ -9,6 +9,10 @@ endmeta-->
 
 # DigitalOcean
 
+
+<img src="https://netdata.cloud/img/digitalocean.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # MariaDB
 
+
+<img src="https://netdata.cloud/img/mariadb.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: mysql
 

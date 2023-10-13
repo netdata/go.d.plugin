@@ -9,6 +9,10 @@ endmeta-->
 
 # ProxySQL
 
+
+<img src="https://netdata.cloud/img/proxysql.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: proxysql
 

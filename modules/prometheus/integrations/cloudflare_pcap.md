@@ -9,6 +9,10 @@ endmeta-->
 
 # Cloudflare PCAP
 
+
+<img src="https://netdata.cloud/img/cloudflare.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

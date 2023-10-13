@@ -9,6 +9,10 @@ endmeta-->
 
 # etcd
 
+
+<img src="https://netdata.cloud/img/etcd.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

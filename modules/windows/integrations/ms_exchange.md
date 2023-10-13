@@ -9,6 +9,10 @@ endmeta-->
 
 # MS Exchange
 
+
+<img src="https://netdata.cloud/img/exchange.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: windows
 

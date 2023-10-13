@@ -9,6 +9,10 @@ endmeta-->
 
 # Fastd
 
+
+<img src="https://netdata.cloud/img/fastd.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

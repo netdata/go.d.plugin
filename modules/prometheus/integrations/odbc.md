@@ -9,6 +9,10 @@ endmeta-->
 
 # ODBC
 
+
+<img src="https://netdata.cloud/img/odbc.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

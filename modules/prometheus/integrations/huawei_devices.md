@@ -9,6 +9,10 @@ endmeta-->
 
 # Huawei devices
 
+
+<img src="https://netdata.cloud/img/huawei.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

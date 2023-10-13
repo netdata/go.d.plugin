@@ -9,6 +9,10 @@ endmeta-->
 
 # TwinCAT ADS Web Service
 
+
+<img src="https://netdata.cloud/img/twincat.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

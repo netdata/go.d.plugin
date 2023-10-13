@@ -9,6 +9,10 @@ endmeta-->
 
 # Dell EMC Isilon cluster
 
+
+<img src="https://netdata.cloud/img/dell.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

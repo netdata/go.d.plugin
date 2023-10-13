@@ -9,6 +9,10 @@ endmeta-->
 
 # Starlink (SpaceX)
 
+
+<img src="https://netdata.cloud/img/starlink.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

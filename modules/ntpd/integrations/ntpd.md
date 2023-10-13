@@ -9,6 +9,10 @@ endmeta-->
 
 # NTPd
 
+
+<img src="https://netdata.cloud/img/ntp.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: ntpd
 

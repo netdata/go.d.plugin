@@ -9,6 +9,10 @@ endmeta-->
 
 # nftables
 
+
+<img src="https://netdata.cloud/img/nftables.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

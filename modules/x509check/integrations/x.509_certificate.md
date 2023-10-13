@@ -9,6 +9,10 @@ endmeta-->
 
 # X.509 certificate
 
+
+<img src="https://netdata.cloud/img/lock.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: x509check
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Synology ActiveBackup
 
+
+<img src="https://netdata.cloud/img/synology.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

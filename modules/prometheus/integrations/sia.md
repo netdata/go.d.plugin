@@ -9,6 +9,10 @@ endmeta-->
 
 # Sia
 
+
+<img src="https://netdata.cloud/img/sia.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

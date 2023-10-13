@@ -9,6 +9,10 @@ endmeta-->
 
 # AWS SQS
 
+
+<img src="https://netdata.cloud/img/aws-sqs.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

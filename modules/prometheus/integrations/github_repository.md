@@ -9,6 +9,10 @@ endmeta-->
 
 # GitHub repository
 
+
+<img src="https://netdata.cloud/img/github.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

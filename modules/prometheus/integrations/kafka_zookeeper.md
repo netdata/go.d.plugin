@@ -9,6 +9,10 @@ endmeta-->
 
 # Kafka ZooKeeper
 
+
+<img src="https://netdata.cloud/img/kafka.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

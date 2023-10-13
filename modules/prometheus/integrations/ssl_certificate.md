@@ -9,6 +9,10 @@ endmeta-->
 
 # SSL Certificate
 
+
+<img src="https://netdata.cloud/img/ssl.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

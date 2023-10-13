@@ -9,6 +9,10 @@ endmeta-->
 
 # Nextcloud servers
 
+
+<img src="https://netdata.cloud/img/nextcloud.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

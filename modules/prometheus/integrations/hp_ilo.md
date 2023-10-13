@@ -9,6 +9,10 @@ endmeta-->
 
 # HP iLO
 
+
+<img src="https://netdata.cloud/img/hp.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

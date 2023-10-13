@@ -9,6 +9,10 @@ endmeta-->
 
 # Traefik
 
+
+<img src="https://netdata.cloud/img/traefik.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: traefik
 

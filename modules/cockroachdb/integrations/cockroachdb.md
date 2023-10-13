@@ -9,6 +9,10 @@ endmeta-->
 
 # CockroachDB
 
+
+<img src="https://netdata.cloud/img/cockroachdb.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: cockroachdb
 

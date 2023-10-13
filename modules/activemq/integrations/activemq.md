@@ -9,6 +9,10 @@ endmeta-->
 
 # ActiveMQ
 
+
+<img src="https://netdata.cloud/img/activemq.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: activemq
 

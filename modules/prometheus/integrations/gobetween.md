@@ -9,6 +9,10 @@ endmeta-->
 
 # Gobetween
 
+
+<img src="https://netdata.cloud/img/gobetween.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

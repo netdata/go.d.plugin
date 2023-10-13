@@ -9,6 +9,10 @@ endmeta-->
 
 # ClickHouse
 
+
+<img src="https://netdata.cloud/img/clickhouse.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

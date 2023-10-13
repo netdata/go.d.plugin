@@ -9,6 +9,10 @@ endmeta-->
 
 # Dnsmasq DHCP
 
+
+<img src="https://netdata.cloud/img/dnsmasq.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: dnsmasq_dhcp
 

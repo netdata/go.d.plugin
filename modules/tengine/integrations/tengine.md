@@ -9,6 +9,10 @@ endmeta-->
 
 # Tengine
 
+
+<img src="https://netdata.cloud/img/tengine.jpeg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: tengine
 

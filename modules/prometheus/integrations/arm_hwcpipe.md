@@ -9,6 +9,10 @@ endmeta-->
 
 # ARM HWCPipe
 
+
+<img src="https://netdata.cloud/img/arm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

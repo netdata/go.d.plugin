@@ -9,6 +9,10 @@ endmeta-->
 
 # Bobcat Miner 300
 
+
+<img src="https://netdata.cloud/img/bobcat.jpg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

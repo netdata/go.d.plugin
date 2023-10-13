@@ -9,6 +9,10 @@ endmeta-->
 
 # IBM Spectrum
 
+
+<img src="https://netdata.cloud/img/ibm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

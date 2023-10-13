@@ -9,6 +9,10 @@ endmeta-->
 
 # TACACS
 
+
+<img src="https://netdata.cloud/img/tacacs.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

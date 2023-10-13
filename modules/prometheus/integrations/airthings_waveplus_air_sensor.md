@@ -9,6 +9,10 @@ endmeta-->
 
 # Airthings Waveplus air sensor
 
+
+<img src="https://netdata.cloud/img/airthings.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

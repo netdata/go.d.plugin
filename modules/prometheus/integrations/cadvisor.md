@@ -9,6 +9,10 @@ endmeta-->
 
 # cAdvisor
 
+
+<img src="https://netdata.cloud/img/cadvisor.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

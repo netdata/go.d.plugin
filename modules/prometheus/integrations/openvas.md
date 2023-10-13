@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenVAS
 
+
+<img src="https://netdata.cloud/img/openVAS.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

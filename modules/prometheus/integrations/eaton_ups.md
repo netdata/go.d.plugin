@@ -9,6 +9,10 @@ endmeta-->
 
 # Eaton UPS
 
+
+<img src="https://netdata.cloud/img/eaton.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

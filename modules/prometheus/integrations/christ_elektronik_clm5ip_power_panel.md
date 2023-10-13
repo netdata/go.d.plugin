@@ -9,6 +9,10 @@ endmeta-->
 
 # Christ Elektronik CLM5IP power panel
 
+
+<img src="https://netdata.cloud/img/christelec.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

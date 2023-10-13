@@ -9,6 +9,10 @@ endmeta-->
 
 # Solr
 
+
+<img src="https://netdata.cloud/img/solr.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: solr
 

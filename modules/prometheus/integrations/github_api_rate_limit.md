@@ -9,6 +9,10 @@ endmeta-->
 
 # GitHub API rate limit
 
+
+<img src="https://netdata.cloud/img/github.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

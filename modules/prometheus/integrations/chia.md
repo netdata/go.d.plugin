@@ -9,6 +9,10 @@ endmeta-->
 
 # Chia
 
+
+<img src="https://netdata.cloud/img/chia.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

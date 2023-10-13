@@ -9,6 +9,10 @@ endmeta-->
 
 # Sunspec Solar Energy
 
+
+<img src="https://netdata.cloud/img/sunspec.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 
