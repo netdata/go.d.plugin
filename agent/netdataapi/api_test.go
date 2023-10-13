@@ -160,7 +160,7 @@ func TestAPI_CLABELCOMMIT(t *testing.T) {
 
 	assert.Equal(
 		t,
-		"CLABEL_COMMIT\n\n",
+		"CLABEL_COMMIT\n",
 		buf.String(),
 	)
 }
