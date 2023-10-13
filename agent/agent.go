@@ -177,21 +177,25 @@ func (a *Agent) run(ctx context.Context) {
 
 	functionsManager := functions.NewManager()
 
-	dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
-		Plugin:               a.Name,
-		API:                  netdataapi.New(a.Out),
-		Modules:              enabledModules,
-		ModuleConfigDefaults: discCfg.Registry,
-		Functions:            functionsManager,
-	})
-
-	discoveryManager.Add(dyncfgDiscovery)
-
 	jobsManager := jobmgr.NewManager()
-	jobsManager.Dyncfg = dyncfgDiscovery
 	jobsManager.PluginName = a.Name
 	jobsManager.Out = a.Out
 	jobsManager.Modules = enabledModules
+
+	// TODO: rm 'if' after https://github.com/netdata/netdata/issues/16079
+	if logger.IsDebug() {
+		dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
+			Plugin:               a.Name,
+			API:                  netdataapi.New(a.Out),
+			Modules:              enabledModules,
+			ModuleConfigDefaults: discCfg.Registry,
+			Functions:            functionsManager,
+		})
+
+		discoveryManager.Add(dyncfgDiscovery)
+
+		jobsManager.Dyncfg = dyncfgDiscovery
+	}
 
 	if reg := a.setupVnodeRegistry(); reg == nil || reg.Len() == 0 {
 		vnodes.Disabled = true
