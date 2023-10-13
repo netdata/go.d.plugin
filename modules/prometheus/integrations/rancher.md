@@ -9,6 +9,10 @@ endmeta-->
 
 # Rancher
 
+
+<img src="https://netdata.cloud/img/rancher.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Hitron CODA Cable Modem
 
+
+<img src="https://netdata.cloud/img/hitron.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

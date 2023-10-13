@@ -9,6 +9,10 @@ endmeta-->
 
 # JMX
 
+
+<img src="https://netdata.cloud/img/java.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

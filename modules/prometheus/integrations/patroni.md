@@ -9,6 +9,10 @@ endmeta-->
 
 # Patroni
 
+
+<img src="https://netdata.cloud/img/patroni.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Philips Hue
 
+
+<img src="https://netdata.cloud/img/hue.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

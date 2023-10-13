@@ -9,6 +9,10 @@ endmeta-->
 
 # Certificate Transparency
 
+
+<img src="https://netdata.cloud/img/ct.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

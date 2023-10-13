@@ -9,6 +9,10 @@ endmeta-->
 
 # Celery
 
+
+<img src="https://netdata.cloud/img/celery.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

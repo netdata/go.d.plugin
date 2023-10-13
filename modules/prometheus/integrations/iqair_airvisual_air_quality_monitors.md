@@ -9,6 +9,10 @@ endmeta-->
 
 # iqAir AirVisual air quality monitors
 
+
+<img src="https://netdata.cloud/img/iqair.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

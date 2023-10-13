@@ -9,6 +9,10 @@ endmeta-->
 
 # SABnzbd
 
+
+<img src="https://netdata.cloud/img/sabnzbd.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

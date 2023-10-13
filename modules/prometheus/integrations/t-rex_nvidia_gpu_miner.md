@@ -9,6 +9,10 @@ endmeta-->
 
 # T-Rex NVIDIA GPU Miner
 
+
+<img src="https://netdata.cloud/img/trex.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

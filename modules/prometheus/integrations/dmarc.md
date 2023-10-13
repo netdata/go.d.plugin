@@ -9,6 +9,10 @@ endmeta-->
 
 # DMARC
 
+
+<img src="https://netdata.cloud/img/dmarc.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

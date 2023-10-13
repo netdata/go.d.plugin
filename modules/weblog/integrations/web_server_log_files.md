@@ -9,6 +9,10 @@ endmeta-->
 
 # Web server log files
 
+
+<img src="https://netdata.cloud/img/webservers.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: web_log
 

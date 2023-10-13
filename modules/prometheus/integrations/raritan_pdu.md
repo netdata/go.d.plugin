@@ -9,6 +9,10 @@ endmeta-->
 
 # Raritan PDU
 
+
+<img src="https://netdata.cloud/img/raritan.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

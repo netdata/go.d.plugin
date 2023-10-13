@@ -9,6 +9,10 @@ endmeta-->
 
 # BigQuery
 
+
+<img src="https://netdata.cloud/img/bigquery.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

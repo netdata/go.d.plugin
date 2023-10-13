@@ -9,6 +9,10 @@ endmeta-->
 
 # Chrony
 
+
+<img src="https://netdata.cloud/img/chrony.jpg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: chrony
 

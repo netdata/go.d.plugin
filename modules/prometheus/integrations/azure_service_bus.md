@@ -9,6 +9,10 @@ endmeta-->
 
 # Azure Service Bus
 
+
+<img src="https://netdata.cloud/img/azure-service-bus.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

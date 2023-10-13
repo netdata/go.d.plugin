@@ -9,6 +9,10 @@ endmeta-->
 
 # gpsd
 
+
+<img src="https://netdata.cloud/img/gpsd.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

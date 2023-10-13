@@ -9,6 +9,10 @@ endmeta-->
 
 # Starwind VSAN VSphere Edition
 
+
+<img src="https://netdata.cloud/img/starwind.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

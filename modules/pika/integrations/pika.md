@@ -9,6 +9,10 @@ endmeta-->
 
 # Pika
 
+
+<img src="https://netdata.cloud/img/pika.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: pika
 

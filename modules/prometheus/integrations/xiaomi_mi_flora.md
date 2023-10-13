@@ -9,6 +9,10 @@ endmeta-->
 
 # Xiaomi Mi Flora
 
+
+<img src="https://netdata.cloud/img/xiaomi.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

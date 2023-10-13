@@ -9,6 +9,10 @@ endmeta-->
 
 # ISC DHCP
 
+
+<img src="https://netdata.cloud/img/isc.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: isc_dhcpd
 

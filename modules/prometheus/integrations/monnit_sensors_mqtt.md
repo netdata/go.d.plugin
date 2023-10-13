@@ -9,6 +9,10 @@ endmeta-->
 
 # Monnit Sensors MQTT
 
+
+<img src="https://netdata.cloud/img/monnit.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

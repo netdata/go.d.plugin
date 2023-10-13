@@ -9,6 +9,10 @@ endmeta-->
 
 # Dependency-Track
 
+
+<img src="https://netdata.cloud/img/dependency-track.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

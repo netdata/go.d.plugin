@@ -9,6 +9,10 @@ endmeta-->
 
 # Redis Queue
 
+
+<img src="https://netdata.cloud/img/rq.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

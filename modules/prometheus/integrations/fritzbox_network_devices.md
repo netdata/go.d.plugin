@@ -9,6 +9,10 @@ endmeta-->
 
 # Fritzbox network devices
 
+
+<img src="https://netdata.cloud/img/avm.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

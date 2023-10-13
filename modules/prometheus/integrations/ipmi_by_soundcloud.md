@@ -9,6 +9,10 @@ endmeta-->
 
 # IPMI (By SoundCloud)
 
+
+<img src="https://netdata.cloud/img/soundcloud.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

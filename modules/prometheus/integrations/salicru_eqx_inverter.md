@@ -9,6 +9,10 @@ endmeta-->
 
 # Salicru EQX inverter
 
+
+<img src="https://netdata.cloud/img/salicru.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Twitch
 
+
+<img src="https://netdata.cloud/img/twitch.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # PowerDNS Recursor
 
+
+<img src="https://netdata.cloud/img/powerdns.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: powerdns_recursor
 

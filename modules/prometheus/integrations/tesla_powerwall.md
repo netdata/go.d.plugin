@@ -9,6 +9,10 @@ endmeta-->
 
 # Tesla Powerwall
 
+
+<img src="https://netdata.cloud/img/tesla.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

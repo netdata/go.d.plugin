@@ -9,6 +9,10 @@ endmeta-->
 
 # NSX-T
 
+
+<img src="https://netdata.cloud/img/vmware-nsx.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

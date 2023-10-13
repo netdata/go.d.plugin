@@ -9,6 +9,10 @@ endmeta-->
 
 # CouchDB
 
+
+<img src="https://netdata.cloud/img/couchdb.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: couchdb
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # UPS (NUT)
 
+
+<img src="https://netdata.cloud/img/plug-circle-bolt.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: upsd
 

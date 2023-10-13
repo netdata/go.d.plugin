@@ -9,6 +9,10 @@ endmeta-->
 
 # Java Spring-boot 2 applications
 
+
+<img src="https://netdata.cloud/img/springboot.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: springboot2
 

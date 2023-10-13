@@ -9,6 +9,10 @@ endmeta-->
 
 # Envoy
 
+
+<img src="https://netdata.cloud/img/envoy.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: envoy
 

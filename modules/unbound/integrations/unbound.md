@@ -9,6 +9,10 @@ endmeta-->
 
 # Unbound
 
+
+<img src="https://netdata.cloud/img/unbound.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: unbound
 

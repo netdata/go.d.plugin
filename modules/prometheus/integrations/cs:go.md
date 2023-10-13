@@ -9,6 +9,10 @@ endmeta-->
 
 # CS:GO
 
+
+<img src="https://netdata.cloud/img/csgo.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

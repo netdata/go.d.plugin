@@ -9,6 +9,10 @@ endmeta-->
 
 # SmartRG 808AC Cable Modem
 
+
+<img src="https://netdata.cloud/img/smartr.jpeg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Honeypot
 
+
+<img src="https://netdata.cloud/img/intrinsec.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

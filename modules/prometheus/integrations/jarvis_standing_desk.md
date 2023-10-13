@@ -9,6 +9,10 @@ endmeta-->
 
 # Jarvis Standing Desk
 
+
+<img src="https://netdata.cloud/img/jarvis.jpg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

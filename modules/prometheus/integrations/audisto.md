@@ -9,6 +9,10 @@ endmeta-->
 
 # Audisto
 
+
+<img src="https://netdata.cloud/img/audisto.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

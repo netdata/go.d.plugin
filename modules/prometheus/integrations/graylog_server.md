@@ -9,6 +9,10 @@ endmeta-->
 
 # Graylog Server
 
+
+<img src="https://netdata.cloud/img/graylog.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

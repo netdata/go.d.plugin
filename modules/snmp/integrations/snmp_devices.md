@@ -9,6 +9,10 @@ endmeta-->
 
 # SNMP devices
 
+
+<img src="https://netdata.cloud/img/snmp.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: snmp
 

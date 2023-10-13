@@ -9,6 +9,10 @@ endmeta-->
 
 # OBS Studio
 
+
+<img src="https://netdata.cloud/img/obs-studio.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Azure AD App passwords
 
+
+<img src="https://netdata.cloud/img/azure.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

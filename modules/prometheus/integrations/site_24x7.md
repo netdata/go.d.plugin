@@ -9,6 +9,10 @@ endmeta-->
 
 # Site 24x7
 
+
+<img src="https://netdata.cloud/img/site24x7.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

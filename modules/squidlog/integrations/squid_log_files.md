@@ -9,6 +9,10 @@ endmeta-->
 
 # Squid log files
 
+
+<img src="https://netdata.cloud/img/squid.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: squidlog
 

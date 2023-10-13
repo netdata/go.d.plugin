@@ -9,6 +9,10 @@ endmeta-->
 
 # Shell command
 
+
+<img src="https://netdata.cloud/img/crunner.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

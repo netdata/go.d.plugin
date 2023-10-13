@@ -9,6 +9,10 @@ endmeta-->
 
 # IBM CryptoExpress (CEX) cards
 
+
+<img src="https://netdata.cloud/img/ibm.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

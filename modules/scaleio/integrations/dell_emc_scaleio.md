@@ -9,6 +9,10 @@ endmeta-->
 
 # Dell EMC ScaleIO
 
+
+<img src="https://netdata.cloud/img/dell.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: scaleio
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenRCT2
 
+
+<img src="https://netdata.cloud/img/openRCT2.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

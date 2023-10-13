@@ -9,6 +9,10 @@ endmeta-->
 
 # vCenter Server Appliance
 
+
+<img src="https://netdata.cloud/img/vmware.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: vcsa
 

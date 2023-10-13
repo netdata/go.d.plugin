@@ -9,6 +9,10 @@ endmeta-->
 
 # Keepalived
 
+
+<img src="https://netdata.cloud/img/keepalived.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

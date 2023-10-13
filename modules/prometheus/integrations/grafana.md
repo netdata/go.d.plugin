@@ -9,6 +9,10 @@ endmeta-->
 
 # Grafana
 
+
+<img src="https://netdata.cloud/img/grafana.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

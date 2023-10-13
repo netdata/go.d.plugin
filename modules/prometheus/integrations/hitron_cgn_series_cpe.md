@@ -9,6 +9,10 @@ endmeta-->
 
 # Hitron CGN series CPE
 
+
+<img src="https://netdata.cloud/img/hitron.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

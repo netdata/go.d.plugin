@@ -9,6 +9,10 @@ endmeta-->
 
 # Meraki dashboard
 
+
+<img src="https://netdata.cloud/img/meraki.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

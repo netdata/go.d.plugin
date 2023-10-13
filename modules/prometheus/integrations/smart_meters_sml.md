@@ -9,6 +9,10 @@ endmeta-->
 
 # Smart meters SML
 
+
+<img src="https://netdata.cloud/img/sml.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

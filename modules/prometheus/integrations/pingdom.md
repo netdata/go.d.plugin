@@ -9,6 +9,10 @@ endmeta-->
 
 # Pingdom
 
+
+<img src="https://netdata.cloud/img/solarwinds.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

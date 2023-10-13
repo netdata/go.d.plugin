@@ -9,6 +9,10 @@ endmeta-->
 
 # Suricata
 
+
+<img src="https://netdata.cloud/img/suricata.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

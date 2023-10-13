@@ -9,6 +9,10 @@ endmeta-->
 
 # Kannel
 
+
+<img src="https://netdata.cloud/img/kannel.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Nagios
 
+
+<img src="https://netdata.cloud/img/nagios.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

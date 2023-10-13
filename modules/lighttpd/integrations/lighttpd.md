@@ -9,6 +9,10 @@ endmeta-->
 
 # Lighttpd
 
+
+<img src="https://netdata.cloud/img/lighttpd.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: lighttpd
 

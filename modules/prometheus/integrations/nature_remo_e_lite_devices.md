@@ -9,6 +9,10 @@ endmeta-->
 
 # Nature Remo E lite devices
 
+
+<img src="https://netdata.cloud/img/nature-remo.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

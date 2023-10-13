@@ -9,6 +9,10 @@ endmeta-->
 
 # SoftEther VPN Server
 
+
+<img src="https://netdata.cloud/img/softether.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

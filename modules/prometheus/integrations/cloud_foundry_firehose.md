@@ -9,6 +9,10 @@ endmeta-->
 
 # Cloud Foundry Firehose
 
+
+<img src="https://netdata.cloud/img/cloud-foundry.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

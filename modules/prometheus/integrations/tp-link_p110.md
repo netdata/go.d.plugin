@@ -9,6 +9,10 @@ endmeta-->
 
 # TP-Link P110
 
+
+<img src="https://netdata.cloud/img/tplink.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

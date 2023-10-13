@@ -9,6 +9,10 @@ endmeta-->
 
 # Windows
 
+
+<img src="https://netdata.cloud/img/windows.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: windows
 

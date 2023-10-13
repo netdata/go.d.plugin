@@ -9,6 +9,10 @@ endmeta-->
 
 # CoreDNS
 
+
+<img src="https://netdata.cloud/img/coredns.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: coredns
 

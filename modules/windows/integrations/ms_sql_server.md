@@ -9,6 +9,10 @@ endmeta-->
 
 # MS SQL Server
 
+
+<img src="https://netdata.cloud/img/mssql.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: windows
 

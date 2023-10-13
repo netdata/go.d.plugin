@@ -9,6 +9,10 @@ endmeta-->
 
 # LDAP
 
+
+<img src="https://netdata.cloud/img/ldap.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

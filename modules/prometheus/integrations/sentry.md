@@ -9,6 +9,10 @@ endmeta-->
 
 # Sentry
 
+
+<img src="https://netdata.cloud/img/sentry.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

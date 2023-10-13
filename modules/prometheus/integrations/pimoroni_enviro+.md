@@ -9,6 +9,10 @@ endmeta-->
 
 # Pimoroni Enviro+
 
+
+<img src="https://netdata.cloud/img/pimorino.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # Tankerkoenig API
 
+
+<img src="https://netdata.cloud/img/tanker.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

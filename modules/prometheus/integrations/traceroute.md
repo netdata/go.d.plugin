@@ -9,6 +9,10 @@ endmeta-->
 
 # Traceroute
 
+
+<img src="https://netdata.cloud/img/traceroute.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

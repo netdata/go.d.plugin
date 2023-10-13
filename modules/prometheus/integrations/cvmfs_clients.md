@@ -9,6 +9,10 @@ endmeta-->
 
 # CVMFS clients
 
+
+<img src="https://netdata.cloud/img/cvmfs.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

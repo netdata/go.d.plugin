@@ -9,6 +9,10 @@ endmeta-->
 
 # Kubernetes Cluster Cloud Cost
 
+
+<img src="https://netdata.cloud/img/kubernetes.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

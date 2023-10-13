@@ -9,6 +9,10 @@ endmeta-->
 
 # AMD CPU & GPU
 
+
+<img src="https://netdata.cloud/img/amd.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

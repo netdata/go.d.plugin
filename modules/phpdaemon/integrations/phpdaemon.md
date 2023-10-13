@@ -9,6 +9,10 @@ endmeta-->
 
 # phpDaemon
 
+
+<img src="https://netdata.cloud/img/php.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: phpdaemon
 

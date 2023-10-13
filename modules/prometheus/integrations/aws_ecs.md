@@ -9,6 +9,10 @@ endmeta-->
 
 # AWS ECS
 
+
+<img src="https://netdata.cloud/img/amazon-ecs.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

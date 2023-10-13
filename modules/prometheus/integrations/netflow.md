@@ -9,6 +9,10 @@ endmeta-->
 
 # NetFlow
 
+
+<img src="https://netdata.cloud/img/netflow.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

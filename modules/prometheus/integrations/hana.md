@@ -9,6 +9,10 @@ endmeta-->
 
 # HANA
 
+
+<img src="https://netdata.cloud/img/sap.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

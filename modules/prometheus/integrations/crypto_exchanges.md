@@ -9,6 +9,10 @@ endmeta-->
 
 # Crypto exchanges
 
+
+<img src="https://netdata.cloud/img/crypto.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # SONiC NOS
 
+
+<img src="https://netdata.cloud/img/sonic.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

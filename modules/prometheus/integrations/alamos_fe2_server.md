@@ -9,6 +9,10 @@ endmeta-->
 
 # Alamos FE2 server
 
+
+<img src="https://netdata.cloud/img/alamos_fe2.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

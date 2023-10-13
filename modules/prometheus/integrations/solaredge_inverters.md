@@ -9,6 +9,10 @@ endmeta-->
 
 # SolarEdge inverters
 
+
+<img src="https://netdata.cloud/img/solaredge.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

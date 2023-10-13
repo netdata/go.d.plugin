@@ -9,6 +9,10 @@ endmeta-->
 
 # Ubiquiti UFiber OLT
 
+
+<img src="https://netdata.cloud/img/ubiquiti.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

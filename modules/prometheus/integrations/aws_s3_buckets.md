@@ -9,6 +9,10 @@ endmeta-->
 
 # AWS S3 buckets
 
+
+<img src="https://netdata.cloud/img/aws-s3.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

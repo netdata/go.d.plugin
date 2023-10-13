@@ -9,6 +9,10 @@ endmeta-->
 
 # SMA Inverters
 
+
+<img src="https://netdata.cloud/img/sma.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

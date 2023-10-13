@@ -9,6 +9,10 @@ endmeta-->
 
 # AWS RDS
 
+
+<img src="https://netdata.cloud/img/aws-rds.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

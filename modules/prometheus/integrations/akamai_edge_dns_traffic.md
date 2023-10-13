@@ -9,6 +9,10 @@ endmeta-->
 
 # Akamai Edge DNS Traffic
 
+
+<img src="https://netdata.cloud/img/akamai.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

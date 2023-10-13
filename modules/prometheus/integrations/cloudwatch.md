@@ -9,6 +9,10 @@ endmeta-->
 
 # CloudWatch
 
+
+<img src="https://netdata.cloud/img/aws-cloudwatch.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

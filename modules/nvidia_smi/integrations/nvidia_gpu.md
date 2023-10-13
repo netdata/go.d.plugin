@@ -9,6 +9,10 @@ endmeta-->
 
 # Nvidia GPU
 
+
+<img src="https://netdata.cloud/img/nvidia.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: nvidia_smi
 

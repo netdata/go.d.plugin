@@ -9,6 +9,10 @@ endmeta-->
 
 # EOS
 
+
+<img src="https://netdata.cloud/img/eos.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

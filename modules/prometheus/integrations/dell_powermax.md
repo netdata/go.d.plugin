@@ -9,6 +9,10 @@ endmeta-->
 
 # Dell PowerMax
 
+
+<img src="https://netdata.cloud/img/powermax.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

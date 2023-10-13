@@ -9,6 +9,10 @@ endmeta-->
 
 # Generic storage enclosure tool
 
+
+<img src="https://netdata.cloud/img/storage-enclosure.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

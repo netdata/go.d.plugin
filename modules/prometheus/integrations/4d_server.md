@@ -9,6 +9,10 @@ endmeta-->
 
 # 4D Server
 
+
+<img src="https://netdata.cloud/img/4d_server.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

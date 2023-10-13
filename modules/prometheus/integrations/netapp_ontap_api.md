@@ -9,6 +9,10 @@ endmeta-->
 
 # Netapp ONTAP API
 
+
+<img src="https://netdata.cloud/img/netapp.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

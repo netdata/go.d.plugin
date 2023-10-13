@@ -9,6 +9,10 @@ endmeta-->
 
 # NRPE daemon
 
+
+<img src="https://netdata.cloud/img/nrpelinux.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

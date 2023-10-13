@@ -9,6 +9,10 @@ endmeta-->
 
 # Proxmox VE
 
+
+<img src="https://netdata.cloud/img/proxmox.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

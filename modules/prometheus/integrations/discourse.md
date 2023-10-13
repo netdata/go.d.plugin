@@ -9,6 +9,10 @@ endmeta-->
 
 # Discourse
 
+
+<img src="https://netdata.cloud/img/discourse.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

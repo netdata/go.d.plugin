@@ -9,6 +9,10 @@ endmeta-->
 
 # Uptimerobot
 
+
+<img src="https://netdata.cloud/img/uptimerobot.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

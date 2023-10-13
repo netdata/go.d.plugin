@@ -9,6 +9,10 @@ endmeta-->
 
 # Apple Time Machine
 
+
+<img src="https://netdata.cloud/img/apple.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

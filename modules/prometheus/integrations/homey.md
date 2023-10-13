@@ -9,6 +9,10 @@ endmeta-->
 
 # Homey
 
+
+<img src="https://netdata.cloud/img/homey.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

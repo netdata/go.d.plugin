@@ -9,6 +9,10 @@ endmeta-->
 
 # Elasticsearch
 
+
+<img src="https://netdata.cloud/img/elasticsearch.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: elasticsearch
 

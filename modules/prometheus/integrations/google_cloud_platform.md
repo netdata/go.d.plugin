@@ -9,6 +9,10 @@ endmeta-->
 
 # Google Cloud Platform
 
+
+<img src="https://netdata.cloud/img/gcp.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

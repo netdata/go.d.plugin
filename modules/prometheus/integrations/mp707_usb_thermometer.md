@@ -9,6 +9,10 @@ endmeta-->
 
 # MP707 USB thermometer
 
+
+<img src="https://netdata.cloud/img/thermometer.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

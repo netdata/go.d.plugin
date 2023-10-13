@@ -9,6 +9,10 @@ endmeta-->
 
 # StatusPage
 
+
+<img src="https://netdata.cloud/img/statuspage.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

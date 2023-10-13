@@ -9,6 +9,10 @@ endmeta-->
 
 # Apache
 
+
+<img src="https://netdata.cloud/img/apache.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: apache
 

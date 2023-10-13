@@ -9,6 +9,10 @@ endmeta-->
 
 # Collectd
 
+
+<img src="https://netdata.cloud/img/collectd.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

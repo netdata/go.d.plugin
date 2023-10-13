@@ -9,6 +9,10 @@ endmeta-->
 
 # Altaro Backup
 
+
+<img src="https://netdata.cloud/img/altaro.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenHAB
 
+
+<img src="https://netdata.cloud/img/openhab.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

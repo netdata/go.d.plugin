@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenSearch
 
+
+<img src="https://netdata.cloud/img/opensearch.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: elasticsearch
 

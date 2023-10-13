@@ -9,6 +9,10 @@ endmeta-->
 
 # Stream
 
+
+<img src="https://netdata.cloud/img/stream.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

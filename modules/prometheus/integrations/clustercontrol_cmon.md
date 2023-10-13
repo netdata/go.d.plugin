@@ -9,6 +9,10 @@ endmeta-->
 
 # ClusterControl CMON
 
+
+<img src="https://netdata.cloud/img/cluster-control.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

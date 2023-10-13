@@ -9,6 +9,10 @@ endmeta-->
 
 # Crowdsec
 
+
+<img src="https://netdata.cloud/img/crowdsec.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

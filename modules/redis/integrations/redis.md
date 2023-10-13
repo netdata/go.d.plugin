@@ -9,6 +9,10 @@ endmeta-->
 
 # Redis
 
+
+<img src="https://netdata.cloud/img/redis.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: redis
 

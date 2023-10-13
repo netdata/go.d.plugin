@@ -9,6 +9,10 @@ endmeta-->
 
 # Aruba devices
 
+
+<img src="https://netdata.cloud/img/aruba.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # NGINX VTS
 
+
+<img src="https://netdata.cloud/img/nginx.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: nginxvts
 

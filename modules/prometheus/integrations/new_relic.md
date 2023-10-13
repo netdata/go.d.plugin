@@ -9,6 +9,10 @@ endmeta-->
 
 # New Relic
 
+
+<img src="https://netdata.cloud/img/newrelic.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

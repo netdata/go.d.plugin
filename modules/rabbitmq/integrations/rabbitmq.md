@@ -9,6 +9,10 @@ endmeta-->
 
 # RabbitMQ
 
+
+<img src="https://netdata.cloud/img/rabbitmq.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: rabbitmq
 

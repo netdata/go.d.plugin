@@ -9,6 +9,10 @@ endmeta-->
 
 # Go-ethereum
 
+
+<img src="https://netdata.cloud/img/geth.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: geth
 

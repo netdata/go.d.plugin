@@ -9,6 +9,10 @@ endmeta-->
 
 # OpenVPN status log
 
+
+<img src="https://netdata.cloud/img/openvpn.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: openvpn_status_log
 

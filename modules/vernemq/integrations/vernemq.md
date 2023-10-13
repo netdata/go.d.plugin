@@ -9,6 +9,10 @@ endmeta-->
 
 # VerneMQ
 
+
+<img src="https://netdata.cloud/img/vernemq.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: vernemq
 

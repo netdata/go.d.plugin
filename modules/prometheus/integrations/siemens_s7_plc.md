@@ -9,6 +9,10 @@ endmeta-->
 
 # Siemens S7 PLC
 
+
+<img src="https://netdata.cloud/img/siemens.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

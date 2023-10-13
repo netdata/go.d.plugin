@@ -9,6 +9,10 @@ endmeta-->
 
 # Pi-hole
 
+
+<img src="https://netdata.cloud/img/pihole.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: pihole
 

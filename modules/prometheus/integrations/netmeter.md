@@ -9,6 +9,10 @@ endmeta-->
 
 # NetMeter
 
+
+<img src="https://netdata.cloud/img/netmeter.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

@@ -9,6 +9,10 @@ endmeta-->
 
 # SQL Database agnostic
 
+
+<img src="https://netdata.cloud/img/sql.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

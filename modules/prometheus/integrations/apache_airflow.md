@@ -9,6 +9,10 @@ endmeta-->
 
 # Apache Airflow
 
+
+<img src="https://netdata.cloud/img/airflow.png" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 

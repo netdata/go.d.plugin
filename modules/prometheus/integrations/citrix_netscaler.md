@@ -9,6 +9,10 @@ endmeta-->
 
 # Citrix NetScaler
 
+
+<img src="https://netdata.cloud/img/citrix.svg" width="150"/>
+
+
 Plugin: go.d.plugin
 Module: prometheus
 
