@@ -435,6 +435,11 @@ func (j *Job) createChart(chart *Chart) {
 		j.moduleName,
 	)
 
+	if chart.Obsolete {
+		_ = j.api.EMPTYLINE()
+		return
+	}
+
 	seen := make(map[string]bool)
 	for _, l := range chart.Labels {
 		if l.Key != "" {
