@@ -21,7 +21,7 @@ const quotes = "' '"
 
 var (
 	end          = []byte("END\n\n")
-	clabelCommit = []byte("CLABEL_COMMIT\n\n")
+	clabelCommit = []byte("CLABEL_COMMIT\n")
 	newLine      = []byte("\n")
 )
 
