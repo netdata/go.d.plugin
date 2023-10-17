@@ -18,6 +18,7 @@ type Config struct {
 
 type NetdataDyncfgAPI interface {
 	DynCfgEnable(string) error
+	DynCfgReset() error
 	DyncCfgRegisterModule(string) error
 	DynCfgRegisterJob(_, _, _ string) error
 	DynCfgReportJobStatus(_, _, _, _ string) error
