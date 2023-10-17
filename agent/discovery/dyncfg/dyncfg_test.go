@@ -201,6 +201,10 @@ func (m *mockApi) DynCfgEnable(string) error {
 	return nil
 }
 
+func (m *mockApi) DynCfgReset() error {
+	return nil
+}
+
 func (m *mockApi) DyncCfgRegisterModule(string) error {
 	m.callsDyncCfgRegisterModule++
 	return nil

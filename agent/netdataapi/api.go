@@ -174,6 +174,11 @@ func (a *API) DynCfgEnable(pluginName string) error {
 	return err
 }
 
+func (a *API) DynCfgReset() error {
+	_, err := a.Write([]byte("DYNCFG_RESET\n"))
+	return err
+}
+
 func (a *API) DyncCfgRegisterModule(moduleName string) error {
 	_, err := fmt.Fprintf(a, "DYNCFG_REGISTER_MODULE '%s' job_array\n\n", moduleName)
 	return err

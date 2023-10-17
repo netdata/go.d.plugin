@@ -273,6 +273,19 @@ func TestAPI_DynCfgEnable(t *testing.T) {
 	)
 }
 
+func TestAPI_DynCfgReset(t *testing.T) {
+	buf := &bytes.Buffer{}
+	a := API{Writer: buf}
+
+	_ = a.DynCfgReset()
+
+	assert.Equal(
+		t,
+		"DYNCFG_RESET\n",
+		buf.String(),
+	)
+}
+
 func TestAPI_DyncCfgRegisterModule(t *testing.T) {
 	buf := &bytes.Buffer{}
 	a := API{Writer: buf}

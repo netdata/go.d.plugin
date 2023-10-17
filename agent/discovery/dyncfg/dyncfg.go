@@ -67,6 +67,10 @@ func (d *Discovery) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 
 	d.in = in
 
+	if reload, ok := ctx.Value("reload").(bool); ok && reload {
+		_ = d.API.DynCfgReset()
+	}
+
 	_ = d.API.DynCfgEnable(d.Plugin)
 
 	for k := range d.Modules {

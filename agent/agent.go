@@ -96,9 +96,11 @@ func serve(a *Agent) {
 	var wg sync.WaitGroup
 
 	var exit bool
+	var reload bool
 
 	for {
 		ctx, cancel := context.WithCancel(context.Background())
+		ctx = context.WithValue(ctx, "reload", reload)
 
 		wg.Add(1)
 		go func() { defer wg.Done(); a.run(ctx) }()
@@ -115,7 +117,7 @@ func serve(a *Agent) {
 		cancel()
 
 		func() {
-			timeout := time.Second * 15
+			timeout := time.Second * 10
 			t := time.NewTimer(timeout)
 			defer t.Stop()
 			done := make(chan struct{})
@@ -134,6 +136,7 @@ func serve(a *Agent) {
 			os.Exit(0)
 		}
 
+		reload = true
 		time.Sleep(time.Second)
 	}
 }

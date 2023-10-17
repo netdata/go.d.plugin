@@ -56,12 +56,13 @@ func (m *Manager) Run(ctx context.Context) {
 			return
 		}
 
-		go func() { <-ctx.Done(); r.Cancel(); _ = r.Close() }()
+		go func() { <-ctx.Done(); r.Cancel() }()
 
 		wg.Add(1)
 		go func() { defer wg.Done(); m.run(r) }()
 
 		wg.Wait()
+		_ = r.Close()
 	}
 
 	<-ctx.Done()
