@@ -38,8 +38,8 @@ func TestPodGroup_Source(t *testing.T) {
 				return sim
 			},
 			expectedSource: []string{
-				"k8s/pod/default/httpd-dd95c4d68-5bkwl",
-				"k8s/pod/default/nginx-7cfd77469b-q6kxj",
+				"sd:k8s:pod(default/httpd-dd95c4d68-5bkwl)",
+				"sd:k8s:pod(default/nginx-7cfd77469b-q6kxj)",
 			},
 		},
 	}

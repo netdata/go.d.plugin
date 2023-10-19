@@ -37,8 +37,8 @@ func TestServiceGroup_Source(t *testing.T) {
 				return sim
 			},
 			expectedSource: []string{
-				"k8s/service/default/httpd-cluster-ip-service",
-				"k8s/service/default/nginx-cluster-ip-service",
+				"sd:k8s:service(default/httpd-cluster-ip-service)",
+				"sd:k8s:service(default/nginx-cluster-ip-service)",
 			},
 		},
 	}
