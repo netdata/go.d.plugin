@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package pipeline
+package discoverer
 
 import (
 	"fmt"

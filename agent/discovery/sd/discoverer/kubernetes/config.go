@@ -20,9 +20,11 @@ func validateConfig(cfg Config) error {
 	if !isRoleValid(cfg.Role) {
 		return fmt.Errorf("invalid role '%s', valid roles: '%s', '%s'", cfg.Role, RolePod, RoleService)
 	}
+
 	if cfg.Tags == "" {
 		return fmt.Errorf("no tags set for '%s' role", cfg.Role)
 	}
+
 	return nil
 }
 

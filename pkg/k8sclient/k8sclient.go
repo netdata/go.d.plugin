@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package kubernetes
+package k8sclient
 
 import (
 	"errors"
@@ -15,31 +15,38 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const envFakeClient = "KUBERNETES_FAKE_CLIENTSET"
+const (
+	EnvFakeClient    = "KUBERNETES_FAKE_CLIENTSET"
+	defaultUserAgent = "Netdata/k8s-client"
+)
 
-func newClientset() (kubernetes.Interface, error) {
+func New(userAgent string) (kubernetes.Interface, error) {
+	if userAgent == "" {
+		userAgent = defaultUserAgent
+	}
+
 	switch {
-	case os.Getenv(envFakeClient) != "":
+	case os.Getenv(EnvFakeClient) != "":
 		return fake.NewSimpleClientset(), nil
 	case os.Getenv("KUBERNETES_SERVICE_HOST") != "" && os.Getenv("KUBERNETES_SERVICE_PORT") != "":
-		return newClientsetInCluster()
+		return newInCluster(userAgent)
 	default:
-		return newClientsetOutOfCluster()
+		return newOutOfCluster(userAgent)
 	}
 }
 
-func newClientsetInCluster() (*kubernetes.Clientset, error) {
+func newInCluster(userAgent string) (*kubernetes.Clientset, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	config.UserAgent = "Netdata/auto-discovery"
+	config.UserAgent = userAgent
 
 	return kubernetes.NewForConfig(config)
 }
 
-func newClientsetOutOfCluster() (*kubernetes.Clientset, error) {
+func newOutOfCluster(userAgent string) (*kubernetes.Clientset, error) {
 	home := homeDir()
 	if home == "" {
 		return nil, errors.New("couldn't find home directory")
@@ -51,7 +58,7 @@ func newClientsetOutOfCluster() (*kubernetes.Clientset, error) {
 		return nil, err
 	}
 
-	config.UserAgent = "Netdata/auto-discovery"
+	config.UserAgent = userAgent
 
 	return kubernetes.NewForConfig(config)
 }

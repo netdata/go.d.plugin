@@ -12,7 +12,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 	"github.com/netdata/go.d.plugin/logger"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 )
@@ -22,7 +22,8 @@ type serviceGroup struct {
 	source  string
 }
 
-func (sg serviceGroup) Source() string          { return sg.source }
+func (sg serviceGroup) Provider() string        { return "sd:k8s:service" }
+func (sg serviceGroup) Source() string          { return fmt.Sprintf("%s(%s)", sg.Provider(), sg.source) }
 func (sg serviceGroup) Targets() []model.Target { return sg.targets }
 
 type ServiceTarget struct {
@@ -130,7 +131,7 @@ func (s *Service) run(ctx context.Context, ch chan<- []model.TargetGroup) {
 	}
 }
 
-func (s *Service) buildGroup(svc *apiv1.Service) model.TargetGroup {
+func (s *Service) buildGroup(svc *corev1.Service) model.TargetGroup {
 	// TODO: headless service?
 	if svc.Spec.ClusterIP == "" || len(svc.Spec.Ports) == 0 {
 		return &serviceGroup{
@@ -143,7 +144,7 @@ func (s *Service) buildGroup(svc *apiv1.Service) model.TargetGroup {
 	}
 }
 
-func (s *Service) buildTargets(svc *apiv1.Service) (targets []model.Target) {
+func (s *Service) buildTargets(svc *corev1.Service) (targets []model.Target) {
 	for _, port := range svc.Spec.Ports {
 		portNum := strconv.FormatInt(int64(port.Port), 10)
 		target := &ServiceTarget{
@@ -151,8 +152,8 @@ func (s *Service) buildTargets(svc *apiv1.Service) (targets []model.Target) {
 			Address:      net.JoinHostPort(svc.Name+"."+svc.Namespace+".svc", portNum),
 			Namespace:    svc.Namespace,
 			Name:         svc.Name,
-			Annotations:  toMapInterface(svc.Annotations),
-			Labels:       toMapInterface(svc.Labels),
+			Annotations:  mapAny(svc.Annotations),
+			Labels:       mapAny(svc.Labels),
 			Port:         portNum,
 			PortName:     port.Name,
 			PortProtocol: string(port.Protocol),
@@ -171,7 +172,7 @@ func (s *Service) buildTargets(svc *apiv1.Service) (targets []model.Target) {
 	return targets
 }
 
-func serviceTUID(svc *apiv1.Service, port apiv1.ServicePort) string {
+func serviceTUID(svc *corev1.Service, port corev1.ServicePort) string {
 	return fmt.Sprintf("%s_%s_%s_%s",
 		svc.Namespace,
 		svc.Name,
@@ -181,15 +182,15 @@ func serviceTUID(svc *apiv1.Service, port apiv1.ServicePort) string {
 }
 
 func serviceSourceFromNsName(namespace, name string) string {
-	return "k8s/service/" + namespace + "/" + name
+	return namespace + "/" + name
 }
 
-func serviceSource(svc *apiv1.Service) string {
+func serviceSource(svc *corev1.Service) string {
 	return serviceSourceFromNsName(svc.Namespace, svc.Name)
 }
 
-func toService(o interface{}) (*apiv1.Service, error) {
-	svc, ok := o.(*apiv1.Service)
+func toService(o interface{}) (*corev1.Service, error) {
+	svc, ok := o.(*corev1.Service)
 	if !ok {
 		return nil, fmt.Errorf("received unexpected object type: %T", o)
 	}

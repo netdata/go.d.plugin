@@ -12,7 +12,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 	"github.com/netdata/go.d.plugin/logger"
 
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 )
@@ -22,7 +22,8 @@ type podGroup struct {
 	source  string
 }
 
-func (pg podGroup) Source() string          { return pg.source }
+func (pg podGroup) Provider() string        { return "sd:k8s:pod" }
+func (pg podGroup) Source() string          { return fmt.Sprintf("%s(%s)", pg.Provider(), pg.source) }
 func (pg podGroup) Targets() []model.Target { return pg.targets }
 
 type PodTarget struct {
@@ -143,7 +144,7 @@ func (p *Pod) run(ctx context.Context, in chan<- []model.TargetGroup) {
 	}
 }
 
-func (p *Pod) buildGroup(pod *apiv1.Pod) model.TargetGroup {
+func (p *Pod) buildGroup(pod *corev1.Pod) model.TargetGroup {
 	if pod.Status.PodIP == "" || len(pod.Spec.Containers) == 0 {
 		return &podGroup{
 			source: podSource(pod),
@@ -155,7 +156,7 @@ func (p *Pod) buildGroup(pod *apiv1.Pod) model.TargetGroup {
 	}
 }
 
-func (p *Pod) buildTargets(pod *apiv1.Pod) (targets []model.Target) {
+func (p *Pod) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 	var name, kind string
 	for _, ref := range pod.OwnerReferences {
 		if ref.Controller != nil && *ref.Controller {
@@ -174,15 +175,15 @@ func (p *Pod) buildTargets(pod *apiv1.Pod) (targets []model.Target) {
 				Address:        pod.Status.PodIP,
 				Namespace:      pod.Namespace,
 				Name:           pod.Name,
-				Annotations:    toMapInterface(pod.Annotations),
-				Labels:         toMapInterface(pod.Labels),
+				Annotations:    mapAny(pod.Annotations),
+				Labels:         mapAny(pod.Labels),
 				NodeName:       pod.Spec.NodeName,
 				PodIP:          pod.Status.PodIP,
 				ControllerName: name,
 				ControllerKind: kind,
 				ContName:       container.Name,
 				Image:          container.Image,
-				Env:            toMapInterface(env),
+				Env:            mapAny(env),
 			}
 			hash, err := calcHash(target)
 			if err != nil {
@@ -199,15 +200,15 @@ func (p *Pod) buildTargets(pod *apiv1.Pod) (targets []model.Target) {
 					Address:        net.JoinHostPort(pod.Status.PodIP, portNum),
 					Namespace:      pod.Namespace,
 					Name:           pod.Name,
-					Annotations:    toMapInterface(pod.Annotations),
-					Labels:         toMapInterface(pod.Labels),
+					Annotations:    mapAny(pod.Annotations),
+					Labels:         mapAny(pod.Labels),
 					NodeName:       pod.Spec.NodeName,
 					PodIP:          pod.Status.PodIP,
 					ControllerName: name,
 					ControllerKind: kind,
 					ContName:       container.Name,
 					Image:          container.Image,
-					Env:            toMapInterface(env),
+					Env:            mapAny(env),
 					Port:           portNum,
 					PortName:       port.Name,
 					PortProtocol:   string(port.Protocol),
@@ -225,7 +226,7 @@ func (p *Pod) buildTargets(pod *apiv1.Pod) (targets []model.Target) {
 	return targets
 }
 
-func (p *Pod) collectEnv(ns string, container apiv1.Container) map[string]string {
+func (p *Pod) collectEnv(ns string, container corev1.Container) map[string]string {
 	vars := make(map[string]string)
 
 	// When a key exists in multiple sources,
@@ -258,33 +259,37 @@ func (p *Pod) collectEnv(ns string, container apiv1.Container) map[string]string
 			p.valueFromConfigMap(vars, ns, env)
 		}
 	}
+
 	if len(vars) == 0 {
 		return nil
 	}
 	return vars
 }
 
-func (p *Pod) valueFromConfigMap(vars map[string]string, ns string, env apiv1.EnvVar) {
+func (p *Pod) valueFromConfigMap(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.ConfigMapKeyRef.Name == "" || env.ValueFrom.ConfigMapKeyRef.Key == "" {
 		return
 	}
 
 	sr := env.ValueFrom.ConfigMapKeyRef
 	key := ns + "/" + sr.Name
+
 	item, exist, err := p.cmapInformer.GetStore().GetByKey(key)
 	if err != nil || !exist {
 		return
 	}
+
 	cmap, err := toConfigMap(item)
 	if err != nil {
 		return
 	}
+
 	if v, ok := cmap.Data[sr.Key]; ok {
 		vars[env.Name] = v
 	}
 }
 
-func (p *Pod) valueFromSecret(vars map[string]string, ns string, env apiv1.EnvVar) {
+func (p *Pod) valueFromSecret(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.SecretKeyRef.Name == "" || env.ValueFrom.SecretKeyRef.Key == "" {
 		return
 	}
@@ -307,7 +312,7 @@ func (p *Pod) valueFromSecret(vars map[string]string, ns string, env apiv1.EnvVa
 	}
 }
 
-func (p *Pod) envFromConfigMap(vars map[string]string, ns string, src apiv1.EnvFromSource) {
+func (p *Pod) envFromConfigMap(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.ConfigMapRef.Name == "" {
 		return
 	}
@@ -328,7 +333,7 @@ func (p *Pod) envFromConfigMap(vars map[string]string, ns string, src apiv1.EnvF
 	}
 }
 
-func (p *Pod) envFromSecret(vars map[string]string, ns string, src apiv1.EnvFromSource) {
+func (p *Pod) envFromSecret(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.SecretRef.Name == "" {
 		return
 	}
@@ -349,7 +354,7 @@ func (p *Pod) envFromSecret(vars map[string]string, ns string, src apiv1.EnvFrom
 	}
 }
 
-func podTUID(pod *apiv1.Pod, container apiv1.Container) string {
+func podTUID(pod *corev1.Pod, container corev1.Container) string {
 	return fmt.Sprintf("%s_%s_%s",
 		pod.Namespace,
 		pod.Name,
@@ -357,7 +362,7 @@ func podTUID(pod *apiv1.Pod, container apiv1.Container) string {
 	)
 }
 
-func podTUIDWithPort(pod *apiv1.Pod, container apiv1.Container, port apiv1.ContainerPort) string {
+func podTUIDWithPort(pod *corev1.Pod, container corev1.Container, port corev1.ContainerPort) string {
 	return fmt.Sprintf("%s_%s_%s_%s_%s",
 		pod.Namespace,
 		pod.Name,
@@ -368,31 +373,31 @@ func podTUIDWithPort(pod *apiv1.Pod, container apiv1.Container, port apiv1.Conta
 }
 
 func podSourceFromNsName(namespace, name string) string {
-	return "k8s/pod/" + namespace + "/" + name
+	return namespace + "/" + name
 }
 
-func podSource(pod *apiv1.Pod) string {
+func podSource(pod *corev1.Pod) string {
 	return podSourceFromNsName(pod.Namespace, pod.Name)
 }
 
-func toPod(item interface{}) (*apiv1.Pod, error) {
-	pod, ok := item.(*apiv1.Pod)
+func toPod(item interface{}) (*corev1.Pod, error) {
+	pod, ok := item.(*corev1.Pod)
 	if !ok {
 		return nil, fmt.Errorf("received unexpected object type: %T", item)
 	}
 	return pod, nil
 }
 
-func toConfigMap(item interface{}) (*apiv1.ConfigMap, error) {
-	cmap, ok := item.(*apiv1.ConfigMap)
+func toConfigMap(item interface{}) (*corev1.ConfigMap, error) {
+	cmap, ok := item.(*corev1.ConfigMap)
 	if !ok {
 		return nil, fmt.Errorf("received unexpected object type: %T", item)
 	}
 	return cmap, nil
 }
 
-func toSecret(item interface{}) (*apiv1.Secret, error) {
-	secret, ok := item.(*apiv1.Secret)
+func toSecret(item interface{}) (*corev1.Secret, error) {
+	secret, ok := item.(*corev1.Secret)
 	if !ok {
 		return nil, fmt.Errorf("received unexpected object type: %T", item)
 	}
@@ -406,7 +411,7 @@ func isVar(name string) bool {
 	return strings.IndexByte(name, '$') != -1
 }
 
-func toMapInterface(src map[string]string) map[string]interface{} {
+func mapAny(src map[string]string) map[string]any {
 	if src == nil {
 		return nil
 	}

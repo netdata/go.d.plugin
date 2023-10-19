@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
+	"github.com/netdata/go.d.plugin/pkg/k8sclient"
 
 	"github.com/stretchr/testify/assert"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
@@ -19,10 +20,10 @@ import (
 
 func TestMain(m *testing.M) {
 	_ = os.Setenv(envNodeName, "m01")
-	_ = os.Setenv(envFakeClient, "true")
+	_ = os.Setenv(k8sclient.EnvFakeClient, "true")
 	code := m.Run()
 	_ = os.Unsetenv(envNodeName)
-	_ = os.Unsetenv(envFakeClient)
+	_ = os.Unsetenv(k8sclient.EnvFakeClient)
 	os.Exit(code)
 }
 
@@ -127,7 +128,7 @@ func TestDiscovery_Discover(t *testing.T) {
 var discoveryTags model.Tags = map[string]struct{}{"k8s": {}}
 
 func prepareAllNsDiscovery(role string, objects ...runtime.Object) (*Discovery, kubernetes.Interface) {
-	return prepareDiscovery(role, []string{apiv1.NamespaceAll}, objects...)
+	return prepareDiscovery(role, []string{corev1.NamespaceAll}, objects...)
 }
 
 func prepareDiscovery(role string, namespaces []string, objects ...runtime.Object) (*Discovery, kubernetes.Interface) {
@@ -145,8 +146,8 @@ func prepareDiscovery(role string, namespaces []string, objects ...runtime.Objec
 	return discovery, clientset
 }
 
-func newNamespace(name string) *apiv1.Namespace {
-	return &apiv1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: name}}
+func newNamespace(name string) *corev1.Namespace {
+	return &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: name}}
 }
 
 func mustCalcHash(target interface{}) uint64 {
