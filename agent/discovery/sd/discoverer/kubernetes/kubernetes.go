@@ -12,9 +12,10 @@ import (
 
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 	"github.com/netdata/go.d.plugin/logger"
+	"github.com/netdata/go.d.plugin/pkg/k8sclient"
 
 	"github.com/ilyam8/hashstructure"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
@@ -68,20 +69,23 @@ func initDiscovery(cfg Config) (*Discovery, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse config->tags: %v", err)
 	}
-	client, err := newClientset()
+
+	client, err := k8sclient.New("Netdata/service-discovery")
 	if err != nil {
 		return nil, fmt.Errorf("create clientset: %v", err)
 	}
+
 	namespaces := cfg.Namespaces
 	if len(namespaces) == 0 {
-		namespaces = []string{apiv1.NamespaceAll}
+		namespaces = []string{corev1.NamespaceAll}
 	}
+
 	if cfg.LocalMode && cfg.Role == RolePod {
-		if name := os.Getenv(envNodeName); name != "" {
-			cfg.Selector.Field = joinSelectors(cfg.Selector.Field, "spec.nodeName="+name)
-		} else {
+		name := os.Getenv(envNodeName)
+		if name == "" {
 			return nil, fmt.Errorf("local_mode is enabled, but env '%s' not set", envNodeName)
 		}
+		cfg.Selector.Field = joinSelectors(cfg.Selector.Field, "spec.nodeName="+name)
 	}
 
 	d := &Discovery{
@@ -147,8 +151,8 @@ func (d *Discovery) run(ctx context.Context, updates chan []model.TargetGroup, i
 			return
 		case groups := <-updates:
 			for _, group := range groups {
-				for _, t := range group.Targets() {
-					t.Tags().Merge(d.tags)
+				for _, tgt := range group.Targets() {
+					tgt.Tags().Merge(d.tags)
 				}
 			}
 			select {
@@ -196,15 +200,16 @@ func (d *Discovery) setupPodDiscoverer(ctx context.Context, namespace string) *P
 	}
 
 	return NewPod(
-		cache.NewSharedInformer(podLW, &apiv1.Pod{}, resyncPeriod),
-		cache.NewSharedInformer(cmapLW, &apiv1.ConfigMap{}, resyncPeriod),
-		cache.NewSharedInformer(secretLW, &apiv1.Secret{}, resyncPeriod),
+		cache.NewSharedInformer(podLW, &corev1.Pod{}, resyncPeriod),
+		cache.NewSharedInformer(cmapLW, &corev1.ConfigMap{}, resyncPeriod),
+		cache.NewSharedInformer(secretLW, &corev1.Secret{}, resyncPeriod),
 	)
 }
 
 func (d *Discovery) setupServiceDiscoverer(ctx context.Context, namespace string) *Service {
 	svc := d.client.CoreV1().Services(namespace)
-	clw := &cache.ListWatch{
+
+	svcLW := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = d.selectorField
 			options.LabelSelector = d.selectorLabel
@@ -216,7 +221,9 @@ func (d *Discovery) setupServiceDiscoverer(ctx context.Context, namespace string
 			return svc.Watch(ctx, options)
 		},
 	}
-	inf := cache.NewSharedInformer(clw, &apiv1.Service{}, resyncPeriod)
+
+	inf := cache.NewSharedInformer(svcLW, &corev1.Service{}, resyncPeriod)
+
 	return NewService(inf)
 }
 
@@ -227,10 +234,6 @@ func enqueue(queue *workqueue.Type, obj interface{}) {
 	}
 	queue.Add(key)
 }
-
-//func send(ctx context.Context, in chan<- []model.TargetGroup, groups []model.TargetGroup) {
-//
-//}
 
 func send(ctx context.Context, in chan<- []model.TargetGroup, group model.TargetGroup) {
 	if group == nil {

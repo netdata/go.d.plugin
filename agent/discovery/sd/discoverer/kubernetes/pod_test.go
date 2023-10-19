@@ -12,7 +12,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 
 	"github.com/stretchr/testify/assert"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/cache"
@@ -187,9 +187,9 @@ func TestNewPod(t *testing.T) {
 		wantPanic bool
 	}{
 		"valid informers": {
-			podInf:    cache.NewSharedInformer(nil, &apiv1.Pod{}, resyncPeriod),
-			cmapInf:   cache.NewSharedInformer(nil, &apiv1.ConfigMap{}, resyncPeriod),
-			secretInf: cache.NewSharedInformer(nil, &apiv1.Secret{}, resyncPeriod),
+			podInf:    cache.NewSharedInformer(nil, &corev1.Pod{}, resyncPeriod),
+			cmapInf:   cache.NewSharedInformer(nil, &corev1.ConfigMap{}, resyncPeriod),
+			secretInf: cache.NewSharedInformer(nil, &corev1.Secret{}, resyncPeriod),
 		},
 		"nil informers": {wantPanic: true},
 	}
@@ -338,8 +338,8 @@ func TestPod_Discover(t *testing.T) {
 		},
 		"Env: from value": func() discoverySim {
 			httpd := newHTTPDPod()
-			mangle := func(c *apiv1.Container) {
-				c.Env = []apiv1.EnvVar{
+			mangle := func(c *corev1.Container) {
+				c.Env = []corev1.EnvVar{
 					{Name: "key1", Value: "value1"},
 				}
 			}
@@ -358,12 +358,12 @@ func TestPod_Discover(t *testing.T) {
 		},
 		"Env: from Secret": func() discoverySim {
 			httpd := newHTTPDPod()
-			mangle := func(c *apiv1.Container) {
-				c.Env = []apiv1.EnvVar{
+			mangle := func(c *corev1.Container) {
+				c.Env = []corev1.EnvVar{
 					{
 						Name: "key1",
-						ValueFrom: &apiv1.EnvVarSource{SecretKeyRef: &apiv1.SecretKeySelector{
-							LocalObjectReference: apiv1.LocalObjectReference{Name: "my-secret"},
+						ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: "my-secret"},
 							Key:                  "key1",
 						}},
 					},
@@ -385,12 +385,12 @@ func TestPod_Discover(t *testing.T) {
 		},
 		"Env: from ConfigMap": func() discoverySim {
 			httpd := newHTTPDPod()
-			mangle := func(c *apiv1.Container) {
-				c.Env = []apiv1.EnvVar{
+			mangle := func(c *corev1.Container) {
+				c.Env = []corev1.EnvVar{
 					{
 						Name: "key1",
-						ValueFrom: &apiv1.EnvVarSource{ConfigMapKeyRef: &apiv1.ConfigMapKeySelector{
-							LocalObjectReference: apiv1.LocalObjectReference{Name: "my-cmap"},
+						ValueFrom: &corev1.EnvVarSource{ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+							LocalObjectReference: corev1.LocalObjectReference{Name: "my-cmap"},
 							Key:                  "key1",
 						}},
 					},
@@ -412,11 +412,11 @@ func TestPod_Discover(t *testing.T) {
 		},
 		"EnvFrom: from ConfigMap": func() discoverySim {
 			httpd := newHTTPDPod()
-			mangle := func(c *apiv1.Container) {
-				c.EnvFrom = []apiv1.EnvFromSource{
+			mangle := func(c *corev1.Container) {
+				c.EnvFrom = []corev1.EnvFromSource{
 					{
-						ConfigMapRef: &apiv1.ConfigMapEnvSource{
-							LocalObjectReference: apiv1.LocalObjectReference{Name: "my-cmap"}},
+						ConfigMapRef: &corev1.ConfigMapEnvSource{
+							LocalObjectReference: corev1.LocalObjectReference{Name: "my-cmap"}},
 					},
 				}
 			}
@@ -436,11 +436,11 @@ func TestPod_Discover(t *testing.T) {
 		},
 		"EnvFrom: from Secret": func() discoverySim {
 			httpd := newHTTPDPod()
-			mangle := func(c *apiv1.Container) {
-				c.EnvFrom = []apiv1.EnvFromSource{
+			mangle := func(c *corev1.Container) {
+				c.EnvFrom = []corev1.EnvFromSource{
 					{
-						SecretRef: &apiv1.SecretEnvSource{
-							LocalObjectReference: apiv1.LocalObjectReference{Name: "my-secret"}},
+						SecretRef: &corev1.SecretEnvSource{
+							LocalObjectReference: corev1.LocalObjectReference{Name: "my-secret"}},
 					},
 				}
 			}
@@ -465,7 +465,7 @@ func TestPod_Discover(t *testing.T) {
 	}
 }
 
-func mangleContainers(containers []apiv1.Container, m func(container *apiv1.Container)) {
+func mangleContainers(containers []corev1.Container, m func(container *corev1.Container)) {
 	for i := range containers {
 		m(&containers[i])
 	}
@@ -473,8 +473,8 @@ func mangleContainers(containers []apiv1.Container, m func(container *apiv1.Cont
 
 var controllerTrue = true
 
-func newHTTPDPod() *apiv1.Pod {
-	return &apiv1.Pod{
+func newHTTPDPod() *corev1.Pod {
+	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "httpd-dd95c4d68-5bkwl",
 			Namespace:   "default",
@@ -485,27 +485,27 @@ func newHTTPDPod() *apiv1.Pod {
 				{Name: "netdata-test", Kind: "DaemonSet", Controller: &controllerTrue},
 			},
 		},
-		Spec: apiv1.PodSpec{
+		Spec: corev1.PodSpec{
 			NodeName: "m01",
-			Containers: []apiv1.Container{
+			Containers: []corev1.Container{
 				{
 					Name:  "httpd",
 					Image: "httpd",
-					Ports: []apiv1.ContainerPort{
-						{Name: "http", Protocol: apiv1.ProtocolTCP, ContainerPort: 80},
-						{Name: "https", Protocol: apiv1.ProtocolTCP, ContainerPort: 443},
+					Ports: []corev1.ContainerPort{
+						{Name: "http", Protocol: corev1.ProtocolTCP, ContainerPort: 80},
+						{Name: "https", Protocol: corev1.ProtocolTCP, ContainerPort: 443},
 					},
 				},
 			},
 		},
-		Status: apiv1.PodStatus{
+		Status: corev1.PodStatus{
 			PodIP: "172.17.0.1",
 		},
 	}
 }
 
-func newNGINXPod() *apiv1.Pod {
-	return &apiv1.Pod{
+func newNGINXPod() *corev1.Pod {
+	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "nginx-7cfd77469b-q6kxj",
 			Namespace:   "default",
@@ -516,27 +516,27 @@ func newNGINXPod() *apiv1.Pod {
 				{Name: "netdata-test", Kind: "DaemonSet", Controller: &controllerTrue},
 			},
 		},
-		Spec: apiv1.PodSpec{
+		Spec: corev1.PodSpec{
 			NodeName: "m01",
-			Containers: []apiv1.Container{
+			Containers: []corev1.Container{
 				{
 					Name:  "nginx",
 					Image: "nginx",
-					Ports: []apiv1.ContainerPort{
-						{Name: "http", Protocol: apiv1.ProtocolTCP, ContainerPort: 80},
-						{Name: "https", Protocol: apiv1.ProtocolTCP, ContainerPort: 443},
+					Ports: []corev1.ContainerPort{
+						{Name: "http", Protocol: corev1.ProtocolTCP, ContainerPort: 80},
+						{Name: "https", Protocol: corev1.ProtocolTCP, ContainerPort: 443},
 					},
 				},
 			},
 		},
-		Status: apiv1.PodStatus{
+		Status: corev1.PodStatus{
 			PodIP: "172.17.0.2",
 		},
 	}
 }
 
-func prepareConfigMap(name string, data map[string]string) *apiv1.ConfigMap {
-	return &apiv1.ConfigMap{
+func prepareConfigMap(name string, data map[string]string) *corev1.ConfigMap {
+	return &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: "default",
@@ -546,12 +546,12 @@ func prepareConfigMap(name string, data map[string]string) *apiv1.ConfigMap {
 	}
 }
 
-func prepareSecret(name string, data map[string]string) *apiv1.Secret {
+func prepareSecret(name string, data map[string]string) *corev1.Secret {
 	secretData := make(map[string][]byte, len(data))
 	for k, v := range data {
 		secretData[k] = []byte(v)
 	}
-	return &apiv1.Secret{
+	return &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: "default",
@@ -561,11 +561,11 @@ func prepareSecret(name string, data map[string]string) *apiv1.Secret {
 	}
 }
 
-func prepareEmptyPodGroup(pod *apiv1.Pod) *podGroup {
+func prepareEmptyPodGroup(pod *corev1.Pod) *podGroup {
 	return &podGroup{source: podSource(pod)}
 }
 
-func preparePodGroup(pod *apiv1.Pod) *podGroup {
+func preparePodGroup(pod *corev1.Pod) *podGroup {
 	group := prepareEmptyPodGroup(pod)
 	for _, container := range pod.Spec.Containers {
 		for _, port := range container.Ports {
@@ -575,8 +575,8 @@ func preparePodGroup(pod *apiv1.Pod) *podGroup {
 				Address:        net.JoinHostPort(pod.Status.PodIP, portNum),
 				Namespace:      pod.Namespace,
 				Name:           pod.Name,
-				Annotations:    toMapInterface(pod.Annotations),
-				Labels:         toMapInterface(pod.Labels),
+				Annotations:    mapAny(pod.Annotations),
+				Labels:         mapAny(pod.Labels),
 				NodeName:       pod.Spec.NodeName,
 				PodIP:          pod.Status.PodIP,
 				ControllerName: "netdata-test",
@@ -596,10 +596,10 @@ func preparePodGroup(pod *apiv1.Pod) *podGroup {
 	return group
 }
 
-func preparePodGroupWithEnv(pod *apiv1.Pod, env map[string]string) *podGroup {
+func preparePodGroupWithEnv(pod *corev1.Pod, env map[string]string) *podGroup {
 	group := preparePodGroup(pod)
 	for _, target := range group.Targets() {
-		target.(*PodTarget).Env = toMapInterface(env)
+		target.(*PodTarget).Env = mapAny(env)
 		target.(*PodTarget).hash = mustCalcHash(target)
 	}
 	return group

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package pipeline
+package discoverer
 
 import (
 	"errors"
@@ -10,38 +10,38 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 )
 
-type Selector interface {
-	Matches(model.Tags) bool
+type selector interface {
+	matches(model.Tags) bool
 }
 
 type (
 	exactSelector string
 	trueSelector  struct{}
-	negSelector   struct{ Selector }
-	orSelector    struct{ lhs, rhs Selector }
-	andSelector   struct{ lhs, rhs Selector }
+	negSelector   struct{ selector }
+	orSelector    struct{ lhs, rhs selector }
+	andSelector   struct{ lhs, rhs selector }
 )
 
-func (s exactSelector) Matches(tags model.Tags) bool { _, ok := tags[string(s)]; return ok }
-func (s trueSelector) Matches(model.Tags) bool       { return true }
-func (s negSelector) Matches(tags model.Tags) bool   { return !s.Selector.Matches(tags) }
-func (s orSelector) Matches(tags model.Tags) bool    { return s.lhs.Matches(tags) || s.rhs.Matches(tags) }
-func (s andSelector) Matches(tags model.Tags) bool   { return s.lhs.Matches(tags) && s.rhs.Matches(tags) }
+func (s exactSelector) matches(tags model.Tags) bool { _, ok := tags[string(s)]; return ok }
+func (s trueSelector) matches(model.Tags) bool       { return true }
+func (s negSelector) matches(tags model.Tags) bool   { return !s.selector.matches(tags) }
+func (s orSelector) matches(tags model.Tags) bool    { return s.lhs.matches(tags) || s.rhs.matches(tags) }
+func (s andSelector) matches(tags model.Tags) bool   { return s.lhs.matches(tags) && s.rhs.matches(tags) }
 
 func (s exactSelector) String() string { return "{" + string(s) + "}" }
-func (s negSelector) String() string   { return "{!" + stringify(s.Selector) + "}" }
+func (s negSelector) String() string   { return "{!" + stringify(s.selector) + "}" }
 func (s trueSelector) String() string  { return "{*}" }
 func (s orSelector) String() string    { return "{" + stringify(s.lhs) + "|" + stringify(s.rhs) + "}" }
 func (s andSelector) String() string   { return "{" + stringify(s.lhs) + ", " + stringify(s.rhs) + "}" }
-func stringify(sr Selector) string     { return strings.Trim(fmt.Sprintf("%s", sr), "{}") }
+func stringify(sr selector) string     { return strings.Trim(fmt.Sprintf("%s", sr), "{}") }
 
-func ParseSelector(line string) (sr Selector, err error) {
+func parseSelector(line string) (sr selector, err error) {
 	words := strings.Fields(line)
 	if len(words) == 0 {
 		return trueSelector{}, nil
 	}
 
-	var srs []Selector
+	var srs []selector
 	for _, word := range words {
 		if idx := strings.IndexByte(word, '|'); idx > 0 {
 			sr, err = parseOrSelectorWord(word)
@@ -64,16 +64,8 @@ func ParseSelector(line string) (sr Selector, err error) {
 	}
 }
 
-func MustParseSelector(line string) Selector {
-	sr, err := ParseSelector(line)
-	if err != nil {
-		panic(fmt.Sprintf("selector '%s' parse error: %v", line, err))
-	}
-	return sr
-}
-
-func parseOrSelectorWord(orWord string) (sr Selector, err error) {
-	var srs []Selector
+func parseOrSelectorWord(orWord string) (sr selector, err error) {
+	var srs []selector
 	for _, word := range strings.Split(orWord, "|") {
 		if sr, err = parseSingleSelectorWord(word); err != nil {
 			return nil, err
@@ -90,7 +82,7 @@ func parseOrSelectorWord(orWord string) (sr Selector, err error) {
 	}
 }
 
-func parseSingleSelectorWord(word string) (Selector, error) {
+func parseSingleSelectorWord(word string) (selector, error) {
 	if len(word) == 0 {
 		return nil, errors.New("empty word")
 	}
@@ -105,7 +97,7 @@ func parseSingleSelectorWord(word string) (Selector, error) {
 		return nil, errors.New("forbidden symbol")
 	}
 
-	var sr Selector
+	var sr selector
 	switch word {
 	case "*":
 		sr = trueSelector{}
@@ -118,7 +110,7 @@ func parseSingleSelectorWord(word string) (Selector, error) {
 	return sr, nil
 }
 
-func newAndSelector(lhs, rhs Selector, others ...Selector) Selector {
+func newAndSelector(lhs, rhs selector, others ...selector) selector {
 	m := andSelector{lhs: lhs, rhs: rhs}
 	switch len(others) {
 	case 0:
@@ -128,7 +120,7 @@ func newAndSelector(lhs, rhs Selector, others ...Selector) Selector {
 	}
 }
 
-func newOrSelector(lhs, rhs Selector, others ...Selector) Selector {
+func newOrSelector(lhs, rhs selector, others ...selector) selector {
 	m := orSelector{lhs: lhs, rhs: rhs}
 	switch len(others) {
 	case 0:
@@ -150,12 +142,12 @@ func isSelectorWordValid(word string) bool {
 	}
 	for i, b := range word {
 		switch {
-		default:
-			return false
 		case b >= 'a' && b <= 'z':
 		case b >= 'A' && b <= 'Z':
 		case b >= '0' && b <= '9' && i > 0:
 		case (b == '=' || b == '_' || b == '.') && i > 0:
+		default:
+			return false
 		}
 	}
 	return true

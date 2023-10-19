@@ -10,6 +10,7 @@ type Target interface {
 
 type TargetGroup interface {
 	Targets() []Target
+	Provider() string
 	Source() string
 }
 

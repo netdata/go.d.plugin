@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package pipeline
+package discoverer
 
 import (
 	"regexp"
@@ -11,7 +11,9 @@ import (
 	"github.com/gobwas/glob"
 )
 
-var funcMap = func() template.FuncMap {
+var funcMap = newFuncMap()
+
+func newFuncMap() template.FuncMap {
 	custom := map[string]interface{}{
 		"glob": globAny,
 		"re":   regexpAny,
@@ -23,7 +25,7 @@ var funcMap = func() template.FuncMap {
 	}
 
 	return fm
-}()
+}
 
 func globAny(value, pattern string, rest ...string) bool {
 	switch len(rest) {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package pipeline
+package discoverer
 
 import (
 	"regexp"
@@ -20,7 +20,7 @@ func TestExactSelector_String(t *testing.T) {
 }
 
 func TestNegSelector_String(t *testing.T) {
-	srs := []Selector{
+	srs := []selector{
 		exactSelector("selector"),
 		negSelector{exactSelector("selector")},
 		orSelector{
@@ -83,10 +83,10 @@ func TestExactSelector_Match(t *testing.T) {
 	}
 
 	for i, sr := range matchTests.srs {
-		assert.Truef(t, sr.Matches(matchTests.tags), "match selector num %d", i+1)
+		assert.Truef(t, sr.matches(matchTests.tags), "match selector num %d", i+1)
 	}
 	for i, sr := range notMatchTests.srs {
-		assert.Falsef(t, sr.Matches(notMatchTests.tags), "not match selector num %d", i+1)
+		assert.Falsef(t, sr.matches(notMatchTests.tags), "not match selector num %d", i+1)
 	}
 }
 
@@ -113,10 +113,10 @@ func TestNegSelector_Match(t *testing.T) {
 	}
 
 	for i, sr := range matchTests.srs {
-		assert.Truef(t, sr.Matches(matchTests.tags), "match selector num %d", i+1)
+		assert.Truef(t, sr.matches(matchTests.tags), "match selector num %d", i+1)
 	}
 	for i, sr := range notMatchTests.srs {
-		assert.Falsef(t, sr.Matches(notMatchTests.tags), "not match selector num %d", i+1)
+		assert.Falsef(t, sr.matches(notMatchTests.tags), "not match selector num %d", i+1)
 	}
 }
 
@@ -147,10 +147,10 @@ func TestOrSelector_Match(t *testing.T) {
 	}
 
 	for i, sr := range matchTests.srs {
-		assert.Truef(t, sr.Matches(matchTests.tags), "match selector num %d", i+1)
+		assert.Truef(t, sr.matches(matchTests.tags), "match selector num %d", i+1)
 	}
 	for i, sr := range notMatchTests.srs {
-		assert.Falsef(t, sr.Matches(notMatchTests.tags), "not match selector num %d", i+1)
+		assert.Falsef(t, sr.matches(notMatchTests.tags), "not match selector num %d", i+1)
 	}
 }
 
@@ -181,16 +181,16 @@ func TestAndSelector_Match(t *testing.T) {
 	}
 
 	for i, sr := range matchTests.srs {
-		assert.Truef(t, sr.Matches(matchTests.tags), "match selector num %d", i+1)
+		assert.Truef(t, sr.matches(matchTests.tags), "match selector num %d", i+1)
 	}
 	for i, sr := range notMatchTests.srs {
-		assert.Falsef(t, sr.Matches(notMatchTests.tags), "not match selector num %d", i+1)
+		assert.Falsef(t, sr.matches(notMatchTests.tags), "not match selector num %d", i+1)
 	}
 }
 
 func TestParseSelector(t *testing.T) {
 	tests := map[string]struct {
-		wantSelector Selector
+		wantSelector selector
 		wantErr      bool
 	}{
 		"":    {wantSelector: trueSelector{}},
@@ -229,7 +229,7 @@ func TestParseSelector(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sr, err := ParseSelector(name)
+			sr, err := parseSelector(name)
 
 			if test.wantErr {
 				assert.Nil(t, sr)
@@ -239,24 +239,5 @@ func TestParseSelector(t *testing.T) {
 				assert.Equal(t, test.wantSelector, sr)
 			}
 		})
-	}
-}
-
-func TestMustParseSelector(t *testing.T) {
-	tests := []string{
-		"!",
-		"a !",
-		"a!b",
-		"0a",
-		"a b c*",
-		"__",
-		"a|b|c*",
-	}
-
-	for _, test := range tests {
-		f := func() {
-			MustParseSelector(test)
-		}
-		assert.Panicsf(t, f, test)
 	}
 }

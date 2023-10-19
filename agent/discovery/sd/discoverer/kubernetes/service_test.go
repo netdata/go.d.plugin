@@ -12,7 +12,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 
 	"github.com/stretchr/testify/assert"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/cache"
 )
@@ -183,7 +183,7 @@ func TestNewService(t *testing.T) {
 		informer  cache.SharedInformer
 		wantPanic bool
 	}{
-		"valid informer": {informer: cache.NewSharedInformer(nil, &apiv1.Service{}, resyncPeriod)},
+		"valid informer": {informer: cache.NewSharedInformer(nil, &corev1.Service{}, resyncPeriod)},
 		"nil informer":   {wantPanic: true},
 	}
 
@@ -336,65 +336,65 @@ func TestService_Discover(t *testing.T) {
 
 }
 
-func newHTTPDClusterIPService() *apiv1.Service {
-	return &apiv1.Service{
+func newHTTPDClusterIPService() *corev1.Service {
+	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "httpd-cluster-ip-service",
 			Namespace:   "default",
 			Annotations: map[string]string{"phase": "prod"},
 			Labels:      map[string]string{"app": "httpd", "tier": "frontend"},
 		},
-		Spec: apiv1.ServiceSpec{
-			Ports: []apiv1.ServicePort{
-				{Name: "http", Protocol: apiv1.ProtocolTCP, Port: 80},
-				{Name: "https", Protocol: apiv1.ProtocolTCP, Port: 443},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{Name: "http", Protocol: corev1.ProtocolTCP, Port: 80},
+				{Name: "https", Protocol: corev1.ProtocolTCP, Port: 443},
 			},
-			Type:      apiv1.ServiceTypeClusterIP,
+			Type:      corev1.ServiceTypeClusterIP,
 			ClusterIP: "10.100.0.1",
 			Selector:  map[string]string{"app": "httpd", "tier": "frontend"},
 		},
 	}
 }
 
-func newNGINXClusterIPService() *apiv1.Service {
-	return &apiv1.Service{
+func newNGINXClusterIPService() *corev1.Service {
+	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "nginx-cluster-ip-service",
 			Namespace:   "default",
 			Annotations: map[string]string{"phase": "prod"},
 			Labels:      map[string]string{"app": "nginx", "tier": "frontend"},
 		},
-		Spec: apiv1.ServiceSpec{
-			Ports: []apiv1.ServicePort{
-				{Name: "http", Protocol: apiv1.ProtocolTCP, Port: 80},
-				{Name: "https", Protocol: apiv1.ProtocolTCP, Port: 443},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{Name: "http", Protocol: corev1.ProtocolTCP, Port: 80},
+				{Name: "https", Protocol: corev1.ProtocolTCP, Port: 443},
 			},
-			Type:      apiv1.ServiceTypeClusterIP,
+			Type:      corev1.ServiceTypeClusterIP,
 			ClusterIP: "10.100.0.2",
 			Selector:  map[string]string{"app": "nginx", "tier": "frontend"},
 		},
 	}
 }
 
-func newHTTPDHeadlessService() *apiv1.Service {
+func newHTTPDHeadlessService() *corev1.Service {
 	svc := newHTTPDClusterIPService()
 	svc.Name = "httpd-headless-service"
 	svc.Spec.ClusterIP = ""
 	return svc
 }
 
-func newNGINXHeadlessService() *apiv1.Service {
+func newNGINXHeadlessService() *corev1.Service {
 	svc := newNGINXClusterIPService()
 	svc.Name = "nginx-headless-service"
 	svc.Spec.ClusterIP = ""
 	return svc
 }
 
-func prepareEmptySvcGroup(svc *apiv1.Service) *serviceGroup {
+func prepareEmptySvcGroup(svc *corev1.Service) *serviceGroup {
 	return &serviceGroup{source: serviceSource(svc)}
 }
 
-func prepareSvcGroup(svc *apiv1.Service) *serviceGroup {
+func prepareSvcGroup(svc *corev1.Service) *serviceGroup {
 	group := prepareEmptySvcGroup(svc)
 	for _, port := range svc.Spec.Ports {
 		portNum := strconv.FormatInt(int64(port.Port), 10)
@@ -403,8 +403,8 @@ func prepareSvcGroup(svc *apiv1.Service) *serviceGroup {
 			Address:      net.JoinHostPort(svc.Name+"."+svc.Namespace+".svc", portNum),
 			Namespace:    svc.Namespace,
 			Name:         svc.Name,
-			Annotations:  toMapInterface(svc.Annotations),
-			Labels:       toMapInterface(svc.Labels),
+			Annotations:  mapAny(svc.Annotations),
+			Labels:       mapAny(svc.Labels),
 			Port:         portNum,
 			PortName:     port.Name,
 			PortProtocol: string(port.Protocol),
