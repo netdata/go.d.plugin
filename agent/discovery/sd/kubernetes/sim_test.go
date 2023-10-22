@@ -21,32 +21,32 @@ const (
 )
 
 type discoverySim struct {
-	discovery        *Discovery
+	td               *TargetDiscoverer
 	runAfterSync     func(ctx context.Context)
 	sortBeforeVerify bool
-	expectedGroups   []model.TargetGroup
+	wantTargetGroups []model.TargetGroup
 }
 
 func (sim discoverySim) run(t *testing.T) []model.TargetGroup {
 	t.Helper()
-	require.NotNil(t, sim.discovery)
-	require.NotEmpty(t, sim.expectedGroups)
+	require.NotNil(t, sim.td)
+	require.NotEmpty(t, sim.wantTargetGroups)
 
 	in, out := make(chan []model.TargetGroup), make(chan []model.TargetGroup)
-	go sim.collectGroups(t, in, out)
+	go sim.collectTargetGroups(t, in, out)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	go sim.discovery.Discover(ctx, in)
+	go sim.td.Discover(ctx, in)
 
 	select {
-	case <-sim.discovery.started:
+	case <-sim.td.started:
 	case <-time.After(startWaitTimeout):
-		t.Fatalf("discovery %s filed to start in %s", sim.discovery.discoverers, startWaitTimeout)
+		t.Fatalf("td %s filed to start in %s", sim.td.discoverers, startWaitTimeout)
 	}
 
-	synced := cache.WaitForCacheSync(ctx.Done(), sim.discovery.hasSynced)
-	require.Truef(t, synced, "discovery %s failed to sync", sim.discovery.discoverers)
+	synced := cache.WaitForCacheSync(ctx.Done(), sim.td.hasSynced)
+	require.Truef(t, synced, "td %s failed to sync", sim.td.discoverers)
 
 	if sim.runAfterSync != nil {
 		sim.runAfterSync(ctx)
@@ -55,40 +55,40 @@ func (sim discoverySim) run(t *testing.T) []model.TargetGroup {
 	groups := <-out
 
 	if sim.sortBeforeVerify {
-		sortGroups(groups)
+		sortTargetGroups(groups)
 	}
 
 	sim.verifyResult(t, groups)
 	return groups
 }
 
-func (sim discoverySim) collectGroups(t *testing.T, in, out chan []model.TargetGroup) {
-	var groups []model.TargetGroup
+func (sim discoverySim) collectTargetGroups(t *testing.T, in, out chan []model.TargetGroup) {
+	var tggs []model.TargetGroup
 loop:
 	for {
 		select {
 		case inGroups := <-in:
-			if groups = append(groups, inGroups...); len(groups) >= len(sim.expectedGroups) {
+			if tggs = append(tggs, inGroups...); len(tggs) >= len(sim.wantTargetGroups) {
 				break loop
 			}
 		case <-time.After(finishWaitTimeout):
-			t.Logf("discovery %s timed out after %s, got %d groups, expected %d, some events are skipped",
-				sim.discovery.discoverers, finishWaitTimeout, len(groups), len(sim.expectedGroups))
+			t.Logf("td %s timed out after %s, got %d groups, expected %d, some events are skipped",
+				sim.td.discoverers, finishWaitTimeout, len(tggs), len(sim.wantTargetGroups))
 			break loop
 		}
 	}
-	out <- groups
+	out <- tggs
 }
 
 func (sim discoverySim) verifyResult(t *testing.T, result []model.TargetGroup) {
-	var expected, actual interface{}
+	var expected, actual any
 
-	if len(sim.expectedGroups) == len(result) {
-		expected = sim.expectedGroups
+	if len(sim.wantTargetGroups) == len(result) {
+		expected = sim.wantTargetGroups
 		actual = result
 	} else {
 		want := make(map[string]model.TargetGroup)
-		for _, group := range sim.expectedGroups {
+		for _, group := range sim.wantTargetGroups {
 			want[group.Source()] = group
 		}
 		got := make(map[string]model.TargetGroup)
@@ -106,14 +106,14 @@ type hasSynced interface {
 }
 
 var (
-	_ hasSynced = &Discovery{}
-	_ hasSynced = &Pod{}
-	_ hasSynced = &Service{}
+	_ hasSynced = &TargetDiscoverer{}
+	_ hasSynced = &PodTargetDiscoverer{}
+	_ hasSynced = &ServiceTargetDiscoverer{}
 )
 
-func (d *Discovery) hasSynced() bool {
-	for _, dd := range d.discoverers {
-		v, ok := dd.(hasSynced)
+func (d *TargetDiscoverer) hasSynced() bool {
+	for _, disc := range d.discoverers {
+		v, ok := disc.(hasSynced)
 		if !ok || !v.hasSynced() {
 			return false
 		}
@@ -121,17 +121,17 @@ func (d *Discovery) hasSynced() bool {
 	return true
 }
 
-func (p *Pod) hasSynced() bool {
+func (p *PodTargetDiscoverer) hasSynced() bool {
 	return p.podInformer.HasSynced() && p.cmapInformer.HasSynced() && p.secretInformer.HasSynced()
 }
 
-func (s *Service) hasSynced() bool {
+func (s *ServiceTargetDiscoverer) hasSynced() bool {
 	return s.informer.HasSynced()
 }
 
-func sortGroups(groups []model.TargetGroup) {
-	if len(groups) == 0 {
+func sortTargetGroups(tggs []model.TargetGroup) {
+	if len(tggs) == 0 {
 		return
 	}
-	sort.Slice(groups, func(i, j int) bool { return groups[i].Source() < groups[j].Source() })
+	sort.Slice(tggs, func(i, j int) bool { return tggs[i].Source() < tggs[j].Source() })
 }

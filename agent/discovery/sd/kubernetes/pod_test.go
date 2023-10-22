@@ -18,26 +18,30 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func TestPodGroup_Source(t *testing.T) {
+func TestPodTargetGroup_Provider(t *testing.T) {
+	var p podTargetGroup
+	assert.NotEmpty(t, p.Provider())
+}
+
+func TestPodTargetGroup_Source(t *testing.T) {
 	tests := map[string]struct {
-		sim            func() discoverySim
-		expectedSource []string
+		createSim   func() discoverySim
+		wantSources []string
 	}{
 		"pods with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDPod(), newNGINXPod()
-				discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+				disc, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						preparePodGroup(httpd),
-						preparePodGroup(nginx),
+				return discoverySim{
+					td: disc,
+					wantTargetGroups: []model.TargetGroup{
+						preparePodTargetGroup(httpd),
+						preparePodTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedSource: []string{
+			wantSources: []string{
 				"sd:k8s:pod(default/httpd-dd95c4d68-5bkwl)",
 				"sd:k8s:pod(default/nginx-7cfd77469b-q6kxj)",
 			},
@@ -46,73 +50,73 @@ func TestPodGroup_Source(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []string
-			for _, group := range sim.run(t) {
-				actual = append(actual, group.Source())
+			sim := test.createSim()
+
+			var sources []string
+			for _, tgg := range sim.run(t) {
+				sources = append(sources, tgg.Source())
 			}
 
-			assert.Equal(t, test.expectedSource, actual)
+			assert.Equal(t, test.wantSources, sources)
 		})
 	}
 }
 
-func TestPodGroup_Targets(t *testing.T) {
+func TestPodTargetGroup_Targets(t *testing.T) {
 	tests := map[string]struct {
-		sim                func() discoverySim
-		expectedNumTargets int
+		createSim   func() discoverySim
+		wantTargets int
 	}{
 		"pods with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDPod(), newNGINXPod()
-				discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+				discovery, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						preparePodGroup(httpd),
-						preparePodGroup(nginx),
+				return discoverySim{
+					td: discovery,
+					wantTargetGroups: []model.TargetGroup{
+						preparePodTargetGroup(httpd),
+						preparePodTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedNumTargets: 4,
+			wantTargets: 4,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual int
-			for _, group := range sim.run(t) {
-				actual += len(group.Targets())
+			sim := test.createSim()
+
+			var targets int
+			for _, tgg := range sim.run(t) {
+				targets += len(tgg.Targets())
 			}
 
-			assert.Equal(t, test.expectedNumTargets, actual)
+			assert.Equal(t, test.wantTargets, targets)
 		})
 	}
 }
 
 func TestPodTarget_Hash(t *testing.T) {
 	tests := map[string]struct {
-		sim          func() discoverySim
-		expectedHash []uint64
+		createSim  func() discoverySim
+		wantHashes []uint64
 	}{
 		"pods with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDPod(), newNGINXPod()
-				discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+				discovery, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						preparePodGroup(httpd),
-						preparePodGroup(nginx),
+				return discoverySim{
+					td: discovery,
+					wantTargetGroups: []model.TargetGroup{
+						preparePodTargetGroup(httpd),
+						preparePodTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedHash: []uint64{
+			wantHashes: []uint64{
 				12703169414253998055,
 				13351713096133918928,
 				8241692333761256175,
@@ -123,39 +127,39 @@ func TestPodTarget_Hash(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []uint64
-			for _, group := range sim.run(t) {
-				for _, tg := range group.Targets() {
-					actual = append(actual, tg.Hash())
+			sim := test.createSim()
+
+			var hashes []uint64
+			for _, tgg := range sim.run(t) {
+				for _, tg := range tgg.Targets() {
+					hashes = append(hashes, tg.Hash())
 				}
 			}
 
-			assert.Equal(t, test.expectedHash, actual)
+			assert.Equal(t, test.wantHashes, hashes)
 		})
 	}
 }
 
 func TestPodTarget_TUID(t *testing.T) {
 	tests := map[string]struct {
-		sim          func() discoverySim
-		expectedTUID []string
+		createSim func() discoverySim
+		wantTUID  []string
 	}{
 		"pods with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDPod(), newNGINXPod()
-				discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+				discovery, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						preparePodGroup(httpd),
-						preparePodGroup(nginx),
+				return discoverySim{
+					td: discovery,
+					wantTargetGroups: []model.TargetGroup{
+						preparePodTargetGroup(httpd),
+						preparePodTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedTUID: []string{
+			wantTUID: []string{
 				"default_httpd-dd95c4d68-5bkwl_httpd_tcp_80",
 				"default_httpd-dd95c4d68-5bkwl_httpd_tcp_443",
 				"default_nginx-7cfd77469b-q6kxj_nginx_tcp_80",
@@ -166,20 +170,21 @@ func TestPodTarget_TUID(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []string
-			for _, group := range sim.run(t) {
-				for _, tg := range group.Targets() {
-					actual = append(actual, tg.TUID())
+			sim := test.createSim()
+
+			var tuid []string
+			for _, tgg := range sim.run(t) {
+				for _, tg := range tgg.Targets() {
+					tuid = append(tuid, tg.TUID())
 				}
 			}
 
-			assert.Equal(t, test.expectedTUID, actual)
+			assert.Equal(t, test.wantTUID, tuid)
 		})
 	}
 }
 
-func TestNewPod(t *testing.T) {
+func TestNewPodTargetDiscoverer(t *testing.T) {
 	tests := map[string]struct {
 		podInf    cache.SharedInformer
 		cmapInf   cache.SharedInformer
@@ -187,154 +192,152 @@ func TestNewPod(t *testing.T) {
 		wantPanic bool
 	}{
 		"valid informers": {
+			wantPanic: false,
 			podInf:    cache.NewSharedInformer(nil, &corev1.Pod{}, resyncPeriod),
 			cmapInf:   cache.NewSharedInformer(nil, &corev1.ConfigMap{}, resyncPeriod),
 			secretInf: cache.NewSharedInformer(nil, &corev1.Secret{}, resyncPeriod),
 		},
-		"nil informers": {wantPanic: true},
+		"nil informers": {
+			wantPanic: true,
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			f := func() { NewPodTargetDiscoverer(test.podInf, test.cmapInf, test.secretInf) }
+
 			if test.wantPanic {
-				assert.Panics(t, func() { NewPod(nil, nil, nil) })
+				assert.Panics(t, f)
 			} else {
-				assert.IsType(t, &Pod{}, NewPod(test.podInf, test.cmapInf, test.secretInf))
+				assert.NotPanics(t, f)
 			}
 		})
 	}
 }
 
-func TestPod_String(t *testing.T) {
-	var p Pod
+func TestPodTargetDiscoverer_String(t *testing.T) {
+	var p PodTargetDiscoverer
 	assert.NotEmpty(t, p.String())
 }
 
-func TestPod_Discover(t *testing.T) {
+func TestPodTargetDiscoverer_Discover(t *testing.T) {
 	tests := map[string]func() discoverySim{
 		"ADD: pods exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+			td, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroup(httpd),
-					preparePodGroup(nginx),
+			return discoverySim{
+				td: td,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroup(httpd),
+					preparePodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"ADD: pods exist before run and add after sync": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
-			discovery, clientset := prepareAllNsDiscovery(RolePod, httpd)
-			podClient := clientset.CoreV1().Pods("default")
+			disc, client := prepareAllNsDiscoverer(RolePod, httpd)
+			podClient := client.CoreV1().Pods("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					_, _ = podClient.Create(ctx, nginx, metav1.CreateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					preparePodGroup(httpd),
-					preparePodGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroup(httpd),
+					preparePodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"DELETE: remove pods after sync": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
-			discovery, clientset := prepareAllNsDiscovery(RolePod, httpd, nginx)
-			podClient := clientset.CoreV1().Pods("default")
+			disc, client := prepareAllNsDiscoverer(RolePod, httpd, nginx)
+			podClient := client.CoreV1().Pods("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_ = podClient.Delete(ctx, httpd.Name, metav1.DeleteOptions{})
 					_ = podClient.Delete(ctx, nginx.Name, metav1.DeleteOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					preparePodGroup(httpd),
-					preparePodGroup(nginx),
-					prepareEmptyPodGroup(httpd),
-					prepareEmptyPodGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroup(httpd),
+					preparePodTargetGroup(nginx),
+					prepareEmptyPodTargetGroup(httpd),
+					prepareEmptyPodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"DELETE,ADD: remove and add pods after sync": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
-			discovery, clientset := prepareAllNsDiscovery(RolePod, httpd)
-			podClient := clientset.CoreV1().Pods("default")
+			disc, client := prepareAllNsDiscoverer(RolePod, httpd)
+			podClient := client.CoreV1().Pods("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_ = podClient.Delete(ctx, httpd.Name, metav1.DeleteOptions{})
 					_, _ = podClient.Create(ctx, nginx, metav1.CreateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					preparePodGroup(httpd),
-					prepareEmptyPodGroup(httpd),
-					preparePodGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroup(httpd),
+					prepareEmptyPodTargetGroup(httpd),
+					preparePodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"ADD: pods with empty PodIP": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
 			httpd.Status.PodIP = ""
 			nginx.Status.PodIP = ""
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					prepareEmptyPodGroup(httpd),
-					prepareEmptyPodGroup(nginx),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptyPodTargetGroup(httpd),
+					prepareEmptyPodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"UPDATE: set pods PodIP after sync": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
 			httpd.Status.PodIP = ""
 			nginx.Status.PodIP = ""
-			discovery, clientset := prepareAllNsDiscovery(RolePod, httpd, nginx)
-			podClient := clientset.CoreV1().Pods("default")
+			disc, client := prepareAllNsDiscoverer(RolePod, httpd, nginx)
+			podClient := client.CoreV1().Pods("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_, _ = podClient.Update(ctx, newHTTPDPod(), metav1.UpdateOptions{})
 					_, _ = podClient.Update(ctx, newNGINXPod(), metav1.UpdateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					prepareEmptyPodGroup(httpd),
-					prepareEmptyPodGroup(nginx),
-					preparePodGroup(newHTTPDPod()),
-					preparePodGroup(newNGINXPod()),
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptyPodTargetGroup(httpd),
+					prepareEmptyPodTargetGroup(nginx),
+					preparePodTargetGroup(newHTTPDPod()),
+					preparePodTargetGroup(newNGINXPod()),
 				},
 			}
-			return sim
 		},
 		"ADD: pods without containers": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
 			httpd.Spec.Containers = httpd.Spec.Containers[:0]
 			nginx.Spec.Containers = httpd.Spec.Containers[:0]
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, nginx)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					prepareEmptyPodGroup(httpd),
-					prepareEmptyPodGroup(nginx),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptyPodTargetGroup(httpd),
+					prepareEmptyPodTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"Env: from value": func() discoverySim {
 			httpd := newHTTPDPod()
@@ -346,15 +349,14 @@ func TestPod_Discover(t *testing.T) {
 			mangleContainers(httpd.Spec.Containers, mangle)
 			data := map[string]string{"key1": "value1"}
 
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroupWithEnv(httpd, data),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroupWithEnv(httpd, data),
 				},
 			}
-			return sim
 		},
 		"Env: from Secret": func() discoverySim {
 			httpd := newHTTPDPod()
@@ -373,15 +375,14 @@ func TestPod_Discover(t *testing.T) {
 			data := map[string]string{"key1": "value1"}
 			secret := prepareSecret("my-secret", data)
 
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, secret)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, secret)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroupWithEnv(httpd, data),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroupWithEnv(httpd, data),
 				},
 			}
-			return sim
 		},
 		"Env: from ConfigMap": func() discoverySim {
 			httpd := newHTTPDPod()
@@ -400,15 +401,14 @@ func TestPod_Discover(t *testing.T) {
 			data := map[string]string{"key1": "value1"}
 			cmap := prepareConfigMap("my-cmap", data)
 
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, cmap)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, cmap)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroupWithEnv(httpd, data),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroupWithEnv(httpd, data),
 				},
 			}
-			return sim
 		},
 		"EnvFrom: from ConfigMap": func() discoverySim {
 			httpd := newHTTPDPod()
@@ -424,15 +424,14 @@ func TestPod_Discover(t *testing.T) {
 			data := map[string]string{"key1": "value1", "key2": "value2"}
 			cmap := prepareConfigMap("my-cmap", data)
 
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, cmap)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, cmap)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroupWithEnv(httpd, data),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroupWithEnv(httpd, data),
 				},
 			}
-			return sim
 		},
 		"EnvFrom: from Secret": func() discoverySim {
 			httpd := newHTTPDPod()
@@ -448,26 +447,28 @@ func TestPod_Discover(t *testing.T) {
 			data := map[string]string{"key1": "value1", "key2": "value2"}
 			secret := prepareSecret("my-secret", data)
 
-			discovery, _ := prepareAllNsDiscovery(RolePod, httpd, secret)
+			disc, _ := prepareAllNsDiscoverer(RolePod, httpd, secret)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					preparePodGroupWithEnv(httpd, data),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					preparePodTargetGroupWithEnv(httpd, data),
 				},
 			}
-			return sim
 		},
 	}
 
-	for name, sim := range tests {
-		t.Run(name, func(t *testing.T) { sim().run(t) })
+	for name, createSim := range tests {
+		t.Run(name, func(t *testing.T) {
+			sim := createSim()
+			sim.run(t)
+		})
 	}
 }
 
-func mangleContainers(containers []corev1.Container, m func(container *corev1.Container)) {
+func mangleContainers(containers []corev1.Container, mange func(container *corev1.Container)) {
 	for i := range containers {
-		m(&containers[i])
+		mange(&containers[i])
 	}
 }
 
@@ -561,16 +562,16 @@ func prepareSecret(name string, data map[string]string) *corev1.Secret {
 	}
 }
 
-func prepareEmptyPodGroup(pod *corev1.Pod) *podGroup {
-	return &podGroup{source: podSource(pod)}
+func prepareEmptyPodTargetGroup(pod *corev1.Pod) *podTargetGroup {
+	return &podTargetGroup{source: podSource(pod)}
 }
 
-func preparePodGroup(pod *corev1.Pod) *podGroup {
-	group := prepareEmptyPodGroup(pod)
+func preparePodTargetGroup(pod *corev1.Pod) *podTargetGroup {
+	tgg := prepareEmptyPodTargetGroup(pod)
 	for _, container := range pod.Spec.Containers {
 		for _, port := range container.Ports {
 			portNum := strconv.FormatUint(uint64(port.ContainerPort), 10)
-			target := &PodTarget{
+			tgt := &PodTarget{
 				tuid:           podTUIDWithPort(pod, container, port),
 				Address:        net.JoinHostPort(pod.Status.PodIP, portNum),
 				Namespace:      pod.Namespace,
@@ -588,19 +589,18 @@ func preparePodGroup(pod *corev1.Pod) *podGroup {
 				PortName:       port.Name,
 				PortProtocol:   string(port.Protocol),
 			}
-			target.hash = mustCalcHash(target)
-			target.Tags().Merge(discoveryTags)
-			group.targets = append(group.targets, target)
+			tgt.hash = mustCalcHash(tgt)
+			tgg.targets = append(tgg.targets, tgt)
 		}
 	}
-	return group
+	return tgg
 }
 
-func preparePodGroupWithEnv(pod *corev1.Pod, env map[string]string) *podGroup {
-	group := preparePodGroup(pod)
-	for _, target := range group.Targets() {
-		target.(*PodTarget).Env = mapAny(env)
-		target.(*PodTarget).hash = mustCalcHash(target)
+func preparePodTargetGroupWithEnv(pod *corev1.Pod, env map[string]string) *podTargetGroup {
+	tgg := preparePodTargetGroup(pod)
+	for _, tgt := range tgg.Targets() {
+		tgt.(*PodTarget).Env = mapAny(env)
+		tgt.(*PodTarget).hash = mustCalcHash(tgt)
 	}
-	return group
+	return tgg
 }
