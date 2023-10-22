@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package discoverer
+package pipileine
 
 import (
 	"regexp"
@@ -60,7 +60,7 @@ func TestAndSelector_String(t *testing.T) {
 	assert.True(t, reSrString.MatchString(sr.String()))
 }
 
-func TestExactSelector_Match(t *testing.T) {
+func TestExactSelector_Matches(t *testing.T) {
 	matchTests := struct {
 		tags model.Tags
 		srs  []exactSelector
@@ -90,7 +90,7 @@ func TestExactSelector_Match(t *testing.T) {
 	}
 }
 
-func TestNegSelector_Match(t *testing.T) {
+func TestNegSelector_Matches(t *testing.T) {
 	matchTests := struct {
 		tags model.Tags
 		srs  []negSelector
@@ -120,7 +120,7 @@ func TestNegSelector_Match(t *testing.T) {
 	}
 }
 
-func TestOrSelector_Match(t *testing.T) {
+func TestOrSelector_Matches(t *testing.T) {
 	matchTests := struct {
 		tags model.Tags
 		srs  []orSelector
@@ -154,7 +154,7 @@ func TestOrSelector_Match(t *testing.T) {
 	}
 }
 
-func TestAndSelector_Match(t *testing.T) {
+func TestAndSelector_Matches(t *testing.T) {
 	matchTests := struct {
 		tags model.Tags
 		srs  []andSelector

@@ -5,8 +5,7 @@ package kubernetes
 import "fmt"
 
 type Config struct {
-	APIServer  string   `yaml:"api_server"`
-	Tags       string   `yaml:"tags"`
+	APIServer  string   `yaml:"api_server"` // TODO: implement?
 	Namespaces []string `yaml:"namespaces"`
 	Role       string   `yaml:"role"`
 	LocalMode  bool     `yaml:"local_mode"`
@@ -17,17 +16,9 @@ type Config struct {
 }
 
 func validateConfig(cfg Config) error {
-	if !isRoleValid(cfg.Role) {
+	if !(cfg.Role == RolePod || cfg.Role == RoleService) {
 		return fmt.Errorf("invalid role '%s', valid roles: '%s', '%s'", cfg.Role, RolePod, RoleService)
 	}
 
-	if cfg.Tags == "" {
-		return fmt.Errorf("no tags set for '%s' role", cfg.Role)
-	}
-
 	return nil
-}
-
-func isRoleValid(role string) bool {
-	return role == RolePod || role == RoleService
 }

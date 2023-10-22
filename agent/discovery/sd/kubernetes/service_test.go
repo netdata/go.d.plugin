@@ -17,26 +17,30 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-func TestServiceGroup_Source(t *testing.T) {
+func TestServiceTargetGroup_Provider(t *testing.T) {
+	var s serviceTargetGroup
+	assert.NotEmpty(t, s.Provider())
+}
+
+func TestServiceTargetGroup_Source(t *testing.T) {
 	tests := map[string]struct {
-		sim            func() discoverySim
-		expectedSource []string
+		createSim   func() discoverySim
+		wantSources []string
 	}{
 		"ClusterIP svc with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						prepareSvcGroup(httpd),
-						prepareSvcGroup(nginx),
+				return discoverySim{
+					td: disc,
+					wantTargetGroups: []model.TargetGroup{
+						prepareSvcTargetGroup(httpd),
+						prepareSvcTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedSource: []string{
+			wantSources: []string{
 				"sd:k8s:service(default/httpd-cluster-ip-service)",
 				"sd:k8s:service(default/nginx-cluster-ip-service)",
 			},
@@ -45,73 +49,73 @@ func TestServiceGroup_Source(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []string
-			for _, group := range sim.run(t) {
-				actual = append(actual, group.Source())
+			sim := test.createSim()
+
+			var sources []string
+			for _, tgg := range sim.run(t) {
+				sources = append(sources, tgg.Source())
 			}
 
-			assert.Equal(t, test.expectedSource, actual)
+			assert.Equal(t, test.wantSources, sources)
 		})
 	}
 }
 
-func TestServiceGroup_Targets(t *testing.T) {
+func TestServiceTargetGroup_Targets(t *testing.T) {
 	tests := map[string]struct {
-		sim                func() discoverySim
-		expectedNumTargets int
+		createSim   func() discoverySim
+		wantTargets int
 	}{
 		"ClusterIP svc with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						prepareSvcGroup(httpd),
-						prepareSvcGroup(nginx),
+				return discoverySim{
+					td: disc,
+					wantTargetGroups: []model.TargetGroup{
+						prepareSvcTargetGroup(httpd),
+						prepareSvcTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedNumTargets: 4,
+			wantTargets: 4,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual int
-			for _, group := range sim.run(t) {
-				actual += len(group.Targets())
+			sim := test.createSim()
+
+			var targets int
+			for _, tgg := range sim.run(t) {
+				targets += len(tgg.Targets())
 			}
 
-			assert.Equal(t, test.expectedNumTargets, actual)
+			assert.Equal(t, test.wantTargets, targets)
 		})
 	}
 }
 
 func TestServiceTarget_Hash(t *testing.T) {
 	tests := map[string]struct {
-		sim          func() discoverySim
-		expectedHash []uint64
+		createSim  func() discoverySim
+		wantHashes []uint64
 	}{
 		"ClusterIP svc with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						prepareSvcGroup(httpd),
-						prepareSvcGroup(nginx),
+				return discoverySim{
+					td: disc,
+					wantTargetGroups: []model.TargetGroup{
+						prepareSvcTargetGroup(httpd),
+						prepareSvcTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedHash: []uint64{
+			wantHashes: []uint64{
 				17611803477081780974,
 				6019985892433421258,
 				4151907287549842238,
@@ -122,39 +126,39 @@ func TestServiceTarget_Hash(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []uint64
-			for _, group := range sim.run(t) {
-				for _, tg := range group.Targets() {
-					actual = append(actual, tg.Hash())
+			sim := test.createSim()
+
+			var hashes []uint64
+			for _, tgg := range sim.run(t) {
+				for _, tgt := range tgg.Targets() {
+					hashes = append(hashes, tgt.Hash())
 				}
 			}
 
-			assert.Equal(t, test.expectedHash, actual)
+			assert.Equal(t, test.wantHashes, hashes)
 		})
 	}
 }
 
 func TestServiceTarget_TUID(t *testing.T) {
 	tests := map[string]struct {
-		sim          func() discoverySim
-		expectedTUID []string
+		createSim func() discoverySim
+		wantTUID  []string
 	}{
 		"ClusterIP svc with multiple ports": {
-			sim: func() discoverySim {
+			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-				sim := discoverySim{
-					discovery: discovery,
-					expectedGroups: []model.TargetGroup{
-						prepareSvcGroup(httpd),
-						prepareSvcGroup(nginx),
+				return discoverySim{
+					td: disc,
+					wantTargetGroups: []model.TargetGroup{
+						prepareSvcTargetGroup(httpd),
+						prepareSvcTargetGroup(nginx),
 					},
 				}
-				return sim
 			},
-			expectedTUID: []string{
+			wantTUID: []string{
 				"default_httpd-cluster-ip-service_tcp_80",
 				"default_httpd-cluster-ip-service_tcp_443",
 				"default_nginx-cluster-ip-service_tcp_80",
@@ -165,173 +169,178 @@ func TestServiceTarget_TUID(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			sim := test.sim()
-			var actual []string
-			for _, group := range sim.run(t) {
-				for _, tg := range group.Targets() {
-					actual = append(actual, tg.TUID())
+			sim := test.createSim()
+
+			var tuid []string
+			for _, tgg := range sim.run(t) {
+				for _, tgt := range tgg.Targets() {
+					tuid = append(tuid, tgt.TUID())
 				}
 			}
 
-			assert.Equal(t, test.expectedTUID, actual)
+			assert.Equal(t, test.wantTUID, tuid)
 		})
 	}
 }
 
-func TestNewService(t *testing.T) {
+func TestNewServiceTargetDiscoverer(t *testing.T) {
 	tests := map[string]struct {
 		informer  cache.SharedInformer
 		wantPanic bool
 	}{
-		"valid informer": {informer: cache.NewSharedInformer(nil, &corev1.Service{}, resyncPeriod)},
-		"nil informer":   {wantPanic: true},
+		"valid informer": {
+			wantPanic: false,
+			informer:  cache.NewSharedInformer(nil, &corev1.Service{}, resyncPeriod),
+		},
+		"nil informer": {
+			wantPanic: true,
+			informer:  nil,
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			f := func() { NewServiceTargetDiscoverer(test.informer) }
+
 			if test.wantPanic {
-				assert.Panics(t, func() { NewService(nil) })
+				assert.Panics(t, f)
 			} else {
-				assert.IsType(t, &Service{}, NewService(test.informer))
+				assert.NotPanics(t, f)
 			}
 		})
 	}
 }
 
-func TestService_String(t *testing.T) {
-	var s Service
+func TestServiceTargetDiscoverer_String(t *testing.T) {
+	var s ServiceTargetDiscoverer
 	assert.NotEmpty(t, s.String())
 }
 
-func TestService_Discover(t *testing.T) {
+func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 	tests := map[string]func() discoverySim{
 		"ADD: ClusterIP svc exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					prepareSvcGroup(httpd),
-					prepareSvcGroup(nginx),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					prepareSvcTargetGroup(httpd),
+					prepareSvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"ADD: ClusterIP svc exist before run and add after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			discovery, clientset := prepareAllNsDiscovery(RoleService, httpd)
-			svcClient := clientset.CoreV1().Services("default")
+			disc, client := prepareAllNsDiscoverer(RoleService, httpd)
+			svcClient := client.CoreV1().Services("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					_, _ = svcClient.Create(ctx, nginx, metav1.CreateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					prepareSvcGroup(httpd),
-					prepareSvcGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					prepareSvcTargetGroup(httpd),
+					prepareSvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"DELETE: ClusterIP svc remove after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			discovery, clientset := prepareAllNsDiscovery(RoleService, httpd, nginx)
-			svcClient := clientset.CoreV1().Services("default")
+			disc, client := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			svcClient := client.CoreV1().Services("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_ = svcClient.Delete(ctx, httpd.Name, metav1.DeleteOptions{})
 					_ = svcClient.Delete(ctx, nginx.Name, metav1.DeleteOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					prepareSvcGroup(httpd),
-					prepareSvcGroup(nginx),
-					prepareEmptySvcGroup(httpd),
-					prepareEmptySvcGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					prepareSvcTargetGroup(httpd),
+					prepareSvcTargetGroup(nginx),
+					prepareEmptySvcTargetGroup(httpd),
+					prepareEmptySvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"ADD,DELETE: ClusterIP svc remove and add after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			discovery, clientset := prepareAllNsDiscovery(RoleService, httpd)
-			svcClient := clientset.CoreV1().Services("default")
+			disc, client := prepareAllNsDiscoverer(RoleService, httpd)
+			svcClient := client.CoreV1().Services("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_ = svcClient.Delete(ctx, httpd.Name, metav1.DeleteOptions{})
 					_, _ = svcClient.Create(ctx, nginx, metav1.CreateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					prepareSvcGroup(httpd),
-					prepareEmptySvcGroup(httpd),
-					prepareSvcGroup(nginx),
+				wantTargetGroups: []model.TargetGroup{
+					prepareSvcTargetGroup(httpd),
+					prepareEmptySvcTargetGroup(httpd),
+					prepareSvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"ADD: Headless svc exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDHeadlessService(), newNGINXHeadlessService()
-			discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					prepareEmptySvcGroup(httpd),
-					prepareEmptySvcGroup(nginx),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptySvcTargetGroup(httpd),
+					prepareEmptySvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 		"UPDATE: Headless => ClusterIP svc after sync": func() discoverySim {
 			httpd, nginx := newHTTPDHeadlessService(), newNGINXHeadlessService()
 			httpdUpd, nginxUpd := *httpd, *nginx
 			httpdUpd.Spec.ClusterIP = "10.100.0.1"
 			nginxUpd.Spec.ClusterIP = "10.100.0.2"
-			discovery, clientset := prepareAllNsDiscovery(RoleService, httpd, nginx)
-			svcClient := clientset.CoreV1().Services("default")
+			disc, client := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			svcClient := client.CoreV1().Services("default")
 
-			sim := discoverySim{
-				discovery: discovery,
+			return discoverySim{
+				td: disc,
 				runAfterSync: func(ctx context.Context) {
 					time.Sleep(time.Millisecond * 50)
 					_, _ = svcClient.Update(ctx, &httpdUpd, metav1.UpdateOptions{})
 					_, _ = svcClient.Update(ctx, &nginxUpd, metav1.UpdateOptions{})
 				},
-				expectedGroups: []model.TargetGroup{
-					prepareEmptySvcGroup(httpd),
-					prepareEmptySvcGroup(nginx),
-					prepareSvcGroup(&httpdUpd),
-					prepareSvcGroup(&nginxUpd),
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptySvcTargetGroup(httpd),
+					prepareEmptySvcTargetGroup(nginx),
+					prepareSvcTargetGroup(&httpdUpd),
+					prepareSvcTargetGroup(&nginxUpd),
 				},
 			}
-			return sim
 		},
 		"ADD: ClusterIP svc with zero exposed ports": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
 			httpd.Spec.Ports = httpd.Spec.Ports[:0]
 			nginx.Spec.Ports = httpd.Spec.Ports[:0]
-			discovery, _ := prepareAllNsDiscovery(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
 
-			sim := discoverySim{
-				discovery: discovery,
-				expectedGroups: []model.TargetGroup{
-					prepareEmptySvcGroup(httpd),
-					prepareEmptySvcGroup(nginx),
+			return discoverySim{
+				td: disc,
+				wantTargetGroups: []model.TargetGroup{
+					prepareEmptySvcTargetGroup(httpd),
+					prepareEmptySvcTargetGroup(nginx),
 				},
 			}
-			return sim
 		},
 	}
 
-	for name, sim := range tests {
-		t.Run(name, func(t *testing.T) { sim().run(t) })
+	for name, createSim := range tests {
+		t.Run(name, func(t *testing.T) {
+			sim := createSim()
+			sim.run(t)
+		})
 	}
 
 }
@@ -390,15 +399,15 @@ func newNGINXHeadlessService() *corev1.Service {
 	return svc
 }
 
-func prepareEmptySvcGroup(svc *corev1.Service) *serviceGroup {
-	return &serviceGroup{source: serviceSource(svc)}
+func prepareEmptySvcTargetGroup(svc *corev1.Service) *serviceTargetGroup {
+	return &serviceTargetGroup{source: serviceSource(svc)}
 }
 
-func prepareSvcGroup(svc *corev1.Service) *serviceGroup {
-	group := prepareEmptySvcGroup(svc)
+func prepareSvcTargetGroup(svc *corev1.Service) *serviceTargetGroup {
+	tgg := prepareEmptySvcTargetGroup(svc)
 	for _, port := range svc.Spec.Ports {
 		portNum := strconv.FormatInt(int64(port.Port), 10)
-		target := &ServiceTarget{
+		tgt := &ServiceTarget{
 			tuid:         serviceTUID(svc, port),
 			Address:      net.JoinHostPort(svc.Name+"."+svc.Namespace+".svc", portNum),
 			Namespace:    svc.Namespace,
@@ -412,9 +421,8 @@ func prepareSvcGroup(svc *corev1.Service) *serviceGroup {
 			ExternalName: svc.Spec.ExternalName,
 			Type:         string(svc.Spec.Type),
 		}
-		target.hash = mustCalcHash(target)
-		target.Tags().Merge(discoveryTags)
-		group.targets = append(group.targets, target)
+		tgt.hash = mustCalcHash(tgt)
+		tgg.targets = append(tgg.targets, tgt)
 	}
-	return group
+	return tgg
 }

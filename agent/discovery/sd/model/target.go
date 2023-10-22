@@ -13,9 +13,3 @@ type TargetGroup interface {
 	Provider() string
 	Source() string
 }
-
-type Config struct {
-	Tags  Tags
-	Conf  string
-	Stale bool
-}

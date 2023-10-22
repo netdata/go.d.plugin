@@ -1,0 +1,21 @@
+name: qqq
+discovery:
+  k8s:
+    - tags: "k8s"
+
+classify:
+  - name: "name"
+    selector: "k8s"
+    tags: "apps"
+    match:
+      - tags: "apache"
+        expr: '{{ and (eq .Port "8161") (glob .Image "**/activemq*") }}'
+
+compose:
+  - name: "Applications"
+    selector: "apps"
+    config:
+      - selector: "apache"
+        template: |
+          module: bind
+          name: bind-{{.TUID}}

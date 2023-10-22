@@ -17,79 +17,79 @@ import (
 	"k8s.io/client-go/util/workqueue"
 )
 
-type podGroup struct {
+type podTargetGroup struct {
 	targets []model.Target
 	source  string
 }
 
-func (pg podGroup) Provider() string        { return "sd:k8s:pod" }
-func (pg podGroup) Source() string          { return fmt.Sprintf("%s(%s)", pg.Provider(), pg.source) }
-func (pg podGroup) Targets() []model.Target { return pg.targets }
+func (p podTargetGroup) Provider() string        { return "sd:k8s:pod" }
+func (p podTargetGroup) Source() string          { return fmt.Sprintf("%s(%s)", p.Provider(), p.source) }
+func (p podTargetGroup) Targets() []model.Target { return p.targets }
 
 type PodTarget struct {
 	model.Base `hash:"ignore"`
-	hash       uint64
-	tuid       string
-	Address    string
 
-	Namespace   string
-	Name        string
-	Annotations map[string]interface{}
-	Labels      map[string]interface{}
-	NodeName    string
-	PodIP       string
+	hash uint64
+	tuid string
 
+	Address        string
+	Namespace      string
+	Name           string
+	Annotations    map[string]any
+	Labels         map[string]any
+	NodeName       string
+	PodIP          string
 	ControllerName string
 	ControllerKind string
-
-	ContName     string
-	Image        string
-	Env          map[string]interface{}
-	Port         string
-	PortName     string
-	PortProtocol string
+	ContName       string
+	Image          string
+	Env            map[string]any
+	Port           string
+	PortName       string
+	PortProtocol   string
 }
 
-func (pt PodTarget) Hash() uint64 { return pt.hash }
-func (pt PodTarget) TUID() string { return pt.tuid }
+func (p PodTarget) Hash() uint64 { return p.hash }
+func (p PodTarget) TUID() string { return p.tuid }
 
-type Pod struct {
-	podInformer    cache.SharedInformer
-	cmapInformer   cache.SharedInformer
-	secretInformer cache.SharedInformer
-	queue          *workqueue.Type
-	log            *logger.Logger
-}
+func NewPodTargetDiscoverer(pod, cmap, secret cache.SharedInformer) *PodTargetDiscoverer {
 
-func NewPod(pod, cmap, secret cache.SharedInformer) *Pod {
 	if pod == nil || cmap == nil || secret == nil {
-		panic("nil cmap or secret informer")
+		panic("nil pod or cmap or secret informer")
 	}
 
 	queue := workqueue.NewWithConfig(workqueue.QueueConfig{Name: "pod"})
 
 	_, _ = pod.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc:    func(obj interface{}) { enqueue(queue, obj) },
-		UpdateFunc: func(_, obj interface{}) { enqueue(queue, obj) },
-		DeleteFunc: func(obj interface{}) { enqueue(queue, obj) },
+		AddFunc:    func(obj any) { enqueue(queue, obj) },
+		UpdateFunc: func(_, obj any) { enqueue(queue, obj) },
+		DeleteFunc: func(obj any) { enqueue(queue, obj) },
 	})
 
-	return &Pod{
+	return &PodTargetDiscoverer{
+		Logger:         logger.New("k8s pod td", ""),
 		podInformer:    pod,
 		cmapInformer:   cmap,
 		secretInformer: secret,
 		queue:          queue,
-		log:            logger.New("k8s pod discovery", ""),
 	}
 }
 
-func (p *Pod) String() string {
-	return fmt.Sprintf("k8s %s discovery", RolePod)
+type PodTargetDiscoverer struct {
+	*logger.Logger
+	podInformer    cache.SharedInformer
+	cmapInformer   cache.SharedInformer
+	secretInformer cache.SharedInformer
+	queue          *workqueue.Type
 }
 
-func (p *Pod) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
-	p.log.Info("instance is started")
-	defer p.log.Info("instance is stopped")
+func (p *PodTargetDiscoverer) String() string {
+	return fmt.Sprintf("k8s %s td", RolePod)
+}
+
+func (p *PodTargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
+	p.Info("instance is started")
+	defer p.Info("instance is stopped")
 	defer p.queue.ShutDown()
 
 	go p.podInformer.Run(ctx.Done())
@@ -98,65 +98,69 @@ func (p *Pod) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
 
 	if !cache.WaitForCacheSync(ctx.Done(),
 		p.podInformer.HasSynced, p.cmapInformer.HasSynced, p.secretInformer.HasSynced) {
-		p.log.Error("failed to sync caches")
+		p.Error("failed to sync caches")
 		return
 	}
 
 	go p.run(ctx, in)
+
 	<-ctx.Done()
 }
 
-func (p *Pod) run(ctx context.Context, in chan<- []model.TargetGroup) {
+func (p *PodTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetGroup) {
 	for {
 		item, shutdown := p.queue.Get()
 		if shutdown {
 			return
 		}
-
-		func() {
-			defer p.queue.Done(item)
-
-			key := item.(string)
-			namespace, name, err := cache.SplitMetaNamespaceKey(key)
-			if err != nil {
-				return
-			}
-
-			item, exists, err := p.podInformer.GetStore().GetByKey(key)
-			if err != nil {
-				return
-			}
-
-			if !exists {
-				group := &podGroup{source: podSourceFromNsName(namespace, name)}
-				send(ctx, in, group)
-				return
-			}
-
-			pod, err := toPod(item)
-			if err != nil {
-				return
-			}
-
-			group := p.buildGroup(pod)
-			send(ctx, in, group)
-		}()
+		p.handleQueueItem(ctx, in, item)
 	}
 }
 
-func (p *Pod) buildGroup(pod *corev1.Pod) model.TargetGroup {
+func (p *PodTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []model.TargetGroup, item any) {
+	defer p.queue.Done(item)
+
+	key := item.(string)
+	namespace, name, err := cache.SplitMetaNamespaceKey(key)
+	if err != nil {
+		return
+	}
+
+	obj, ok, err := p.podInformer.GetStore().GetByKey(key)
+	if err != nil {
+		return
+	}
+
+	if !ok {
+		tgg := &podTargetGroup{source: podSourceFromNsName(namespace, name)}
+		send(ctx, in, tgg)
+		return
+	}
+
+	pod, err := toPod(obj)
+	if err != nil {
+		return
+	}
+
+	tgg := p.buildTargetGroup(pod)
+
+	send(ctx, in, tgg)
+
+}
+
+func (p *PodTargetDiscoverer) buildTargetGroup(pod *corev1.Pod) model.TargetGroup {
 	if pod.Status.PodIP == "" || len(pod.Spec.Containers) == 0 {
-		return &podGroup{
+		return &podTargetGroup{
 			source: podSource(pod),
 		}
 	}
-	return &podGroup{
+	return &podTargetGroup{
 		source:  podSource(pod),
 		targets: p.buildTargets(pod),
 	}
 }
 
-func (p *Pod) buildTargets(pod *corev1.Pod) (targets []model.Target) {
+func (p *PodTargetDiscoverer) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 	var name, kind string
 	for _, ref := range pod.OwnerReferences {
 		if ref.Controller != nil && *ref.Controller {
@@ -170,7 +174,7 @@ func (p *Pod) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 		env := p.collectEnv(pod.Namespace, container)
 
 		if len(container.Ports) == 0 {
-			target := &PodTarget{
+			tgt := &PodTarget{
 				tuid:           podTUID(pod, container),
 				Address:        pod.Status.PodIP,
 				Namespace:      pod.Namespace,
@@ -185,17 +189,17 @@ func (p *Pod) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 				Image:          container.Image,
 				Env:            mapAny(env),
 			}
-			hash, err := calcHash(target)
+			hash, err := calcHash(tgt)
 			if err != nil {
 				continue
 			}
-			target.hash = hash
+			tgt.hash = hash
 
-			targets = append(targets, target)
+			targets = append(targets, tgt)
 		} else {
 			for _, port := range container.Ports {
 				portNum := strconv.FormatUint(uint64(port.ContainerPort), 10)
-				target := &PodTarget{
+				tgt := &PodTarget{
 					tuid:           podTUIDWithPort(pod, container, port),
 					Address:        net.JoinHostPort(pod.Status.PodIP, portNum),
 					Namespace:      pod.Namespace,
@@ -213,20 +217,20 @@ func (p *Pod) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 					PortName:       port.Name,
 					PortProtocol:   string(port.Protocol),
 				}
-				hash, err := calcHash(target)
+				hash, err := calcHash(tgt)
 				if err != nil {
 					continue
 				}
-				target.hash = hash
+				tgt.hash = hash
 
-				targets = append(targets, target)
+				targets = append(targets, tgt)
 			}
 		}
 	}
 	return targets
 }
 
-func (p *Pod) collectEnv(ns string, container corev1.Container) map[string]string {
+func (p *PodTargetDiscoverer) collectEnv(ns string, container corev1.Container) map[string]string {
 	vars := make(map[string]string)
 
 	// When a key exists in multiple sources,
@@ -266,7 +270,7 @@ func (p *Pod) collectEnv(ns string, container corev1.Container) map[string]strin
 	return vars
 }
 
-func (p *Pod) valueFromConfigMap(vars map[string]string, ns string, env corev1.EnvVar) {
+func (p *PodTargetDiscoverer) valueFromConfigMap(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.ConfigMapKeyRef.Name == "" || env.ValueFrom.ConfigMapKeyRef.Key == "" {
 		return
 	}
@@ -289,7 +293,7 @@ func (p *Pod) valueFromConfigMap(vars map[string]string, ns string, env corev1.E
 	}
 }
 
-func (p *Pod) valueFromSecret(vars map[string]string, ns string, env corev1.EnvVar) {
+func (p *PodTargetDiscoverer) valueFromSecret(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.SecretKeyRef.Name == "" || env.ValueFrom.SecretKeyRef.Key == "" {
 		return
 	}
@@ -312,7 +316,7 @@ func (p *Pod) valueFromSecret(vars map[string]string, ns string, env corev1.EnvV
 	}
 }
 
-func (p *Pod) envFromConfigMap(vars map[string]string, ns string, src corev1.EnvFromSource) {
+func (p *PodTargetDiscoverer) envFromConfigMap(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.ConfigMapRef.Name == "" {
 		return
 	}
@@ -333,7 +337,7 @@ func (p *Pod) envFromConfigMap(vars map[string]string, ns string, src corev1.Env
 	}
 }
 
-func (p *Pod) envFromSecret(vars map[string]string, ns string, src corev1.EnvFromSource) {
+func (p *PodTargetDiscoverer) envFromSecret(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.SecretRef.Name == "" {
 		return
 	}
@@ -380,26 +384,26 @@ func podSource(pod *corev1.Pod) string {
 	return podSourceFromNsName(pod.Namespace, pod.Name)
 }
 
-func toPod(item interface{}) (*corev1.Pod, error) {
-	pod, ok := item.(*corev1.Pod)
+func toPod(obj any) (*corev1.Pod, error) {
+	pod, ok := obj.(*corev1.Pod)
 	if !ok {
-		return nil, fmt.Errorf("received unexpected object type: %T", item)
+		return nil, fmt.Errorf("received unexpected object type: %T", obj)
 	}
 	return pod, nil
 }
 
-func toConfigMap(item interface{}) (*corev1.ConfigMap, error) {
-	cmap, ok := item.(*corev1.ConfigMap)
+func toConfigMap(obj any) (*corev1.ConfigMap, error) {
+	cmap, ok := obj.(*corev1.ConfigMap)
 	if !ok {
-		return nil, fmt.Errorf("received unexpected object type: %T", item)
+		return nil, fmt.Errorf("received unexpected object type: %T", obj)
 	}
 	return cmap, nil
 }
 
-func toSecret(item interface{}) (*corev1.Secret, error) {
-	secret, ok := item.(*corev1.Secret)
+func toSecret(obj any) (*corev1.Secret, error) {
+	secret, ok := obj.(*corev1.Secret)
 	if !ok {
-		return nil, fmt.Errorf("received unexpected object type: %T", item)
+		return nil, fmt.Errorf("received unexpected object type: %T", obj)
 	}
 	return secret, nil
 }
@@ -415,7 +419,7 @@ func mapAny(src map[string]string) map[string]any {
 	if src == nil {
 		return nil
 	}
-	m := make(map[string]interface{}, len(src))
+	m := make(map[string]any, len(src))
 	for k, v := range src {
 		m[k] = v
 	}

@@ -24,8 +24,6 @@ import (
 	"k8s.io/client-go/util/workqueue"
 )
 
-type Role string
-
 const (
 	RolePod     = "pod"
 	RoleService = "service"
@@ -35,42 +33,12 @@ const (
 	envNodeName = "MY_NODE_NAME"
 )
 
-type (
-	Discovery struct {
-		tags          model.Tags
-		namespaces    []string
-		role          string
-		selectorLabel string
-		selectorField string
-		client        kubernetes.Interface
-		discoverers   []discoverer
-		started       chan struct{}
-		log           *logger.Logger
-	}
-	discoverer interface {
-		Discover(ctx context.Context, ch chan<- []model.TargetGroup)
-	}
-)
-
-func NewDiscovery(cfg Config) (*Discovery, error) {
+func NewTargetDiscoverer(cfg Config) (*TargetDiscoverer, error) {
 	if err := validateConfig(cfg); err != nil {
-		return nil, fmt.Errorf("k8s discovery config validation: %v", err)
+		return nil, fmt.Errorf("k8s td config validation: %v", err)
 	}
 
-	d, err := initDiscovery(cfg)
-	if err != nil {
-		return nil, fmt.Errorf("k8s discovery initialization ('%s'): %v", cfg.Role, err)
-	}
-	return d, nil
-}
-
-func initDiscovery(cfg Config) (*Discovery, error) {
-	tags, err := model.ParseTags(cfg.Tags)
-	if err != nil {
-		return nil, fmt.Errorf("parse config->tags: %v", err)
-	}
-
-	client, err := k8sclient.New("Netdata/service-discovery")
+	client, err := k8sclient.New("Netdata/service-td")
 	if err != nil {
 		return nil, fmt.Errorf("create clientset: %v", err)
 	}
@@ -88,51 +56,63 @@ func initDiscovery(cfg Config) (*Discovery, error) {
 		cfg.Selector.Field = joinSelectors(cfg.Selector.Field, "spec.nodeName="+name)
 	}
 
-	d := &Discovery{
-		tags:          tags,
+	d := &TargetDiscoverer{
+		Logger:        logger.New("k8s td manager", ""),
 		namespaces:    namespaces,
 		role:          cfg.Role,
 		selectorLabel: cfg.Selector.Label,
 		selectorField: cfg.Selector.Field,
 		client:        client,
-		discoverers:   make([]discoverer, 0, len(namespaces)),
+		discoverers:   make([]model.Discoverer, 0, len(namespaces)),
 		started:       make(chan struct{}),
-		log:           logger.New("k8s discovery manager", ""),
 	}
+
 	return d, nil
 }
 
-func (d *Discovery) String() string {
-	return "k8s discovery manager"
+type TargetDiscoverer struct {
+	*logger.Logger
+
+	namespaces    []string
+	role          string
+	selectorLabel string
+	selectorField string
+	client        kubernetes.Interface
+	discoverers   []model.Discoverer
+	started       chan struct{}
+}
+
+func (d *TargetDiscoverer) String() string {
+	return "k8s td manager"
 }
 
 const resyncPeriod = 10 * time.Minute
 
-func (d *Discovery) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
+func (d *TargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
 	for _, namespace := range d.namespaces {
-		var dd discoverer
+		var disc model.Discoverer
 		switch d.role {
 		case RolePod:
-			dd = d.setupPodDiscoverer(ctx, namespace)
+			disc = d.setupPodDiscoverer(ctx, namespace)
 		case RoleService:
-			dd = d.setupServiceDiscoverer(ctx, namespace)
+			disc = d.setupServiceDiscoverer(ctx, namespace)
 		default:
-			panic(fmt.Sprintf("unknown k8 discovery role: '%s'", d.role))
+			panic(fmt.Sprintf("unknown k8 td role: '%s'", d.role))
 		}
-		d.discoverers = append(d.discoverers, dd)
+		d.discoverers = append(d.discoverers, disc)
 	}
 	if len(d.discoverers) == 0 {
-		panic("k8s cant run discovery: zero discoverers")
+		panic("k8s cant run td: zero discoverers")
 	}
 
-	d.log.Infof("registered: %v", d.discoverers)
+	d.Infof("registered: %v", d.discoverers)
 
 	var wg sync.WaitGroup
 	updates := make(chan []model.TargetGroup)
 
-	for _, dd := range d.discoverers {
+	for _, disc := range d.discoverers {
 		wg.Add(1)
-		go func(dd discoverer) { defer wg.Done(); dd.Discover(ctx, updates) }(dd)
+		go func(disc model.Discoverer) { defer wg.Done(); disc.Discover(ctx, updates) }(disc)
 	}
 
 	wg.Add(1)
@@ -144,27 +124,22 @@ func (d *Discovery) Discover(ctx context.Context, in chan<- []model.TargetGroup)
 	<-ctx.Done()
 }
 
-func (d *Discovery) run(ctx context.Context, updates chan []model.TargetGroup, in chan<- []model.TargetGroup) {
+func (d *TargetDiscoverer) run(ctx context.Context, updates chan []model.TargetGroup, in chan<- []model.TargetGroup) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
-		case groups := <-updates:
-			for _, group := range groups {
-				for _, tgt := range group.Targets() {
-					tgt.Tags().Merge(d.tags)
-				}
-			}
+		case tggs := <-updates:
 			select {
 			case <-ctx.Done():
 				return
-			case in <- groups:
+			case in <- tggs:
 			}
 		}
 	}
 }
 
-func (d *Discovery) setupPodDiscoverer(ctx context.Context, namespace string) *Pod {
+func (d *TargetDiscoverer) setupPodDiscoverer(ctx context.Context, namespace string) *PodTargetDiscoverer {
 	pod := d.client.CoreV1().Pods(namespace)
 	podLW := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -199,14 +174,14 @@ func (d *Discovery) setupPodDiscoverer(ctx context.Context, namespace string) *P
 		},
 	}
 
-	return NewPod(
+	return NewPodTargetDiscoverer(
 		cache.NewSharedInformer(podLW, &corev1.Pod{}, resyncPeriod),
 		cache.NewSharedInformer(cmapLW, &corev1.ConfigMap{}, resyncPeriod),
 		cache.NewSharedInformer(secretLW, &corev1.Secret{}, resyncPeriod),
 	)
 }
 
-func (d *Discovery) setupServiceDiscoverer(ctx context.Context, namespace string) *Service {
+func (d *TargetDiscoverer) setupServiceDiscoverer(ctx context.Context, namespace string) *ServiceTargetDiscoverer {
 	svc := d.client.CoreV1().Services(namespace)
 
 	svcLW := &cache.ListWatch{
@@ -224,10 +199,10 @@ func (d *Discovery) setupServiceDiscoverer(ctx context.Context, namespace string
 
 	inf := cache.NewSharedInformer(svcLW, &corev1.Service{}, resyncPeriod)
 
-	return NewService(inf)
+	return NewServiceTargetDiscoverer(inf)
 }
 
-func enqueue(queue *workqueue.Type, obj interface{}) {
+func enqueue(queue *workqueue.Type, obj any) {
 	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
 	if err != nil {
 		return
@@ -235,17 +210,17 @@ func enqueue(queue *workqueue.Type, obj interface{}) {
 	queue.Add(key)
 }
 
-func send(ctx context.Context, in chan<- []model.TargetGroup, group model.TargetGroup) {
-	if group == nil {
+func send(ctx context.Context, in chan<- []model.TargetGroup, tgg model.TargetGroup) {
+	if tgg == nil {
 		return
 	}
 	select {
 	case <-ctx.Done():
-	case in <- []model.TargetGroup{group}:
+	case in <- []model.TargetGroup{tgg}:
 	}
 }
 
-func calcHash(obj interface{}) (uint64, error) {
+func calcHash(obj any) (uint64, error) {
 	return hashstructure.Hash(obj, nil)
 }
 
