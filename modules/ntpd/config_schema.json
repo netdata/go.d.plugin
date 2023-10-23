@@ -1,21 +1,26 @@
 {
-  "$id": "https://example.com/person.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "NTPd collector job configuration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "go.d/ntpd job configuration schema.",
   "type": "object",
   "properties": {
-    "firstName": {
-      "type": "string",
-      "description": "The person's first name."
+    "name": {
+      "type": "string"
     },
-    "lastName": {
-      "type": "string",
-      "description": "The person's last name."
+    "address": {
+      "type": "string"
     },
-    "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
-      "type": "integer",
-      "minimum": 0
+    "timeout": {
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "collect_peers": {
+      "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "name",
+    "address"
+  ]
 }

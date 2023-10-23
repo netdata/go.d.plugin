@@ -1,12 +1,18 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/chrony job configuration schema.",
+  "title": "go.d/upsd job configuration schema.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string"
     },
     "address": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
       "type": "string"
     },
     "timeout": {

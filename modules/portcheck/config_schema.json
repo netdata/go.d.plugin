@@ -1,21 +1,37 @@
 {
-  "$id": "https://example.com/person.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Port Check collector job configuration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "go.d/portcheck job configuration schema.",
   "type": "object",
   "properties": {
-    "firstName": {
+    "name": {
       "type": "string",
-      "description": "The person's first name."
+      "minLength": 1
     },
-    "lastName": {
+    "host": {
       "type": "string",
-      "description": "The person's last name."
+      "minLength": 1
     },
-    "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
-      "type": "integer",
-      "minimum": 0
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1
+    },
+    "timeout": {
+      "type": [
+        "string",
+        "integer"
+      ],
+      "minLength": 1,
+      "minimum": 1,
+      "description": "The timeout duration, in seconds. Must be at least 1."
     }
-  }
+  },
+  "required": [
+    "name",
+    "host",
+    "ports"
+  ]
 }

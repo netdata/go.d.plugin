@@ -43,13 +43,13 @@ func New() *DNSQuery {
 }
 
 type Config struct {
-	Domains     []string
-	Servers     []string
-	Network     string
-	RecordType  string   `yaml:"record_type"`
-	RecordTypes []string `yaml:"record_types"`
-	Port        int
-	Timeout     web.Duration
+	Domains     []string     `yaml:"domains"`
+	Servers     []string     `yaml:"servers"`
+	Network     string       `yaml:"network"`
+	RecordType  string       `yaml:"record_type"`
+	RecordTypes []string     `yaml:"record_types"`
+	Port        int          `yaml:"port"`
+	Timeout     web.Duration `yaml:"timeout"`
 }
 
 type (

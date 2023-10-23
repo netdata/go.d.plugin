@@ -1,21 +1,44 @@
 {
-  "$id": "https://example.com/person.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Redis collector job configuration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "go.d/redis job configuration schema.",
   "type": "object",
   "properties": {
-    "firstName": {
-      "type": "string",
-      "description": "The person's first name."
+    "name": {
+      "type": "string"
     },
-    "lastName": {
-      "type": "string",
-      "description": "The person's last name."
+    "address": {
+      "type": "string"
     },
-    "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
-      "type": "integer",
-      "minimum": 0
+    "password": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "timeout": {
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "ping_samples": {
+      "type": "integer"
+    },
+    "tls_ca": {
+      "type": "string"
+    },
+    "tls_cert": {
+      "type": "string"
+    },
+    "tls_key": {
+      "type": "string"
+    },
+    "tls_skip_verify": {
+      "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "name",
+    "address"
+  ]
 }
