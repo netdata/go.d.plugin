@@ -58,9 +58,18 @@
       ]
     }
   },
-  "required": [
-    "name",
-    "files",
-    "dirs"
+  "oneOf": [
+    {
+      "required": [
+        "name",
+        "files"
+      ]
+    },
+    {
+      "required": [
+        "name",
+        "dirs"
+      ]
+    }
   ]
 }
