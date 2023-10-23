@@ -1,21 +1,29 @@
 {
-  "$id": "https://example.com/person.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Whois Query collector job configuration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "go.d/whoisquery job configuration schema.",
   "type": "object",
   "properties": {
-    "firstName": {
-      "type": "string",
-      "description": "The person's first name."
+    "name": {
+      "type": "string"
     },
-    "lastName": {
-      "type": "string",
-      "description": "The person's last name."
+    "source": {
+      "type": "string"
     },
-    "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
-      "type": "integer",
-      "minimum": 0
+    "timeout": {
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "days_until_expiration_warning": {
+      "type": "integer"
+    },
+    "days_until_expiration_critical": {
+      "type": "integer"
     }
-  }
+  },
+  "required": [
+    "name",
+    "source"
+  ]
 }

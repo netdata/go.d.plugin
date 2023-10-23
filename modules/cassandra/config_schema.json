@@ -1,21 +1,59 @@
 {
-  "$id": "https://example.com/person.schema.json",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Cassandra collector job configuration",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "go.d/cassandra job configuration schema.",
   "type": "object",
   "properties": {
-    "firstName": {
-      "type": "string",
-      "description": "The person's first name."
+    "name": {
+      "type": "string"
     },
-    "lastName": {
-      "type": "string",
-      "description": "The person's last name."
+    "url": {
+      "type": "string"
     },
-    "age": {
-      "description": "Age in years which must be equal to or greater than zero.",
-      "type": "integer",
-      "minimum": 0
+    "timeout": {
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "proxy_url": {
+      "type": "string"
+    },
+    "proxy_username": {
+      "type": "string"
+    },
+    "proxy_password": {
+      "type": "string"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "not_follow_redirects": {
+      "type": "boolean"
+    },
+    "tls_ca": {
+      "type": "string"
+    },
+    "tls_cert": {
+      "type": "string"
+    },
+    "tls_key": {
+      "type": "string"
+    },
+    "insecure_skip_verify": {
+      "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "name",
+    "url"
+  ]
 }
