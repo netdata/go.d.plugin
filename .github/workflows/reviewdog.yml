@@ -90,10 +90,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
+        uses: reviewdog/action-golangci-lint@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check
+          args: --timeout=10m
 
   hadolint:
     name: hadolint
