@@ -5,6 +5,7 @@ package pipeline
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
 	"time"
@@ -13,9 +14,40 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 
 	"github.com/ilyam8/hashstructure"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 func TestNew(t *testing.T) {
+	tests := map[string]struct {
+		config  string
+		wantErr bool
+	}{
+		"fails when config unset": {
+			wantErr: true,
+			config:  "",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+
+			var cfg Config
+			err := yaml.Unmarshal([]byte(test.config), &cfg)
+			require.Nilf(t, err, "cfg unmarshal")
+
+			_, err = New(cfg)
+
+			if test.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestPipeline_Discover(t *testing.T) {
 	const config = `
 classify:
   - selector: "rule1"

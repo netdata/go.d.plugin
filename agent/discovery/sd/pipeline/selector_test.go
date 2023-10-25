@@ -13,6 +13,11 @@ import (
 
 var reSrString = regexp.MustCompile(`^{[^{}]+}$`)
 
+func TestTrueSelector_String(t *testing.T) {
+	var sr trueSelector
+	assert.Equal(t, "{*}", sr.String())
+}
+
 func TestExactSelector_String(t *testing.T) {
 	sr := exactSelector("selector")
 
