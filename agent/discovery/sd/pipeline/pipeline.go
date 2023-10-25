@@ -4,7 +4,7 @@ package pipeline
 
 import (
 	"context"
-	"sync"
+	"time"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/kubernetes"
@@ -19,6 +19,7 @@ func New(cfg Config) (*Pipeline, error) {
 
 	p := &Pipeline{
 		Logger:      logger.New("sd pipeline", cfg.Name),
+		accum:       newAccumulator(),
 		discoverers: make([]accumulateTask, 0),
 		items:       make(map[string]map[uint64][]confgroup.Config),
 	}
@@ -30,16 +31,25 @@ func New(cfg Config) (*Pipeline, error) {
 	return p, nil
 }
 
-type Pipeline struct {
-	*logger.Logger
+type (
+	Pipeline struct {
+		*logger.Logger
 
-	discoverers []accumulateTask
+		discoverers []accumulateTask
+		accum       *accumulator
 
-	clr *classificator
-	cmr *composer
+		clr classificator
+		cmr composer
 
-	items map[string]map[uint64][]confgroup.Config // [source][targetHash]
-}
+		items map[string]map[uint64][]confgroup.Config // [source][targetHash]
+	}
+	classificator interface {
+		classify(model.Target) model.Tags
+	}
+	composer interface {
+		compose(model.Target) []confgroup.Config
+	}
+)
 
 func (p *Pipeline) registerDiscoverers(conf Config) error {
 	for _, cfg := range conf.Discovery.K8s {
@@ -63,47 +73,40 @@ func (p *Pipeline) Discover(ctx context.Context, in chan<- []*confgroup.Group) {
 	p.Info("instance is started")
 	defer p.Info("instance is stopped")
 
-	accum := newAccumulator()
-	accum.tasks = p.discoverers
+	p.accum.tasks = p.discoverers
 
 	updates := make(chan []model.TargetGroup)
+	done := make(chan struct{})
 
-	var wg sync.WaitGroup
+	go func() { defer close(done); p.accum.run(ctx, updates) }()
 
-	wg.Add(1)
-	go func() { defer wg.Done(); accum.run(ctx, updates) }()
-
-	wg.Add(1)
-	go func() { defer wg.Done(); p.run(ctx, updates, in) }()
-
-	wg.Wait()
-	<-ctx.Done()
-}
-
-func (p *Pipeline) run(ctx context.Context, updates <-chan []model.TargetGroup, in chan<- []*confgroup.Group) {
 	for {
 		select {
 		case <-ctx.Done():
+			select {
+			case <-done:
+			case <-time.After(time.Second * 5):
+			}
 			return
-		case groups := <-updates:
-			p.Infof("received %d target groups", len(groups))
-
-			var cfgGroups []*confgroup.Group
-
-			// updates come from the accumulator, this ensures that all groups have different sources
-			for _, group := range groups {
-				p.Infof("processing group '%s' with %d target(s)", group.Source(), len(group.Targets()))
-
-				if v := p.processGroup(group); v != nil {
-					cfgGroups = append(cfgGroups, v)
-				}
-			}
-
-			if len(cfgGroups) > 0 {
-				send(ctx, in, cfgGroups)
-			}
+		case <-done:
+			return
+		case tggs := <-updates:
+			p.Infof("received %d target groups", len(tggs))
+			send(ctx, in, p.processGroups(tggs))
 		}
 	}
+}
+
+func (p *Pipeline) processGroups(tggs []model.TargetGroup) []*confgroup.Group {
+	var confGroups []*confgroup.Group
+	// updates come from the accumulator, this ensures that all groups have different sources
+	for _, tgg := range tggs {
+		p.Infof("processing group '%s' with %d target(s)", tgg.Source(), len(tgg.Targets()))
+		if v := p.processGroup(tgg); v != nil {
+			confGroups = append(confGroups, v)
+		}
+	}
+	return confGroups
 }
 
 func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
@@ -176,6 +179,10 @@ func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
 }
 
 func send(ctx context.Context, in chan<- []*confgroup.Group, configs []*confgroup.Group) {
+	if len(configs) == 0 {
+		return
+	}
+
 	select {
 	case <-ctx.Done():
 		return

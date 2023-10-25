@@ -11,13 +11,13 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
-func newClassificator(cfg []ClassifyRuleConfig) (*classificator, error) {
+func newTargetClassificator(cfg []ClassifyRuleConfig) (*targetClassificator, error) {
 	rules, err := newClassifyRules(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	c := &classificator{
+	c := &targetClassificator{
 		rules: rules,
 		buf:   bytes.Buffer{},
 	}
@@ -26,7 +26,7 @@ func newClassificator(cfg []ClassifyRuleConfig) (*classificator, error) {
 }
 
 type (
-	classificator struct {
+	targetClassificator struct {
 		*logger.Logger
 		rules []*classifyRule
 		buf   bytes.Buffer
@@ -44,7 +44,7 @@ type (
 	}
 )
 
-func (c *classificator) classify(tgt model.Target) model.Tags {
+func (c *targetClassificator) classify(tgt model.Target) model.Tags {
 	var tags model.Tags
 
 	for i, rule := range c.rules {

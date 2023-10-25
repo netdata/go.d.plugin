@@ -13,7 +13,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func TestComposer_compose(t *testing.T) {
+func TestConfigComposer_compose(t *testing.T) {
 	config := `
 - selector: "rule1"
   config:
@@ -79,10 +79,10 @@ func TestComposer_compose(t *testing.T) {
 			var cfg []ComposeRuleConfig
 
 			err := yaml.Unmarshal([]byte(config), &cfg)
-			require.NoError(t, err)
+			require.NoErrorf(t, err, "yaml unmarshalling of config")
 
-			cmr, err := newComposer(cfg)
-			require.NoError(t, err)
+			cmr, err := newConfigComposer(cfg)
+			require.NoErrorf(t, err, "configComposer creation")
 
 			assert.Equal(t, test.wantConfigs, cmr.compose(test.target))
 		})

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
+	"github.com/netdata/go.d.plugin/logger"
 )
 
 func newAccumulator() *accumulator {
@@ -21,6 +22,7 @@ func newAccumulator() *accumulator {
 
 type (
 	accumulator struct {
+		*logger.Logger
 		tasks     []accumulateTask
 		send      chan struct{}
 		sendEvery time.Duration
@@ -34,57 +36,58 @@ type (
 )
 
 func (a *accumulator) run(ctx context.Context, in chan []model.TargetGroup) {
-	var wg sync.WaitGroup
 	updates := make(chan []model.TargetGroup)
 
+	var wg sync.WaitGroup
 	for _, task := range a.tasks {
 		task := task
 		wg.Add(1)
 		go func() { defer wg.Done(); a.runTask(ctx, task, updates) }()
-
 	}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	done := make(chan struct{})
+	go func() { defer close(done); wg.Wait() }()
 
-		tk := time.NewTicker(a.sendEvery)
-		defer tk.Stop()
+	tk := time.NewTicker(a.sendEvery)
+	defer tk.Stop()
 
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-tk.C:
-				select {
-				case <-a.send:
-					a.trySend(in)
-				default:
-				}
-			}
-		}
-	}()
-
-	wg.Wait()
-	<-ctx.Done()
-}
-
-func (a *accumulator) runTask(ctx context.Context, task accumulateTask, updates chan []model.TargetGroup) {
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() { defer wg.Done(); task.disc.Discover(ctx, updates) }()
-
-loop:
 	for {
 		select {
 		case <-ctx.Done():
-			break loop
-		case tggs, ok := <-updates:
-			if !ok {
-				break loop
+			select {
+			case <-done:
+			case <-time.After(time.Second * 5):
 			}
+			return
+		case <-done:
+			a.Info("all discovery tasks completed")
+			a.trySend(in)
+			return
+		case <-tk.C:
+			select {
+			case <-a.send:
+				a.trySend(in)
+			default:
+			}
+		}
+	}
+}
 
+func (a *accumulator) runTask(ctx context.Context, task accumulateTask, updates chan []model.TargetGroup) {
+	done := make(chan struct{})
+	go func() { defer close(done); task.disc.Discover(ctx, updates) }()
+
+	for {
+		select {
+		case <-ctx.Done():
+			select {
+			case <-done:
+			case <-time.After(time.Second * 5):
+			}
+			return
+		case <-done:
+			return
+		case tggs := <-updates:
 			for _, tgg := range tggs {
 				for _, tgt := range tgg.Targets() {
 					tgt.Tags().Merge(task.tags)
@@ -97,9 +100,6 @@ loop:
 			a.triggerSend()
 		}
 	}
-
-	wg.Wait()
-	<-ctx.Done()
 }
 
 func (a *accumulator) trySend(in chan<- []model.TargetGroup) {
