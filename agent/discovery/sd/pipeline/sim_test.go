@@ -4,74 +4,127 @@ package pipeline
 
 import (
 	"context"
-	"fmt"
+	"sort"
 	"testing"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
-	"github.com/stretchr/testify/require"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
+	"github.com/netdata/go.d.plugin/logger"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 )
 
 type discoverySim struct {
-	pl             *Pipeline
-	config         string
-	maxRuntime     time.Duration
-	wantConfGroups []*confgroup.Config
+	config            string
+	discoverers       []accumulateTask
+	wantClassifyCalls int
+	wantComposeCalls  int
+	wantConfGroups    []*confgroup.Group
 }
 
 func (sim discoverySim) run(t *testing.T) {
 	t.Helper()
-	require.NotNil(t, sim.pl)
 
 	var cfg Config
 	err := yaml.Unmarshal([]byte(sim.config), &cfg)
 	require.Nilf(t, err, "cfg unmarshal")
 
-	clr, err := newClassificator(cfg.Classify)
+	clr, err := newTargetClassificator(cfg.Classify)
 	require.Nilf(t, err, "classify %v", err)
 
-	cmr, err := newComposer(cfg.Compose)
+	cmr, err := newConfigComposer(cfg.Compose)
 	require.Nilf(t, err, "compose")
 
-	clr.Logger = sim.pl.Logger
-	cmr.Logger = sim.pl.Logger
+	mockClr := &mockClassificator{clr: clr}
+	mockCmr := &mockComposer{cmr: cmr}
 
-	sim.pl.clr = clr
-	sim.pl.cmr = cmr
+	accum := newAccumulator()
+	accum.sendEvery = time.Second * 2
 
-	in := make(chan []*confgroup.Group)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	go sim.pl.Discover(ctx, in)
-
-	confGroups := sim.collectGroups(t, in)
-	cancel()
-
-	time.Sleep(time.Second * 3)
-
-	for _, g := range confGroups {
-		for _, c := range g.Configs {
-			fmt.Println(c)
-		}
+	pl := &Pipeline{
+		Logger:      logger.New("sd pipeline", "test"),
+		accum:       accum,
+		discoverers: sim.discoverers,
+		clr:         mockClr,
+		cmr:         mockCmr,
+		items:       make(map[string]map[uint64][]confgroup.Config),
 	}
+
+	pl.accum.Logger = pl.Logger
+	clr.Logger = pl.Logger
+	cmr.Logger = pl.Logger
+
+	groups := sim.collectGroups(t, pl)
+
+	sortConfigGroups(groups)
+	sortConfigGroups(sim.wantConfGroups)
+
+	assert.Equal(t, sim.wantConfGroups, groups)
+	assert.Equalf(t, sim.wantClassifyCalls, mockClr.calls, "classify calls")
+	assert.Equalf(t, sim.wantComposeCalls, mockCmr.calls, "compose calls")
 }
 
-func (sim discoverySim) collectGroups(t *testing.T, in chan []*confgroup.Group) []*confgroup.Group {
+func (sim discoverySim) collectGroups(t *testing.T, pl *Pipeline) []*confgroup.Group {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	in := make(chan []*confgroup.Group)
+	done := make(chan struct{})
+
+	go func() { defer close(done); pl.Discover(ctx, in) }()
+
+	timeout := time.Second * 10
 	var groups []*confgroup.Group
-loop:
-	for {
-		select {
-		case inGroups := <-in:
-			if groups = append(groups, inGroups...); len(groups) >= len(sim.wantConfGroups) {
-				break loop
+
+	func() {
+		for {
+			select {
+			case inGroups := <-in:
+				groups = append(groups, inGroups...)
+			case <-done:
+				return
+			case <-time.After(timeout):
+				t.Logf("discovery timed out after %s, got %d groups, expected %d, some events are skipped",
+					timeout, len(groups), len(sim.wantConfGroups))
+				return
 			}
-		case <-time.After(sim.maxRuntime):
-			t.Logf("discovery timed out after %s, got %d groups, expected %d, some events are skipped",
-				sim.maxRuntime, len(groups), len(sim.wantConfGroups))
-			break loop
 		}
-	}
+	}()
+
 	return groups
+}
+
+type mockClassificator struct {
+	calls int
+	clr   *targetClassificator
+}
+
+func (m *mockClassificator) classify(tgt model.Target) model.Tags {
+	m.calls++
+	return m.clr.classify(tgt)
+}
+
+type mockComposer struct {
+	calls int
+	cmr   *configComposer
+}
+
+func (m *mockComposer) compose(tgt model.Target) []confgroup.Config {
+	m.calls++
+	return m.cmr.compose(tgt)
+}
+
+func sortConfigGroups(groups []*confgroup.Group) {
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Source < groups[j].Source
+	})
+
+	for _, g := range groups {
+		sort.Slice(g.Configs, func(i, j int) bool {
+			return g.Configs[i].Name() < g.Configs[j].Name()
+		})
+	}
 }

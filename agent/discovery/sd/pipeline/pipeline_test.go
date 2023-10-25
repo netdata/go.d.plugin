@@ -5,196 +5,318 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"github.com/netdata/go.d.plugin/agent/confgroup"
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
-	"github.com/netdata/go.d.plugin/logger"
+	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/confgroup"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
+
 	"github.com/ilyam8/hashstructure"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
-// import (
-//
-//	"context"
-//	"fmt"
-//	"testing"
-//	"time"
-//
-//	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
-//
-// )
-//
-// func TestNew(t *testing.T) {
-//
-// }
-//
-//	func TestManager_Discover(t *testing.T) {
-//		tests := map[string]func() discoverySim{
-//			"2 tasks unique groups with delayed collect": func() discoverySim {
-//				const numGroups, numTargets = 2, 2
-//				d1 := prepareMockDiscoverer("test1", numGroups, numTargets)
-//				d2 := prepareMockDiscoverer("test2", numGroups, numTargets)
-//				mgr := prepareManager(d1, d2)
-//				expected := combineGroups(d1.groups, d2.groups)
-//
-//				sim := discoverySim{
-//					mgr:            mgr,
-//					maxRuntime:   mgr.accum.sendEvery + time.Second,
-//					wantConfGroups: expected,
-//				}
-//				return sim
-//			},
-//			"2 tasks unique groups": func() discoverySim {
-//				const numGroups, numTargets = 2, 2
-//				d1 := prepareMockDiscoverer("test1", numGroups, numTargets)
-//				d2 := prepareMockDiscoverer("test2", numGroups, numTargets)
-//				mgr := prepareManager(d1, d2)
-//				expected := combineGroups(d1.groups, d2.groups)
-//
-//				sim := discoverySim{
-//					mgr:            mgr,
-//					wantConfGroups: expected,
-//				}
-//				return sim
-//			},
-//			"2 tasks same groups": func() discoverySim {
-//				const numGroups, numTargets = 2, 2
-//				d1 := prepareMockDiscoverer("test1", numGroups, numTargets)
-//				mgr := prepareManager(d1, d1)
-//				expected := combineGroups(d1.groups)
-//
-//				sim := discoverySim{
-//					mgr:            mgr,
-//					wantConfGroups: expected,
-//				}
-//				return sim
-//			},
-//			"2 tasks empty groups": func() discoverySim {
-//				const numGroups, numTargets = 1, 0
-//				d1 := prepareMockDiscoverer("test1", numGroups, numTargets)
-//				d2 := prepareMockDiscoverer("test2", numGroups, numTargets)
-//				mgr := prepareManager(d1, d2)
-//				expected := combineGroups(d1.groups, d2.groups)
-//
-//				sim := discoverySim{
-//					mgr:            mgr,
-//					wantConfGroups: expected,
-//				}
-//				return sim
-//			},
-//			"2 tasks nil groups": func() discoverySim {
-//				const numGroups, numTargets = 0, 0
-//				d1 := prepareMockDiscoverer("test1", numGroups, numTargets)
-//				d2 := prepareMockDiscoverer("test2", numGroups, numTargets)
-//				mgr := prepareManager(d1, d2)
-//
-//				sim := discoverySim{
-//					mgr:            mgr,
-//					wantConfGroups: nil,
-//				}
-//				return sim
-//			},
-//		}
-//
-//		for name, sim := range tests {
-//			t.Run(name, func(t *testing.T) { sim().run(t) })
-//		}
-//	}
-//
-//	func prepareMockDiscoverer(source string, groups, targets int) mockDiscoverer {
-//		d := mockDiscoverer{}
-//
-//		for i := 0; i < groups; i++ {
-//			group := mockTargetGroup{
-//				source: fmt.Sprintf("%s_group_%d", source, i+1),
-//			}
-//			for j := 0; j < targets; j++ {
-//				group.targets = append(group.targets,
-//					mockTarget{Name: fmt.Sprintf("%s_group_%d_target_%d", source, i+1, j+1)})
-//			}
-//			d.groups = append(d.groups, group)
-//		}
-//		return d
-//	}
-//
-//	func prepareManager(tasks ...Discoverer) *Pipeline {
-//		mgr := &Pipeline{
-//			accum:       newAccumulator(),
-//			tasks: tasks,
-//		}
-//		return mgr
-//	}
-
 func TestNew(t *testing.T) {
-	cfg := `
-classify:
-  - selector: "test"
-    tags: "apps"
-    match:
-      - tags: "name1"
-        expr: '{{ eq .Name "name1" }}'
-      - tags: "name2"
-        expr: '{{ eq .Name "name2" }}'
-compose:
-  - selector: "apps"
-    config:
-      - selector: "name1"
-        template: |
-          module: name1
-          name: qqq-{{.TUID}}
-      - selector: "name2"
-        template: |
-          module: name2
-          name: www-{{.TUID}}
-`
-
-	p := &Pipeline{
-		Logger:      logger.New("sd pipeline", "test"),
-		discoverers: make([]accumulateTask, 0),
-		items:       make(map[string]map[uint64][]confgroup.Config),
-	}
-	p.discoverers = []accumulateTask{
-		{
-			disc: &mockDiscoverer{
-				tggs: []model.TargetGroup{
-					&mockTargetGroup{
-						source: "test",
-						targets: []model.Target{
-							&mockTarget{Name: "name1"},
-							&mockTarget{Name: "name2"},
-						},
-					},
-				},
-			},
-			tags: map[string]struct{}{"test": {}},
+	tests := map[string]struct {
+		config  string
+		wantErr bool
+	}{
+		"fails when config unset": {
+			wantErr: true,
+			config:  "",
 		},
 	}
 
-	sim := &discoverySim{
-		pl:             p,
-		config:         cfg,
-		maxRuntime:     time.Second * 10,
-		wantConfGroups: nil,
-	}
-	sim.run(t)
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
 
+			var cfg Config
+			err := yaml.Unmarshal([]byte(test.config), &cfg)
+			require.Nilf(t, err, "cfg unmarshal")
+
+			_, err = New(cfg)
+
+			if test.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestPipeline_Discover(t *testing.T) {
+	const config = `
+classify:
+  - selector: "rule1"
+    tags: "foo1"
+    match:
+      - tags: "bar1"
+        expr: '{{ glob .Name "mock*1*" }}'
+      - tags: "bar2"
+        expr: '{{ glob .Name "mock*2*" }}'
+compose:
+  - selector: "foo1"
+    config:
+      - selector: "bar1"
+        template: |
+          name: {{ .Name }}-foobar1
+      - selector: "bar2"
+        template: |
+          name: {{ .Name }}-foobar2
+`
+	tests := map[string]discoverySim{
+		"new group with no targets": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("test",
+					newMockDiscoverer(
+						newMockTargetGroup("test"),
+					),
+				),
+			},
+			wantClassifyCalls: 0,
+			wantComposeCalls:  0,
+			wantConfGroups:    nil,
+		},
+		"new group with targets": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("rule1",
+					newMockDiscoverer(
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+			},
+			wantClassifyCalls: 2,
+			wantComposeCalls:  2,
+			wantConfGroups: []*confgroup.Group{
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+				}},
+			},
+		},
+		"existing group with same targets": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("rule1",
+					newMockDiscoverer(
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+				prepareAccumTask("rule1",
+					newDelayedMockDiscoverer(5,
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+			},
+			wantClassifyCalls: 2,
+			wantComposeCalls:  2,
+			wantConfGroups: []*confgroup.Group{
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+				}},
+			},
+		},
+		"existing empty group that previously had targets": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("rule1",
+					newMockDiscoverer(
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+				prepareAccumTask("rule1",
+					newDelayedMockDiscoverer(5,
+						newMockTargetGroup("test"),
+					),
+				),
+			},
+			wantClassifyCalls: 2,
+			wantComposeCalls:  2,
+			wantConfGroups: []*confgroup.Group{
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+				}},
+				{Source: "test", Configs: nil},
+			},
+		},
+		"existing group with old and new targets": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("rule1",
+					newMockDiscoverer(
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+				prepareAccumTask("rule1",
+					newDelayedMockDiscoverer(5,
+						newMockTargetGroup("test", "mock1", "mock2", "mock11", "mock22"),
+					),
+				),
+			},
+			wantClassifyCalls: 4,
+			wantComposeCalls:  4,
+			wantConfGroups: []*confgroup.Group{
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+				}},
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock11-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock22-foobar2",
+					},
+				}},
+			},
+		},
+		"existing group with new targets only": {
+			config: config,
+			discoverers: []accumulateTask{
+				prepareAccumTask("rule1",
+					newMockDiscoverer(
+						newMockTargetGroup("test", "mock1", "mock2"),
+					),
+				),
+				prepareAccumTask("rule1",
+					newDelayedMockDiscoverer(5,
+						newMockTargetGroup("test", "mock11", "mock22"),
+					),
+				),
+			},
+			wantClassifyCalls: 4,
+			wantComposeCalls:  4,
+			wantConfGroups: []*confgroup.Group{
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock1-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock2-foobar2",
+					},
+				}},
+				{Source: "test", Configs: []confgroup.Config{
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock11-foobar1",
+					},
+					{
+						"__provider__": "mock",
+						"__source__":   "test",
+						"name":         "mock22-foobar2",
+					},
+				}},
+			},
+		},
+	}
+
+	for name, sim := range tests {
+		t.Run(name, func(t *testing.T) {
+			sim.run(t)
+		})
+	}
+}
+
+func prepareAccumTask(tags string, disc model.Discoverer) accumulateTask {
+	return accumulateTask{
+		disc: disc,
+		tags: mustParseTags(tags),
+	}
+}
+
+func newMockDiscoverer(tggs ...model.TargetGroup) *mockDiscoverer {
+	return &mockDiscoverer{
+		tggs: tggs,
+	}
+}
+
+func newDelayedMockDiscoverer(delay int, tggs ...model.TargetGroup) *mockDiscoverer {
+	return &mockDiscoverer{
+		tggs:  tggs,
+		delay: time.Duration(delay) * time.Second,
+	}
 }
 
 type mockDiscoverer struct {
-	tggs []model.TargetGroup
+	tggs  []model.TargetGroup
+	delay time.Duration
 }
 
 func (md mockDiscoverer) Discover(ctx context.Context, out chan<- []model.TargetGroup) {
-	for {
+	select {
+	case <-ctx.Done():
+	case <-time.After(md.delay):
 		select {
 		case <-ctx.Done():
-			return
 		case out <- md.tggs:
-			return
 		}
 	}
+}
+
+func newMockTargetGroup(source string, targets ...string) *mockTargetGroup {
+	m := &mockTargetGroup{source: source}
+	for _, name := range targets {
+		m.targets = append(m.targets, &mockTarget{Name: name})
+	}
+	return m
 }
 
 type mockTargetGroup struct {
@@ -236,11 +358,3 @@ func mustCalcHash(obj any) uint64 {
 	}
 	return hash
 }
-
-//
-//func combineGroups(groups ...[]model.TargetGroup) (combined []model.TargetGroup) {
-//	for _, set := range groups {
-//		combined = append(combined, set...)
-//	}
-//	return combined
-//}

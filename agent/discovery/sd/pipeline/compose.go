@@ -13,13 +13,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func newComposer(cfg []ComposeRuleConfig) (*composer, error) {
+func newConfigComposer(cfg []ComposeRuleConfig) (*configComposer, error) {
 	rules, err := newComposeRules(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	c := &composer{
+	c := &configComposer{
 		rules: rules,
 		buf:   bytes.Buffer{},
 	}
@@ -28,7 +28,7 @@ func newComposer(cfg []ComposeRuleConfig) (*composer, error) {
 }
 
 type (
-	composer struct {
+	configComposer struct {
 		*logger.Logger
 		rules []*composeRule
 		buf   bytes.Buffer
@@ -45,7 +45,7 @@ type (
 	}
 )
 
-func (c *composer) compose(tgt model.Target) []confgroup.Config {
+func (c *configComposer) compose(tgt model.Target) []confgroup.Config {
 	var configs []confgroup.Config
 
 	for i, rule := range c.rules {

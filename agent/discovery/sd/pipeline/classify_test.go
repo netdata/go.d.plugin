@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func TestClassificator_classify(t *testing.T) {
+func TestTargetClassificator_classify(t *testing.T) {
 	config := `
 - selector: "rule1"
   tags: "foo1"
@@ -65,8 +65,8 @@ func TestClassificator_classify(t *testing.T) {
 			err := yaml.Unmarshal([]byte(config), &cfg)
 			require.NoErrorf(t, err, "yaml unmarshalling of config")
 
-			clr, err := newClassificator(cfg)
-			require.NoErrorf(t, err, "classificator creation")
+			clr, err := newTargetClassificator(cfg)
+			require.NoErrorf(t, err, "targetClassificator creation")
 
 			assert.Equal(t, test.wantTags, clr.classify(test.target))
 		})
