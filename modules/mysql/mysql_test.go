@@ -21,11 +21,11 @@ import (
 )
 
 var (
-	dataMySQLV8030Version, _                = os.ReadFile("testdata/mysql/v8.0.30/version.txt")
-	dataMySQLV8030GlobalStatus, _           = os.ReadFile("testdata/mysql/v8.0.30/global_status.txt")
-	dataMySQLV8030GlobalVariables, _        = os.ReadFile("testdata/mysql/v8.0.30/global_variables.txt")
-	dataMySQLV8030SlaveStatusMultiSource, _ = os.ReadFile("testdata/mysql/v8.0.30/slave_status_multi_source.txt")
-	dataMySQLV8030ProcessList, _            = os.ReadFile("testdata/mysql/v8.0.30/process_list.txt")
+	dataMySQLV8030Version, _                  = os.ReadFile("testdata/mysql/v8.0.30/version.txt")
+	dataMySQLV8030GlobalStatus, _             = os.ReadFile("testdata/mysql/v8.0.30/global_status.txt")
+	dataMySQLV8030GlobalVariables, _          = os.ReadFile("testdata/mysql/v8.0.30/global_variables.txt")
+	dataMySQLV8030ReplicaStatusMultiSource, _ = os.ReadFile("testdata/mysql/v8.0.30/replica_status_multi_source.txt")
+	dataMySQLV8030ProcessList, _              = os.ReadFile("testdata/mysql/v8.0.30/process_list.txt")
 
 	dataPerconaV8029Version, _         = os.ReadFile("testdata/percona/v8.0.29/version.txt")
 	dataPerconaV8029GlobalStatus, _    = os.ReadFile("testdata/percona/v8.0.29/global_status.txt")
@@ -55,11 +55,11 @@ var (
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
-		"dataMySQLV8030Version":                dataMySQLV8030Version,
-		"dataMySQLV8030GlobalStatus":           dataMySQLV8030GlobalStatus,
-		"dataMySQLV8030GlobalVariables":        dataMySQLV8030GlobalVariables,
-		"dataMySQLV8030SlaveStatusMultiSource": dataMySQLV8030SlaveStatusMultiSource,
-		"dataMySQLV8030ProcessList":            dataMySQLV8030ProcessList,
+		"dataMySQLV8030Version":                  dataMySQLV8030Version,
+		"dataMySQLV8030GlobalStatus":             dataMySQLV8030GlobalStatus,
+		"dataMySQLV8030GlobalVariables":          dataMySQLV8030GlobalVariables,
+		"dataMySQLV8030ReplicaStatusMultiSource": dataMySQLV8030ReplicaStatusMultiSource,
+		"dataMySQLV8030ProcessList":              dataMySQLV8030ProcessList,
 
 		"dataPerconaV8029Version":         dataPerconaV8029Version,
 		"dataPerconaV8029GlobalStatus":    dataPerconaV8029GlobalStatus,
@@ -1308,7 +1308,7 @@ func TestMySQL_Collect(t *testing.T) {
 					mockExpect(t, m, queryShowVersion, dataMySQLV8030Version)
 					mockExpect(t, m, queryShowGlobalStatus, dataMySQLV8030GlobalStatus)
 					mockExpect(t, m, queryShowGlobalVariables, dataMySQLV8030GlobalVariables)
-					mockExpect(t, m, queryShowReplicaStatus, dataMySQLV8030SlaveStatusMultiSource)
+					mockExpect(t, m, queryShowReplicaStatus, dataMySQLV8030ReplicaStatusMultiSource)
 					mockExpect(t, m, queryShowProcessListPS, dataMySQLV8030ProcessList)
 				},
 				check: func(t *testing.T, my *MySQL) {
