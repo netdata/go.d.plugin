@@ -2,6 +2,10 @@
 
 package mysql
 
+import (
+	"github.com/blang/semver/v4"
+)
+
 // Table Schema:
 // (MariaDB) https://mariadb.com/kb/en/information-schema-processlist-table/
 // (MySql) https://dev.mysql.com/doc/refman/5.7/en/information-schema-processlist-table.html
@@ -19,8 +23,30 @@ ORDER BY
   time;`
 )
 
+// Performance Schema
+// (MySQL) https://dev.mysql.com/doc/refman/8.0/en/performance-schema-processlist-table.html
+const (
+	queryShowProcessListPS = `
+SELECT 
+  time, 
+  user 
+FROM 
+  performance_schema.processlist 
+WHERE 
+  info IS NOT NULL 
+  AND info NOT LIKE '%PROCESSLIST%' 
+ORDER BY 
+  time;`
+)
+
 func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
-	q := queryShowProcessList
+	var q string
+	mysqlMinVer := semver.Version{Major: 8, Minor: 0, Patch: 22}
+	if !m.isMariaDB && m.version.GTE(mysqlMinVer) && m.varPerformanceSchema != "OFF" {
+		q = queryShowProcessListPS
+	} else {
+		q = queryShowProcessList
+	}
 	m.Debugf("executing query: '%s'", q)
 
 	var maxTime int64 // slowest query milliseconds in process list
