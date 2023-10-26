@@ -41,7 +41,7 @@ modules:
           - `SELECT VERSION();`
           - `SHOW GLOBAL STATUS;`
           - `SHOW GLOBAL VARIABLES;`
-          - `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+)
+          - `SHOW SLAVE STATUS;` or `SHOW ALL SLAVES STATUS;` (MariaDBv10.2+) or `SHOW REPLICA STATUS;` (MySQL 8.0.22+)
           - `SHOW USER_STATISTICS;` (MariaDBv10.1.1+)
           - `SELECT TIME,USER FROM INFORMATION_SCHEMA.PROCESSLIST;`
       default_behavior:

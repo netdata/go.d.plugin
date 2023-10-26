@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	queryShowReplicaStatus   = "SHOW REPLICA STATUS;"
 	queryShowSlaveStatus     = "SHOW SLAVE STATUS;"
 	queryShowAllSlavesStatus = "SHOW ALL SLAVES STATUS;"
 )
@@ -16,9 +17,12 @@ const (
 func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {
 	// https://mariadb.com/docs/reference/es/sql-statements/SHOW_ALL_SLAVES_STATUS/
 	mariaDBMinVer := semver.Version{Major: 10, Minor: 2, Patch: 0}
+	mysqlMinVer := semver.Version{Major: 8, Minor: 0, Patch: 22}
 	var q string
 	if m.isMariaDB && m.version.GTE(mariaDBMinVer) {
 		q = queryShowAllSlavesStatus
+	} else if !m.isMariaDB && m.version.GTE(mysqlMinVer) {
+		q = queryShowReplicaStatus
 	} else {
 		q = queryShowSlaveStatus
 	}
@@ -35,11 +39,11 @@ func (m *MySQL) collectSlaveStatus(mx map[string]int64) error {
 		switch column {
 		case "Connection_name", "Channel_Name":
 			v.name = value
-		case "Seconds_Behind_Master":
+		case "Seconds_Behind_Master", "Seconds_Behind_Source":
 			v.behindMaster = parseInt(value)
-		case "Slave_SQL_Running":
+		case "Slave_SQL_Running", "Replica_SQL_Running":
 			v.sqlRunning = parseInt(convertSlaveSQLRunning(value))
-		case "Slave_IO_Running":
+		case "Slave_IO_Running", "Replica_IO_Running":
 			v.ioRunning = parseInt(convertSlaveIORunning(value))
 		}
 		if lineEnd {
