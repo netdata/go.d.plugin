@@ -42,7 +42,7 @@ ORDER BY
 func (m *MySQL) collectProcessListStatistics(mx map[string]int64) error {
 	var q string
 	mysqlMinVer := semver.Version{Major: 8, Minor: 0, Patch: 22}
-	if !m.isMariaDB && m.version.GTE(mysqlMinVer) && m.varPerformanceSchema != "OFF" {
+	if !m.isMariaDB && m.version.GTE(mysqlMinVer) && m.varPerformanceSchema == "ON" {
 		q = queryShowProcessListPS
 	} else {
 		q = queryShowProcessList
