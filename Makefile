@@ -39,7 +39,7 @@ vet:
 .PHONY: release
 release: clean download ## Create all release artifacts
 	hack/go-build.sh all
-	tar -zcvf bin/config.tar.gz -C config .
+	hack/go-build.sh configs
 	cd bin && sha256sum -b * >"sha256sums.txt"
 
 .PHONY: dev
