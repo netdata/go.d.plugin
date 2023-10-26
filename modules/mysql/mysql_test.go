@@ -1309,7 +1309,7 @@ func TestMySQL_Collect(t *testing.T) {
 					mockExpect(t, m, queryShowGlobalStatus, dataMySQLV8030GlobalStatus)
 					mockExpect(t, m, queryShowGlobalVariables, dataMySQLV8030GlobalVariables)
 					mockExpect(t, m, queryShowSlaveStatus, dataMySQLV8030SlaveStatusMultiSource)
-					mockExpect(t, m, queryShowProcessList, dataMySQLV8030ProcessList)
+					mockExpect(t, m, queryShowProcessListPS, dataMySQLV8030ProcessList)
 				},
 				check: func(t *testing.T, my *MySQL) {
 					mx := my.Collect()
@@ -1445,7 +1445,7 @@ func TestMySQL_Collect(t *testing.T) {
 					mockExpect(t, m, queryShowGlobalVariables, dataPerconaV8029GlobalVariables)
 					mockExpect(t, m, queryShowSlaveStatus, nil)
 					mockExpect(t, m, queryShowUserStatistics, dataPerconaV8029UserStatistics)
-					mockExpect(t, m, queryShowProcessList, dataPerconaV8029ProcessList)
+					mockExpect(t, m, queryShowProcessListPS, dataPerconaV8029ProcessList)
 				},
 				check: func(t *testing.T, my *MySQL) {
 					mx := my.Collect()

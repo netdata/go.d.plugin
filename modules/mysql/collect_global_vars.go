@@ -9,7 +9,8 @@ WHERE
   Variable_name LIKE 'max_connections' 
   OR Variable_name LIKE 'table_open_cache' 
   OR Variable_name LIKE 'disabled_storage_engines' 
-  OR Variable_name LIKE 'log_bin';`
+  OR Variable_name LIKE 'log_bin'
+  OR Variable_name LIKE 'performance_schema';`
 )
 
 func (m *MySQL) collectGlobalVariables() error {
@@ -31,6 +32,8 @@ func (m *MySQL) collectGlobalVariables() error {
 				m.varLogBin = value
 			case "max_connections":
 				m.varMaxConns = parseInt(value)
+			case "performance_schema":
+				m.varPerformanceSchema = value
 			case "table_open_cache":
 				m.varTableOpenCache = parseInt(value)
 			}

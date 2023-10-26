@@ -89,6 +89,7 @@ type MySQL struct {
 	varTableOpenCache        int64
 	varDisabledStorageEngine string
 	varLogBin                string
+	varPerformanceSchema     string
 }
 
 func (m *MySQL) Init() bool {
