@@ -1,5 +1,5 @@
 <!--startmeta
-custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/integrations/cs:go.md"
+custom_edit_url: "https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/integrations/csgo.md"
 meta_yaml: "https://github.com/netdata/go.d.plugin/edit/master/modules/prometheus/metadata.yaml"
 sidebar_label: "CS:GO"
 learn_status: "Published"
