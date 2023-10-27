@@ -20,7 +20,7 @@ func New(cfg Config) (*Pipeline, error) {
 	p := &Pipeline{
 		Logger:      logger.New("sd pipeline", cfg.Name),
 		accum:       newAccumulator(),
-		discoverers: make([]accumulateTask, 0),
+		discoverers: make([]model.Discoverer, 0),
 		items:       make(map[string]map[uint64][]confgroup.Config),
 	}
 
@@ -35,7 +35,7 @@ type (
 	Pipeline struct {
 		*logger.Logger
 
-		discoverers []accumulateTask
+		discoverers []model.Discoverer
 		accum       *accumulator
 
 		clr classificator
@@ -53,17 +53,12 @@ type (
 
 func (p *Pipeline) registerDiscoverers(conf Config) error {
 	for _, cfg := range conf.Discovery.K8s {
-		tags, _ := model.ParseTags(cfg.Tags)
-
-		td, err := kubernetes.NewTargetDiscoverer(cfg.Config)
+		td, err := kubernetes.NewTargetDiscoverer(cfg)
 		if err != nil {
 			return err
 		}
 
-		p.discoverers = append(p.discoverers, accumulateTask{
-			disc: td,
-			tags: tags,
-		})
+		p.discoverers = append(p.discoverers, td)
 	}
 
 	return nil
@@ -73,7 +68,7 @@ func (p *Pipeline) Discover(ctx context.Context, in chan<- []*confgroup.Group) {
 	p.Info("instance is started")
 	defer p.Info("instance is stopped")
 
-	p.accum.tasks = p.discoverers
+	p.accum.discoverers = p.discoverers
 
 	updates := make(chan []model.TargetGroup)
 	done := make(chan struct{})

@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -30,7 +32,7 @@ func TestServiceTargetGroup_Source(t *testing.T) {
 		"ClusterIP svc with multiple ports": {
 			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 				return discoverySim{
 					td: disc,
@@ -69,7 +71,7 @@ func TestServiceTargetGroup_Targets(t *testing.T) {
 		"ClusterIP svc with multiple ports": {
 			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 				return discoverySim{
 					td: disc,
@@ -105,7 +107,7 @@ func TestServiceTarget_Hash(t *testing.T) {
 		"ClusterIP svc with multiple ports": {
 			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 				return discoverySim{
 					td: disc,
@@ -148,7 +150,7 @@ func TestServiceTarget_TUID(t *testing.T) {
 		"ClusterIP svc with multiple ports": {
 			createSim: func() discoverySim {
 				httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-				disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+				disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 				return discoverySim{
 					td: disc,
@@ -200,7 +202,7 @@ func TestNewServiceTargetDiscoverer(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			f := func() { NewServiceTargetDiscoverer(test.informer) }
+			f := func() { newServiceTargetDiscoverer(test.informer) }
 
 			if test.wantPanic {
 				assert.Panics(t, f)
@@ -212,7 +214,7 @@ func TestNewServiceTargetDiscoverer(t *testing.T) {
 }
 
 func TestServiceTargetDiscoverer_String(t *testing.T) {
-	var s ServiceTargetDiscoverer
+	var s serviceTargetDiscoverer
 	assert.NotEmpty(t, s.String())
 }
 
@@ -220,7 +222,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 	tests := map[string]func() discoverySim{
 		"ADD: ClusterIP svc exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 			return discoverySim{
 				td: disc,
@@ -232,7 +234,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 		},
 		"ADD: ClusterIP svc exist before run and add after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			disc, client := prepareAllNsDiscoverer(RoleService, httpd)
+			disc, client := prepareAllNsSvcDiscoverer(httpd)
 			svcClient := client.CoreV1().Services("default")
 
 			return discoverySim{
@@ -248,7 +250,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 		},
 		"DELETE: ClusterIP svc remove after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			disc, client := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			disc, client := prepareAllNsSvcDiscoverer(httpd, nginx)
 			svcClient := client.CoreV1().Services("default")
 
 			return discoverySim{
@@ -268,7 +270,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 		},
 		"ADD,DELETE: ClusterIP svc remove and add after sync": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
-			disc, client := prepareAllNsDiscoverer(RoleService, httpd)
+			disc, client := prepareAllNsSvcDiscoverer(httpd)
 			svcClient := client.CoreV1().Services("default")
 
 			return discoverySim{
@@ -287,7 +289,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 		},
 		"ADD: Headless svc exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDHeadlessService(), newNGINXHeadlessService()
-			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 			return discoverySim{
 				td: disc,
@@ -302,7 +304,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 			httpdUpd, nginxUpd := *httpd, *nginx
 			httpdUpd.Spec.ClusterIP = "10.100.0.1"
 			nginxUpd.Spec.ClusterIP = "10.100.0.2"
-			disc, client := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			disc, client := prepareAllNsSvcDiscoverer(httpd, nginx)
 			svcClient := client.CoreV1().Services("default")
 
 			return discoverySim{
@@ -324,7 +326,7 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
 			httpd.Spec.Ports = httpd.Spec.Ports[:0]
 			nginx.Spec.Ports = httpd.Spec.Ports[:0]
-			disc, _ := prepareAllNsDiscoverer(RoleService, httpd, nginx)
+			disc, _ := prepareAllNsSvcDiscoverer(httpd, nginx)
 
 			return discoverySim{
 				td: disc,
@@ -342,7 +344,14 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 			sim.run(t)
 		})
 	}
+}
 
+func prepareAllNsSvcDiscoverer(objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+	return prepareDiscoverer("svc", []string{corev1.NamespaceAll}, objects...)
+}
+
+func prepareSvcDiscoverer(namespaces []string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+	return prepareDiscoverer("svc", namespaces, objects...)
 }
 
 func newHTTPDClusterIPService() *corev1.Service {
@@ -405,6 +414,7 @@ func prepareEmptySvcTargetGroup(svc *corev1.Service) *serviceTargetGroup {
 
 func prepareSvcTargetGroup(svc *corev1.Service) *serviceTargetGroup {
 	tgg := prepareEmptySvcTargetGroup(svc)
+
 	for _, port := range svc.Spec.Ports {
 		portNum := strconv.FormatInt(int64(port.Port), 10)
 		tgt := &ServiceTarget{
@@ -422,7 +432,9 @@ func prepareSvcTargetGroup(svc *corev1.Service) *serviceTargetGroup {
 			Type:         string(svc.Spec.Type),
 		}
 		tgt.hash = mustCalcHash(tgt)
+		tgt.Tags().Merge(discoveryTags)
 		tgg.targets = append(tgg.targets, tgt)
 	}
+
 	return tgg
 }

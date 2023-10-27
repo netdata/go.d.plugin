@@ -2,22 +2,35 @@
 
 package kubernetes
 
-import "fmt"
+import "errors"
 
 type Config struct {
-	APIServer  string   `yaml:"api_server"` // TODO: implement?
-	Namespaces []string `yaml:"namespaces"`
-	Role       string   `yaml:"role"`
-	LocalMode  bool     `yaml:"local_mode"`
-	Selector   struct {
+	APIServer  string         `yaml:"api_server"` // TODO: not used
+	Namespaces []string       `yaml:"namespaces"`
+	Pod        *PodConfig     `yaml:"pod"`
+	Service    *ServiceConfig `yaml:"service"`
+}
+
+type PodConfig struct {
+	Tags      string `yaml:"tags"`
+	LocalMode bool   `yaml:"local_mode"`
+	Selector  struct {
+		Label string `yaml:"label"`
+		Field string `yaml:"field"`
+	} `yaml:"selector"`
+}
+
+type ServiceConfig struct {
+	Tags     string `yaml:"tags"`
+	Selector struct {
 		Label string `yaml:"label"`
 		Field string `yaml:"field"`
 	} `yaml:"selector"`
 }
 
 func validateConfig(cfg Config) error {
-	if !(cfg.Role == RolePod || cfg.Role == RoleService) {
-		return fmt.Errorf("invalid role '%s', valid roles: '%s', '%s'", cfg.Role, RolePod, RoleService)
+	if cfg.Pod == nil && cfg.Service == nil {
+		return errors.New("no discovers configured")
 	}
 
 	return nil

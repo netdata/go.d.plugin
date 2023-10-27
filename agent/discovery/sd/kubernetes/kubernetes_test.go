@@ -18,6 +18,8 @@ import (
 	"k8s.io/client-go/kubernetes/fake"
 )
 
+var discoveryTags model.Tags = map[string]struct{}{"k8s": {}}
+
 func TestMain(m *testing.M) {
 	_ = os.Setenv(envNodeName, "m01")
 	_ = os.Setenv(k8sclient.EnvFakeClient, "true")
@@ -32,21 +34,21 @@ func TestNewTargetDiscoverer(t *testing.T) {
 		cfg     Config
 		wantErr bool
 	}{
-		"role pod and local mode": {
+		"pod and service config": {
 			wantErr: false,
-			cfg:     Config{Role: RolePod, LocalMode: true},
+			cfg:     Config{Pod: &PodConfig{}, Service: &ServiceConfig{}},
 		},
-		"role service and local mode": {
+		"pod config": {
 			wantErr: false,
-			cfg:     Config{Role: RoleService, LocalMode: true},
+			cfg:     Config{Pod: &PodConfig{}},
+		},
+		"service config": {
+			wantErr: false,
+			cfg:     Config{Service: &ServiceConfig{}},
 		},
 		"empty config": {
 			wantErr: true,
 			cfg:     Config{},
-		},
-		"invalid role": {
-			wantErr: true,
-			cfg:     Config{Role: "invalid"},
 		},
 	}
 	for name, test := range tests {
@@ -56,17 +58,9 @@ func TestNewTargetDiscoverer(t *testing.T) {
 			if test.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, disc)
-				return
-			}
-
-			assert.NoError(t, err)
-			assert.NotNil(t, disc)
-			if test.cfg.LocalMode {
-				if test.cfg.Role == RolePod {
-					assert.Contains(t, disc.selectorField, "spec.nodeName=m01")
-				} else {
-					assert.Empty(t, disc.selectorField)
-				}
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, disc)
 			}
 		})
 	}
@@ -88,8 +82,7 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 			httpdDev.Namespace = dev
 			nginxDev.Namespace = dev
 
-			disc, _ := prepareDiscoverer(
-				RolePod,
+			disc, _ := preparePodDiscoverer(
 				[]string{prod, dev},
 				prodNamespace, devNamespace, httpdProd, nginxProd, httpdDev, nginxDev)
 
@@ -113,8 +106,7 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 			httpdDev.Namespace = dev
 			nginxDev.Namespace = dev
 
-			disc, _ := prepareDiscoverer(
-				RoleService,
+			disc, _ := prepareSvcDiscoverer(
 				[]string{prod, dev},
 				prodNamespace, devNamespace, httpdProd, nginxProd, httpdDev, nginxDev)
 
@@ -139,20 +131,19 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 	}
 }
 
-func prepareAllNsDiscoverer(role string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
-	return prepareDiscoverer(role, []string{corev1.NamespaceAll}, objects...)
-}
-
 func prepareDiscoverer(role string, namespaces []string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
 	client := fake.NewSimpleClientset(objects...)
 	disc := &TargetDiscoverer{
-		namespaces:    namespaces,
-		role:          role,
-		selectorLabel: "",
-		selectorField: "",
-		client:        client,
-		discoverers:   nil,
-		started:       make(chan struct{}),
+		namespaces:  namespaces,
+		client:      client,
+		discoverers: nil,
+		started:     make(chan struct{}),
+	}
+	switch role {
+	case "pod":
+		disc.podConf = &PodConfig{Tags: "k8s"}
+	case "svc":
+		disc.svcConf = &ServiceConfig{Tags: "k8s"}
 	}
 	return disc, client
 }
