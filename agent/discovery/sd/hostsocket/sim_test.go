@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package hostnetsocket
+package hostsocket
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type discoverySim struct {
 }
 
 func (sim *discoverySim) run(t *testing.T) {
-	d, err := NewTargetDiscoverer("")
+	d, err := NewNetSocketDiscoverer(NetworkSocketConfig{Tags: "hostsocket net"})
 	require.NoError(t, err)
 
 	d.ll = sim.mock
@@ -45,7 +45,7 @@ func (sim *discoverySim) run(t *testing.T) {
 	}
 }
 
-func (sim *discoverySim) collectTargetGroups(t *testing.T, ctx context.Context, d *TargetDiscoverer) ([]model.TargetGroup, chan struct{}) {
+func (sim *discoverySim) collectTargetGroups(t *testing.T, ctx context.Context, d *NetDiscoverer) ([]model.TargetGroup, chan struct{}) {
 
 	in := make(chan []model.TargetGroup)
 	done := make(chan struct{})

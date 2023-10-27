@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package hostnetsocket
+package hostsocket
 
 import (
 	"bufio"
@@ -8,6 +8,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,23 +20,63 @@ import (
 	"github.com/ilyam8/hashstructure"
 )
 
-func NewTargetDiscoverer(path string) (*TargetDiscoverer, error) {
-	d := &TargetDiscoverer{
-		Logger:   logger.New("qq", "qq"),
+type netSocketTargetGroup struct {
+	provider string
+	source   string
+	targets  []model.Target
+}
+
+func (g *netSocketTargetGroup) Provider() string        { return g.provider }
+func (g *netSocketTargetGroup) Source() string          { return g.source }
+func (g *netSocketTargetGroup) Targets() []model.Target { return g.targets }
+
+type NetSocketTarget struct {
+	model.Base
+
+	hash uint64
+
+	Protocol string
+	Address  string
+	Port     string
+	Comm     string
+	Cmdline  string
+}
+
+func (t *NetSocketTarget) TUID() string { return t.tuid() }
+func (t *NetSocketTarget) Hash() uint64 { return t.hash }
+func (t *NetSocketTarget) tuid() string {
+	return fmt.Sprintf("%s_%s_%d", strings.ToLower(t.Protocol), t.Port, t.hash)
+}
+
+func NewNetSocketDiscoverer(cfg NetworkSocketConfig) (*NetDiscoverer, error) {
+	tags, err := model.ParseTags(cfg.Tags)
+	if err != nil {
+		return nil, fmt.Errorf("parse tags: %v", err)
+	}
+
+	dir := os.Getenv("NETDATA_PLUGINS_DIR")
+	if dir == "" {
+		dir, _ = os.Getwd()
+	}
+
+	d := &NetDiscoverer{
+		Logger:   logger.New("hostsocket", "net"),
 		interval: time.Second * 60,
 		ll: &localListenersExec{
-			binPath: path,
-			timeout: time.Second * 10,
+			binPath: filepath.Join(dir, "local-listeners"),
+			timeout: time.Second * 5,
 		},
 		started: make(chan struct{}),
 	}
+	d.Tags().Merge(tags)
 
 	return d, nil
 }
 
 type (
-	TargetDiscoverer struct {
+	NetDiscoverer struct {
 		*logger.Logger
+		model.Base
 
 		interval time.Duration
 		ll       localListeners
@@ -46,9 +88,7 @@ type (
 	}
 )
 
-func (d *TargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
-	close(d.started)
-
+func (d *NetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
 	if err := d.discoverLocalListeners(ctx, in); err != nil {
 		d.Error(err)
 		return
@@ -70,7 +110,7 @@ func (d *TargetDiscoverer) Discover(ctx context.Context, in chan<- []model.Targe
 	}
 }
 
-func (d *TargetDiscoverer) discoverLocalListeners(ctx context.Context, in chan<- []model.TargetGroup) error {
+func (d *NetDiscoverer) discoverLocalListeners(ctx context.Context, in chan<- []model.TargetGroup) error {
 	bs, err := d.ll.discover(ctx)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
@@ -91,7 +131,7 @@ func (d *TargetDiscoverer) discoverLocalListeners(ctx context.Context, in chan<-
 	return nil
 }
 
-func (d *TargetDiscoverer) parseLocalListeners(bs []byte) ([]model.TargetGroup, error) {
+func (d *NetDiscoverer) parseLocalListeners(bs []byte) ([]model.TargetGroup, error) {
 	var tgts []model.Target
 
 	sc := bufio.NewScanner(bytes.NewReader(bs))
@@ -107,7 +147,7 @@ func (d *TargetDiscoverer) parseLocalListeners(bs []byte) ([]model.TargetGroup, 
 			return nil, fmt.Errorf("unexpected data: '%s'", text)
 		}
 
-		tgt := listenerTarget{
+		tgt := NetSocketTarget{
 			Protocol: parts[0],
 			Address:  parts[1],
 			Port:     parts[2],
@@ -121,17 +161,37 @@ func (d *TargetDiscoverer) parseLocalListeners(bs []byte) ([]model.TargetGroup, 
 		}
 
 		tgt.hash = hash
+		tgt.Tags().Merge(d.Tags())
 
 		tgts = append(tgts, &tgt)
 	}
 
-	tgg := &listenerTargetGroup{
+	tgg := &netSocketTargetGroup{
 		provider: "hostsocket",
-		source:   "local_listeners",
+		source:   "net",
 		targets:  tgts,
 	}
 
 	return []model.TargetGroup{tgg}, nil
+}
+
+type localListenersExec struct {
+	binPath string
+	timeout time.Duration
+}
+
+func (e *localListenersExec) discover(ctx context.Context) ([]byte, error) {
+	execCtx, cancel := context.WithTimeout(ctx, e.timeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(execCtx, e.binPath, "tcp") // TODO: tcp6?
+
+	bs, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("error on '%s': %v", cmd, err)
+	}
+
+	return bs, nil
 }
 
 func extractComm(s string) string {

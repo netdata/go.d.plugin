@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package hostnetsocket
+package hostsocket
 
 import (
 	"context"
@@ -19,37 +19,37 @@ UDP|127.0.0.1|53768|/opt/netdata/usr/libexec/netdata/plugins.d/go.d.plugin 1
 `)
 )
 
-func TestTargetDiscoverer_Discover(t *testing.T) {
+func TestNetSocketDiscoverer_Discover(t *testing.T) {
 	tests := map[string]discoverySim{
 		"valid response": {
 			mock:                 &mockLocalListenersExec{},
 			wantDoneBeforeCancel: false,
-			wantTargetGroups: []model.TargetGroup{&listenerTargetGroup{
+			wantTargetGroups: []model.TargetGroup{&netSocketTargetGroup{
 				provider: "hostsocket",
-				source:   "local_listeners",
+				source:   "net",
 				targets: []model.Target{
-					withHash(&listenerTarget{
+					withHash(&NetSocketTarget{
 						Protocol: "UDP6",
 						Address:  "::1",
 						Port:     "8125",
 						Comm:     "netdata",
 						Cmdline:  "/opt/netdata/usr/sbin/netdata -P /run/netdata/netdata.pid -D",
 					}),
-					withHash(&listenerTarget{
+					withHash(&NetSocketTarget{
 						Protocol: "TCP6",
 						Address:  "::1",
 						Port:     "8125",
 						Comm:     "netdata",
 						Cmdline:  "/opt/netdata/usr/sbin/netdata -P /run/netdata/netdata.pid -D",
 					}),
-					withHash(&listenerTarget{
+					withHash(&NetSocketTarget{
 						Protocol: "TCP",
 						Address:  "127.0.0.1",
 						Port:     "8125",
 						Comm:     "netdata",
 						Cmdline:  "/opt/netdata/usr/sbin/netdata -P /run/netdata/netdata.pid -D",
 					}),
-					withHash(&listenerTarget{
+					withHash(&NetSocketTarget{
 						Protocol: "UDP",
 						Address:  "127.0.0.1",
 						Port:     "53768",
@@ -62,9 +62,9 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 		"empty response": {
 			mock:                 &mockLocalListenersExec{emptyResponse: true},
 			wantDoneBeforeCancel: false,
-			wantTargetGroups: []model.TargetGroup{&listenerTargetGroup{
+			wantTargetGroups: []model.TargetGroup{&netSocketTargetGroup{
 				provider: "hostsocket",
-				source:   "local_listeners",
+				source:   "net",
 			}},
 		},
 		"error on exec": {
@@ -86,8 +86,10 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 	}
 }
 
-func withHash(l *listenerTarget) *listenerTarget {
+func withHash(l *NetSocketTarget) *NetSocketTarget {
 	l.hash, _ = calcHash(l)
+	tags, _ := model.ParseTags("hostsocket net")
+	l.Tags().Merge(tags)
 	return l
 }
 
