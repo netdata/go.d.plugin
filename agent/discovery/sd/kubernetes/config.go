@@ -30,7 +30,7 @@ type ServiceConfig struct {
 
 func validateConfig(cfg Config) error {
 	if cfg.Pod == nil && cfg.Service == nil {
-		return errors.New("no discovers configured")
+		return errors.New("no discoverers configured")
 	}
 
 	return nil
