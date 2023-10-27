@@ -5,6 +5,8 @@ package logs
 import (
 	"errors"
 	"os"
+
+	"github.com/clbanning/rfile/v2"
 )
 
 const DefaultMaxLineWidth = 4 * 1024 // assume disk block size is 4K
@@ -56,4 +58,8 @@ func ReadLastLine(filename string, maxLineWidth int64) ([]byte, error) {
 	}
 
 	return nil, ErrTooLongLine
+}
+
+func ReadLastLines(filename string, n uint) ([]string, error) {
+	return rfile.Tail(filename, int(n))
 }
