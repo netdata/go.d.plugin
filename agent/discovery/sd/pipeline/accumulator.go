@@ -23,15 +23,11 @@ func newAccumulator() *accumulator {
 type (
 	accumulator struct {
 		*logger.Logger
-		tasks     []accumulateTask
-		send      chan struct{}
-		sendEvery time.Duration
-		mux       *sync.Mutex
-		tggs      map[string]model.TargetGroup
-	}
-	accumulateTask struct {
-		disc model.Discoverer
-		tags model.Tags
+		discoverers []model.Discoverer
+		send        chan struct{}
+		sendEvery   time.Duration
+		mux         *sync.Mutex
+		tggs        map[string]model.TargetGroup
 	}
 )
 
@@ -39,10 +35,10 @@ func (a *accumulator) run(ctx context.Context, in chan []model.TargetGroup) {
 	updates := make(chan []model.TargetGroup)
 
 	var wg sync.WaitGroup
-	for _, task := range a.tasks {
-		task := task
+	for _, d := range a.discoverers {
 		wg.Add(1)
-		go func() { defer wg.Done(); a.runTask(ctx, task, updates) }()
+		d := d
+		go func() { defer wg.Done(); a.runDiscoverer(ctx, d, updates) }()
 	}
 
 	done := make(chan struct{})
@@ -56,11 +52,13 @@ func (a *accumulator) run(ctx context.Context, in chan []model.TargetGroup) {
 		case <-ctx.Done():
 			select {
 			case <-done:
+				a.Info("all discoverers exited")
 			case <-time.After(time.Second * 5):
+				a.Warning("not all discoverers exited")
 			}
 			return
 		case <-done:
-			a.Info("all discovery tasks completed")
+			a.Info("all discoverers exited")
 			a.trySend(in)
 			return
 		case <-tk.C:
@@ -73,9 +71,9 @@ func (a *accumulator) run(ctx context.Context, in chan []model.TargetGroup) {
 	}
 }
 
-func (a *accumulator) runTask(ctx context.Context, task accumulateTask, updates chan []model.TargetGroup) {
+func (a *accumulator) runDiscoverer(ctx context.Context, d model.Discoverer, updates chan []model.TargetGroup) {
 	done := make(chan struct{})
-	go func() { defer close(done); task.disc.Discover(ctx, updates) }()
+	go func() { defer close(done); d.Discover(ctx, updates) }()
 
 	for {
 		select {
@@ -88,12 +86,6 @@ func (a *accumulator) runTask(ctx context.Context, task accumulateTask, updates 
 		case <-done:
 			return
 		case tggs := <-updates:
-			for _, tgg := range tggs {
-				for _, tgt := range tgg.Targets() {
-					tgt.Tags().Merge(task.tags)
-				}
-			}
-
 			a.mux.Lock()
 			a.groupsUpdate(tggs)
 			a.mux.Unlock()

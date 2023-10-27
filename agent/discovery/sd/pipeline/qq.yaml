@@ -1,7 +1,20 @@
 name: qqq
 discovery:
   k8s:
-    - tags: "k8s"
+    - pod:
+        tags: "pod"
+        local_mode: yes
+      service:
+        tags: "service"
+  hostsocket:
+    net:
+      tags: "netsocket"
+    unix:
+      tags: "unixsocket"
+  docker:
+    - address: "1"
+      tags: "qq"
+
 
 classify:
   - name: "name"

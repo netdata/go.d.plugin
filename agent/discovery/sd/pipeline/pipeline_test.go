@@ -5,7 +5,6 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
 	"time"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/ilyam8/hashstructure"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 )
 
@@ -70,11 +70,9 @@ compose:
 	tests := map[string]discoverySim{
 		"new group with no targets": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("test",
-					newMockDiscoverer(
-						newMockTargetGroup("test"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("",
+					newMockTargetGroup("test"),
 				),
 			},
 			wantClassifyCalls: 0,
@@ -83,11 +81,9 @@ compose:
 		},
 		"new group with targets": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("rule1",
-					newMockDiscoverer(
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("rule1",
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
 			},
 			wantClassifyCalls: 2,
@@ -109,16 +105,12 @@ compose:
 		},
 		"existing group with same targets": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("rule1",
-					newMockDiscoverer(
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("rule1",
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
-				prepareAccumTask("rule1",
-					newDelayedMockDiscoverer(5,
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+				newDelayedMockDiscoverer("rule1", 5,
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
 			},
 			wantClassifyCalls: 2,
@@ -140,16 +132,12 @@ compose:
 		},
 		"existing empty group that previously had targets": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("rule1",
-					newMockDiscoverer(
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("rule1",
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
-				prepareAccumTask("rule1",
-					newDelayedMockDiscoverer(5,
-						newMockTargetGroup("test"),
-					),
+				newDelayedMockDiscoverer("rule1", 5,
+					newMockTargetGroup("test"),
 				),
 			},
 			wantClassifyCalls: 2,
@@ -172,16 +160,12 @@ compose:
 		},
 		"existing group with old and new targets": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("rule1",
-					newMockDiscoverer(
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("rule1",
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
-				prepareAccumTask("rule1",
-					newDelayedMockDiscoverer(5,
-						newMockTargetGroup("test", "mock1", "mock2", "mock11", "mock22"),
-					),
+				newDelayedMockDiscoverer("rule1", 5,
+					newMockTargetGroup("test", "mock1", "mock2", "mock11", "mock22"),
 				),
 			},
 			wantClassifyCalls: 4,
@@ -225,16 +209,12 @@ compose:
 		},
 		"existing group with new targets only": {
 			config: config,
-			discoverers: []accumulateTask{
-				prepareAccumTask("rule1",
-					newMockDiscoverer(
-						newMockTargetGroup("test", "mock1", "mock2"),
-					),
+			discoverers: []model.Discoverer{
+				newMockDiscoverer("rule1",
+					newMockTargetGroup("test", "mock1", "mock2"),
 				),
-				prepareAccumTask("rule1",
-					newDelayedMockDiscoverer(5,
-						newMockTargetGroup("test", "mock11", "mock22"),
-					),
+				newDelayedMockDiscoverer("rule1", 5,
+					newMockTargetGroup("test", "mock11", "mock22"),
 				),
 			},
 			wantClassifyCalls: 4,
@@ -275,21 +255,16 @@ compose:
 	}
 }
 
-func prepareAccumTask(tags string, disc model.Discoverer) accumulateTask {
-	return accumulateTask{
-		disc: disc,
-		tags: mustParseTags(tags),
-	}
-}
-
-func newMockDiscoverer(tggs ...model.TargetGroup) *mockDiscoverer {
+func newMockDiscoverer(tags string, tggs ...model.TargetGroup) *mockDiscoverer {
 	return &mockDiscoverer{
+		tags: mustParseTags(tags),
 		tggs: tggs,
 	}
 }
 
-func newDelayedMockDiscoverer(delay int, tggs ...model.TargetGroup) *mockDiscoverer {
+func newDelayedMockDiscoverer(tags string, delay int, tggs ...model.TargetGroup) *mockDiscoverer {
 	return &mockDiscoverer{
+		tags:  mustParseTags(tags),
 		tggs:  tggs,
 		delay: time.Duration(delay) * time.Second,
 	}
@@ -297,10 +272,17 @@ func newDelayedMockDiscoverer(delay int, tggs ...model.TargetGroup) *mockDiscove
 
 type mockDiscoverer struct {
 	tggs  []model.TargetGroup
+	tags  model.Tags
 	delay time.Duration
 }
 
 func (md mockDiscoverer) Discover(ctx context.Context, out chan<- []model.TargetGroup) {
+	for _, tgg := range md.tggs {
+		for _, tgt := range tgg.Targets() {
+			tgt.Tags().Merge(md.tags)
+		}
+	}
+
 	select {
 	case <-ctx.Done():
 	case <-time.After(md.delay):

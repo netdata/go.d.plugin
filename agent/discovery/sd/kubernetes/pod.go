@@ -52,7 +52,7 @@ type PodTarget struct {
 func (p PodTarget) Hash() uint64 { return p.hash }
 func (p PodTarget) TUID() string { return p.tuid }
 
-func NewPodTargetDiscoverer(pod, cmap, secret cache.SharedInformer) *PodTargetDiscoverer {
+func newPodTargetDiscoverer(pod, cmap, secret cache.SharedInformer) *podTargetDiscoverer {
 
 	if pod == nil || cmap == nil || secret == nil {
 		panic("nil pod or cmap or secret informer")
@@ -66,7 +66,7 @@ func NewPodTargetDiscoverer(pod, cmap, secret cache.SharedInformer) *PodTargetDi
 		DeleteFunc: func(obj any) { enqueue(queue, obj) },
 	})
 
-	return &PodTargetDiscoverer{
+	return &podTargetDiscoverer{
 		Logger:         logger.New("k8s pod td", ""),
 		podInformer:    pod,
 		cmapInformer:   cmap,
@@ -75,19 +75,21 @@ func NewPodTargetDiscoverer(pod, cmap, secret cache.SharedInformer) *PodTargetDi
 	}
 }
 
-type PodTargetDiscoverer struct {
+type podTargetDiscoverer struct {
 	*logger.Logger
+	model.Base
+
 	podInformer    cache.SharedInformer
 	cmapInformer   cache.SharedInformer
 	secretInformer cache.SharedInformer
 	queue          *workqueue.Type
 }
 
-func (p *PodTargetDiscoverer) String() string {
-	return fmt.Sprintf("k8s %s td", RolePod)
+func (p *podTargetDiscoverer) String() string {
+	return "k8s pod"
 }
 
-func (p *PodTargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
+func (p *podTargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
 	p.Info("instance is started")
 	defer p.Info("instance is stopped")
 	defer p.queue.ShutDown()
@@ -107,7 +109,7 @@ func (p *PodTargetDiscoverer) Discover(ctx context.Context, in chan<- []model.Ta
 	<-ctx.Done()
 }
 
-func (p *PodTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetGroup) {
+func (p *podTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetGroup) {
 	for {
 		item, shutdown := p.queue.Get()
 		if shutdown {
@@ -117,7 +119,7 @@ func (p *PodTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetG
 	}
 }
 
-func (p *PodTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []model.TargetGroup, item any) {
+func (p *podTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []model.TargetGroup, item any) {
 	defer p.queue.Done(item)
 
 	key := item.(string)
@@ -144,11 +146,15 @@ func (p *PodTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []m
 
 	tgg := p.buildTargetGroup(pod)
 
+	for _, tgt := range tgg.Targets() {
+		tgt.Tags().Merge(p.Tags())
+	}
+
 	send(ctx, in, tgg)
 
 }
 
-func (p *PodTargetDiscoverer) buildTargetGroup(pod *corev1.Pod) model.TargetGroup {
+func (p *podTargetDiscoverer) buildTargetGroup(pod *corev1.Pod) model.TargetGroup {
 	if pod.Status.PodIP == "" || len(pod.Spec.Containers) == 0 {
 		return &podTargetGroup{
 			source: podSource(pod),
@@ -160,7 +166,7 @@ func (p *PodTargetDiscoverer) buildTargetGroup(pod *corev1.Pod) model.TargetGrou
 	}
 }
 
-func (p *PodTargetDiscoverer) buildTargets(pod *corev1.Pod) (targets []model.Target) {
+func (p *podTargetDiscoverer) buildTargets(pod *corev1.Pod) (targets []model.Target) {
 	var name, kind string
 	for _, ref := range pod.OwnerReferences {
 		if ref.Controller != nil && *ref.Controller {
@@ -227,10 +233,11 @@ func (p *PodTargetDiscoverer) buildTargets(pod *corev1.Pod) (targets []model.Tar
 			}
 		}
 	}
+
 	return targets
 }
 
-func (p *PodTargetDiscoverer) collectEnv(ns string, container corev1.Container) map[string]string {
+func (p *podTargetDiscoverer) collectEnv(ns string, container corev1.Container) map[string]string {
 	vars := make(map[string]string)
 
 	// When a key exists in multiple sources,
@@ -270,7 +277,7 @@ func (p *PodTargetDiscoverer) collectEnv(ns string, container corev1.Container) 
 	return vars
 }
 
-func (p *PodTargetDiscoverer) valueFromConfigMap(vars map[string]string, ns string, env corev1.EnvVar) {
+func (p *podTargetDiscoverer) valueFromConfigMap(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.ConfigMapKeyRef.Name == "" || env.ValueFrom.ConfigMapKeyRef.Key == "" {
 		return
 	}
@@ -293,7 +300,7 @@ func (p *PodTargetDiscoverer) valueFromConfigMap(vars map[string]string, ns stri
 	}
 }
 
-func (p *PodTargetDiscoverer) valueFromSecret(vars map[string]string, ns string, env corev1.EnvVar) {
+func (p *podTargetDiscoverer) valueFromSecret(vars map[string]string, ns string, env corev1.EnvVar) {
 	if env.ValueFrom.SecretKeyRef.Name == "" || env.ValueFrom.SecretKeyRef.Key == "" {
 		return
 	}
@@ -316,7 +323,7 @@ func (p *PodTargetDiscoverer) valueFromSecret(vars map[string]string, ns string,
 	}
 }
 
-func (p *PodTargetDiscoverer) envFromConfigMap(vars map[string]string, ns string, src corev1.EnvFromSource) {
+func (p *podTargetDiscoverer) envFromConfigMap(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.ConfigMapRef.Name == "" {
 		return
 	}
@@ -337,7 +344,7 @@ func (p *PodTargetDiscoverer) envFromConfigMap(vars map[string]string, ns string
 	}
 }
 
-func (p *PodTargetDiscoverer) envFromSecret(vars map[string]string, ns string, src corev1.EnvFromSource) {
+func (p *podTargetDiscoverer) envFromSecret(vars map[string]string, ns string, src corev1.EnvFromSource) {
 	if src.SecretRef.Name == "" {
 		return
 	}

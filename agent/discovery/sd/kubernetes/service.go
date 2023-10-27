@@ -48,14 +48,15 @@ type ServiceTarget struct {
 func (s ServiceTarget) Hash() uint64 { return s.hash }
 func (s ServiceTarget) TUID() string { return s.tuid }
 
-type ServiceTargetDiscoverer struct {
+type serviceTargetDiscoverer struct {
 	*logger.Logger
+	model.Base
 
 	informer cache.SharedInformer
 	queue    *workqueue.Type
 }
 
-func NewServiceTargetDiscoverer(inf cache.SharedInformer) *ServiceTargetDiscoverer {
+func newServiceTargetDiscoverer(inf cache.SharedInformer) *serviceTargetDiscoverer {
 	if inf == nil {
 		panic("nil service informer")
 	}
@@ -67,18 +68,18 @@ func NewServiceTargetDiscoverer(inf cache.SharedInformer) *ServiceTargetDiscover
 		DeleteFunc: func(obj any) { enqueue(queue, obj) },
 	})
 
-	return &ServiceTargetDiscoverer{
+	return &serviceTargetDiscoverer{
 		Logger:   logger.New("k8s service td", ""),
 		informer: inf,
 		queue:    queue,
 	}
 }
 
-func (s *ServiceTargetDiscoverer) String() string {
-	return fmt.Sprintf("k8s %s td", RoleService)
+func (s *serviceTargetDiscoverer) String() string {
+	return "k8s service"
 }
 
-func (s *ServiceTargetDiscoverer) Discover(ctx context.Context, ch chan<- []model.TargetGroup) {
+func (s *serviceTargetDiscoverer) Discover(ctx context.Context, ch chan<- []model.TargetGroup) {
 	s.Info("instance is started")
 	defer s.Info("instance is stopped")
 	defer s.queue.ShutDown()
@@ -95,7 +96,7 @@ func (s *ServiceTargetDiscoverer) Discover(ctx context.Context, ch chan<- []mode
 	<-ctx.Done()
 }
 
-func (s *ServiceTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetGroup) {
+func (s *serviceTargetDiscoverer) run(ctx context.Context, in chan<- []model.TargetGroup) {
 	for {
 		item, shutdown := s.queue.Get()
 		if shutdown {
@@ -106,7 +107,7 @@ func (s *ServiceTargetDiscoverer) run(ctx context.Context, in chan<- []model.Tar
 	}
 }
 
-func (s *ServiceTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []model.TargetGroup, item any) {
+func (s *serviceTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<- []model.TargetGroup, item any) {
 	defer s.queue.Done(item)
 
 	key := item.(string)
@@ -133,10 +134,14 @@ func (s *ServiceTargetDiscoverer) handleQueueItem(ctx context.Context, in chan<-
 
 	tgg := s.buildTargetGroup(svc)
 
+	for _, tgt := range tgg.Targets() {
+		tgt.Tags().Merge(s.Tags())
+	}
+
 	send(ctx, in, tgg)
 }
 
-func (s *ServiceTargetDiscoverer) buildTargetGroup(svc *corev1.Service) model.TargetGroup {
+func (s *serviceTargetDiscoverer) buildTargetGroup(svc *corev1.Service) model.TargetGroup {
 	// TODO: headless service?
 	if svc.Spec.ClusterIP == "" || len(svc.Spec.Ports) == 0 {
 		return &serviceTargetGroup{
@@ -149,7 +154,7 @@ func (s *ServiceTargetDiscoverer) buildTargetGroup(svc *corev1.Service) model.Ta
 	}
 }
 
-func (s *ServiceTargetDiscoverer) buildTargets(svc *corev1.Service) (targets []model.Target) {
+func (s *serviceTargetDiscoverer) buildTargets(svc *corev1.Service) (targets []model.Target) {
 	for _, port := range svc.Spec.Ports {
 		portNum := strconv.FormatInt(int64(port.Port), 10)
 		tgt := &ServiceTarget{

@@ -18,11 +18,7 @@ type Config struct {
 
 type (
 	DiscoveryConfig struct {
-		K8s []K8sConfig `yaml:"k8s"`
-	}
-	K8sConfig struct {
-		Tags              string `yaml:"tags"`
-		kubernetes.Config `yaml:",inline"`
+		K8s []kubernetes.Config `yaml:"k8s"`
 	}
 )
 

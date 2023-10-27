@@ -19,7 +19,7 @@ import (
 
 type discoverySim struct {
 	config            string
-	discoverers       []accumulateTask
+	discoverers       []model.Discoverer
 	wantClassifyCalls int
 	wantComposeCalls  int
 	wantConfGroups    []*confgroup.Group

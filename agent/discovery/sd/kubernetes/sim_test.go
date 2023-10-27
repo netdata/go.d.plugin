@@ -107,8 +107,8 @@ type hasSynced interface {
 
 var (
 	_ hasSynced = &TargetDiscoverer{}
-	_ hasSynced = &PodTargetDiscoverer{}
-	_ hasSynced = &ServiceTargetDiscoverer{}
+	_ hasSynced = &podTargetDiscoverer{}
+	_ hasSynced = &serviceTargetDiscoverer{}
 )
 
 func (d *TargetDiscoverer) hasSynced() bool {
@@ -121,11 +121,11 @@ func (d *TargetDiscoverer) hasSynced() bool {
 	return true
 }
 
-func (p *PodTargetDiscoverer) hasSynced() bool {
+func (p *podTargetDiscoverer) hasSynced() bool {
 	return p.podInformer.HasSynced() && p.cmapInformer.HasSynced() && p.secretInformer.HasSynced()
 }
 
-func (s *ServiceTargetDiscoverer) hasSynced() bool {
+func (s *serviceTargetDiscoverer) hasSynced() bool {
 	return s.informer.HasSynced()
 }
 
