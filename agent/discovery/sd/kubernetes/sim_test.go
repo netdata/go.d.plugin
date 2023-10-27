@@ -21,7 +21,7 @@ const (
 )
 
 type discoverySim struct {
-	td               *TargetDiscoverer
+	td               *KubeDiscoverer
 	runAfterSync     func(ctx context.Context)
 	sortBeforeVerify bool
 	wantTargetGroups []model.TargetGroup
@@ -106,12 +106,12 @@ type hasSynced interface {
 }
 
 var (
-	_ hasSynced = &TargetDiscoverer{}
-	_ hasSynced = &podTargetDiscoverer{}
-	_ hasSynced = &serviceTargetDiscoverer{}
+	_ hasSynced = &KubeDiscoverer{}
+	_ hasSynced = &podDiscoverer{}
+	_ hasSynced = &serviceDiscoverer{}
 )
 
-func (d *TargetDiscoverer) hasSynced() bool {
+func (d *KubeDiscoverer) hasSynced() bool {
 	for _, disc := range d.discoverers {
 		v, ok := disc.(hasSynced)
 		if !ok || !v.hasSynced() {
@@ -121,11 +121,11 @@ func (d *TargetDiscoverer) hasSynced() bool {
 	return true
 }
 
-func (p *podTargetDiscoverer) hasSynced() bool {
+func (p *podDiscoverer) hasSynced() bool {
 	return p.podInformer.HasSynced() && p.cmapInformer.HasSynced() && p.secretInformer.HasSynced()
 }
 
-func (s *serviceTargetDiscoverer) hasSynced() bool {
+func (s *serviceDiscoverer) hasSynced() bool {
 	return s.informer.HasSynced()
 }
 

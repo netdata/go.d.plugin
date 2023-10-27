@@ -185,7 +185,7 @@ func TestServiceTarget_TUID(t *testing.T) {
 	}
 }
 
-func TestNewServiceTargetDiscoverer(t *testing.T) {
+func TestNewServiceDiscoverer(t *testing.T) {
 	tests := map[string]struct {
 		informer  cache.SharedInformer
 		wantPanic bool
@@ -202,7 +202,7 @@ func TestNewServiceTargetDiscoverer(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			f := func() { newServiceTargetDiscoverer(test.informer) }
+			f := func() { newServiceDiscoverer(test.informer) }
 
 			if test.wantPanic {
 				assert.Panics(t, f)
@@ -213,12 +213,12 @@ func TestNewServiceTargetDiscoverer(t *testing.T) {
 	}
 }
 
-func TestServiceTargetDiscoverer_String(t *testing.T) {
-	var s serviceTargetDiscoverer
+func TestServiceDiscoverer_String(t *testing.T) {
+	var s serviceDiscoverer
 	assert.NotEmpty(t, s.String())
 }
 
-func TestServiceTargetDiscoverer_Discover(t *testing.T) {
+func TestServiceDiscoverer_Discover(t *testing.T) {
 	tests := map[string]func() discoverySim{
 		"ADD: ClusterIP svc exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDClusterIPService(), newNGINXClusterIPService()
@@ -346,11 +346,11 @@ func TestServiceTargetDiscoverer_Discover(t *testing.T) {
 	}
 }
 
-func prepareAllNsSvcDiscoverer(objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+func prepareAllNsSvcDiscoverer(objects ...runtime.Object) (*KubeDiscoverer, kubernetes.Interface) {
 	return prepareDiscoverer("svc", []string{corev1.NamespaceAll}, objects...)
 }
 
-func prepareSvcDiscoverer(namespaces []string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+func prepareSvcDiscoverer(namespaces []string, objects ...runtime.Object) (*KubeDiscoverer, kubernetes.Interface) {
 	return prepareDiscoverer("svc", namespaces, objects...)
 }
 

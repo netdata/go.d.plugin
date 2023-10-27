@@ -186,7 +186,7 @@ func TestPodTarget_TUID(t *testing.T) {
 	}
 }
 
-func TestNewPodTargetDiscoverer(t *testing.T) {
+func TestNewPodDiscoverer(t *testing.T) {
 	tests := map[string]struct {
 		podInf    cache.SharedInformer
 		cmapInf   cache.SharedInformer
@@ -206,7 +206,7 @@ func TestNewPodTargetDiscoverer(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			f := func() { newPodTargetDiscoverer(test.podInf, test.cmapInf, test.secretInf) }
+			f := func() { newPodDiscoverer(test.podInf, test.cmapInf, test.secretInf) }
 
 			if test.wantPanic {
 				assert.Panics(t, f)
@@ -217,12 +217,12 @@ func TestNewPodTargetDiscoverer(t *testing.T) {
 	}
 }
 
-func TestPodTargetDiscoverer_String(t *testing.T) {
-	var p podTargetDiscoverer
+func TestPodDiscoverer_String(t *testing.T) {
+	var p podDiscoverer
 	assert.NotEmpty(t, p.String())
 }
 
-func TestPodTargetDiscoverer_Discover(t *testing.T) {
+func TestPodDiscoverer_Discover(t *testing.T) {
 	tests := map[string]func() discoverySim{
 		"ADD: pods exist before run": func() discoverySim {
 			httpd, nginx := newHTTPDPod(), newNGINXPod()
@@ -468,11 +468,11 @@ func TestPodTargetDiscoverer_Discover(t *testing.T) {
 	}
 }
 
-func prepareAllNsPodDiscoverer(objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+func prepareAllNsPodDiscoverer(objects ...runtime.Object) (*KubeDiscoverer, kubernetes.Interface) {
 	return prepareDiscoverer("pod", []string{corev1.NamespaceAll}, objects...)
 }
 
-func preparePodDiscoverer(namespaces []string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+func preparePodDiscoverer(namespaces []string, objects ...runtime.Object) (*KubeDiscoverer, kubernetes.Interface) {
 	return prepareDiscoverer("pod", namespaces, objects...)
 }
 

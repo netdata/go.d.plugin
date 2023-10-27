@@ -28,7 +28,7 @@ const (
 	envNodeName = "MY_NODE_NAME"
 )
 
-func NewTargetDiscoverer(cfg Config) (*TargetDiscoverer, error) {
+func NewKubeDiscoverer(cfg Config) (*KubeDiscoverer, error) {
 	if err := validateConfig(cfg); err != nil {
 		return nil, fmt.Errorf("config validation: %v", err)
 	}
@@ -43,7 +43,7 @@ func NewTargetDiscoverer(cfg Config) (*TargetDiscoverer, error) {
 		ns = []string{corev1.NamespaceAll}
 	}
 
-	d := &TargetDiscoverer{
+	d := &KubeDiscoverer{
 		Logger:      logger.New("k8s td manager", ""),
 		namespaces:  ns,
 		podConf:     cfg.Pod,
@@ -56,7 +56,7 @@ func NewTargetDiscoverer(cfg Config) (*TargetDiscoverer, error) {
 	return d, nil
 }
 
-type TargetDiscoverer struct {
+type KubeDiscoverer struct {
 	*logger.Logger
 
 	podConf *PodConfig
@@ -68,13 +68,13 @@ type TargetDiscoverer struct {
 	started     chan struct{}
 }
 
-func (d *TargetDiscoverer) String() string {
+func (d *KubeDiscoverer) String() string {
 	return "k8s td manager"
 }
 
 const resyncPeriod = 10 * time.Minute
 
-func (d *TargetDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
+func (d *KubeDiscoverer) Discover(ctx context.Context, in chan<- []model.TargetGroup) {
 	d.Info("instance is started")
 	defer d.Info("instance is stopped")
 
@@ -131,7 +131,7 @@ func (d *TargetDiscoverer) Discover(ctx context.Context, in chan<- []model.Targe
 	}
 }
 
-func (d *TargetDiscoverer) setupPodDiscoverer(ctx context.Context, conf *PodConfig, namespace string) error {
+func (d *KubeDiscoverer) setupPodDiscoverer(ctx context.Context, conf *PodConfig, namespace string) error {
 	if conf == nil {
 		return nil
 	}
@@ -183,7 +183,7 @@ func (d *TargetDiscoverer) setupPodDiscoverer(ctx context.Context, conf *PodConf
 		},
 	}
 
-	td := newPodTargetDiscoverer(
+	td := newPodDiscoverer(
 		cache.NewSharedInformer(podLW, &corev1.Pod{}, resyncPeriod),
 		cache.NewSharedInformer(cmapLW, &corev1.ConfigMap{}, resyncPeriod),
 		cache.NewSharedInformer(secretLW, &corev1.Secret{}, resyncPeriod),
@@ -195,7 +195,7 @@ func (d *TargetDiscoverer) setupPodDiscoverer(ctx context.Context, conf *PodConf
 	return nil
 }
 
-func (d *TargetDiscoverer) setupServiceDiscoverer(ctx context.Context, conf *ServiceConfig, namespace string) error {
+func (d *KubeDiscoverer) setupServiceDiscoverer(ctx context.Context, conf *ServiceConfig, namespace string) error {
 	if conf == nil {
 		return nil
 	}
@@ -222,7 +222,7 @@ func (d *TargetDiscoverer) setupServiceDiscoverer(ctx context.Context, conf *Ser
 
 	inf := cache.NewSharedInformer(svcLW, &corev1.Service{}, resyncPeriod)
 
-	td := newServiceTargetDiscoverer(inf)
+	td := newServiceDiscoverer(inf)
 	td.Tags().Merge(tags)
 
 	d.discoverers = append(d.discoverers, td)

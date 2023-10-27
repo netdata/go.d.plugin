@@ -4,6 +4,7 @@ package pipeline
 
 import (
 	"context"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
@@ -53,11 +54,17 @@ type (
 
 func (p *Pipeline) registerDiscoverers(conf Config) error {
 	for _, cfg := range conf.Discovery.K8s {
-		td, err := kubernetes.NewTargetDiscoverer(cfg)
+		td, err := kubernetes.NewKubeDiscoverer(cfg)
 		if err != nil {
 			return err
 		}
-
+		p.discoverers = append(p.discoverers, td)
+	}
+	if conf.Discovery.HostSocket.Net != nil {
+		td, err := hostsocket.NewNetSocketDiscoverer(*conf.Discovery.HostSocket.Net)
+		if err != nil {
+			return err
+		}
 		p.discoverers = append(p.discoverers, td)
 	}
 

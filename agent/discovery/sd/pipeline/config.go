@@ -5,6 +5,7 @@ package pipeline
 import (
 	"errors"
 	"fmt"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
 
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/kubernetes"
 )
@@ -18,7 +19,11 @@ type Config struct {
 
 type (
 	DiscoveryConfig struct {
-		K8s []kubernetes.Config `yaml:"k8s"`
+		K8s        []kubernetes.Config `yaml:"k8s"`
+		HostSocket HostSocketConfig    `yaml:"hostsocket"`
+	}
+	HostSocketConfig struct {
+		Net *hostsocket.NetworkSocketConfig `yaml:"net"`
 	}
 )
 

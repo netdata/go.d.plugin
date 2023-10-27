@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestNewTargetDiscoverer(t *testing.T) {
+func TestNewKubeDiscoverer(t *testing.T) {
 	tests := map[string]struct {
 		cfg     Config
 		wantErr bool
@@ -53,7 +53,7 @@ func TestNewTargetDiscoverer(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			disc, err := NewTargetDiscoverer(test.cfg)
+			disc, err := NewKubeDiscoverer(test.cfg)
 
 			if test.wantErr {
 				assert.Error(t, err)
@@ -66,7 +66,7 @@ func TestNewTargetDiscoverer(t *testing.T) {
 	}
 }
 
-func TestTargetDiscoverer_Discover(t *testing.T) {
+func TestKubeDiscoverer_Discover(t *testing.T) {
 	const prod = "prod"
 	const dev = "dev"
 	prodNamespace := newNamespace(prod)
@@ -131,9 +131,9 @@ func TestTargetDiscoverer_Discover(t *testing.T) {
 	}
 }
 
-func prepareDiscoverer(role string, namespaces []string, objects ...runtime.Object) (*TargetDiscoverer, kubernetes.Interface) {
+func prepareDiscoverer(role string, namespaces []string, objects ...runtime.Object) (*KubeDiscoverer, kubernetes.Interface) {
 	client := fake.NewSimpleClientset(objects...)
-	disc := &TargetDiscoverer{
+	disc := &KubeDiscoverer{
 		namespaces:  namespaces,
 		client:      client,
 		discoverers: nil,
