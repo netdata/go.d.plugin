@@ -66,7 +66,6 @@ func NewNetSocketDiscoverer(cfg NetworkSocketConfig) (*NetDiscoverer, error) {
 			binPath: filepath.Join(dir, "local-listeners"),
 			timeout: time.Second * 5,
 		},
-		started: make(chan struct{}),
 	}
 	d.Tags().Merge(tags)
 
@@ -80,8 +79,6 @@ type (
 
 		interval time.Duration
 		ll       localListeners
-
-		started chan struct{}
 	}
 	localListeners interface {
 		discover(ctx context.Context) ([]byte, error)
