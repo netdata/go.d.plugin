@@ -43,7 +43,7 @@ modules:
         list:
           - title: Enable built-in Prometheus exporter
             description: |
-              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+              To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/prometheus/) documentation.
       configuration:
         file:
           name: go.d/traefik.conf
