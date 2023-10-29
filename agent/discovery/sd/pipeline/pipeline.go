@@ -71,7 +71,7 @@ func (p *Pipeline) registerDiscoverers(conf Config) error {
 	return nil
 }
 
-func (p *Pipeline) Discover(ctx context.Context, in chan<- []*confgroup.Group) {
+func (p *Pipeline) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 	p.Info("instance is started")
 	defer p.Info("instance is stopped")
 
