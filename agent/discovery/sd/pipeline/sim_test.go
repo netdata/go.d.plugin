@@ -74,7 +74,7 @@ func (sim discoverySim) collectGroups(t *testing.T, pl *Pipeline) []*confgroup.G
 	in := make(chan []*confgroup.Group)
 	done := make(chan struct{})
 
-	go func() { defer close(done); pl.Discover(ctx, in) }()
+	go func() { defer close(done); pl.Run(ctx, in) }()
 
 	timeout := time.Second * 10
 	var groups []*confgroup.Group

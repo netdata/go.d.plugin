@@ -47,7 +47,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestPipeline_Discover(t *testing.T) {
+func TestPipeline_Run(t *testing.T) {
 	const config = `
 classify:
   - selector: "rule1"
