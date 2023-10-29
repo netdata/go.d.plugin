@@ -209,28 +209,28 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | Server URL. | http://127.0.0.1:9200 | True |
-| cluster_mode | Controls whether to collect metrics for all nodes in the cluster or only for the local node. | false | False |
-| collect_node_stats | Controls whether to collect nodes metrics. | true | False |
-| collect_cluster_health | Controls whether to collect cluster health metrics. | true | False |
-| collect_cluster_stats | Controls whether to collect cluster stats metrics. | true | False |
-| collect_indices_stats | Controls whether to collect indices metrics. | false | False |
-| timeout | HTTP request timeout. | 5 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. | GET | False |
-| body | HTTP request body. |  | False |
-| headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | Server URL. | http://127.0.0.1:9200 | yes |
+| cluster_mode | Controls whether to collect metrics for all nodes in the cluster or only for the local node. | false | no |
+| collect_node_stats | Controls whether to collect nodes metrics. | true | no |
+| collect_cluster_health | Controls whether to collect cluster health metrics. | true | no |
+| collect_cluster_stats | Controls whether to collect cluster stats metrics. | true | no |
+| collect_indices_stats | Controls whether to collect indices metrics. | false | no |
+| timeout | HTTP request timeout. | 5 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| method | HTTP request method. | GET | no |
+| body | HTTP request body. |  | no |
+| headers | HTTP request headers. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

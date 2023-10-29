@@ -120,15 +120,15 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Server address. The format is IP:PORT. | 127.0.0.1:2181 | True |
-| timeout | Connection/read/write/ssl handshake timeout. | 1 | False |
-| use_tls | Whether to use TLS or not. | False | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Server address. The format is IP:PORT. | 127.0.0.1:2181 | yes |
+| timeout | Connection/read/write/ssl handshake timeout. | 1 | no |
+| use_tls | Whether to use TLS or not. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

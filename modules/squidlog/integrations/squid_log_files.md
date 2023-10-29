@@ -143,21 +143,21 @@ In addition, to make `Squid` [native log format](https://wiki.squid-cache.org/Fe
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| path | Path to the Squid access log file. | /var/log/squid/access.log | True |
-| exclude_path | Path to exclude. | *.gz | False |
-| parser | Log parser configuration. |  | False |
-| parser.log_type | Log parser type. | auto | False |
-| parser.csv_config | CSV log parser config. |  | False |
-| parser.csv_config.delimiter | CSV field delimiter. | space | False |
-| parser.csv_config.format | CSV log format. | - $resp_time $client_address $result_code $resp_size $req_method - - $hierarchy $mime_type | True |
-| parser.ltsv_config | LTSV log parser config. |  | False |
-| parser.ltsv_config.field_delimiter | LTSV field delimiter. | \t | False |
-| parser.ltsv_config.value_delimiter | LTSV value delimiter. | : | False |
-| parser.ltsv_config.mapping | LTSV fields mapping to **known fields**. |  | True |
-| parser.regexp_config | RegExp log parser config. |  | False |
-| parser.regexp_config.pattern | RegExp pattern with named groups. |  | True |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| path | Path to the Squid access log file. | /var/log/squid/access.log | yes |
+| exclude_path | Path to exclude. | *.gz | no |
+| parser | Log parser configuration. |  | no |
+| parser.log_type | Log parser type. | auto | no |
+| parser.csv_config | CSV log parser config. |  | no |
+| parser.csv_config.delimiter | CSV field delimiter. | space | no |
+| parser.csv_config.format | CSV log format. | - $resp_time $client_address $result_code $resp_size $req_method - - $hierarchy $mime_type | yes |
+| parser.ltsv_config | LTSV log parser config. |  | no |
+| parser.ltsv_config.field_delimiter | LTSV field delimiter. | \t | no |
+| parser.ltsv_config.value_delimiter | LTSV value delimiter. | : | no |
+| parser.ltsv_config.mapping | LTSV fields mapping to **known fields**. |  | yes |
+| parser.regexp_config | RegExp log parser config. |  | no |
+| parser.regexp_config.pattern | RegExp pattern with named groups. |  | yes |
 
 ##### parser.log_type
 

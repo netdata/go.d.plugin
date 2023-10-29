@@ -137,10 +137,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | UPS daemon address in IP:PORT format. | 127.0.0.1:3493 | True |
-| timeout | Connection/read/write timeout in seconds. The timeout includes name resolution, if required. | 2 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | UPS daemon address in IP:PORT format. | 127.0.0.1:3493 | yes |
+| timeout | Connection/read/write timeout in seconds. The timeout includes name resolution, if required. | 2 | no |
 
 </details>
 

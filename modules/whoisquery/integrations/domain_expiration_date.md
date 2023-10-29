@@ -111,12 +111,12 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| source | Domain address. |  | True |
-| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | False |
-| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | False |
-| timeout | The query timeout in seconds. | 5 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| source | Domain address. |  | yes |
+| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | no |
+| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | no |
+| timeout | The query timeout in seconds. | 5 | no |
 
 </details>
 
