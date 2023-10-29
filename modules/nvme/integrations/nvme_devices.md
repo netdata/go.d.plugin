@@ -139,10 +139,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 10 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| binary_path | Path to nvme binary. The default is "nvme" and the executable is looked for in the directories specified in the PATH environment variable. | nvme | False |
-| timeout | nvme binary execution timeout. | 2 | False |
+| update_every | Data collection frequency. | 10 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| binary_path | Path to nvme binary. The default is "nvme" and the executable is looked for in the directories specified in the PATH environment variable. | nvme | no |
+| timeout | nvme binary execution timeout. | 2 | no |
 
 </details>
 

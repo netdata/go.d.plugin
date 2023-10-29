@@ -122,10 +122,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| log_path | Path to status log. | /var/log/openvpn/status.log | True |
-| per_user_stats | User selector. Determines which user metrics will be collected. |  | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| log_path | Path to status log. | /var/log/openvpn/status.log | yes |
+| per_user_stats | User selector. Determines which user metrics will be collected. |  | no |
 
 </details>
 

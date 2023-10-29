@@ -144,16 +144,16 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Redis server address. | redis://@localhost:6379 | True |
-| timeout | Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds. | 1 | False |
-| username | Username used for authentication. |  | False |
-| password | Password used for authentication. |  | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
-| tls_ca | Certificate authority that client use when verifying server certificates. |  | False |
-| tls_cert | Client tls certificate. |  | False |
-| tls_key | Client tls key. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Redis server address. | redis://@localhost:6379 | yes |
+| timeout | Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds. | 1 | no |
+| username | Username used for authentication. |  | no |
+| password | Password used for authentication. |  | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certificate authority that client use when verifying server certificates. |  | no |
+| tls_cert | Client tls certificate. |  | no |
+| tls_key | Client tls key. |  | no |
 
 </details>
 

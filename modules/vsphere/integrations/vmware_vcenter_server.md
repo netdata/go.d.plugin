@@ -201,23 +201,23 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 20 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | vCenter server URL. |  | True |
-| host_include | Hosts selector (filter). |  | False |
-| vm_include | Virtual machines selector (filter). |  | False |
-| discovery_interval | Hosts and VMs discovery interval. | 300 | False |
-| timeout | HTTP request timeout. | 20 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 20 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | vCenter server URL. |  | yes |
+| host_include | Hosts selector (filter). |  | no |
+| vm_include | Virtual machines selector (filter). |  | no |
+| discovery_interval | Hosts and VMs discovery interval. | 300 | no |
+| timeout | HTTP request timeout. | 20 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 ##### host_include
 
