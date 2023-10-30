@@ -5,7 +5,8 @@ package multipath
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 )
@@ -50,10 +51,34 @@ func New(paths ...string) MultiPath {
 // Find finds a file in given paths
 func (p MultiPath) Find(filename string) (string, error) {
 	for _, dir := range p {
-		file := path.Join(dir, filename)
+		file := filepath.Join(dir, filename)
 		if _, err := os.Stat(file); !os.IsNotExist(err) {
 			return file, nil
 		}
 	}
 	return "", ErrNotFound{msg: fmt.Sprintf("can't find '%s' in %v", filename, p)}
+}
+
+func (p MultiPath) FindFiles(suffix string) ([]string, error) {
+	set := make(map[string]bool)
+	var files []string
+
+	for _, dir := range p {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+
+		for _, e := range entries {
+			if !e.Type().IsRegular() || !strings.HasSuffix(e.Name(), suffix) || set[e.Name()] {
+				continue
+			}
+			set[e.Name()] = true
+
+			name := filepath.Join(dir, e.Name())
+			files = append(files, name)
+		}
+	}
+
+	return files, nil
 }
