@@ -801,6 +801,6 @@ modules:
       monitored_instance:
         name: Percona MySQL
         link: https://www.percona.com/software/mysql-database/percona-server
-        icon_filename: mysql.svg
+        icon_filename: percona.svg
         categories:
           - data-collection.database-servers
