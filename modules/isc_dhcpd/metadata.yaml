@@ -42,7 +42,7 @@ modules:
         list: []
       configuration:
         file:
-          name: go.d/isc_dhcps.conf
+          name: go.d/isc_dhcpd.conf
         options:
           description: |
             The following options can be defined globally: update_every, autodetection_retry.
