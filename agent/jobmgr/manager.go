@@ -44,15 +44,15 @@ const (
 )
 
 func NewManager() *Manager {
+	np := noop{}
 	mgr := &Manager{
-		Logger: logger.New("job", "manager"),
-		Out:    io.Discard,
-
-		FileLock:    noopFileLocker{},
-		StatusSaver: noopStatusSaver{},
-		StatusStore: noopStatusStore{},
-		Vnodes:      noopVnodes{},
-		Dyncfg:      noopDyncfg{},
+		Logger:      logger.New("job", "manager"),
+		Out:         io.Discard,
+		FileLock:    np,
+		StatusSaver: np,
+		StatusStore: np,
+		Vnodes:      np,
+		Dyncfg:      np,
 
 		confGroupCache: confgroup.NewCache(),
 
