@@ -88,6 +88,8 @@ func (c *configComposer) compose(tgt model.Target) []confgroup.Config {
 func newComposeRules(cfg []ComposeRuleConfig) ([]*composeRule, error) {
 	var rules []*composeRule
 
+	fmap := newFuncMap()
+
 	for _, ruleCfg := range cfg {
 		rule := composeRule{name: ruleCfg.Name}
 
@@ -106,7 +108,7 @@ func newComposeRules(cfg []ComposeRuleConfig) ([]*composeRule, error) {
 			}
 			conf.sr = sr
 
-			tmpl, err := parseTemplate(confCfg.Template)
+			tmpl, err := parseTemplate(confCfg.Template, fmap)
 			if err != nil {
 				return nil, err
 			}

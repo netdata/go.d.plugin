@@ -4,14 +4,11 @@ package pipeline
 
 import (
 	"regexp"
-	"sync"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/gobwas/glob"
+	"github.com/bmatcuk/doublestar/v4"
 )
-
-var funcMap = newFuncMap()
 
 func newFuncMap() template.FuncMap {
 	custom := map[string]interface{}{
@@ -46,57 +43,11 @@ func regexpAny(value, pattern string, rest ...string) bool {
 }
 
 func globOnce(value, pattern string) bool {
-	g, _ := globStore(pattern)
-	return g != nil && g.Match(value)
+	ok, err := doublestar.Match(pattern, value)
+	return err == nil && ok
 }
 
 func regexpOnce(value, pattern string) bool {
-	r, _ := regexpStore(pattern)
-	return r != nil && r.MatchString(value)
+	ok, err := regexp.MatchString(pattern, value)
+	return err == nil && ok
 }
-
-// TODO: cleanup?
-var globStore = func() func(pattern string) (glob.Glob, error) {
-	var l sync.RWMutex
-	store := make(map[string]struct {
-		g   glob.Glob
-		err error
-	})
-
-	return func(pattern string) (glob.Glob, error) {
-		if pattern == "" {
-			return nil, nil
-		}
-		l.Lock()
-		defer l.Unlock()
-		entry, ok := store[pattern]
-		if !ok {
-			entry.g, entry.err = glob.Compile(pattern, '/')
-			store[pattern] = entry
-		}
-		return entry.g, entry.err
-	}
-}()
-
-// TODO: cleanup?
-var regexpStore = func() func(pattern string) (*regexp.Regexp, error) {
-	var l sync.RWMutex
-	store := make(map[string]struct {
-		r   *regexp.Regexp
-		err error
-	})
-
-	return func(pattern string) (*regexp.Regexp, error) {
-		if pattern == "" {
-			return nil, nil
-		}
-		l.Lock()
-		defer l.Unlock()
-		entry, ok := store[pattern]
-		if !ok {
-			entry.r, entry.err = regexp.Compile(pattern)
-			store[pattern] = entry
-		}
-		return entry.r, entry.err
-	}
-}()

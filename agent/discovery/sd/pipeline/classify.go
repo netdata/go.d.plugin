@@ -78,6 +78,8 @@ func (c *targetClassificator) classify(tgt model.Target) model.Tags {
 func newClassifyRules(cfg []ClassifyRuleConfig) ([]*classifyRule, error) {
 	var rules []*classifyRule
 
+	fmap := newFuncMap()
+
 	for _, ruleCfg := range cfg {
 		rule := classifyRule{name: ruleCfg.Name}
 
@@ -102,7 +104,7 @@ func newClassifyRules(cfg []ClassifyRuleConfig) ([]*classifyRule, error) {
 			}
 			match.tags = tags
 
-			tmpl, err := parseTemplate(matchCfg.Expr)
+			tmpl, err := parseTemplate(matchCfg.Expr, fmap)
 			if err != nil {
 				return nil, err
 			}
@@ -117,9 +119,9 @@ func newClassifyRules(cfg []ClassifyRuleConfig) ([]*classifyRule, error) {
 	return rules, nil
 }
 
-func parseTemplate(s string) (*template.Template, error) {
+func parseTemplate(s string, fmap template.FuncMap) (*template.Template, error) {
 	return template.New("root").
 		Option("missingkey=error").
-		Funcs(funcMap).
+		Funcs(fmap).
 		Parse(s)
 }
