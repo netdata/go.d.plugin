@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/valyala/fastjson"
 )
@@ -61,11 +62,15 @@ func (p *JSONParser) parseObject(prefix string, val *fastjson.Value, line LogLin
 	}
 
 	obj.Visit(func(key []byte, v *fastjson.Value) {
+		k := jsonObjKey(prefix, string(key))
+
 		switch v.Type() {
 		case fastjson.TypeString, fastjson.TypeNumber:
-			err = p.parseStringNumber(jsonObjKey(prefix, string(key)), v, line)
+			err = p.parseStringNumber(k, v, line)
+		case fastjson.TypeArray:
+			err = p.parseArray(k, v, line)
 		case fastjson.TypeObject:
-			err = p.parseObject(jsonObjKey(prefix, string(key)), v, line)
+			err = p.parseObject(k, v, line)
 		default:
 			return
 		}
@@ -83,6 +88,30 @@ func jsonObjKey(prefix, key string) string {
 		return key
 	}
 	return prefix + "." + key
+}
+
+func (p *JSONParser) parseArray(key string, val *fastjson.Value, line LogLine) error {
+	arr, err := val.Array()
+	if err != nil {
+		return err
+	}
+
+	for i, v := range arr {
+		k := jsonObjKey(key, strconv.Itoa(i))
+
+		switch v.Type() {
+		case fastjson.TypeString, fastjson.TypeNumber:
+			err = p.parseStringNumber(k, v, line)
+		case fastjson.TypeArray:
+			err = p.parseArray(k, v, line)
+		case fastjson.TypeObject:
+			err = p.parseObject(k, v, line)
+		default:
+			continue
+		}
+	}
+
+	return err
 }
 
 func (p *JSONParser) parseStringNumber(key string, val *fastjson.Value, line LogLine) error {
