@@ -91,6 +91,18 @@ func TestJSONParser_ReadLine(t *testing.T) {
 				"FLOAT":  "1.1",
 			},
 		},
+		"nested": {
+			input: `{"one": {"two": 2, "three": {"four": 4}}, "five": 5}`,
+			config: JSONConfig{Mapping: map[string]string{
+				"one.two": "mapped_value",
+			}},
+			wantErr: false,
+			wantAssigned: map[string]string{
+				"mapped_value":   "2",
+				"one.three.four": "4",
+				"five":           "5",
+			},
+		},
 		"error on malformed JSON": {
 			input:   `{ "host"": unquoted_string}`,
 			wantErr: true,

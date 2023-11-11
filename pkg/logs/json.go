@@ -46,43 +46,60 @@ func (p *JSONParser) Parse(row []byte, line LogLine) error {
 	if err != nil {
 		return err
 	}
+
+	if err := p.parseObject("", val, line); err != nil {
+		return &ParseError{msg: fmt.Sprintf("json parse: %v", err), err: err}
+	}
+
+	return nil
+}
+
+func (p *JSONParser) parseObject(prefix string, val *fastjson.Value, line LogLine) error {
 	obj, err := val.Object()
 	if err != nil {
 		return err
 	}
 
 	obj.Visit(func(key []byte, v *fastjson.Value) {
+		switch v.Type() {
+		case fastjson.TypeString, fastjson.TypeNumber:
+			err = p.parseStringNumber(jsonObjKey(prefix, string(key)), v, line)
+		case fastjson.TypeObject:
+			err = p.parseObject(jsonObjKey(prefix, string(key)), v, line)
+		default:
+			return
+		}
+
 		if err != nil {
 			return
 		}
-		switch v.Type() {
-		case fastjson.TypeString, fastjson.TypeNumber:
-		default:
-			return
-		}
-
-		name := string(key)
-		if mapped, ok := p.mapping[name]; ok {
-			name = mapped
-		}
-
-		p.buf = p.buf[:0]
-		if p.buf = v.MarshalTo(p.buf); len(p.buf) == 0 {
-			return
-		}
-
-		switch v.Type() {
-		case fastjson.TypeString:
-			// trim "
-			err = line.Assign(name, string(p.buf[1:len(p.buf)-1]))
-		default:
-			err = line.Assign(name, string(p.buf))
-		}
 	})
-	if err != nil {
-		return &ParseError{msg: fmt.Sprintf("json parse: %v", err), err: err}
+
+	return err
+}
+
+func jsonObjKey(prefix, key string) string {
+	if prefix == "" {
+		return key
 	}
-	return nil
+	return prefix + "." + key
+}
+
+func (p *JSONParser) parseStringNumber(key string, val *fastjson.Value, line LogLine) error {
+	if mapped, ok := p.mapping[key]; ok {
+		key = mapped
+	}
+
+	p.buf = p.buf[:0]
+	if p.buf = val.MarshalTo(p.buf); len(p.buf) == 0 {
+		return nil
+	}
+
+	if val.Type() == fastjson.TypeString {
+		// trim "
+		return line.Assign(key, string(p.buf[1:len(p.buf)-1]))
+	}
+	return line.Assign(key, string(p.buf))
 }
 
 func (p *JSONParser) Info() string {
