@@ -62,6 +62,10 @@ func (p *JSONParser) parseObject(prefix string, val *fastjson.Value, line LogLin
 	}
 
 	obj.Visit(func(key []byte, v *fastjson.Value) {
+		if err != nil {
+			return
+		}
+
 		k := jsonObjKey(prefix, string(key))
 
 		switch v.Type() {
@@ -72,10 +76,6 @@ func (p *JSONParser) parseObject(prefix string, val *fastjson.Value, line LogLin
 		case fastjson.TypeObject:
 			err = p.parseObject(k, v, line)
 		default:
-			return
-		}
-
-		if err != nil {
 			return
 		}
 	})
@@ -108,6 +108,10 @@ func (p *JSONParser) parseArray(key string, val *fastjson.Value, line LogLine) e
 			err = p.parseObject(k, v, line)
 		default:
 			continue
+		}
+
+		if err != nil {
+			return err
 		}
 	}
 
