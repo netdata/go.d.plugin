@@ -209,6 +209,8 @@ github.com/likexian/whois v1.15.1 h1:6vTMI8n9s1eJdmcO4R9h1x99aQWIZZX1CD3am68gApU
 github.com/likexian/whois v1.15.1/go.mod h1:/nxmQ6YXvLz+qTxC/QFtEJNAt0zLuRxJrKiWpBJX8X0=
 github.com/likexian/whois-parser v1.24.9 h1:BT6fzO3lj3F07yzVv0YXoaj+K4Ush0/cF+Yp6tvJJgk=
 github.com/likexian/whois-parser v1.24.9/go.mod h1:b6STMHHDaSKbd4PzGrP50wWE5NzeBUETa/hT9gI0G9I=
+github.com/lmittmann/tint v1.0.3 h1:W5PHeA2D8bBJVvabNfQD/XW9HPLZK1XoPZH0cq8NouQ=
+github.com/lmittmann/tint v1.0.3/go.mod h1:HIS3gSy7qNwGCj+5oRjAutErFBl4BzdQP6cJZ0NfMwE=
 github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0=
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=

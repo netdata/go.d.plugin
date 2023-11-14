@@ -30,6 +30,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/whois v1.15.1
 	github.com/likexian/whois-parser v1.24.9
+	github.com/lmittmann/tint v1.0.3
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.56
