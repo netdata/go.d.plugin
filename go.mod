@@ -30,6 +30,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/likexian/whois v1.15.1
 	github.com/likexian/whois-parser v1.24.9
+	github.com/lmittmann/tint v1.0.3
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-xmlrpc v0.0.3
 	github.com/miekg/dns v1.1.56
@@ -95,7 +96,6 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/likexian/gokit v0.25.13 // indirect
-	github.com/lmittmann/tint v1.0.3 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mdlayher/genetlink v1.3.2 // indirect
 	github.com/mdlayher/netlink v1.7.2 // indirect
