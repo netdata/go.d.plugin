@@ -24,7 +24,7 @@ func newBaseLogger() *Logger {
 
 func newTerminalLogger() *Logger {
 	src := Level.Level() == slog.LevelDebug
-	h := &handler{
+	h := &callDepthHandler{
 		src: src,
 		sh: tint.NewHandler(os.Stderr, &tint.Options{
 			AddSource: src,
@@ -50,24 +50,24 @@ func newLogger() *Logger {
 	return &Logger{sl: slog.New(h)}
 }
 
-type handler struct {
+type callDepthHandler struct {
 	src bool
 	sh  slog.Handler
 }
 
-func (h *handler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h *callDepthHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.sh.Enabled(ctx, level)
 }
 
-func (h *handler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &handler{src: h.src, sh: h.sh.WithAttrs(attrs)}
+func (h *callDepthHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return &callDepthHandler{src: h.src, sh: h.sh.WithAttrs(attrs)}
 }
 
-func (h *handler) WithGroup(name string) slog.Handler {
-	return &handler{src: h.src, sh: h.sh.WithGroup(name)}
+func (h *callDepthHandler) WithGroup(name string) slog.Handler {
+	return &callDepthHandler{src: h.src, sh: h.sh.WithGroup(name)}
 }
 
-func (h *handler) Handle(ctx context.Context, r slog.Record) error {
+func (h *callDepthHandler) Handle(ctx context.Context, r slog.Record) error {
 	if h.src {
 		// https://pkg.go.dev/log/slog#example-package-Wrapping
 		var pcs [1]uintptr
