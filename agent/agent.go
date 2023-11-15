@@ -188,7 +188,7 @@ func (a *Agent) run(ctx context.Context) {
 	jobsManager.Modules = enabledModules
 
 	// TODO: rm 'if' after https://github.com/netdata/netdata/issues/16079
-	if logger.Level.Level() == slog.LevelDebug {
+	if logger.Level.Enabled(slog.LevelDebug) {
 		dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
 			Plugin:               a.Name,
 			API:                  netdataapi.New(a.Out),

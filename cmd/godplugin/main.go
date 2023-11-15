@@ -99,7 +99,7 @@ func main() {
 	}
 
 	if envLogLevelLevel != "" {
-		logger.SetLevelByName(envLogLevelLevel)
+		logger.Level.SetByName(envLogLevelLevel)
 	}
 
 	if opts.Debug {

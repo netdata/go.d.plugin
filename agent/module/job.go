@@ -188,7 +188,7 @@ func (j *Job) AutoDetection() (ok bool) {
 			j.disableAutoDetection()
 
 			j.Errorf("PANIC %v", r)
-			if logger.Level.Level() == slog.LevelDebug {
+			if logger.Level.Enabled(slog.LevelDebug) {
 				j.Errorf("STACK: %s", debug.Stack())
 			}
 		}
@@ -351,7 +351,7 @@ func (j *Job) collect() (result map[string]int64) {
 		if r := recover(); r != nil {
 			j.panicked = true
 			j.Errorf("PANIC: %v", r)
-			if logger.Level.Level() == slog.LevelDebug {
+			if logger.Level.Enabled(slog.LevelDebug) {
 				j.Errorf("STACK: %s", debug.Stack())
 			}
 		}

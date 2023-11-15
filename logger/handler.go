@@ -12,7 +12,7 @@ import (
 
 func newTextHandler() slog.Handler {
 	return slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: Level,
+		Level: Level.lvl,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.LevelKey {
 				if v, ok := a.Value.Any().(slog.Level); ok {
@@ -27,7 +27,7 @@ func newTextHandler() slog.Handler {
 func newTerminalHandler() slog.Handler {
 	return tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource: true,
-		Level:     Level,
+		Level:     Level.lvl,
 	})
 }
 
