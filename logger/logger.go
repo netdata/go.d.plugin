@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/netdata/go.d.plugin/agent/executable"
 
@@ -18,22 +17,10 @@ var pluginAttr = slog.String("plugin", executable.Name)
 
 func New() *Logger {
 	if isatty.IsTerminal(os.Stderr.Fd()) {
-		return newTerminalLogger()
+		// skip 2 slog pkg calls, 2 this pkg calls
+		return &Logger{sl: slog.New(withCallDepth(4, newTerminalHandler()))}
 	}
-
-	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: Level,
-		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-			if a.Key == slog.LevelKey {
-				if v, ok := a.Value.Any().(slog.Level); ok {
-					a.Value = slog.StringValue(strings.ToLower(v.String()))
-				}
-			}
-			return a
-		},
-	})
-
-	return &Logger{sl: slog.New(h).With(pluginAttr)}
+	return &Logger{sl: slog.New(newTextHandler()).With(pluginAttr)}
 }
 
 type Logger struct {
@@ -51,14 +38,14 @@ func (l *Logger) Debugf(format string, a ...any)   { l.log(slog.LevelDebug, fmt.
 
 func (l *Logger) With(args ...any) *Logger {
 	if l.isNil() {
-		return &Logger{sl: newDefaultLogger().sl.With(args...)}
+		return &Logger{sl: New().sl.With(args...)}
 	}
 	return &Logger{sl: l.sl.With(args...)}
 }
 
 func (l *Logger) log(level slog.Level, msg string) {
 	if l.isNil() {
-		defaultLogger.sl.Log(context.Background(), level, msg)
+		nilLogger.sl.Log(context.Background(), level, msg)
 	} else {
 		l.sl.Log(context.Background(), level, msg)
 	}
@@ -67,3 +54,5 @@ func (l *Logger) log(level slog.Level, msg string) {
 func (l *Logger) isNil() bool {
 	return l == nil || l.sl == nil
 }
+
+var nilLogger = New()

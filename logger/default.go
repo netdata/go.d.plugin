@@ -2,8 +2,19 @@
 
 package logger
 
+import (
+	"log/slog"
+	"os"
+
+	"github.com/mattn/go-isatty"
+)
+
 func newDefaultLogger() *Logger {
-	return New()
+	if isatty.IsTerminal(os.Stderr.Fd()) {
+		// skip 2 slog pkg calls, 3 this pkg calls
+		return &Logger{sl: slog.New(withCallDepth(5, newTerminalHandler()))}
+	}
+	return &Logger{sl: slog.New(newTextHandler()).With(pluginAttr)}
 }
 
 var defaultLogger = newDefaultLogger()

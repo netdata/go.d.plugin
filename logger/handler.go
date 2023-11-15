@@ -5,18 +5,30 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/lmittmann/tint"
 )
 
-func newTerminalLogger() *Logger {
-	// skip Callers, this function, 2 slog pkg calls, 2 this pkg calls
-	h := withCallDepth(6, tint.NewHandler(os.Stderr, &tint.Options{
+func newTextHandler() slog.Handler {
+	return slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: Level,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.LevelKey {
+				if v, ok := a.Value.Any().(slog.Level); ok {
+					a.Value = slog.StringValue(strings.ToLower(v.String()))
+				}
+			}
+			return a
+		},
+	})
+}
+
+func newTerminalHandler() slog.Handler {
+	return tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource: true,
 		Level:     Level,
-	}))
-
-	return &Logger{sl: slog.New(h)}
+	})
 }
 
 func withCallDepth(depth int, sh slog.Handler) slog.Handler {
@@ -43,7 +55,8 @@ func (h *callDepthHandler) WithGroup(name string) slog.Handler {
 func (h *callDepthHandler) Handle(ctx context.Context, r slog.Record) error {
 	// https://pkg.go.dev/log/slog#example-package-Wrapping
 	var pcs [1]uintptr
-	runtime.Callers(h.depth, pcs[:])
+	// skip Callers and this function
+	runtime.Callers(h.depth+2, pcs[:])
 	r.PC = pcs[0]
 
 	return h.sh.Handle(ctx, r)
