@@ -23,13 +23,11 @@ func newBaseLogger() *Logger {
 }
 
 func newTerminalLogger() *Logger {
-	src := Level.Level() == slog.LevelDebug
-	h := &callDepthHandler{
-		src: src,
-		sh: tint.NewHandler(os.Stderr, &tint.Options{
-			AddSource: src,
-			Level:     Level,
-		})}
+	// skip Callers, this function, 2 slog pkg calls, 2 this pkg calls
+	h := withCallDepth(6, tint.NewHandler(os.Stderr, &tint.Options{
+		AddSource: true,
+		Level:     Level,
+	}))
 
 	return &Logger{sl: slog.New(h)}
 }
@@ -50,9 +48,13 @@ func newLogger() *Logger {
 	return &Logger{sl: slog.New(h)}
 }
 
+func withCallDepth(depth int, sh slog.Handler) slog.Handler {
+	return &callDepthHandler{depth: depth, sh: sh}
+}
+
 type callDepthHandler struct {
-	src bool
-	sh  slog.Handler
+	depth int
+	sh    slog.Handler
 }
 
 func (h *callDepthHandler) Enabled(ctx context.Context, level slog.Level) bool {
@@ -60,19 +62,18 @@ func (h *callDepthHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (h *callDepthHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &callDepthHandler{src: h.src, sh: h.sh.WithAttrs(attrs)}
+	return &callDepthHandler{depth: h.depth, sh: h.sh.WithAttrs(attrs)}
 }
 
 func (h *callDepthHandler) WithGroup(name string) slog.Handler {
-	return &callDepthHandler{src: h.src, sh: h.sh.WithGroup(name)}
+	return &callDepthHandler{depth: h.depth, sh: h.sh.WithGroup(name)}
 }
 
 func (h *callDepthHandler) Handle(ctx context.Context, r slog.Record) error {
-	if h.src {
-		// https://pkg.go.dev/log/slog#example-package-Wrapping
-		var pcs [1]uintptr
-		runtime.Callers(6, pcs[:]) // skip Callers, this function, 2 slog pkg calls, 2 this pkg calls
-		r.PC = pcs[0]
-	}
+	// https://pkg.go.dev/log/slog#example-package-Wrapping
+	var pcs [1]uintptr
+	runtime.Callers(h.depth, pcs[:])
+	r.PC = pcs[0]
+
 	return h.sh.Handle(ctx, r)
 }
