@@ -7,19 +7,33 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
+
+	"github.com/netdata/go.d.plugin/agent/executable"
 
 	"github.com/mattn/go-isatty"
 )
+
+var pluginAttr = slog.String("plugin", executable.Name)
 
 func New() *Logger {
 	if isatty.IsTerminal(os.Stderr.Fd()) {
 		return newTerminalLogger()
 	}
 
-	l := newLogger()
-	l = l.With(pluginAttr)
+	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: Level,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.LevelKey {
+				if v, ok := a.Value.Any().(slog.Level); ok {
+					a.Value = slog.StringValue(strings.ToLower(v.String()))
+				}
+			}
+			return a
+		},
+	})
 
-	return l
+	return &Logger{sl: slog.New(h).With(pluginAttr)}
 }
 
 type Logger struct {
@@ -37,14 +51,14 @@ func (l *Logger) Debugf(format string, a ...any)   { l.log(slog.LevelDebug, fmt.
 
 func (l *Logger) With(args ...any) *Logger {
 	if l.isNil() {
-		return &Logger{sl: newBaseLogger().sl.With(args...)}
+		return &Logger{sl: newDefaultLogger().sl.With(args...)}
 	}
 	return &Logger{sl: l.sl.With(args...)}
 }
 
 func (l *Logger) log(level slog.Level, msg string) {
 	if l.isNil() {
-		base.sl.Log(context.Background(), level, msg)
+		defaultLogger.sl.Log(context.Background(), level, msg)
 	} else {
 		l.sl.Log(context.Background(), level, msg)
 	}
