@@ -4,6 +4,7 @@ package file
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -21,7 +22,10 @@ type (
 
 func NewReader(reg confgroup.Registry, paths []string) *Reader {
 	return &Reader{
-		Logger: logger.New("discovery", "file reader"),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "file reader"),
+		),
 
 		reg:   reg,
 		paths: paths,

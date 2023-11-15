@@ -5,6 +5,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"sync"
@@ -44,7 +45,10 @@ func NewKubeDiscoverer(cfg Config) (*KubeDiscoverer, error) {
 	}
 
 	d := &KubeDiscoverer{
-		Logger:      logger.New("k8s td manager", ""),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "sd k8s manager"),
+		),
 		namespaces:  ns,
 		podConf:     cfg.Pod,
 		svcConf:     cfg.Service,

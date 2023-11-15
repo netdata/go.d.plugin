@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -60,7 +61,10 @@ func NewNetSocketDiscoverer(cfg NetworkSocketConfig) (*NetDiscoverer, error) {
 	}
 
 	d := &NetDiscoverer{
-		Logger:   logger.New("hostsocket", "net"),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "sd hostsocket"),
+		),
 		interval: time.Second * 60,
 		ll: &localListenersExec{
 			binPath: filepath.Join(dir, "local-listeners"),

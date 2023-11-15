@@ -5,6 +5,7 @@ package vnodes
 import (
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sync"
@@ -18,7 +19,10 @@ var Disabled = false // TODO: remove after Netdata v1.39.0. Fix for "from source
 
 func New(confDir string) *Vnodes {
 	vn := &Vnodes{
-		Logger: logger.New("vnode", "registry"),
+		Logger: logger.New().With(
+			slog.String("component", "vnodes"),
+			slog.String("job", "registry"),
+		),
 
 		confDir: confDir,
 		vnodes:  make(map[string]*VirtualNode),

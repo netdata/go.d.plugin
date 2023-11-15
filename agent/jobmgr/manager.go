@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"strings"
 	"sync"
@@ -46,7 +47,10 @@ const (
 func NewManager() *Manager {
 	np := noop{}
 	mgr := &Manager{
-		Logger:      logger.New("job", "manager"),
+		Logger: logger.New().With(
+			slog.String("component", "job"),
+			slog.String("job", "manager"),
+		),
 		Out:         io.Discard,
 		FileLock:    np,
 		StatusSaver: np,

@@ -5,6 +5,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -67,7 +68,10 @@ func newPodDiscoverer(pod, cmap, secret cache.SharedInformer) *podDiscoverer {
 	})
 
 	return &podDiscoverer{
-		Logger:         logger.New("k8s pod td", ""),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "sd k8s pod"),
+		),
 		podInformer:    pod,
 		cmapInformer:   cmap,
 		secretInformer: secret,

@@ -4,11 +4,10 @@ package stm
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/netdata/go.d.plugin/logger"
 )
 
 const (
@@ -34,7 +33,7 @@ func ToMap(s ...interface{}) map[string]int64 {
 
 func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	if !value.IsValid() {
-		logger.Panicf("value is not valid key=%s", key)
+		log.Panicf("value is not valid key=%s", key)
 	}
 	if value.CanInterface() {
 		val, ok := value.Interface().(Value)
@@ -61,7 +60,7 @@ func toMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	case reflect.Interface:
 		convertInterface(value, rv, key, mul, div)
 	default:
-		logger.Panic("unsupported data type: ", value.Kind())
+		log.Panicf("unsupported data type: %v", value.Kind())
 	}
 }
 
@@ -91,7 +90,7 @@ func convertStruct(value reflect.Value, rv map[string]int64, key string) {
 
 func convertMap(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	if value.IsNil() {
-		logger.Panicf("value is nil key=%s", key)
+		log.Panicf("value is nil key=%s", key)
 	}
 	for _, k := range value.MapKeys() {
 		toMap(value.MapIndex(k), rv, joinPrefix(key, k.String()), mul, div)
@@ -106,7 +105,7 @@ func convertArraySlice(value reflect.Value, rv map[string]int64, key string, mul
 
 func convertBool(value reflect.Value, rv map[string]int64, key string) {
 	if _, ok := rv[key]; ok {
-		logger.Panic("duplicate key: ", key)
+		log.Panic("duplicate key: ", key)
 	}
 	if value.Bool() {
 		rv[key] = 1
@@ -117,7 +116,7 @@ func convertBool(value reflect.Value, rv map[string]int64, key string) {
 
 func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	if _, ok := rv[key]; ok {
-		logger.Panic("duplicate key: ", key)
+		log.Panic("duplicate key: ", key)
 	}
 	intVal := value.Int()
 	rv[key] = intVal * int64(mul) / int64(div)
@@ -125,7 +124,7 @@ func convertInteger(value reflect.Value, rv map[string]int64, key string, mul, d
 
 func convertFloat(value reflect.Value, rv map[string]int64, key string, mul, div int) {
 	if _, ok := rv[key]; ok {
-		logger.Panic("duplicate key: ", key)
+		log.Panic("duplicate key: ", key)
 	}
 	floatVal := value.Float()
 	rv[key] = int64(floatVal * float64(mul) / float64(div))
@@ -155,19 +154,19 @@ func parseTag(tag string) (prefix string, mul int, div int) {
 	case 3:
 		div, err = strconv.Atoi(tokens[2])
 		if err != nil {
-			logger.Panic(err)
+			log.Panic(err)
 		}
 		fallthrough
 	case 2:
 		mul, err = strconv.Atoi(tokens[1])
 		if err != nil {
-			logger.Panic(err)
+			log.Panic(err)
 		}
 		fallthrough
 	case 1:
 		prefix = tokens[0]
 	default:
-		logger.Panic(fmt.Errorf("invalid tag format: %s", tag))
+		log.Panic(fmt.Errorf("invalid tag format: %s", tag))
 	}
 	return
 }

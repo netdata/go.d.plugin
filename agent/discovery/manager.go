@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -21,7 +22,10 @@ func NewManager(cfg Config) (*Manager, error) {
 	}
 
 	mgr := &Manager{
-		Logger:      logger.New("discovery", "manager"),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "manager"),
+		),
 		send:        make(chan struct{}, 1),
 		sendEvery:   time.Second * 2, // timeout to aggregate changes
 		discoverers: make([]discoverer, 0),

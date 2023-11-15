@@ -5,6 +5,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -69,7 +70,10 @@ func newServiceDiscoverer(inf cache.SharedInformer) *serviceDiscoverer {
 	})
 
 	return &serviceDiscoverer{
-		Logger:   logger.New("k8s service td", ""),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "sd k8s service"),
+		),
 		informer: inf,
 		queue:    queue,
 	}

@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"context"
 	"io"
+	"log/slog"
 	"os"
 	"strings"
 	"sync"
@@ -20,7 +21,10 @@ var isTerminal = isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsTerminal(os.Stdin
 
 func NewManager() *Manager {
 	return &Manager{
-		Logger:           logger.New("functions", "manager"),
+		Logger: logger.New().With(
+			slog.String("component", "functions"),
+			slog.String("job", "manager"),
+		),
 		Input:            os.Stdin,
 		mux:              &sync.Mutex{},
 		FunctionRegistry: make(map[string]func(Function)),

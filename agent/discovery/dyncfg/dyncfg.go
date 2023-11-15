@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"sync"
 
@@ -25,7 +26,10 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 	}
 
 	mgr := &Discovery{
-		Logger:               logger.New("dyncfg", "manager"),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "dyncfg"),
+		),
 		Plugin:               cfg.Plugin,
 		API:                  cfg.API,
 		Modules:              cfg.Modules,
