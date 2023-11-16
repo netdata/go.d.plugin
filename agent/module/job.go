@@ -69,6 +69,7 @@ type JobConfig struct {
 	UpdateEvery     int
 	AutoDetectEvery int
 	Priority        int
+	IsStock         bool
 
 	VnodeGUID     string
 	VnodeHostname string
@@ -83,7 +84,8 @@ const (
 
 func NewJob(cfg JobConfig) *Job {
 	var buf bytes.Buffer
-	return &Job{
+
+	j := &Job{
 		AutoDetectEvery: cfg.AutoDetectEvery,
 		AutoDetectTries: infTries,
 
@@ -93,6 +95,7 @@ func NewJob(cfg JobConfig) *Job {
 		fullName:    cfg.FullName,
 		updateEvery: cfg.UpdateEvery,
 		priority:    cfg.Priority,
+		isStock:     cfg.IsStock,
 		module:      cfg.Module,
 		labels:      cfg.Labels,
 		out:         cfg.Out,
@@ -106,6 +109,16 @@ func NewJob(cfg JobConfig) *Job {
 		vnodeHostname: cfg.VnodeHostname,
 		vnodeLabels:   cfg.VnodeLabels,
 	}
+
+	log := logger.New().With(
+		slog.String("module", j.ModuleName()),
+		slog.String("job", j.Name()),
+	)
+
+	j.Logger = log
+	j.module.GetBase().Logger = log
+
+	return j
 }
 
 // Job represents a job. It's a module wrapper.
@@ -122,6 +135,8 @@ type Job struct {
 	labels          map[string]string
 
 	*logger.Logger
+
+	isStock bool
 
 	module Module
 
@@ -197,21 +212,32 @@ func (j *Job) AutoDetection() (ok bool) {
 		}
 	}()
 
+	if j.isStock {
+		j.Mute()
+	}
+
 	if ok = j.init(); !ok {
 		j.Error("init failed")
+		j.Unmute()
 		j.disableAutoDetection()
 		return
 	}
+
 	if ok = j.check(); !ok {
 		j.Error("check failed")
+		j.Unmute()
 		return
 	}
+
+	j.Unmute()
+
 	j.Info("check success")
 	if ok = j.postCheck(); !ok {
 		j.Error("postCheck failed")
 		j.disableAutoDetection()
 		return
 	}
+
 	return true
 }
 
@@ -293,14 +319,8 @@ func (j *Job) init() bool {
 		return true
 	}
 
-	log := logger.New().With(
-		slog.String("module", j.ModuleName()),
-		slog.String("job", j.Name()),
-	)
-	j.Logger = log
-	j.module.GetBase().Logger = log
-
 	j.initialized = j.module.Init()
+
 	return j.initialized
 }
 

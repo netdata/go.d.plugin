@@ -288,6 +288,7 @@ func (m *Manager) createJob(cfg confgroup.Config) (*module.Job, error) {
 		AutoDetectEvery: cfg.AutoDetectionRetry(),
 		Priority:        cfg.Priority(),
 		Labels:          labels,
+		IsStock:         isStockConfig(cfg.Source()),
 		Module:          mod,
 		Out:             m.Out,
 	}
@@ -359,4 +360,15 @@ func isInsideK8sCluster() bool {
 
 func isTooManyOpenFiles(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "too many open files")
+}
+
+var (
+	envNDStockConfigDir = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
+)
+
+func isStockConfig(path string) bool {
+	if envNDStockConfigDir == "" {
+		return false
+	}
+	return strings.HasPrefix(path, envNDStockConfigDir)
 }

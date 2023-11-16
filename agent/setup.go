@@ -26,7 +26,7 @@ func (a *Agent) loadPluginConfig() config {
 	}
 
 	cfgPath := a.Name + ".conf"
-	a.Infof("looking for '%s' in %v", cfgPath, a.ConfDir)
+	a.Debugf("looking for '%s' in %v", cfgPath, a.ConfDir)
 
 	path, err := a.ConfDir.Find(cfgPath)
 	if err != nil || path == "" {
@@ -104,7 +104,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 		// 2nd part of this fix is in /agent/job/discovery/file/parse.go parseStaticFormat()
 		if name == "windows" {
 			cfgName := "wmi.conf"
-			a.Infof("looking for '%s' in %v", cfgName, a.ModulesConfDir)
+			a.Debugf("looking for '%s' in %v", cfgName, a.ModulesConfDir)
 
 			path, err := a.ModulesConfDir.Find(cfgName)
 
@@ -116,7 +116,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 		}
 
 		cfgName := name + ".conf"
-		a.Infof("looking for '%s' in %v", cfgName, a.ModulesConfDir)
+		a.Debugf("looking for '%s' in %v", cfgName, a.ModulesConfDir)
 
 		path, err := a.ModulesConfDir.Find(cfgName)
 		if isInsideK8sCluster() {
@@ -132,7 +132,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 			a.Infof("couldn't find '%s' module config, will use default config", name)
 			dummyPaths = append(dummyPaths, name)
 		} else {
-			a.Infof("found '%s", path)
+			a.Debugf("found '%s", path)
 			readPaths = append(readPaths, path)
 		}
 	}
@@ -151,7 +151,7 @@ func (a *Agent) buildDiscoveryConf(enabled module.Registry) discovery.Config {
 }
 
 func (a *Agent) setupVnodeRegistry() *vnodes.Vnodes {
-	a.Infof("looking for 'vnodes/' in %v", a.VnodesConfDir)
+	a.Debugf("looking for 'vnodes/' in %v", a.VnodesConfDir)
 
 	if len(a.VnodesConfDir) == 0 {
 		return nil

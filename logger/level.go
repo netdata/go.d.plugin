@@ -24,12 +24,12 @@ func (l *level) Set(level slog.Level) {
 func (l *level) SetByName(level string) {
 	switch strings.ToLower(level) {
 	case "err", "error":
-		Level.Set(slog.LevelError)
+		l.lvl.Set(slog.LevelError)
 	case "warn", "warning":
-		Level.Set(slog.LevelWarn)
+		l.lvl.Set(slog.LevelWarn)
 	case "info":
-		Level.Set(slog.LevelInfo)
+		l.lvl.Set(slog.LevelInfo)
 	case "debug":
-		Level.Set(slog.LevelDebug)
+		l.lvl.Set(slog.LevelDebug)
 	}
 }

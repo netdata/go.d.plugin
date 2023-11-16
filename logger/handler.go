@@ -32,6 +32,9 @@ func newTerminalHandler() slog.Handler {
 }
 
 func withCallDepth(depth int, sh slog.Handler) slog.Handler {
+	if v, ok := sh.(*callDepthHandler); ok {
+		sh = v.sh
+	}
 	return &callDepthHandler{depth: depth, sh: sh}
 }
 
@@ -45,11 +48,11 @@ func (h *callDepthHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (h *callDepthHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &callDepthHandler{depth: h.depth, sh: h.sh.WithAttrs(attrs)}
+	return withCallDepth(h.depth, h.sh.WithAttrs(attrs))
 }
 
 func (h *callDepthHandler) WithGroup(name string) slog.Handler {
-	return &callDepthHandler{depth: h.depth, sh: h.sh.WithGroup(name)}
+	return withCallDepth(h.depth, h.sh.WithGroup(name))
 }
 
 func (h *callDepthHandler) Handle(ctx context.Context, r slog.Record) error {
