@@ -45,7 +45,7 @@ func (sim discoverySim) run(t *testing.T) {
 	accum.sendEvery = time.Second * 2
 
 	pl := &Pipeline{
-		Logger:      logger.New("sd pipeline", "test"),
+		Logger:      logger.New(),
 		accum:       accum,
 		discoverers: sim.discoverers,
 		clr:         mockClr,

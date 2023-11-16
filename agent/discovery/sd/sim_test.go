@@ -26,7 +26,7 @@ type discoverySim struct {
 func (sim *discoverySim) run(t *testing.T) {
 	fact := &mockFactory{}
 	mgr := &ServiceDiscovery{
-		Logger:    logger.New("test", "test"),
+		Logger:    logger.New(),
 		sdFactory: fact,
 		confProv: &mockConfigProvider{
 			configs: sim.configs,

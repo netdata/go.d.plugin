@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"os"
 	"path"
@@ -90,7 +91,7 @@ func main() {
 	opt := parseCLI()
 
 	if opt.Debug {
-		logger.SetSeverity(logger.DEBUG)
+		logger.Level.Set(slog.LevelDebug)
 	}
 	if opt.Version {
 		fmt.Println(version)

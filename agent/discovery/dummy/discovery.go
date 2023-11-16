@@ -5,6 +5,7 @@ package dummy
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/logger"
@@ -15,9 +16,12 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 		return nil, fmt.Errorf("config validation: %v", err)
 	}
 	d := &Discovery{
-		Logger: logger.New("discovery", "dummy"),
-		reg:    cfg.Registry,
-		names:  cfg.Names,
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "dummy"),
+		),
+		reg:   cfg.Registry,
+		names: cfg.Names,
 	}
 	return d, nil
 }

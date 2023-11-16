@@ -5,6 +5,7 @@ package agent
 import (
 	"context"
 	"io"
+	"log/slog"
 	"os"
 	"os/signal"
 	"sync"
@@ -65,10 +66,11 @@ type Agent struct {
 
 // New creates a new Agent.
 func New(cfg Config) *Agent {
-	logger.Prefix = cfg.Name
-
 	return &Agent{
-		Logger:            logger.New("main", "main"),
+		Logger: logger.New().With(
+			slog.String("component", "agent"),
+			slog.String("job", "main"),
+		),
 		Name:              cfg.Name,
 		ConfDir:           cfg.ConfDir,
 		ModulesConfDir:    cfg.ModulesConfDir,
@@ -186,7 +188,7 @@ func (a *Agent) run(ctx context.Context) {
 	jobsManager.Modules = enabledModules
 
 	// TODO: rm 'if' after https://github.com/netdata/netdata/issues/16079
-	if logger.IsDebug() {
+	if logger.Level.Enabled(slog.LevelDebug) {
 		dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
 			Plugin:               a.Name,
 			API:                  netdataapi.New(a.Out),

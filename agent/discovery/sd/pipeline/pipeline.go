@@ -4,10 +4,11 @@ package pipeline
 
 import (
 	"context"
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
+	"log/slog"
 	"time"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/kubernetes"
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 	"github.com/netdata/go.d.plugin/logger"
@@ -19,7 +20,10 @@ func New(cfg Config) (*Pipeline, error) {
 	}
 
 	p := &Pipeline{
-		Logger:      logger.New("sd pipeline", cfg.Name),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "sd pipeline"),
+		),
 		accum:       newAccumulator(),
 		discoverers: make([]model.Discoverer, 0),
 		items:       make(map[string]map[uint64][]confgroup.Config),

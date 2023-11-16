@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
@@ -18,7 +19,10 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 	}
 
 	d := Discovery{
-		Logger: logger.New("discovery", "file manager"),
+		Logger: logger.New().With(
+			slog.String("component", "discovery"),
+			slog.String("job", "file manager"),
+		),
 	}
 
 	if err := d.registerDiscoverers(cfg); err != nil {

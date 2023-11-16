@@ -4,6 +4,7 @@ package filestatus
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"time"
 
@@ -13,7 +14,10 @@ import (
 
 func NewManager(path string) *Manager {
 	return &Manager{
-		Logger:     logger.New("status save", "manager"),
+		Logger: logger.New().With(
+			slog.String("component", "filestatus"),
+			slog.String("job", "manager"),
+		),
 		path:       path,
 		store:      &Store{},
 		flushEvery: time.Second * 5,

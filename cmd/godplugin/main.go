@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -21,14 +22,14 @@ import (
 )
 
 var (
-	cd, _               = os.Getwd()
-	name                = "go.d"
-	userDir             = os.Getenv("NETDATA_USER_CONFIG_DIR")
-	stockDir            = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
-	varLibDir           = os.Getenv("NETDATA_LIB_DIR")
-	lockDir             = os.Getenv("NETDATA_LOCK_DIR")
-	watchPath           = os.Getenv("NETDATA_PLUGINS_GOD_WATCH_PATH")
-	envLogSeverityLevel = os.Getenv("NETDATA_LOG_SEVERITY_LEVEL")
+	cd, _            = os.Getwd()
+	name             = "go.d"
+	userDir          = os.Getenv("NETDATA_USER_CONFIG_DIR")
+	stockDir         = os.Getenv("NETDATA_STOCK_CONFIG_DIR")
+	varLibDir        = os.Getenv("NETDATA_LIB_DIR")
+	lockDir          = os.Getenv("NETDATA_LOCK_DIR")
+	watchPath        = os.Getenv("NETDATA_PLUGINS_GOD_WATCH_PATH")
+	envLogLevelLevel = os.Getenv("NETDATA_LOG_SEVERITY_LEVEL")
 
 	version = "unknown"
 )
@@ -97,12 +98,12 @@ func main() {
 		return
 	}
 
-	if envLogSeverityLevel != "" {
-		logger.SetSeverityByName(envLogSeverityLevel)
+	if envLogLevelLevel != "" {
+		logger.Level.SetByName(envLogLevelLevel)
 	}
 
 	if opts.Debug {
-		logger.SetSeverity(logger.DEBUG)
+		logger.Level.Set(slog.LevelDebug)
 	}
 
 	a := agent.New(agent.Config{

@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"regexp"
 	"runtime/debug"
@@ -185,8 +186,9 @@ func (j *Job) AutoDetection() (ok bool) {
 			ok = false
 			j.panicked = true
 			j.disableAutoDetection()
+
 			j.Errorf("PANIC %v", r)
-			if logger.IsDebug() {
+			if logger.Level.Enabled(slog.LevelDebug) {
 				j.Errorf("STACK: %s", debug.Stack())
 			}
 		}
@@ -255,9 +257,6 @@ func (j *Job) disableAutoDetection() {
 }
 
 func (j *Job) Cleanup() {
-	if j.Logger != nil {
-		logger.GlobalMsgCountWatcher.Unregister(j.Logger)
-	}
 	j.buf.Reset()
 	if !shouldObsoleteCharts() {
 		return
@@ -294,7 +293,10 @@ func (j *Job) init() bool {
 		return true
 	}
 
-	log := logger.NewLimited(j.ModuleName(), j.Name())
+	log := logger.New().With(
+		slog.String("module", j.ModuleName()),
+		slog.String("job", j.Name()),
+	)
 	j.Logger = log
 	j.module.GetBase().Logger = log
 
@@ -349,7 +351,7 @@ func (j *Job) collect() (result map[string]int64) {
 		if r := recover(); r != nil {
 			j.panicked = true
 			j.Errorf("PANIC: %v", r)
-			if logger.IsDebug() {
+			if logger.Level.Enabled(slog.LevelDebug) {
 				j.Errorf("STACK: %s", debug.Stack())
 			}
 		}
