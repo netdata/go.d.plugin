@@ -37,8 +37,8 @@ func (l *Logger) Errorf(format string, a ...any)   { l.log(slog.LevelError, fmt.
 func (l *Logger) Warningf(format string, a ...any) { l.log(slog.LevelWarn, fmt.Sprintf(format, a...)) }
 func (l *Logger) Infof(format string, a ...any)    { l.log(slog.LevelInfo, fmt.Sprintf(format, a...)) }
 func (l *Logger) Debugf(format string, a ...any)   { l.log(slog.LevelDebug, fmt.Sprintf(format, a...)) }
-func (l *Logger) Mute()                            { l.muted.Store(true) }
-func (l *Logger) Unmute()                          { l.muted.Store(false) }
+func (l *Logger) Mute()                            { l.mute(true) }
+func (l *Logger) Unmute()                          { l.mute(false) }
 
 func (l *Logger) With(args ...any) *Logger {
 	if l.isNil() {
@@ -52,14 +52,19 @@ func (l *Logger) With(args ...any) *Logger {
 }
 
 func (l *Logger) log(level slog.Level, msg string) {
-	if l.muted.Load() {
+	if l.isNil() {
+		nilLogger.sl.Log(context.Background(), level, msg)
 		return
 	}
 
-	if l.isNil() {
-		nilLogger.sl.Log(context.Background(), level, msg)
-	} else {
+	if !l.muted.Load() {
 		l.sl.Log(context.Background(), level, msg)
+	}
+}
+
+func (l *Logger) mute(v bool) {
+	if !l.isNil() {
+		l.muted.Store(v)
 	}
 }
 

@@ -116,7 +116,9 @@ func NewJob(cfg JobConfig) *Job {
 	)
 
 	j.Logger = log
-	j.module.GetBase().Logger = log
+	if j.module != nil {
+		j.module.GetBase().Logger = log
+	}
 
 	return j
 }
