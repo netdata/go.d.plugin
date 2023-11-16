@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"sync/atomic"
 
 	"github.com/netdata/go.d.plugin/agent/executable"
 
@@ -24,7 +25,8 @@ func New() *Logger {
 }
 
 type Logger struct {
-	sl *slog.Logger
+	muted atomic.Bool
+	sl    *slog.Logger
 }
 
 func (l *Logger) Error(a ...any)                   { l.log(slog.LevelError, fmt.Sprint(a...)) }
@@ -35,24 +37,37 @@ func (l *Logger) Errorf(format string, a ...any)   { l.log(slog.LevelError, fmt.
 func (l *Logger) Warningf(format string, a ...any) { l.log(slog.LevelWarn, fmt.Sprintf(format, a...)) }
 func (l *Logger) Infof(format string, a ...any)    { l.log(slog.LevelInfo, fmt.Sprintf(format, a...)) }
 func (l *Logger) Debugf(format string, a ...any)   { l.log(slog.LevelDebug, fmt.Sprintf(format, a...)) }
+func (l *Logger) Mute()                            { l.mute(true) }
+func (l *Logger) Unmute()                          { l.mute(false) }
 
 func (l *Logger) With(args ...any) *Logger {
 	if l.isNil() {
 		return &Logger{sl: New().sl.With(args...)}
 	}
-	return &Logger{sl: l.sl.With(args...)}
+
+	ll := &Logger{sl: l.sl.With(args...)}
+	ll.muted.Store(l.muted.Load())
+
+	return ll
 }
 
 func (l *Logger) log(level slog.Level, msg string) {
 	if l.isNil() {
 		nilLogger.sl.Log(context.Background(), level, msg)
-	} else {
+		return
+	}
+
+	if !l.muted.Load() {
 		l.sl.Log(context.Background(), level, msg)
 	}
 }
 
-func (l *Logger) isNil() bool {
-	return l == nil || l.sl == nil
+func (l *Logger) mute(v bool) {
+	if !l.isNil() {
+		l.muted.Store(v)
+	}
 }
+
+func (l *Logger) isNil() bool { return l == nil || l.sl == nil }
 
 var nilLogger = New()
