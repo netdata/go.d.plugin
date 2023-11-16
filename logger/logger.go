@@ -65,12 +65,10 @@ func (l *Logger) log(level slog.Level, msg string) {
 }
 
 func (l *Logger) mute(v bool) {
-	if l.isNil() {
+	if l.isNil() || isTerm && Level.Enabled(slog.LevelDebug) {
 		return
 	}
-	if !isTerm || (isTerm && !Level.Enabled(slog.LevelDebug)) {
-		l.muted.Store(v)
-	}
+	l.muted.Store(v)
 }
 
 func (l *Logger) isNil() bool { return l == nil || l.sl == nil }
