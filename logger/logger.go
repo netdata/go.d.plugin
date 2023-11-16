@@ -14,10 +14,12 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
+var isTerm = isatty.IsTerminal(os.Stderr.Fd())
+
 var pluginAttr = slog.String("plugin", executable.Name)
 
 func New() *Logger {
-	if isatty.IsTerminal(os.Stderr.Fd()) {
+	if isTerm {
 		// skip 2 slog pkg calls, 2 this pkg calls
 		return &Logger{sl: slog.New(withCallDepth(4, newTerminalHandler()))}
 	}
@@ -63,7 +65,7 @@ func (l *Logger) log(level slog.Level, msg string) {
 }
 
 func (l *Logger) mute(v bool) {
-	if !l.isNil() {
+	if !l.isNil() && (!isTerm || (isTerm && !Level.Enabled(slog.LevelDebug))) {
 		l.muted.Store(v)
 	}
 }
