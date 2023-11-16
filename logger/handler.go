@@ -15,9 +15,8 @@ func newTextHandler() slog.Handler {
 		Level: Level.lvl,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.LevelKey {
-				if v, ok := a.Value.Any().(slog.Level); ok {
-					a.Value = slog.StringValue(strings.ToLower(v.String()))
-				}
+				v := a.Value.Any().(slog.Level)
+				a.Value = slog.StringValue(strings.ToLower(v.String()))
 			}
 			return a
 		},
@@ -28,6 +27,15 @@ func newTerminalHandler() slog.Handler {
 	return tint.NewHandler(os.Stderr, &tint.Options{
 		AddSource: true,
 		Level:     Level.lvl,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			if a.Key == slog.SourceKey && !Level.Enabled(slog.LevelDebug) {
+				return slog.Attr{}
+			}
+			return a
+		},
 	})
 }
 
