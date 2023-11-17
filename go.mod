@@ -33,7 +33,7 @@ require (
 	github.com/lmittmann/tint v1.0.3
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-xmlrpc v0.0.3
-	github.com/miekg/dns v1.1.56
+	github.com/miekg/dns v1.1.57
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/muesli/cancelreader v0.2.2
 	github.com/prometheus-community/pro-bing v0.3.0
