@@ -22,8 +22,7 @@ var isTerminal = isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsTerminal(os.Stdin
 func NewManager() *Manager {
 	return &Manager{
 		Logger: logger.New().With(
-			slog.String("component", "functions"),
-			slog.String("job", "manager"),
+			slog.String("component", "functions manager"),
 		),
 		Input:            os.Stdin,
 		mux:              &sync.Mutex{},

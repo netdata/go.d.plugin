@@ -23,8 +23,7 @@ func NewManager(cfg Config) (*Manager, error) {
 
 	mgr := &Manager{
 		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "manager"),
+			slog.String("component", "discovery manager"),
 		),
 		send:        make(chan struct{}, 1),
 		sendEvery:   time.Second * 2, // timeout to aggregate changes

@@ -111,7 +111,7 @@ func NewJob(cfg JobConfig) *Job {
 	}
 
 	log := logger.New().With(
-		slog.String("module", j.ModuleName()),
+		slog.String("collector", j.ModuleName()),
 		slog.String("job", j.Name()),
 	)
 

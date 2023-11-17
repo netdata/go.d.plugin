@@ -4,7 +4,6 @@ package file
 
 import (
 	"context"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,10 +35,7 @@ func (c cache) put(path string, modTime time.Time)   { c[path] = modTime }
 
 func NewWatcher(reg confgroup.Registry, paths []string) *Watcher {
 	d := &Watcher{
-		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "file watcher"),
-		),
+		Logger:       log,
 		paths:        paths,
 		reg:          reg,
 		watcher:      nil,

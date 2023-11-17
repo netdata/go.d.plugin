@@ -48,8 +48,7 @@ func NewManager() *Manager {
 	np := noop{}
 	mgr := &Manager{
 		Logger: logger.New().With(
-			slog.String("component", "job"),
-			slog.String("job", "manager"),
+			slog.String("component", "job manager"),
 		),
 		Out:         io.Discard,
 		FileLock:    np,

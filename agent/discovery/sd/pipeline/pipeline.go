@@ -21,8 +21,7 @@ func New(cfg Config) (*Pipeline, error) {
 
 	p := &Pipeline{
 		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "sd pipeline"),
+			slog.String("component", "discovery sd pipeline"),
 		),
 		accum:       newAccumulator(),
 		discoverers: make([]model.Discoverer, 0),

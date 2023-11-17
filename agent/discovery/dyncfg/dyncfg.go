@@ -27,8 +27,7 @@ func NewDiscovery(cfg Config) (*Discovery, error) {
 
 	mgr := &Discovery{
 		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "dyncfg"),
+			slog.String("component", "discovery dyncfg"),
 		),
 		Plugin:               cfg.Plugin,
 		API:                  cfg.API,
