@@ -21,7 +21,6 @@ func New(confDir string) *Vnodes {
 	vn := &Vnodes{
 		Logger: logger.New().With(
 			slog.String("component", "vnodes"),
-			slog.String("job", "registry"),
 		),
 
 		confDir: confDir,

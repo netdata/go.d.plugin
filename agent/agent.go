@@ -69,7 +69,6 @@ func New(cfg Config) *Agent {
 	return &Agent{
 		Logger: logger.New().With(
 			slog.String("component", "agent"),
-			slog.String("job", "main"),
 		),
 		Name:              cfg.Name,
 		ConfDir:           cfg.ConfDir,

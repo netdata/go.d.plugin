@@ -62,8 +62,7 @@ func NewNetSocketDiscoverer(cfg NetworkSocketConfig) (*NetDiscoverer, error) {
 
 	d := &NetDiscoverer{
 		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "sd hostsocket"),
+			slog.String("component", "discovery sd hostsocket"),
 		),
 		interval: time.Second * 60,
 		ll: &localListenersExec{

@@ -13,16 +13,17 @@ import (
 	"github.com/netdata/go.d.plugin/logger"
 )
 
+var log = logger.New().With(
+	slog.String("component", "discovery file"),
+)
+
 func NewDiscovery(cfg Config) (*Discovery, error) {
 	if err := validateConfig(cfg); err != nil {
 		return nil, fmt.Errorf("file discovery config validation: %v", err)
 	}
 
 	d := Discovery{
-		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "file manager"),
-		),
+		Logger: log,
 	}
 
 	if err := d.registerDiscoverers(cfg); err != nil {

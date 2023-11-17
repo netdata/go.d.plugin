@@ -15,8 +15,7 @@ import (
 func NewManager(path string) *Manager {
 	return &Manager{
 		Logger: logger.New().With(
-			slog.String("component", "filestatus"),
-			slog.String("job", "manager"),
+			slog.String("component", "filestatus manager"),
 		),
 		path:       path,
 		store:      &Store{},

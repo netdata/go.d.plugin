@@ -29,6 +29,10 @@ const (
 	envNodeName = "MY_NODE_NAME"
 )
 
+var log = logger.New().With(
+	slog.String("component", "discovery sd k8s"),
+)
+
 func NewKubeDiscoverer(cfg Config) (*KubeDiscoverer, error) {
 	if err := validateConfig(cfg); err != nil {
 		return nil, fmt.Errorf("config validation: %v", err)
@@ -45,10 +49,7 @@ func NewKubeDiscoverer(cfg Config) (*KubeDiscoverer, error) {
 	}
 
 	d := &KubeDiscoverer{
-		Logger: logger.New().With(
-			slog.String("component", "discovery"),
-			slog.String("job", "sd k8s manager"),
-		),
+		Logger:      log,
 		namespaces:  ns,
 		podConf:     cfg.Pod,
 		svcConf:     cfg.Service,
