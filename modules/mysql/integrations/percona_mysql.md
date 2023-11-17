@@ -11,7 +11,7 @@ endmeta-->
 # Percona MySQL
 
 
-<img src="https://netdata.cloud/img/mysql.svg" width="150"/>
+<img src="https://netdata.cloud/img/percona.svg" width="150"/>
 
 
 Plugin: go.d.plugin

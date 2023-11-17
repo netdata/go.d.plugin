@@ -85,7 +85,7 @@ No action required.
 
 #### File
 
-The configuration file name for this integration is `go.d/isc_dhcps.conf`.
+The configuration file name for this integration is `go.d/isc_dhcpd.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
@@ -93,7 +93,7 @@ Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/c
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
-sudo ./edit-config go.d/isc_dhcps.conf
+sudo ./edit-config go.d/isc_dhcpd.conf
 ```
 #### Options
 
