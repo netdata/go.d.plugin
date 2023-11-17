@@ -81,7 +81,7 @@ There are no alerts configured by default for this integration.
 
 #### Enable built-in Prometheus exporter
 
-To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/p1rometheus/) documentation.
+To enable see [Prometheus exporter](https://doc.traefik.io/traefik/observability/metrics/prometheus/) documentation.
 
 
 
