@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strconv"
+	"strings"
 	"sync/atomic"
+	"syscall"
 
 	"github.com/netdata/go.d.plugin/agent/executable"
 
@@ -15,6 +18,8 @@ import (
 )
 
 var isTerm = isatty.IsTerminal(os.Stderr.Fd())
+
+var isJournal = isStderrConnectedToJournal()
 
 var pluginAttr = slog.String("plugin", executable.Name)
 
@@ -74,3 +79,24 @@ func (l *Logger) mute(v bool) {
 func (l *Logger) isNil() bool { return l == nil || l.sl == nil }
 
 var nilLogger = New()
+
+func isStderrConnectedToJournal() bool {
+	stream := os.Getenv("JOURNAL_STREAM")
+	if stream == "" {
+		return false
+	}
+
+	idx := strings.IndexByte(stream, ':')
+	if idx <= 0 {
+		return false
+	}
+
+	dev, ino := stream[:idx], stream[idx+1:]
+
+	var stat syscall.Stat_t
+	if err := syscall.Fstat(int(os.Stderr.Fd()), &stat); err != nil {
+		return false
+	}
+
+	return dev == strconv.Itoa(int(stat.Dev)) && ino == strconv.FormatUint(stat.Ino, 10)
+}

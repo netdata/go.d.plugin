@@ -14,6 +14,9 @@ func newTextHandler() slog.Handler {
 	return slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 		Level: Level.lvl,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey && isJournal {
+				return slog.Attr{}
+			}
 			if a.Key == slog.LevelKey {
 				v := a.Value.Any().(slog.Level)
 				a.Value = slog.StringValue(strings.ToLower(v.String()))
