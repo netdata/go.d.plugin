@@ -3,6 +3,7 @@
 package httpcheck
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -18,6 +19,7 @@ type reqErrCode int
 
 const (
 	codeTimeout reqErrCode = iota
+	codeRedirect
 	codeNoConnection
 )
 
@@ -41,8 +43,8 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 
 	var mx metrics
 
-	if err != nil {
-		hc.Warning(err)
+	if hc.isError(err, resp) {
+		hc.Debug(err)
 		hc.collectErrResponse(&mx, err)
 	} else {
 		mx.ResponseTime = durationToMs(dur)
@@ -59,12 +61,18 @@ func (hc *HTTPCheck) collect() (map[string]int64, error) {
 	return stm.ToMap(mx), nil
 }
 
+func (hc *HTTPCheck) isError(err error, resp *http.Response) bool {
+	return err != nil && !(errors.Is(err, web.ErrRedirectAttempted) && hc.acceptedStatuses[resp.StatusCode])
+}
+
 func (hc *HTTPCheck) collectErrResponse(mx *metrics, err error) {
 	switch code := decodeReqError(err); code {
 	case codeNoConnection:
 		mx.Status.NoConnection = true
 	case codeTimeout:
 		mx.Status.Timeout = true
+	case codeRedirect:
+		mx.Status.Redirect = true
 	default:
 		panic(fmt.Sprintf("unknown request error code : %d", code))
 	}
@@ -79,7 +87,7 @@ func (hc *HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	}
 
 	bs, err := io.ReadAll(resp.Body)
-	if err != nil && err != io.EOF {
+	if err != nil && errors.Is(err, io.EOF) {
 		hc.Warningf("error on reading body : %v", err)
 		mx.Status.BadContent = true
 		return
@@ -99,7 +107,12 @@ func decodeReqError(err error) reqErrCode {
 	if err == nil {
 		panic("nil error")
 	}
-	if v, ok := err.(net.Error); ok && v.Timeout() {
+
+	if errors.Is(err, web.ErrRedirectAttempted) {
+		return codeRedirect
+	}
+	var v net.Error
+	if errors.As(err, &v) && v.Timeout() {
 		return codeTimeout
 	}
 	return codeNoConnection
