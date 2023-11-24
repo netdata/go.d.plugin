@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/netdata/go.d.plugin/pkg/stm"
@@ -87,7 +88,8 @@ func (hc *HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 	}
 
 	bs, err := io.ReadAll(resp.Body)
-	if err != nil && errors.Is(err, io.EOF) {
+	// golang net/http closes body on redirect
+	if err != nil && !errors.Is(err, io.EOF) && !strings.Contains(err.Error(), "read on closed response body") {
 		hc.Warningf("error on reading body : %v", err)
 		mx.Status.BadContent = true
 		return
