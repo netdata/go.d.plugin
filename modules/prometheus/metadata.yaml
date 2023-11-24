@@ -1391,7 +1391,7 @@ modules:
       most_popular: false
       community: true
       monitored_instance:
-        name: FreeBSD RCTL/RACCT
+        name: FreeBSD RCTL-RACCT
         link: https://github.com/yo000/rctl_exporter
         icon_filename: freebsd.svg
         categories:
