@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -132,7 +133,8 @@ func main() {
 func parseCLI() *cli.Option {
 	opt, err := cli.Parse(os.Args)
 	if err != nil {
-		if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
+		var flagsErr *flags.Error
+		if errors.As(err, &flagsErr) && flagsErr.Type == flags.ErrHelp {
 			os.Exit(0)
 		} else {
 			os.Exit(1)
