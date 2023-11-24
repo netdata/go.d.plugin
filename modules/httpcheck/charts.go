@@ -55,6 +55,7 @@ var responseStatusChart = module.Chart{
 		{ID: "success"},
 		{ID: "no_connection"},
 		{ID: "timeout"},
+		{ID: "redirect"},
 		{ID: "bad_content"},
 		{ID: "bad_status"},
 	},

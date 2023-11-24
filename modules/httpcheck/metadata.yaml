@@ -212,8 +212,9 @@ modules:
               chart_type: line
               dimensions:
                 - name: success
-                - name: no_connection
                 - name: timeout
+                - name: redirect
+                - name: no_connection
                 - name: bad_content
                 - name: bad_status
             - name: httpcheck.in_state

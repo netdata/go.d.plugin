@@ -116,6 +116,8 @@ func TestHTTPCheck_Check(t *testing.T) {
 	}{
 		"success case":       {wantFail: false, prepare: prepareSuccessCase},
 		"timeout case":       {wantFail: false, prepare: prepareTimeoutCase},
+		"redirect success":   {wantFail: false, prepare: prepareRedirectSuccessCase},
+		"redirect fail":      {wantFail: false, prepare: prepareRedirectFailCase},
 		"bad status case":    {wantFail: false, prepare: prepareBadStatusCase},
 		"bad content case":   {wantFail: false, prepare: prepareBadContentCase},
 		"no connection case": {wantFail: false, prepare: prepareNoConnectionCase},
@@ -152,6 +154,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        5,
 				"no_connection": 0,
+				"redirect":      0,
 				"success":       1,
 				"time":          0,
 				"timeout":       0,
@@ -165,9 +168,38 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        0,
 				"no_connection": 0,
+				"redirect":      0,
 				"success":       0,
 				"time":          0,
 				"timeout":       1,
+			},
+		},
+		"redirect success case": {
+			prepare: prepareRedirectSuccessCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"redirect fail case": {
+			prepare: prepareRedirectFailCase,
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        0,
+				"no_connection": 0,
+				"redirect":      1,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
 			},
 		},
 		"bad status case": {
@@ -178,6 +210,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        0,
 				"no_connection": 0,
+				"redirect":      0,
 				"success":       0,
 				"time":          0,
 				"timeout":       0,
@@ -191,6 +224,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        17,
 				"no_connection": 0,
+				"redirect":      0,
 				"success":       0,
 				"time":          0,
 				"timeout":       0,
@@ -204,6 +238,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        0,
 				"no_connection": 1,
+				"redirect":      0,
 				"success":       0,
 				"time":          0,
 				"timeout":       0,
@@ -217,6 +252,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"in_state":      2,
 				"length":        0,
 				"no_connection": 0,
+				"redirect":      0,
 				"success":       1,
 				"time":          0,
 				"timeout":       0,
@@ -269,6 +305,37 @@ func prepareTimeoutCase() (*HTTPCheck, func()) {
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			time.Sleep(httpCheck.Timeout.Duration + time.Millisecond*100)
+		}))
+
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func prepareRedirectSuccessCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.NotFollowRedirect = true
+	httpCheck.AcceptedStatuses = []int{301}
+
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "https://example.com", http.StatusMovedPermanently)
+		}))
+
+	httpCheck.URL = srv.URL
+
+	return httpCheck, srv.Close
+}
+
+func prepareRedirectFailCase() (*HTTPCheck, func()) {
+	httpCheck := New()
+	httpCheck.UpdateEvery = 1
+	httpCheck.NotFollowRedirect = true
+
+	srv := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "https://example.com", http.StatusMovedPermanently)
 		}))
 
 	httpCheck.URL = srv.URL
