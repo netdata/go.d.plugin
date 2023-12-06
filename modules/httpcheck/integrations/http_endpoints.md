@@ -70,7 +70,7 @@ Metrics:
 |:------|:----------|:----|
 | httpcheck.response_time | time | ms |
 | httpcheck.response_length | length | characters |
-| httpcheck.status | success, no_connection, timeout, bad_content, bad_status | boolean |
+| httpcheck.status | success, timeout, redirect, no_connection, bad_content, bad_status | boolean |
 | httpcheck.in_state | time | boolean |
 
 
