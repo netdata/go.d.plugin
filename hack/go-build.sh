@@ -44,7 +44,7 @@ build() {
 }
 
 create_config_archives() {
-  [ ! -d bin/ ] && mkdir bin
+  mkdir -p bin
   tar -zcvf "bin/config.tar.gz" -C config .
   tar -zcvf "bin/go.d.plugin-config-${VERSION}.tar.gz" -C config .
 }
