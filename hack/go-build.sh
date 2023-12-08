@@ -44,9 +44,16 @@ build() {
 }
 
 create_config_archives() {
-  [ ! -d bin/ ] && mkdir bin
+  mkdir -p bin
   tar -zcvf "bin/config.tar.gz" -C config .
   tar -zcvf "bin/go.d.plugin-config-${VERSION}.tar.gz" -C config .
+}
+
+create_vendor_archives() {
+  mkdir -p bin
+  go mod vendor
+  tar -zc --transform "s:^:go.d.plugin-${VERSION#v}/:" -f "bin/vendor.tar.gz" vendor
+  tar -zc --transform "s:^:go.d.plugin-${VERSION#v}/:" -f "bin/go.d.plugin-vendor-${VERSION}.tar.gz" vendor
 }
 
 build_all_platforms() {
@@ -82,6 +89,12 @@ build_current_platform() {
 if [[ "$WHICH" == "configs" ]]; then
   echo "Creating config archives for version: $VERSION"
   create_config_archives
+  exit 0
+fi
+
+if [[ "$WHICH" == "vendor" ]]; then
+  echo "Creating vendor archives for version: $VERSION"
+  create_vendor_archives
   exit 0
 fi
 

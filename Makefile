@@ -18,7 +18,7 @@ build: clean ## Build package
 
 .PHONY: clean
 clean:
-	rm -rf bin
+	rm -rf bin vendor
 
 .PHONY: check
 check: fmt vet ## Run static code analysis
@@ -40,6 +40,7 @@ vet:
 release: clean download ## Create all release artifacts
 	hack/go-build.sh all
 	hack/go-build.sh configs
+	hack/go-build.sh vendor
 	cd bin && sha256sum -b * >"sha256sums.txt"
 
 .PHONY: dev
