@@ -134,7 +134,7 @@ func parseCLI() *cli.Option {
 	opt, err := cli.Parse(os.Args)
 	if err != nil {
 		var flagsErr *flags.Error
-		if errors.As(err, &flagsErr) && flagsErr.Type == flags.ErrHelp {
+		if errors.As(err, &flagsErr) && errors.Is(flagsErr.Type, flags.ErrHelp) {
 			os.Exit(0)
 		} else {
 			os.Exit(1)
