@@ -27,6 +27,7 @@ const (
 	varOutputFrequencyNominal = "output.frequency.nominal"
 
 	varUpsLoad             = "ups.load"
+	varUpsRealPower        = "ups.realpower"
 	varUpsRealPowerNominal = "ups.realpower.nominal"
 	varUpsTemperature      = "ups.temperature"
 	varUpsStatus           = "ups.status"
