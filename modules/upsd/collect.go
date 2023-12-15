@@ -111,6 +111,12 @@ func writeVar(mx map[string]int64, ups upsUnit, v string) {
 }
 
 func writeUpsLoadUsage(mx map[string]int64, ups upsUnit) {
+	if hasVar(ups.vars, varUpsRealPower) {
+		pow, _ := strconv.ParseFloat(ups.vars[varUpsRealPower], 64)
+		mx[prefix(ups)+"ups.load.usage"] = int64(pow * varPrecision)
+		return
+	}
+
 	if !hasVar(ups.vars, varUpsLoad) || !hasVar(ups.vars, varUpsRealPowerNominal) {
 		return
 	}
