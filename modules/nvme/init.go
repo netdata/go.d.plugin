@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 func (n *NVMe) validateConfig() error {
@@ -19,6 +20,23 @@ func (n *NVMe) validateConfig() error {
 }
 
 func (n *NVMe) initNVMeCLIExec() (nvmeCLI, error) {
+	if exePath, err := os.Executable(); err == nil {
+		ndsudoPath := filepath.Join(filepath.Dir(exePath), "ndsudo")
+
+		if fi, err := os.Stat(ndsudoPath); err == nil {
+			// executable by owner or group
+			if fi.Mode().Perm()&0110 != 0 {
+				n.Debug("using ndsudo")
+				return &nvmeCLIExec{
+					ndsudoPath: ndsudoPath,
+					timeout:    n.Timeout.Duration,
+				}, nil
+			}
+		}
+	}
+
+	// TODO: remove after next minor release of Netdata (latest is v1.44.0)
+	// can't remove now because it will break "from source + stable channel" installations
 	nvmePath, err := exec.LookPath(n.BinaryPath)
 	if err != nil {
 		return nil, err
