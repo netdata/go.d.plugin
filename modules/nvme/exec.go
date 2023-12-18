@@ -54,13 +54,21 @@ func (n *nvmeNumber) UnmarshalJSON(b []byte) error {
 }
 
 type nvmeCLIExec struct {
-	sudoPath string
-	nvmePath string
-	timeout  time.Duration
+	sudoPath   string
+	nvmePath   string
+	ndsudoPath string
+	timeout    time.Duration
 }
 
 func (n *nvmeCLIExec) list() (*nvmeDeviceList, error) {
-	data, err := n.execute("list", "--output-format=json")
+	var data []byte
+	var err error
+
+	if n.ndsudoPath != "" {
+		data, err = n.executeNdSudo("nvme-list")
+	} else {
+		data, err = n.execute("list", "--output-format=json")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +82,14 @@ func (n *nvmeCLIExec) list() (*nvmeDeviceList, error) {
 }
 
 func (n *nvmeCLIExec) smartLog(devicePath string) (*nvmeDeviceSmartLog, error) {
-	data, err := n.execute("smart-log", devicePath, "--output-format=json")
+	var data []byte
+	var err error
+
+	if n.ndsudoPath != "" {
+		data, err = n.executeNdSudo("nvme-smart-log", "--device", devicePath)
+	} else {
+		data, err = n.execute("smart-log", devicePath, "--output-format=json")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -97,4 +112,11 @@ func (n *nvmeCLIExec) execute(arg ...string) ([]byte, error) {
 	}
 
 	return exec.CommandContext(ctx, n.nvmePath, arg...).Output()
+}
+
+func (n *nvmeCLIExec) executeNdSudo(arg ...string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), n.timeout)
+	defer cancel()
+
+	return exec.CommandContext(ctx, n.ndsudoPath, arg...).Output()
 }
