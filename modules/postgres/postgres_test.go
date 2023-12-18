@@ -179,7 +179,7 @@ func TestPostgres_Check(t *testing.T) {
 				mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 				mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
-				mockExpect(t, m, queryDatabaseSize(), dataV140004DatabaseSize)
+				mockExpect(t, m, queryDatabaseSize(140004), dataV140004DatabaseSize)
 				mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
 				mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 
@@ -282,7 +282,7 @@ func TestPostgres_Collect(t *testing.T) {
 					mockExpect(t, m, queryReplicationSlotFiles(140004), dataV140004ReplSlotFiles)
 
 					mockExpect(t, m, queryDatabaseStats(), dataV140004DatabaseStats)
-					mockExpect(t, m, queryDatabaseSize(), dataV140004DatabaseSize)
+					mockExpect(t, m, queryDatabaseSize(140004), dataV140004DatabaseSize)
 					mockExpect(t, m, queryDatabaseConflicts(), dataV140004DatabaseConflicts)
 					mockExpect(t, m, queryDatabaseLocks(), dataV140004DatabaseLocks)
 

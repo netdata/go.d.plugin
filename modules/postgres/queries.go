@@ -470,13 +470,23 @@ WHERE pg_database.datistemplate = false;
 `
 }
 
-func queryDatabaseSize() string {
-	return `
+func queryDatabaseSize(version int) string {
+	if version < pgVersion10 {
+		return `
 SELECT datname,
        pg_database_size(datname) AS size
 FROM pg_database
 WHERE pg_database.datistemplate = false
   AND has_database_privilege((SELECT CURRENT_USER), pg_database.datname, 'connect');
+`
+	}
+	return `
+SELECT datname,
+       pg_database_size(datname) AS size
+FROM pg_database
+WHERE pg_database.datistemplate = false
+  AND (has_database_privilege((SELECT CURRENT_USER), datname, 'connect')
+       OR pg_has_role((SELECT CURRENT_USER), 'pg_read_all_stats', 'MEMBER'));
 `
 }
 
