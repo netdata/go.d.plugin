@@ -68,7 +68,7 @@ func (p *Postgres) doQueryDatabaseStats() error {
 }
 
 func (p *Postgres) doQueryDatabaseSize() error {
-	q := queryDatabaseSize()
+	q := queryDatabaseSize(p.pgVersion)
 
 	var db string
 	return p.doQuery(q, func(column, value string, _ bool) {
