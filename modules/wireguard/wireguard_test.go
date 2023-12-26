@@ -199,6 +199,37 @@ func TestWireGuard_Collect(t *testing.T) {
 				},
 			},
 		},
+		"peers without last handshake time": {
+			{
+				prepareMock: func(m *mockClient) {
+					d1 := prepareDevice(1)
+					d1.Peers = append(d1.Peers, preparePeer("11"))
+					d1.Peers = append(d1.Peers, preparePeer("12"))
+					d1.Peers = append(d1.Peers, prepareNoLastHandshakePeer("13"))
+					d1.Peers = append(d1.Peers, prepareNoLastHandshakePeer("14"))
+					m.devices = append(m.devices, d1)
+				},
+				check: func(t *testing.T, w *WireGuard) {
+					mx := w.Collect()
+
+					expected := map[string]int64{
+						"device_wg1_peers":    4,
+						"device_wg1_receive":  0,
+						"device_wg1_transmit": 0,
+						"peer_wg1_cGVlcjExAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_latest_handshake_ago": 60,
+						"peer_wg1_cGVlcjExAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_receive":              0,
+						"peer_wg1_cGVlcjExAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_transmit":             0,
+						"peer_wg1_cGVlcjEyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_latest_handshake_ago": 60,
+						"peer_wg1_cGVlcjEyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_receive":              0,
+						"peer_wg1_cGVlcjEyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=_transmit":             0,
+					}
+
+					copyLatestHandshake(mx, expected)
+					assert.Equal(t, expected, mx)
+					assert.Equal(t, len(deviceChartsTmpl)+len(peerChartsTmpl)*2, len(*w.Charts()))
+				},
+			},
+		},
 		"device added at runtime": {
 			{
 				prepareMock: func(m *mockClient) {
@@ -429,6 +460,13 @@ func preparePeer(s string) wgtypes.Peer {
 		ReceiveBytes:      0,
 		TransmitBytes:     0,
 	}
+}
+
+func prepareNoLastHandshakePeer(s string) wgtypes.Peer {
+	p := preparePeer(s)
+	var lh time.Time
+	p.LastHandshakeTime = lh
+	return p
 }
 
 func copyLatestHandshake(dst, src map[string]int64) {

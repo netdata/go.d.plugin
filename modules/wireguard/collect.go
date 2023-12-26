@@ -61,6 +61,10 @@ func (w *WireGuard) collectDevicesPeers(mx map[string]int64, devices []*wgtypes.
 		}
 
 		for _, p := range d.Peers {
+			if p.LastHandshakeTime.IsZero() {
+				continue
+			}
+
 			pubKey := p.PublicKey.String()
 			id := peerID(d.Name, pubKey)
 
