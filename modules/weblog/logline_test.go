@@ -199,6 +199,8 @@ func TestLogLine_Assign(t *testing.T) {
 				{input: "HTTP/1.1", wantLine: logLine{web: web{reqProto: "1.1"}}},
 				{input: "HTTP/2", wantLine: logLine{web: web{reqProto: "2"}}},
 				{input: "HTTP/2.0", wantLine: logLine{web: web{reqProto: "2.0"}}},
+				{input: "HTTP/3", wantLine: logLine{web: web{reqProto: "3"}}},
+				{input: "HTTP/3.0", wantLine: logLine{web: web{reqProto: "3.0"}}},
 				{input: emptyStr, wantLine: emptyLogLine},
 				{input: hyphen, wantLine: emptyLogLine},
 				{input: "1.1", wantLine: emptyLogLine, wantErr: errBadReqProto},
