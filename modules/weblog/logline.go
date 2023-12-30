@@ -559,11 +559,8 @@ func isReqProtoValid(proto string) bool {
 }
 
 func isReqProtoVerValid(version string) bool {
-	if version == "1.1" {
-		return true
-	}
 	switch version {
-	case "1", "1.0", "2", "2.0":
+	case "1.1", "1", "1.0", "2", "2.0", "3", "3.0":
 		return true
 	}
 	return false
