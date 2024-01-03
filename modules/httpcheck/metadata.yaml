@@ -69,6 +69,22 @@ modules:
               description: If the status code is accepted, the content of the response will be matched against this regular expression.
               default_value: ""
               required: false
+            - name: headers_match
+              description: "This option defines a set of rules that check for specific key-value pairs in the HTTP headers of the response."
+              default_value: "[]"
+              required: false
+            - name: headers_match.exclude
+              description: "This option determines whether the rule should check for the presence of the specified key-value pair or the absence of it."
+              default_value: false
+              required: false
+            - name: headers_match.key
+              description: "The exact name of the HTTP header to check for."
+              default_value: ""
+              required: true
+            - name: headers_match.value
+              description: "The [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) to match against the value of the specified header."
+              default_value: ""
+              required: false
             - name: cookie_file
               description: Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat).
               default_value: ""
@@ -140,7 +156,7 @@ modules:
                 jobs:
                   - name: local
                     url: http://127.0.0.1:8080
-            - name: With status_accepted
+            - name: With `status_accepted`
               description: A basic example configuration with non-default status_accepted.
               config: |
                 jobs:
@@ -149,6 +165,34 @@ modules:
                     status_accepted:
                       - 200
                       - 204
+            - name: With `header_match`
+              description: Example configurations with `header_match`. See the value [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) syntax.
+              config: |
+                jobs:
+                    # The x-robots-tag key must present in the HTTP response header
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    header_match:
+                      - key: x-robots-tag
+                    # The x-robots-tag key with a specific value must present in the HTTP response header
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    header_match:
+                      - key: x-robots-tag
+                        value: '= noindex,nofollow'
+                    # The x-robots-tag key must not be present in the HTTP response header
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    header_match:
+                      - key: x-robots-tag
+                        exclude: yes
+                    # The x-robots-tag key with a specific value must not be present in the HTTP response header
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    header_match:
+                      - key: x-robots-tag
+                        exclude: yes
+                        value: '= noindex,nofollow'
             - name: HTTP authentication
               description: Basic HTTP authentication.
               config: |
@@ -216,6 +260,7 @@ modules:
                 - name: redirect
                 - name: no_connection
                 - name: bad_content
+                - name: bad_header
                 - name: bad_status
             - name: httpcheck.in_state
               description: HTTP Current State Duration

@@ -4,12 +4,20 @@ package httpcheck
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 
 	"github.com/netdata/go.d.plugin/agent/module"
+	"github.com/netdata/go.d.plugin/pkg/matcher"
 	"github.com/netdata/go.d.plugin/pkg/web"
 )
+
+type headerMatch struct {
+	exclude    bool
+	key        string
+	valMatcher matcher.Matcher
+}
 
 func (hc *HTTPCheck) validateConfig() error {
 	if hc.URL == "" {
@@ -27,6 +35,41 @@ func (hc *HTTPCheck) initResponseMatchRegexp() (*regexp.Regexp, error) {
 		return nil, nil
 	}
 	return regexp.Compile(hc.ResponseMatch)
+}
+
+func (hc *HTTPCheck) initHeaderMatch() ([]headerMatch, error) {
+	if len(hc.HeaderMatch) == 0 {
+		return nil, nil
+	}
+
+	var hms []headerMatch
+
+	for _, v := range hc.HeaderMatch {
+		if v.Key == "" {
+			continue
+		}
+
+		hm := headerMatch{
+			exclude:    v.Exclude,
+			key:        v.Key,
+			valMatcher: nil,
+		}
+
+		if v.Value != "" {
+			m, err := matcher.Parse(v.Value)
+			if err != nil {
+				return nil, fmt.Errorf("parse key '%s value '%s': %v", v.Key, v.Value, err)
+			}
+			if v.Exclude {
+				m = matcher.Not(m)
+			}
+			hm.valMatcher = m
+		}
+
+		hms = append(hms, hm)
+	}
+
+	return hms, nil
 }
 
 func (hc *HTTPCheck) initCharts() *module.Charts {

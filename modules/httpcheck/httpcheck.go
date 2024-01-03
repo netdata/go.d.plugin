@@ -40,13 +40,21 @@ func New() *HTTPCheck {
 	}
 }
 
-type Config struct {
-	web.HTTP         `yaml:",inline"`
-	UpdateEvery      int    `yaml:"update_every"`
-	AcceptedStatuses []int  `yaml:"status_accepted"`
-	ResponseMatch    string `yaml:"response_match"`
-	CookieFile       string `yaml:"cookie_file"`
-}
+type (
+	Config struct {
+		web.HTTP         `yaml:",inline"`
+		UpdateEvery      int                 `yaml:"update_every"`
+		AcceptedStatuses []int               `yaml:"status_accepted"`
+		ResponseMatch    string              `yaml:"response_match"`
+		CookieFile       string              `yaml:"cookie_file"`
+		HeaderMatch      []HeaderMatchConfig `yaml:"header_match"`
+	}
+	HeaderMatchConfig struct {
+		Exclude bool   `yaml:"exclude"`
+		Key     string `yaml:"key"`
+		Value   string `yaml:"value"`
+	}
+)
 
 type HTTPCheck struct {
 	module.Base
@@ -58,6 +66,7 @@ type HTTPCheck struct {
 
 	acceptedStatuses map[int]bool
 	reResponse       *regexp.Regexp
+	headerMatch      []headerMatch
 
 	cookieFileModTime time.Time
 
@@ -85,6 +94,13 @@ func (hc *HTTPCheck) Init() bool {
 		return false
 	}
 	hc.reResponse = re
+
+	hm, err := hc.initHeaderMatch()
+	if err != nil {
+		hc.Errorf("init header match: %v", err)
+		return false
+	}
+	hc.headerMatch = hm
 
 	for _, v := range hc.AcceptedStatuses {
 		hc.acceptedStatuses[v] = true

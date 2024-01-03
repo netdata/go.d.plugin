@@ -102,7 +102,35 @@ func (hc *HTTPCheck) collectOKResponse(mx *metrics, resp *http.Response) {
 		return
 	}
 
+	if ok := hc.checkHeader(resp); !ok {
+		mx.Status.BadHeader = true
+		return
+	}
+
 	mx.Status.Success = true
+}
+
+func (hc *HTTPCheck) checkHeader(resp *http.Response) bool {
+	for _, m := range hc.headerMatch {
+		value := resp.Header.Get(m.key)
+
+		var ok bool
+		switch {
+		case value == "":
+			ok = m.exclude
+		case m.valMatcher == nil:
+			ok = !m.exclude
+		default:
+			ok = m.valMatcher.MatchString(value)
+		}
+
+		if !ok {
+			hc.Debugf("header match: bad header: exlude '%v' key '%s' value '%s'", m.exclude, m.key, value)
+			return false
+		}
+	}
+
+	return true
 }
 
 func decodeReqError(err error) reqErrCode {

@@ -15,5 +15,6 @@ type status struct {
 	Redirect      bool `stm:"redirect"`
 	BadContent    bool `stm:"bad_content"`
 	BadStatusCode bool `stm:"bad_status"`
+	BadHeader     bool `stm:"bad_header"`
 	NoConnection  bool `stm:"no_connection"` // All other errors basically
 }
