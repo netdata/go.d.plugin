@@ -1,4 +1,6 @@
-package confgroup
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+package hostinfo
 
 import (
 	"bytes"
@@ -7,7 +9,9 @@ import (
 	"time"
 )
 
-var hostname = func() string {
+var Hostname = getHostname()
+
+func getHostname() string {
 	path, err := exec.LookPath("hostname")
 	if err != nil {
 		return ""
@@ -22,4 +26,4 @@ var hostname = func() string {
 	}
 
 	return string(bytes.TrimSpace(bs))
-}()
+}

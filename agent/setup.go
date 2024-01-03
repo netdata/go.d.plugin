@@ -11,6 +11,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/discovery"
 	"github.com/netdata/go.d.plugin/agent/discovery/dummy"
 	"github.com/netdata/go.d.plugin/agent/discovery/file"
+	"github.com/netdata/go.d.plugin/agent/hostinfo"
 	"github.com/netdata/go.d.plugin/agent/module"
 	"github.com/netdata/go.d.plugin/agent/vnodes"
 
@@ -54,17 +55,22 @@ func (a *Agent) loadEnabledModules(cfg config) module.Registry {
 		if !all && a.RunModule != name {
 			continue
 		}
-		if all && creator.Disabled && !cfg.isExplicitlyEnabled(name) {
-			a.Infof("'%s' module disabled by default, should be explicitly enabled in the config", name)
-			continue
-		}
-		if all && !cfg.isImplicitlyEnabled(name) {
-			a.Infof("'%s' module disabled in the config file", name)
-			continue
+		if all {
+			// Known issue: go.d/logind high CPU usage on Alma Linux8 (https://github.com/netdata/netdata/issues/15930)
+			if !cfg.isExplicitlyEnabled(name) && (creator.Disabled || name == "logind" && hostinfo.SystemdVersion == 239) {
+				a.Infof("'%s' module disabled by default, should be explicitly enabled in the config", name)
+				continue
+			}
+			if !cfg.isImplicitlyEnabled(name) {
+				a.Infof("'%s' module disabled in the config file", name)
+				continue
+			}
 		}
 		enabled[name] = creator
 	}
+
 	a.Infof("enabled/registered modules: %d/%d", len(enabled), len(a.ModuleRegistry))
+
 	return enabled
 }
 
