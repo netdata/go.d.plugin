@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/netdata/go.d.plugin/agent/hostinfo"
 	"github.com/netdata/go.d.plugin/agent/module"
 
 	"github.com/ilyam8/hashstructure"
@@ -99,7 +100,7 @@ func firstPositive(value int, others ...int) int {
 }
 
 func urlResolveHostname(rawURL string) string {
-	if hostname == "" || !strings.Contains(rawURL, "hostname") {
+	if hostinfo.Hostname == "" || !strings.Contains(rawURL, "hostname") {
 		return rawURL
 	}
 
@@ -108,13 +109,13 @@ func urlResolveHostname(rawURL string) string {
 		return rawURL
 	}
 
-	u.Host = strings.Replace(u.Host, "hostname", hostname, 1)
+	u.Host = strings.Replace(u.Host, "hostname", hostinfo.Hostname, 1)
 
 	return u.String()
 }
 
 func jobNameResolveHostname(name string) string {
-	if hostname == "" || !strings.Contains(name, "hostname") {
+	if hostinfo.Hostname == "" || !strings.Contains(name, "hostname") {
 		return name
 	}
 
@@ -122,5 +123,5 @@ func jobNameResolveHostname(name string) string {
 		return name
 	}
 
-	return strings.Replace(name, "hostname", hostname, 1)
+	return strings.Replace(name, "hostname", hostinfo.Hostname, 1)
 }
