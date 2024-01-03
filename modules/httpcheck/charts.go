@@ -58,6 +58,7 @@ var responseStatusChart = module.Chart{
 		{ID: "redirect"},
 		{ID: "bad_content"},
 		{ID: "bad_status"},
+		{ID: "bad_header"},
 	},
 }
 

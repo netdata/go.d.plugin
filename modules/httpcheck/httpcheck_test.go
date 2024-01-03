@@ -144,12 +144,14 @@ func TestHTTPCheck_Check(t *testing.T) {
 func TestHTTPCheck_Collect(t *testing.T) {
 	tests := map[string]struct {
 		prepare     func() (httpCheck *HTTPCheck, cleanup func())
+		update      func(check *HTTPCheck)
 		wantMetrics map[string]int64
 	}{
 		"success case": {
 			prepare: prepareSuccessCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        5,
@@ -164,6 +166,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareTimeoutCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        0,
@@ -178,6 +181,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareRedirectSuccessCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        0,
@@ -192,6 +196,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareRedirectFailCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        0,
@@ -206,6 +211,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareBadStatusCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    1,
 				"in_state":      2,
 				"length":        0,
@@ -220,6 +226,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareBadContentCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   1,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        17,
@@ -234,6 +241,7 @@ func TestHTTPCheck_Collect(t *testing.T) {
 			prepare: prepareNoConnectionCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        0,
@@ -244,10 +252,171 @@ func TestHTTPCheck_Collect(t *testing.T) {
 				"timeout":       0,
 			},
 		},
+		"header match include no value success case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Key: "header-key2"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match include with value success case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Key: "header-key2", Value: "= header-value"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match include no value bad headers case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Key: "header-key99"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    1,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match include with value bad headers case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Key: "header-key2", Value: "= header-value99"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    1,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match exclude no value success case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Exclude: true, Key: "header-key99"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match exclude with value success case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Exclude: true, Key: "header-key2", Value: "= header-value99"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    0,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       1,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match exclude no value bad headers case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Exclude: true, Key: "header-key2"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    1,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
+		"header match exclude with value bad headers case": {
+			prepare: prepareSuccessCase,
+			update: func(httpCheck *HTTPCheck) {
+				httpCheck.HeaderMatch = []HeaderMatchConfig{
+					{Exclude: true, Key: "header-key2", Value: "= header-value"},
+				}
+			},
+			wantMetrics: map[string]int64{
+				"bad_content":   0,
+				"bad_header":    1,
+				"bad_status":    0,
+				"in_state":      2,
+				"length":        5,
+				"no_connection": 0,
+				"redirect":      0,
+				"success":       0,
+				"time":          0,
+				"timeout":       0,
+			},
+		},
 		"cookie auth case": {
 			prepare: prepareCookieAuthCase,
 			wantMetrics: map[string]int64{
 				"bad_content":   0,
+				"bad_header":    0,
 				"bad_status":    0,
 				"in_state":      2,
 				"length":        0,
@@ -264,6 +433,10 @@ func TestHTTPCheck_Collect(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			httpCheck, cleanup := test.prepare()
 			defer cleanup()
+
+			if test.update != nil {
+				test.update(httpCheck)
+			}
 
 			require.True(t, httpCheck.Init())
 
@@ -288,6 +461,8 @@ func prepareSuccessCase() (*HTTPCheck, func()) {
 
 	srv := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("header-key1", "header-value")
+			w.Header().Set("header-key2", "header-value")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("match"))
 		}))
