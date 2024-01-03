@@ -169,28 +169,39 @@ modules:
               description: Example configurations with `header_match`. See the value [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) syntax.
               config: |
                 jobs:
-                    # The x-robots-tag key must present in the HTTP response header
+                    # The "X-Robots-Tag" header must be present in the HTTP response header,
+                    # but the value of the header does not matter.
+                    # This config checks for the presence of the header regardless of its value.
                   - name: local
                     url: http://127.0.0.1:8080
                     header_match:
-                      - key: x-robots-tag
-                    # The x-robots-tag key with a specific value must present in the HTTP response header
+                      - key: X-Robots-Tag
+
+                    # The "X-Robots-Tag" header must be present in the HTTP response header
+                    # only if its value is equal to "noindex, nofollow".
+                    # This config checks both the presence of the header and its value.
                   - name: local
                     url: http://127.0.0.1:8080
                     header_match:
-                      - key: x-robots-tag
+                      - key: X-Robots-Tag
                         value: '= noindex,nofollow'
-                    # The x-robots-tag key must not be present in the HTTP response header
+
+                    # The "X-Robots-Tag" header must not be present in the HTTP response header
+                    # but the value of the header does not matter.
+                    # This config checks for the presence of the header regardless of its value.
                   - name: local
                     url: http://127.0.0.1:8080
                     header_match:
-                      - key: x-robots-tag
+                      - key: X-Robots-Tag
                         exclude: yes
-                    # The x-robots-tag key with a specific value must not be present in the HTTP response header
+
+                    # The "X-Robots-Tag" header must not be present in the HTTP response header
+                    # only if its value is equal to "noindex, nofollow".
+                    # This config checks both the presence of the header and its value.
                   - name: local
                     url: http://127.0.0.1:8080
                     header_match:
-                      - key: x-robots-tag
+                      - key: X-Robots-Tag
                         exclude: yes
                         value: '= noindex,nofollow'
             - name: HTTP authentication
