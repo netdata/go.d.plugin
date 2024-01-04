@@ -126,13 +126,13 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    uri: mongodb://netconfig:password@localhost:27017
+                    uri: mongodb://netdata:password@localhost:27017
             - name: With databases metrics
               description: An example configuration.
               config: |
                 jobs:
                   - name: local
-                    uri: mongodb://netconfig:password@localhost:27017
+                    uri: mongodb://netdata:password@localhost:27017
                     databases:
                       includes:
                         - "* *"
@@ -144,10 +144,10 @@ modules:
               config: |
                 jobs:
                   - name: local
-                    uri: mongodb://netconfig:password@localhost:27017
+                    uri: mongodb://netdata:password@localhost:27017
                 
                   - name: remote
-                    uri: mongodb://netconfig:password@203.0.113.0:27017
+                    uri: mongodb://netdata:password@203.0.113.0:27017
     troubleshooting:
       problems:
         list: []
