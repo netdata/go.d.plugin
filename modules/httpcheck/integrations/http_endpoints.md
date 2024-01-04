@@ -70,7 +70,7 @@ Metrics:
 |:------|:----------|:----|
 | httpcheck.response_time | time | ms |
 | httpcheck.response_length | length | characters |
-| httpcheck.status | success, timeout, redirect, no_connection, bad_content, bad_status | boolean |
+| httpcheck.status | success, timeout, redirect, no_connection, bad_content, bad_header, bad_status | boolean |
 | httpcheck.in_state | time | boolean |
 
 
@@ -114,6 +114,10 @@ The following options can be defined globally: update_every, autodetection_retry
 | url | Server URL. |  | yes |
 | status_accepted | HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart. | [200] | no |
 | response_match | If the status code is accepted, the content of the response will be matched against this regular expression. |  | no |
+| headers_match | This option defines a set of rules that check for specific key-value pairs in the HTTP headers of the response. | [] | no |
+| headers_match.exclude | This option determines whether the rule should check for the presence of the specified key-value pair or the absence of it. | no | no |
+| headers_match.key | The exact name of the HTTP header to check for. |  | yes |
+| headers_match.value | The [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) to match against the value of the specified header. |  | no |
 | cookie_file | Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat). |  | no |
 | timeout | HTTP request timeout. | 1 | no |
 | username | Username for basic HTTP authentication. |  | no |
@@ -148,7 +152,7 @@ jobs:
 ```
 </details>
 
-##### With status_accepted
+##### With `status_accepted`
 
 A basic example configuration with non-default status_accepted.
 
@@ -161,6 +165,53 @@ jobs:
     status_accepted:
       - 200
       - 204
+
+```
+</details>
+
+##### With `header_match`
+
+Example configurations with `header_match`. See the value [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) syntax.
+
+<details><summary>Config</summary>
+
+```yaml
+jobs:
+    # The "X-Robots-Tag" header must be present in the HTTP response header,
+    # but the value of the header does not matter.
+    # This config checks for the presence of the header regardless of its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+
+    # The "X-Robots-Tag" header must be present in the HTTP response header
+    # only if its value is equal to "noindex, nofollow".
+    # This config checks both the presence of the header and its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        value: '= noindex,nofollow'
+
+    # The "X-Robots-Tag" header must not be present in the HTTP response header
+    # but the value of the header does not matter.
+    # This config checks for the presence of the header regardless of its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        exclude: yes
+
+    # The "X-Robots-Tag" header must not be present in the HTTP response header
+    # only if its value is equal to "noindex, nofollow".
+    # This config checks both the presence of the header and its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        exclude: yes
+        value: '= noindex,nofollow'
 
 ```
 </details>

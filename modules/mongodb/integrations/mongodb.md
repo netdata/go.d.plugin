@@ -283,7 +283,7 @@ An example configuration.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
 
 ```
 </details>
@@ -297,7 +297,7 @@ An example configuration.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
     databases:
       includes:
         - "* *"
@@ -317,10 +317,10 @@ Local and remote instances.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
 
   - name: remote
-    uri: mongodb://netconfig:password@203.0.113.0:27017
+    uri: mongodb://netdata:password@203.0.113.0:27017
 
 ```
 </details>

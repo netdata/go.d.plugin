@@ -183,6 +183,21 @@ jobs:
     url: http://127.0.0.1:9090/metrics
 
 ```
+##### Read metrics from a file
+
+An example configuration to read metrics from a file.
+
+<details><summary>Config</summary>
+
+```yaml
+# use "file://" scheme
+jobs:
+  - name: myapp
+    url: file:///opt/metrics/myapp/metrics.txt
+
+```
+</details>
+
 ##### HTTP authentication
 
 > **Note**: Change the port of the monitored application on which it provides metrics.
