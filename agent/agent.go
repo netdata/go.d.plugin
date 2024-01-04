@@ -14,7 +14,6 @@ import (
 
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/agent/discovery"
-	"github.com/netdata/go.d.plugin/agent/discovery/dyncfg"
 	"github.com/netdata/go.d.plugin/agent/filelock"
 	"github.com/netdata/go.d.plugin/agent/filestatus"
 	"github.com/netdata/go.d.plugin/agent/functions"
@@ -186,20 +185,20 @@ func (a *Agent) run(ctx context.Context) {
 	jobsManager.Out = a.Out
 	jobsManager.Modules = enabledModules
 
-	// TODO: rm 'if' after https://github.com/netdata/netdata/issues/16079
-	if logger.Level.Enabled(slog.LevelDebug) {
-		dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
-			Plugin:               a.Name,
-			API:                  netdataapi.New(a.Out),
-			Modules:              enabledModules,
-			ModuleConfigDefaults: discCfg.Registry,
-			Functions:            functionsManager,
-		})
-
-		discoveryManager.Add(dyncfgDiscovery)
-
-		jobsManager.Dyncfg = dyncfgDiscovery
-	}
+	// TODO: API will be changed in https://github.com/netdata/netdata/pull/16702
+	//if logger.Level.Enabled(slog.LevelDebug) {
+	//	dyncfgDiscovery, _ := dyncfg.NewDiscovery(dyncfg.Config{
+	//		Plugin:               a.Name,
+	//		API:                  netdataapi.New(a.Out),
+	//		Modules:              enabledModules,
+	//		ModuleConfigDefaults: discCfg.Registry,
+	//		Functions:            functionsManager,
+	//	})
+	//
+	//	discoveryManager.Add(dyncfgDiscovery)
+	//
+	//	jobsManager.Dyncfg = dyncfgDiscovery
+	//}
 
 	if reg := a.setupVnodeRegistry(); reg == nil || reg.Len() == 0 {
 		vnodes.Disabled = true
