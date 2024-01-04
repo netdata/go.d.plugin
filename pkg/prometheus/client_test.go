@@ -111,6 +111,17 @@ func TestPrometheusGzip(t *testing.T) {
 	}
 }
 
+func TestPrometheusReadFromFile(t *testing.T) {
+	req := web.Request{URL: "file://testdata/testdata.txt"}
+	prom := NewWithSelector(http.DefaultClient, req, nil)
+
+	for i := 0; i < 2; i++ {
+		res, err := prom.ScrapeSeries()
+		assert.NoError(t, err)
+		verifyTestData(t, res)
+	}
+}
+
 func verifyTestData(t *testing.T, ms Series) {
 	assert.Equal(t, 410, len(ms))
 	assert.Equal(t, "go_gc_duration_seconds", ms[0].Labels.Get("__name__"))
