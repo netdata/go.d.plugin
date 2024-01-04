@@ -3,9 +3,9 @@
 package weblog
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/netdata/go.d.plugin/pkg/logs"
 	"github.com/netdata/go.d.plugin/pkg/matcher"
@@ -138,37 +138,60 @@ func (w *WebLog) createLogLine() {
 func (w *WebLog) createLogReader() error {
 	w.Cleanup()
 	w.Debug("starting log reader creating")
+
 	reader, err := logs.Open(w.Path, w.ExcludePath, w.Logger)
 	if err != nil {
 		return fmt.Errorf("creating log reader: %v", err)
 	}
+
 	w.Debugf("created log reader, current file '%s'", reader.CurrentFilename())
 	w.file = reader
+
 	return nil
 }
 
 func (w *WebLog) createParser() error {
 	w.Debug("starting parser creating")
-	lastLine, err := logs.ReadLastLine(w.file.CurrentFilename(), 0)
-	if err != nil {
-		return fmt.Errorf("read last line: %v", err)
-	}
-	lastLine = bytes.TrimRight(lastLine, "\n")
-	w.Debugf("last line: '%s'", string(lastLine))
 
-	w.parser, err = w.newParser(lastLine)
-	if err != nil {
-		return fmt.Errorf("create parser: %v", err)
-	}
-	w.Debugf("created parser: %s", w.parser.Info())
+	const readLinesNum = 100
 
-	err = w.parser.Parse(lastLine, w.line)
+	lines, err := logs.ReadLastLines(w.file.CurrentFilename(), readLinesNum)
 	if err != nil {
-		return fmt.Errorf("parse last line: %v (%s)", err, string(lastLine))
+		return fmt.Errorf("failed to read last lines: %v", err)
 	}
 
-	if err = w.line.verify(); err != nil {
-		return fmt.Errorf("verify last line: %v (%s)", err, string(lastLine))
+	var found bool
+	for _, line := range lines {
+		if line = strings.TrimSpace(line); line == "" {
+			continue
+		}
+		w.Debugf("last line: '%s'", line)
+
+		w.parser, err = w.newParser([]byte(line))
+		if err != nil {
+			w.Debugf("failed to create parser from line: %v", err)
+			continue
+		}
+
+		w.line.reset()
+
+		if err = w.parser.Parse([]byte(line), w.line); err != nil {
+			w.Debugf("failed to parse line: %v", err)
+			continue
+		}
+
+		if err = w.line.verify(); err != nil {
+			w.Debugf("failed to verify line: %v", err)
+			continue
+		}
+
+		found = true
+		break
 	}
+
+	if !found {
+		return fmt.Errorf("failed to create log parser (file '%s')", w.file.CurrentFilename())
+	}
+
 	return nil
 }
