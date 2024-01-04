@@ -9,6 +9,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 
 	"github.com/netdata/go.d.plugin/pkg/prometheus/selector"
 	"github.com/netdata/go.d.plugin/pkg/web"
@@ -24,8 +27,9 @@ type (
 	}
 
 	prometheus struct {
-		client  *http.Client
-		request web.Request
+		client   *http.Client
+		request  web.Request
+		filepath string
 
 		sr selector.Selector
 
@@ -53,13 +57,19 @@ func New(client *http.Client, request web.Request) Prometheus {
 
 // NewWithSelector creates a Prometheus instance with the selector.
 func NewWithSelector(client *http.Client, request web.Request, sr selector.Selector) Prometheus {
-	return &prometheus{
+	p := &prometheus{
 		client:  client,
 		request: request,
 		sr:      sr,
 		buf:     bytes.NewBuffer(make([]byte, 0, 16000)),
 		parser:  promTextParser{sr: sr},
 	}
+
+	if v, err := url.Parse(request.URL); err == nil && v.Scheme == "file" {
+		p.filepath = filepath.Join(v.Host, v.Path)
+	}
+
+	return p
 }
 
 func (p *prometheus) HTTPClient() *http.Client {
@@ -88,6 +98,19 @@ func (p *prometheus) Scrape() (MetricFamilies, error) {
 }
 
 func (p *prometheus) fetch(w io.Writer) error {
+	// TODO: should be a separate text file prom client
+	if p.filepath != "" {
+		f, err := os.Open(p.filepath)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		_, err = io.Copy(w, f)
+
+		return err
+	}
+
 	req, err := web.NewHTTPRequest(p.request)
 	if err != nil {
 		return err
