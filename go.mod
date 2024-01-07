@@ -5,7 +5,7 @@ go 1.21
 replace github.com/prometheus/prometheus => github.com/prometheus/prometheus v0.36.2
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.1
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/Wing924/ltsv v0.3.1
 	github.com/apparentlymart/go-cidr v1.1.0
