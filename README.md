@@ -40,10 +40,11 @@ the [official installation method](https://github.com/netdata/netdata/blob/maste
 No further action required. If you have used a different installation method and need to set the capabilities manually,
 see the appropriate collector readme.
 
-| Capability    |                                               Required by                                                |
-|:--------------|:--------------------------------------------------------------------------------------------------------:|
-| CAP_NET_RAW   |      [Ping](https://github.com/netdata/go.d.plugin/blob/master/modules/ping/README.md#requirements)      |
-| CAP_NET_ADMIN | [Wireguard](https://github.com/netdata/go.d.plugin/blob/master/modules/wireguard/README.md#requirements) |
+| Capability          |                                       Required by                                        |
+|:--------------------|:----------------------------------------------------------------------------------------:|
+| CAP_NET_RAW         |      [Ping](https://github.com/netdata/go.d.plugin/tree/master/modules/ping#readme)      |
+| CAP_NET_ADMIN       | [Wireguard](https://github.com/netdata/go.d.plugin/tree/master/modules/wireguard#readme) |
+| CAP_DAC_READ_SEARCH | [Filecheck](https://github.com/netdata/go.d.plugin/tree/master/modules/filecheck#readme) |
 
 ## Available modules
 

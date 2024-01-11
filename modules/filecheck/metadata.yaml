@@ -30,20 +30,7 @@ modules:
       multi_instance: true
       additional_permissions:
         description: |
-          `netdata` user needs the following permissions on all the directories in pathname that lead to the file/dir:
-
-          - files monitoring: `execute`.
-          - directories monitoring: `read` and `execute`.
-          
-          If you need to modify the permissions we
-          suggest [to use file access control lists](https://linux.die.net/man/1/setfacl):
-          
-          ```cmd
-          setfacl -m u:netconfig:rx file ...
-          ``` 
-
-          > **Warning**: For security reasons, this should not be applied recursively, but only to the exact set of directories
-          > that lead to the file/dir you want to monitor.
+          This collector requires the DAC_READ_SEARCH capability, but it is set automatically during installation, so no manual configuration is needed.
       default_behavior:
         auto_detection:
           description: ""
