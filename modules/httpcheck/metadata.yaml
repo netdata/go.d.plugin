@@ -156,6 +156,16 @@ modules:
                 jobs:
                   - name: local
                     url: http://127.0.0.1:8080
+            - name: With HTTP request headers
+              description: Configuration with HTTP request headers that will be sent by the client.
+              config: |
+                jobs:
+                  - name: local
+                    url: http://127.0.0.1:8080
+                    headers:
+                      Host: localhost:8080
+                      User-Agent: netdata/go.d.plugin
+                      Accept: */*
             - name: With `status_accepted`
               description: A basic example configuration with non-default status_accepted.
               config: |
