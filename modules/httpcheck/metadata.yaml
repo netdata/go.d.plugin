@@ -121,8 +121,8 @@ modules:
               description: HTTP request body.
               default_value: ""
               required: false
-            - name: headers
-              description: HTTP request headers.
+            - name: header
+              description: List of HTTP request headers.
               default_value: ""
               required: false
             - name: not_follow_redirects
