@@ -8,11 +8,16 @@ import (
 	"os"
 	"testing"
 
+	"github.com/netdata/go.d.plugin/agent/module"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 var (
+	dataConfigJSON, _ = os.ReadFile("testdata/config.json")
+	dataConfigYAML, _ = os.ReadFile("testdata/config.yaml")
+
 	dataXMLRTX2080Win, _       = os.ReadFile("testdata/rtx-2080-win.xml")
 	dataXMLRTX4090Driver535, _ = os.ReadFile("testdata/rtx-4090-driver-535.xml")
 	dataXMLRTX3060, _          = os.ReadFile("testdata/rtx-3060.xml")
@@ -26,18 +31,22 @@ var (
 
 func Test_testDataIsValid(t *testing.T) {
 	for name, data := range map[string][]byte{
+		"dataConfigJSON":          dataConfigJSON,
+		"dataConfigYAML":          dataConfigYAML,
 		"dataXMLRTX2080Win":       dataXMLRTX2080Win,
 		"dataXMLRTX4090Driver535": dataXMLRTX4090Driver535,
 		"dataXMLRTX3060":          dataXMLRTX3060,
 		"dataXMLTeslaP100":        dataXMLTeslaP100,
-
-		"dataXMLA100SXM4MIG": dataXMLA100SXM4MIG,
-
-		"dataHelpQueryGPU": dataHelpQueryGPU,
-		"dataCSVTeslaP100": dataCSVTeslaP100,
+		"dataXMLA100SXM4MIG":      dataXMLA100SXM4MIG,
+		"dataHelpQueryGPU":        dataHelpQueryGPU,
+		"dataCSVTeslaP100":        dataCSVTeslaP100,
 	} {
-		require.NotNilf(t, data, name)
+		require.NotNil(t, data, name)
 	}
+}
+
+func TestNvidiaSMI_ConfigurationSerialize(t *testing.T) {
+	module.TestConfigurationSerialize(t, &NvidiaSMI{}, dataConfigJSON, dataConfigYAML)
 }
 
 func TestNvidiaSMI_Init(t *testing.T) {
@@ -60,9 +69,9 @@ func TestNvidiaSMI_Init(t *testing.T) {
 			test.prepare(nv)
 
 			if test.wantFail {
-				assert.False(t, nv.Init())
+				assert.Error(t, nv.Init())
 			} else {
-				assert.True(t, nv.Init())
+				assert.NoError(t, nv.Init())
 			}
 		})
 	}
@@ -118,9 +127,9 @@ func TestNvidiaSMI_Check(t *testing.T) {
 			test.prepare(nv)
 
 			if test.wantFail {
-				assert.False(t, nv.Check())
+				assert.Error(t, nv.Check())
 			} else {
-				assert.True(t, nv.Check())
+				assert.NoError(t, nv.Check())
 			}
 		})
 	}

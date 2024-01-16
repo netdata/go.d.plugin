@@ -1,23 +1,86 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/mongodb job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MongoDB collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update frequency",
+        "description": "The data collection frequency in seconds.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "uri": {
+        "title": "URI",
+        "description": "MongoDB connection string.",
+        "type": "string",
+        "default": "mongodb://localhost:27017"
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Query timeout in seconds.",
+        "type": "number",
+        "minimum": 0.5,
+        "default": 1
+      },
+      "databases": {
+        "title": "Database selector",
+        "description": "Configuration for monitoring specific databases. The logic for inclusion and exclusion is as follows: (include1 OR include2) AND !(exclude1 or exclude2). Patterns follow the syntax of matcher patterns.",
+        "type": "object",
+        "properties": {
+          "includes": {
+            "title": "Include",
+            "description": "Include databases that match any of the specified include patterns.",
+            "type": "array",
+            "items": {
+              "title": "Pattern",
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "excludes": {
+            "title": "Exclude",
+            "description": "Exclude databases that match any of the specified exclude patterns.",
+            "type": "array",
+            "items": {
+              "title": "Pattern",
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
     },
-    "uri": {
-      "type": "string"
+    "required": [
+      "uri"
+    ]
+  },
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
     },
     "timeout": {
-      "type": "number"
+      "ui:help": "Accepts decimals for precise control (e.g., type 1.5 for 1.5 seconds)."
     },
-    "databases": {
-      "type": "string"
+    "ui:flavour": "tabs",
+    "ui:options": {
+      "tabs": [
+        {
+          "title": "Base",
+          "fields": [
+            "update_every",
+            "uri",
+            "timeout"
+          ]
+        },
+        {
+          "title": "Database stats",
+          "fields": [
+            "databases"
+          ]
+        }
+      ]
     }
-  },
-  "required": [
-    "name",
-    "uri"
-  ]
+  }
 }

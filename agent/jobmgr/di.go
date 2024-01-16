@@ -4,6 +4,7 @@ package jobmgr
 
 import (
 	"github.com/netdata/go.d.plugin/agent/confgroup"
+	"github.com/netdata/go.d.plugin/agent/functions"
 	"github.com/netdata/go.d.plugin/agent/vnodes"
 )
 
@@ -12,21 +13,27 @@ type FileLocker interface {
 	Unlock(name string) error
 }
 
-type Vnodes interface {
-	Lookup(key string) (*vnodes.VirtualNode, bool)
-}
-
-type StatusSaver interface {
+type FileStatus interface {
 	Save(cfg confgroup.Config, state string)
 	Remove(cfg confgroup.Config)
 }
 
-type StatusStore interface {
+type FileStatusStore interface {
 	Contains(cfg confgroup.Config, states ...string) bool
 }
 
-type Dyncfg interface {
-	Register(cfg confgroup.Config)
-	Unregister(cfg confgroup.Config)
-	UpdateStatus(cfg confgroup.Config, status, payload string)
+type Vnodes interface {
+	Lookup(key string) (*vnodes.VirtualNode, bool)
+}
+
+type FunctionRegistry interface {
+	Register(name string, reg func(functions.Function))
+	Unregister(name string)
+}
+
+type DyncfgAPI interface {
+	CONFIGCREATE(id, status, configType, path, sourceType, source, supportedCommands string)
+	CONFIGDELETE(id string)
+	CONFIGSTATUS(id, status string)
+	FUNCRESULT(uid, contentType, payload, code, expireTimestamp string)
 }

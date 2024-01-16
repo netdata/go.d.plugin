@@ -1,26 +1,48 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/dnsmasq job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Dnsmasq collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update every",
+        "description": "The data collection frequency in seconds.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "address": {
+        "title": "Address",
+        "description": "Dnsmasq address. The format is IP:PORT.",
+        "type": "string",
+        "default": "127.0.0.1:53"
+      },
+      "protocol": {
+        "title": "Protocol",
+        "description": "DNS query transport protocol. Supported protocols: udp, tcp, tcp-tls.",
+        "type": "string",
+        "enum": [
+          "udp",
+          "tcp",
+          "tcp-tls"
+        ],
+        "default": "udp"
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Connection timeout in seconds.",
+        "type": "number",
+        "default": 1
+      }
     },
-    "protocol": {
-      "type": "string"
-    },
-    "address": {
-      "type": "string"
-    },
-    "timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
-    }
+    "required": [
+      "address",
+      "protocol"
+    ]
   },
-  "required": [
-    "name",
-    "address"
-  ]
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
+    }
+  }
 }

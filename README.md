@@ -68,7 +68,6 @@ see the appropriate collector readme.
 | [docker_engine](https://github.com/netdata/go.d.plugin/tree/master/modules/docker_engine)           |         Docker Engine         |
 | [dockerhub](https://github.com/netdata/go.d.plugin/tree/master/modules/dockerhub)                   |          Docker Hub           |
 | [elasticsearch](https://github.com/netdata/go.d.plugin/tree/master/modules/elasticsearch)           |   Elasticsearch/OpenSearch    |
-| [energid](https://github.com/netdata/go.d.plugin/tree/master/modules/energid)                       |          Energi Core          |
 | [envoy](https://github.com/netdata/go.d.plugin/tree/master/modules/envoy)                           |             Envoy             |
 | [example](https://github.com/netdata/go.d.plugin/tree/master/modules/example)                       |               -               |
 | [filecheck](https://github.com/netdata/go.d.plugin/tree/master/modules/filecheck)                   |     Files and Directories     |
@@ -110,9 +109,7 @@ see the appropriate collector readme.
 | [redis](https://github.com/netdata/go.d.plugin/tree/master/modules/redis)                           |             Redis             |
 | [scaleio](https://github.com/netdata/go.d.plugin/tree/master/modules/scaleio)                       |       Dell EMC ScaleIO        |
 | [SNMP](https://github.com/netdata/go.d.plugin/blob/master/modules/snmp)                             |             SNMP              |
-| [solr](https://github.com/netdata/go.d.plugin/tree/master/modules/solr)                             |             Solr              |
 | [squidlog](https://github.com/netdata/go.d.plugin/tree/master/modules/squidlog)                     |             Squid             |
-| [springboot2](https://github.com/netdata/go.d.plugin/tree/master/modules/springboot2)               |         Spring Boot2          |
 | [supervisord](https://github.com/netdata/go.d.plugin/tree/master/modules/supervisord)               |          Supervisor           |
 | [systemdunits](https://github.com/netdata/go.d.plugin/tree/master/modules/systemdunits)             |      Systemd unit state       |
 | [tengine](https://github.com/netdata/go.d.plugin/tree/master/modules/tengine)                       |            Tengine            |

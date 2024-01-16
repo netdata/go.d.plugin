@@ -1,22 +1,40 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/nvme job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "NVMe Collector Configuration",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update frequency",
+        "description": "The frequency, in seconds, at which NVMe metrics are collected.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 10
+      },
+      "binary_path": {
+        "title": "Binary path",
+        "description": "Path to the 'nvme' binary. The default path is 'nvme', and the executable is looked for in the directories specified in the PATH environment variable.",
+        "type": "string",
+        "default": "nvme"
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Timeout for executing the 'nvme' binary, specified in seconds.",
+        "type": "number",
+        "minimum": 0.5,
+        "default": 10
+      }
+    },
+    "required": [
+      "binary_path"
+    ]
+  },
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
     },
     "timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
-    },
-    "binary_path": {
-      "type": "string"
+      "ui:help": "Accepts decimals for precise control (e.g., type 1.5 for 1.5 seconds)."
     }
-  },
-  "required": [
-    "name"
-  ]
+  }
 }

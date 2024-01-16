@@ -1,52 +1,86 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/openvpn job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
-    },
-    "address": {
-      "type": "string"
-    },
-    "connect_timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
-    },
-    "read_timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
-    },
-    "write_timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
-    },
-    "per_user_stats": {
-      "type": "object",
-      "properties": {
-        "includes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "excludes": {
-          "type": "array",
-          "items": {
-            "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "OpenVPN collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update frequency",
+        "description": "The frequency, in seconds, at which data is collected from the OpenVPN server.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "address": {
+        "title": "Address",
+        "description": "The IP address and port where the OpenVPN Management Interface listens for connections.",
+        "type": "string",
+        "default": "127.0.0.1:123"
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Connection, read, and write timeout duration in seconds.",
+        "type": "number",
+        "minimum": 0.5,
+        "default": 1
+      },
+      "per_user_stats": {
+        "title": "User selector",
+        "description": "Configuration for monitoring specific users. The logic for inclusion and exclusion is as follows: (include1 OR include2) AND !(exclude1 or exclude2). Patterns follow the syntax of matcher patterns.",
+        "type": "object",
+        "properties": {
+          "includes": {
+            "title": "Include",
+            "description": "Include users whose usernames match any of the specified inclusion patterns.",
+            "type": "array",
+            "items": {
+              "title": "Username pattern",
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "excludes": {
+            "title": "Exclude",
+            "description": "Exclude users whose usernames match any of the specified exclusion patterns.",
+            "type": "array",
+            "items": {
+              "title": "Username pattern",
+              "type": "string"
+            },
+            "uniqueItems": true
           }
         }
       }
-    }
+    },
+    "required": [
+      "address"
+    ]
   },
-  "required": [
-    "name",
-    "address"
-  ]
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
+    },
+    "timeout": {
+      "ui:help": "Accepts decimals for precise control (e.g., type 1.5 for 1.5 seconds)."
+    },
+    "ui:flavour": "tabs",
+    "ui:options": {
+      "tabs": [
+        {
+          "title": "Base",
+          "fields": [
+            "update_every",
+            "address",
+            "timeout"
+          ]
+        },
+        {
+          "title": "User stats",
+          "fields": [
+            "per_user_stats"
+          ]
+        }
+      ]
+    }
+  }
 }

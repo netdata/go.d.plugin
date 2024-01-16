@@ -1,36 +1,59 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/isc_dhcpd job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
-    },
-    "leases_path": {
-      "type": "string"
-    },
-    "pools": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ISC DHCP collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update every",
+        "description": "The data collection frequency in seconds.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "leases_path": {
+        "title": "Leases path",
+        "description": "Specifies the file path to the ISC DHCP client lease database.",
+        "type": "string",
+        "default": "/var/lib/dhcp/dhcpd.leases"
+      },
+      "pools": {
+        "title": "IP pools",
+        "description": "Specifies a list of IP pools to monitor.",
+        "type": "array",
+        "items": {
+          "title": "IP pool",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "Specifies a descriptive name for the IP pool.",
+              "type": "string"
+            },
+            "networks": {
+              "title": "Networks",
+              "description": "Specifies the IP ranges to monitor, separated by spaces. Supported formats: IP-IP, IP/mask.",
+              "type": "string"
+            }
           },
-          "networks": {
-            "type": "string"
-          }
+          "required": [
+            "name",
+            "networks"
+          ]
         },
-        "required": [
-          "name",
-          "networks"
-        ]
+        "minItems": 1,
+        "uniqueItems": true,
+        "additionalItems": false
       }
-    }
+    },
+    "required": [
+      "leases_path",
+      "pools"
+    ]
   },
-  "required": [
-    "name",
-    "leases_path",
-    "pools"
-  ]
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
+    }
+  }
 }

@@ -89,18 +89,7 @@ compose:
 			wantClassifyCalls: 2,
 			wantComposeCalls:  2,
 			wantConfGroups: []*confgroup.Group{
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-				}},
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2"),
 			},
 		},
 		"existing group with same targets": {
@@ -116,21 +105,10 @@ compose:
 			wantClassifyCalls: 2,
 			wantComposeCalls:  2,
 			wantConfGroups: []*confgroup.Group{
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-				}},
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2"),
 			},
 		},
-		"existing empty group that previously had targets": {
+		"existing group that previously had targets with no targets": {
 			config: config,
 			discoverers: []model.Discoverer{
 				newMockDiscoverer("rule1",
@@ -143,19 +121,8 @@ compose:
 			wantClassifyCalls: 2,
 			wantComposeCalls:  2,
 			wantConfGroups: []*confgroup.Group{
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-				}},
-				{Source: "test", Configs: nil},
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2"),
+				prepareDiscoveredGroup(),
 			},
 		},
 		"existing group with old and new targets": {
@@ -171,40 +138,8 @@ compose:
 			wantClassifyCalls: 4,
 			wantComposeCalls:  4,
 			wantConfGroups: []*confgroup.Group{
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-				}},
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock11-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock22-foobar2",
-					},
-				}},
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2"),
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2", "mock11-foobar1", "mock22-foobar2"),
 			},
 		},
 		"existing group with new targets only": {
@@ -220,30 +155,8 @@ compose:
 			wantClassifyCalls: 4,
 			wantComposeCalls:  4,
 			wantConfGroups: []*confgroup.Group{
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock1-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock2-foobar2",
-					},
-				}},
-				{Source: "test", Configs: []confgroup.Config{
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock11-foobar1",
-					},
-					{
-						"__provider__": "mock",
-						"__source__":   "test",
-						"name":         "mock22-foobar2",
-					},
-				}},
+				prepareDiscoveredGroup("mock1-foobar1", "mock2-foobar2"),
+				prepareDiscoveredGroup("mock11-foobar1", "mock22-foobar2"),
 			},
 		},
 	}
@@ -252,6 +165,23 @@ compose:
 		t.Run(name, func(t *testing.T) {
 			sim.run(t)
 		})
+	}
+}
+
+func prepareDiscoveredGroup(configNames ...string) *confgroup.Group {
+	var configs []confgroup.Config
+
+	for _, name := range configNames {
+		configs = append(configs, confgroup.Config{}.
+			SetProvider("mock").
+			SetSourceType(confgroup.TypeDiscovered).
+			SetSource("test").
+			SetName(name))
+	}
+
+	return &confgroup.Group{
+		Source:  "test",
+		Configs: configs,
 	}
 }
 

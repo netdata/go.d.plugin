@@ -96,9 +96,9 @@ func TestExample_Init(t *testing.T) {
 			example.Config = test.config
 
 			if test.wantFail {
-				assert.False(t, example.Init())
+				assert.Error(t, example.Init())
 			} else {
-				assert.True(t, example.Init())
+				assert.NoError(t, example.Init())
 			}
 		})
 	}
@@ -124,12 +124,12 @@ func TestExample_Check(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			example := test.prepare()
-			require.True(t, example.Init())
+			require.NoError(t, example.Init())
 
 			if test.wantFail {
-				assert.False(t, example.Check())
+				assert.Error(t, example.Check())
 			} else {
-				assert.True(t, example.Check())
+				assert.NoError(t, example.Check())
 			}
 		})
 	}
@@ -153,7 +153,7 @@ func TestExample_Charts(t *testing.T) {
 		"initialized collector": {
 			prepare: func(t *testing.T) *Example {
 				example := New()
-				require.True(t, example.Init())
+				require.NoError(t, example.Init())
 				return example
 			},
 		},
@@ -259,7 +259,7 @@ func TestExample_Collect(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			example := test.prepare()
-			require.True(t, example.Init())
+			require.NoError(t, example.Init())
 
 			collected := example.Collect()
 

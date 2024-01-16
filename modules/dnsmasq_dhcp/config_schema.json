@@ -1,23 +1,42 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/dnsmasq_dhcp job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Dnsmasq DHCP collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update every",
+        "description": "The data collection frequency in seconds.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "leases_path": {
+        "title": "Leases path",
+        "description": "Path to Dnsmasq DHCP leases file.",
+        "type": "string",
+        "default": "/var/lib/misc/dnsmasq.leases"
+      },
+      "conf_path": {
+        "title": "Config path",
+        "description": "Path to Dnsmasq configuration file.",
+        "type": "string",
+        "default": "/etc/dnsmasq.conf"
+      },
+      "conf_dir": {
+        "title": "Config directory path",
+        "description": "Path to Dnsmasq configuration directory.",
+        "type": "string",
+        "default": "/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new"
+      }
     },
-    "leases_path": {
-      "type": "string"
-    },
-    "conf_path": {
-      "type": "string"
-    },
-    "conf_dir": {
-      "type": "string"
-    }
+    "required": [
+      "leases_path"
+    ]
   },
-  "required": [
-    "name",
-    "leases_path"
-  ]
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
+    }
+  }
 }

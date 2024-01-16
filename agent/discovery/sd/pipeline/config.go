@@ -5,27 +5,22 @@ package pipeline
 import (
 	"errors"
 	"fmt"
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
 
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/kubernetes"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/discoverer/kubernetes"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/discoverer/netlisteners"
 )
 
 type Config struct {
 	Name      string               `yaml:"name"`
-	Discovery DiscoveryConfig      `yaml:"discovery"`
+	Discovery DiscoveryConfig      `yaml:"discover"`
 	Classify  []ClassifyRuleConfig `yaml:"classify"`
-	Compose   []ComposeRuleConfig  `yaml:"compose"` // TODO: "jobs"?
+	Compose   []ComposeRuleConfig  `yaml:"compose"`
 }
 
-type (
-	DiscoveryConfig struct {
-		K8s        []kubernetes.Config `yaml:"k8s"`
-		HostSocket HostSocketConfig    `yaml:"hostsocket"`
-	}
-	HostSocketConfig struct {
-		Net *hostsocket.NetworkSocketConfig `yaml:"net"`
-	}
-)
+type DiscoveryConfig struct {
+	K8s          []kubernetes.Config  `yaml:"k8s"`
+	NetListeners *netlisteners.Config `yaml:"net_listeners"`
+}
 
 type ClassifyRuleConfig struct {
 	Name     string `yaml:"name"`
@@ -47,11 +42,11 @@ type ComposeRuleConfig struct {
 }
 
 func validateConfig(cfg Config) error {
-	if cfg.Name != "" {
+	if cfg.Name == "" {
 		return errors.New("'name' not set")
 	}
-	if len(cfg.Discovery.K8s) == 0 {
-		return errors.New("'discovery->k8s' not set")
+	if len(cfg.Discovery.K8s) == 0 && cfg.Discovery.NetListeners == nil {
+		return errors.New("'discover' not set")
 	}
 	if err := validateClassifyConfig(cfg.Classify); err != nil {
 		return fmt.Errorf("tag rules: %v", err)

@@ -39,8 +39,11 @@ func (c *zookeeperFetcher) fetch(command string) (rows []string, err error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return rows, nil
 }
+
+func (c *zookeeperFetcher) disconnect() {}
 
 func isZKLine(line []byte) bool {
 	return bytes.HasPrefix(line, []byte("zk_"))

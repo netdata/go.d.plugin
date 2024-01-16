@@ -1,48 +1,104 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "go.d/dns_query job configuration schema.",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string"
-    },
-    "domains": {
-      "type": "array",
-      "items": {
-        "type": "string"
+  "jsonSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "DNS query collector configuration.",
+    "type": "object",
+    "properties": {
+      "update_every": {
+        "title": "Update every",
+        "description": "The data collection frequency in seconds.",
+        "type": "integer",
+        "minimum": 1,
+        "default": 5
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "DNS query timeout.",
+        "type": "number",
+        "default": 2
+      },
+      "servers": {
+        "title": "Servers",
+        "description": "List of DNS servers that will be queried.",
+        "type": "array",
+        "items": {
+          "title": "DNS server",
+          "description": "IP address or hostname of the DNS server.",
+          "type": "string"
+        },
+        "default": [
+          "8.8.8.8"
+        ],
+        "uniqueItems": true
+      },
+      "network": {
+        "title": "Protocol",
+        "description": "Network protocol. Supported protocols: udp, tcp, tcp-tls.",
+        "type": "string",
+        "enum": [
+          "udp",
+          "tcp",
+          "tcp-tls"
+        ],
+        "default": "udp"
+      },
+      "port": {
+        "title": "Port",
+        "description": "DNS server port.",
+        "type": "integer",
+        "default": 53
+      },
+      "domains": {
+        "title": "Domains",
+        "description": "Domain or subdomains to query. At each iteration, a random domain will be selected from the list.",
+        "type": "array",
+        "items": {
+          "title": "Domain",
+          "type": "string"
+        },
+        "default": [
+          "google.com",
+          "github.com"
+        ],
+        "uniqueItems": true
+      },
+      "record_types": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "A",
+            "AAAA",
+            "CNAME",
+            "MX",
+            "NS",
+            "PTR",
+            "TXT",
+            "SOA",
+            "SPF",
+            "TXT",
+            "SRV"
+          ],
+          "default": "A"
+        },
+        "default": [
+          "A"
+        ],
+        "uniqueItems": true
       }
     },
-    "servers": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "network": {
-      "type": "string"
-    },
-    "record_type": {
-      "type": "string"
-    },
-    "record_types": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "port": {
-      "type": "integer"
+    "required": [
+      "domains",
+      "servers",
+      "network"
+    ]
+  },
+  "uiSchema": {
+    "uiOptions": {
+      "fullPage": true
     },
     "timeout": {
-      "type": [
-        "string",
-        "integer"
-      ]
+      "ui:help": "Accepts decimals for precise control (e.g., type 1.5 for 1.5 seconds)."
     }
-  },
-  "required": [
-    "name",
-    "domains",
-    "servers"
-  ]
+  }
 }

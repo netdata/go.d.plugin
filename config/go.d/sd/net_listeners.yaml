@@ -1,0 +1,129 @@
+name: 'network listeners'
+
+discover:
+  net_listeners:
+    tags: "listener"
+
+classify:
+  - name: "Applications"
+    selector: "listener"
+    tags: "app"
+    match:
+      - tags: "activemq"
+        expr: '{{ and (eq .Port "8161") (eq .Comm "activemq") }}'
+      - tags: "apache"
+        expr: '{{ and (eq .Port "80" "8080") (eq .Comm "apache" "httpd") }}'
+      - tags: "bind"
+        expr: '{{ and (eq .Port "8653") (eq .Comm "bind" "named") }}'
+      - tags: "cassandra"
+        expr: '{{ and (eq .Port "7072") (glob .Cmdline "*cassandra*") }}'
+      - tags: "chrony"
+        expr: '{{ and (eq .Port "323") (eq .Comm "chronyd") }}'
+      - tags: "cockroachdb"
+        expr: '{{ and (eq .Port "8080") (eq .Comm "cockroach") }}'
+      - tags: "consul"
+        expr: '{{ and (eq .Port "8500") (eq .Comm "consul") }}'
+      - tags: "coredns"
+        expr: '{{ and (eq .Port "9153") (eq .Comm "coredns") }}'
+      - tags: "couchbase"
+        expr: '{{ and (eq .Port "8091") (glob .Cmdline "*couchbase*") }}'
+      - tags: "couchdb"
+        expr: '{{ and (eq .Port "5984") (glob .Cmdline "*couchdb*") }}'
+      - tags: "dnsdist"
+        expr: '{{ and (eq .Port "8083") (eq .Comm "dnsdist") }}'
+      - tags: "dnsmasq"
+        expr: '{{ and (eq .Port "53") (eq .Comm "dnsmasq") }}'
+      - tags: "docker_engine"
+        expr: '{{ and (eq .Port "9323") (eq .Comm "dockerd") }}'
+      - tags: "elasticsearch"
+        expr: '{{ and (eq .Port "9200") (glob .Cmdline "*elasticsearch*") }}'
+      - tags: "opensearch"
+        expr: '{{ and (eq .Port "9200") (glob .Cmdline "*opensearch*") }}'
+      - tags: "envoy"
+        expr: '{{ and (eq .Port "9901") (eq .Comm "envoy") }}'
+      - tags: "fluentd"
+        expr: '{{ and (eq .Port "24220") (glob .Cmdline "*fluentd*") }}'
+      - tags: "freeradius"
+        expr: '{{ and (eq .Port "18121") (eq .Comm "freeradius") }}'
+      - tags: "geth"
+        expr: '{{ and (eq .Port "6060") (eq .Comm "geth") }}'
+      - tags: "haproxy"
+        expr: '{{ and (eq .Port "8404") (eq .Comm "haproxy") }}'
+      - tags: "hdfs_namenode"
+        expr: '{{ and (eq .Port "9870") (eq .Comm "hadoop") }}'
+      - tags: "hdfs_datanode"
+        expr: '{{ and (eq .Port "9864") (eq .Comm "hadoop") }}'
+      - tags: "kubelet"
+        expr: '{{ and (eq .Port "10250" "10255") (eq .Comm "kubelet") }}'
+      - tags: "kubeproxy"
+        expr: '{{ and (eq .Port "10249") (eq .Comm "kube-proxy") }}'
+      - tags: "lighttpd"
+        expr: '{{ and (eq .Port "80" "8080") (eq .Comm "lighttpd") }}'
+      - tags: "logstash"
+        expr: '{{ and (eq .Port "9600") (glob .Cmdline "*logstash*") }}'
+      - tags: "mongodb"
+        expr: '{{ and (eq .Port "27017") (eq .Comm "mongod") }}'
+      - tags: "mysql"
+        expr: '{{ and (eq .Port "3306") (eq .Comm "mysqld" "mariadb") }}'
+      - tags: "nginx"
+        expr: '{{ and (eq .Port "80" "8080") (eq .Comm "nginx") }}'
+      - tags: "ntpd"
+        expr: '{{ and (eq .Port "123") (eq .Comm "ntpd") }}'
+      - tags: "openvpn"
+        expr: '{{ and (eq .Port "7505") (eq .Comm "openvpn") }}'
+      - tags: "pgbouncer"
+        expr: '{{ and (eq .Port "6432") (eq .Comm "pgbouncer") }}'
+      - tags: "pihole"
+        expr: '{{ and (eq .Port "53") (eq .Comm "pihole-FTL") }}'
+      - tags: "pika"
+        expr: '{{ and (eq .Port "9221") (eq .Comm "pika") }}'
+      - tags: "postgres"
+        expr: '{{ and (eq .Port "5432") (eq .Comm "postgres") }}'
+      - tags: "powerdns"
+        expr: '{{ and (eq .Port "8081") (eq .Comm "pdns_server") }}'
+      - tags: "powerdns_recursor"
+        expr: '{{ and (eq .Port "8081") (eq .Comm "pdns_recursor") }}'
+      - tags: "proxysql"
+        expr: '{{ and (eq .Port "6032") (eq .Comm "proxysql") }}'
+      - tags: "rabbitmq"
+        expr: '{{ and (eq .Port "15672") (glob .Cmdline "*rabbitmq*") }}'
+      - tags: "redis"
+        expr: '{{ and (eq .Port "6379") (eq .Comm "redis-server") }}'
+      - tags: "supervisord"
+        expr: '{{ and (eq .Port "9001") (eq .Comm "supervisord") }}'
+      - tags: "traefik"
+        expr: '{{ and (eq .Port "80" "8080") (eq .Comm "traefik") }}'
+      - tags: "unbound"
+        expr: '{{ and (eq .Port "8953") (eq .Comm "unbound") }}'
+      - tags: "upsd"
+        expr: '{{ and (eq .Port "3493") (eq .Comm "upsd") }}'
+      - tags: "vernemq"
+        expr: '{{ and (eq .Port "8888") (glob .Cmdline "*vernemq*") }}'
+      - tags: "zookeeper"
+        expr: '{{ and (eq .Port "2181" "2182") (glob .Cmdline "*zookeeper*") }}'
+
+compose:
+  - name: "Applications"
+    selector: "app"
+    config:
+      - selector: "activemq"
+        template: |
+          module: activemq
+          name: local
+          url: http://{{.Address}}:{{.Port}}
+      - selector: "apache"
+        template: |
+          module: apache
+          name: local
+          url: http://{{.Address}}:{{.Port}}/server-status?auto
+      - selector: "nginx"
+        template: |
+          module: nginx
+          name: local
+          url: http://{{.Address}}:{{.Port}}/basic_status
+      - selector: "ntpd"
+        template: |
+          module: ntpd
+          name: local
+          address: '127.0.0.1:123'
+          collect_peers: no

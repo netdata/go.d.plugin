@@ -13,6 +13,7 @@ import (
 	"github.com/netdata/go.d.plugin/agent/confgroup"
 	"github.com/netdata/go.d.plugin/agent/discovery/dummy"
 	"github.com/netdata/go.d.plugin/agent/discovery/file"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd"
 	"github.com/netdata/go.d.plugin/logger"
 )
 
@@ -56,9 +57,9 @@ func (m *Manager) String() string {
 	return fmt.Sprintf("discovery manager: %v", m.discoverers)
 }
 
-func (m *Manager) Add(d discoverer) {
-	m.discoverers = append(m.discoverers, d)
-}
+//func (m *Manager) Add(d discoverer) {
+//	m.discoverers = append(m.discoverers, d)
+//}
 
 func (m *Manager) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 	m.Info("instance is started")
@@ -91,7 +92,7 @@ func (m *Manager) registerDiscoverers(cfg Config) error {
 		if err != nil {
 			return err
 		}
-		m.Add(d)
+		m.discoverers = append(m.discoverers, d)
 	}
 
 	if len(cfg.Dummy.Names) > 0 {
@@ -100,7 +101,15 @@ func (m *Manager) registerDiscoverers(cfg Config) error {
 		if err != nil {
 			return err
 		}
-		m.Add(d)
+		m.discoverers = append(m.discoverers, d)
+	}
+
+	if len(cfg.SD.ConfDir) != 0 {
+		d, err := sd.NewServiceDiscovery(cfg.SD)
+		if err != nil {
+			return err
+		}
+		m.discoverers = append(m.discoverers, d)
 	}
 
 	if len(m.discoverers) == 0 {

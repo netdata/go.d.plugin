@@ -21,14 +21,14 @@ func TestNew(t *testing.T) {
 
 func TestAgent_Run(t *testing.T) {
 	a := New(Config{
-		Name:              "",
-		ConfDir:           nil,
-		ModulesConfDir:    nil,
-		ModulesSDConfPath: nil,
-		StateFile:         "",
-		ModuleRegistry:    nil,
-		RunModule:         "",
-		MinUpdateEvery:    0,
+		Name:                 "",
+		ConfDir:              nil,
+		ModulesConfDir:       nil,
+		ModulesConfWatchPath: nil,
+		StateFile:            "",
+		ModuleRegistry:       nil,
+		RunModule:            "",
+		MinUpdateEvery:       0,
 	})
 
 	var buf bytes.Buffer
@@ -74,17 +74,17 @@ func prepareRegistry(mux *sync.Mutex, stats map[string]int, names ...string) mod
 
 func prepareMockModule(name string, mux *sync.Mutex, stats map[string]int) module.Module {
 	return &module.MockModule{
-		InitFunc: func() bool {
+		InitFunc: func() error {
 			mux.Lock()
 			defer mux.Unlock()
 			stats[name+"_init"]++
-			return true
+			return nil
 		},
-		CheckFunc: func() bool {
+		CheckFunc: func() error {
 			mux.Lock()
 			defer mux.Unlock()
 			stats[name+"_check"]++
-			return true
+			return nil
 		},
 		ChartsFunc: func() *module.Charts {
 			mux.Lock()

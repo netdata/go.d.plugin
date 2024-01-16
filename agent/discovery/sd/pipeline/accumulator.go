@@ -20,16 +20,14 @@ func newAccumulator() *accumulator {
 	}
 }
 
-type (
-	accumulator struct {
-		*logger.Logger
-		discoverers []model.Discoverer
-		send        chan struct{}
-		sendEvery   time.Duration
-		mux         *sync.Mutex
-		tggs        map[string]model.TargetGroup
-	}
-)
+type accumulator struct {
+	*logger.Logger
+	discoverers []model.Discoverer
+	send        chan struct{}
+	sendEvery   time.Duration
+	mux         *sync.Mutex
+	tggs        map[string]model.TargetGroup
+}
 
 func (a *accumulator) run(ctx context.Context, in chan []model.TargetGroup) {
 	updates := make(chan []model.TargetGroup)

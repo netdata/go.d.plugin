@@ -7,9 +7,10 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/discoverer/kubernetes"
+	"github.com/netdata/go.d.plugin/agent/discovery/sd/discoverer/netlisteners"
+
 	"github.com/netdata/go.d.plugin/agent/confgroup"
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/hostsocket"
-	"github.com/netdata/go.d.plugin/agent/discovery/sd/kubernetes"
 	"github.com/netdata/go.d.plugin/agent/discovery/sd/model"
 	"github.com/netdata/go.d.plugin/logger"
 )
@@ -19,14 +20,28 @@ func New(cfg Config) (*Pipeline, error) {
 		return nil, err
 	}
 
+	clr, err := newTargetClassificator(cfg.Classify)
+	if err != nil {
+		return nil, err
+	}
+
+	cmr, err := newConfigComposer(cfg.Compose)
+	if err != nil {
+		return nil, err
+	}
+
 	p := &Pipeline{
 		Logger: logger.New().With(
-			slog.String("component", "discovery sd pipeline"),
+			slog.String("component", "service discovery"),
+			slog.String("pipeline", cfg.Name),
 		),
+		clr:         clr,
+		cmr:         cmr,
 		accum:       newAccumulator(),
 		discoverers: make([]model.Discoverer, 0),
 		items:       make(map[string]map[uint64][]confgroup.Config),
 	}
+	p.accum.Logger = p.Logger
 
 	if err := p.registerDiscoverers(cfg); err != nil {
 		return nil, err
@@ -63,8 +78,8 @@ func (p *Pipeline) registerDiscoverers(conf Config) error {
 		}
 		p.discoverers = append(p.discoverers, td)
 	}
-	if conf.Discovery.HostSocket.Net != nil {
-		td, err := hostsocket.NewNetSocketDiscoverer(*conf.Discovery.HostSocket.Net)
+	if conf.Discovery.NetListeners != nil {
+		td, err := netlisteners.NewDiscoverer(*conf.Discovery.NetListeners)
 		if err != nil {
 			return err
 		}
@@ -103,15 +118,15 @@ func (p *Pipeline) Run(ctx context.Context, in chan<- []*confgroup.Group) {
 }
 
 func (p *Pipeline) processGroups(tggs []model.TargetGroup) []*confgroup.Group {
-	var confGroups []*confgroup.Group
+	var groups []*confgroup.Group
 	// updates come from the accumulator, this ensures that all groups have different sources
 	for _, tgg := range tggs {
 		p.Infof("processing group '%s' with %d target(s)", tgg.Source(), len(tgg.Targets()))
 		if v := p.processGroup(tgg); v != nil {
-			confGroups = append(confGroups, v)
+			groups = append(groups, v)
 		}
 	}
-	return confGroups
+	return groups
 }
 
 func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
@@ -120,6 +135,7 @@ func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
 			return nil
 		}
 		delete(p.items, tgg.Source())
+
 		return &confgroup.Group{Source: tgg.Source()}
 	}
 
@@ -149,14 +165,16 @@ func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
 
 			if configs := p.cmr.compose(tgt); len(configs) > 0 {
 				for _, cfg := range configs {
+					// TODO: set
 					cfg.SetProvider(tgg.Provider())
 					cfg.SetSource(tgg.Source())
+					cfg.SetSourceType(confgroup.TypeDiscovered)
 				}
 				targetsCache[hash] = configs
 				changed = true
 			}
 		} else {
-			p.Infof("target '%s' classify: fail", tgt.TUID())
+			targetsCache[hash] = nil
 		}
 	}
 
@@ -176,6 +194,7 @@ func (p *Pipeline) processGroup(tgg model.TargetGroup) *confgroup.Group {
 
 	// TODO: deepcopy?
 	cfgGroup := &confgroup.Group{Source: tgg.Source()}
+
 	for _, cfgs := range targetsCache {
 		cfgGroup.Configs = append(cfgGroup.Configs, cfgs...)
 	}
