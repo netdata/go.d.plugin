@@ -161,6 +161,10 @@ modules:
         metric: systemd.slice_unit_state
         info: systemd slice unit in the failed state
         link: https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf
+      - name: systemd_timer_unit_failed_state
+        metric: systemd.timer_unit_state
+        info: systemd timer unit in the failed state
+        link: https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf
     metrics:
       folding:
         title: Metrics
