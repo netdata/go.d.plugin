@@ -223,7 +223,7 @@ The following options can be defined globally: update_every, autodetection_retry
 | url | Server URL. | http://localhost:8500 | yes |
 | acl_token | ACL token used in every request. |  | no |
 | max_checks | Checks processing/charting limit. |  | no |
-| max_filter | Checks processing/charting filter. Uses [simple patterns](https://github.com/netdata/netdata/blob/master/src/libnetdata/simple_pattern/README.md). |  | no |
+| max_filter | Checks processing/charting filter. Uses [simple patterns](https://github.com/netdata/netdata/blob/master/libnetdata/simple_pattern/README.md). |  | no |
 | username | Username for basic HTTP authentication. |  | no |
 | password | Password for basic HTTP authentication. |  | no |
 | proxy_url | Proxy URL. |  | no |

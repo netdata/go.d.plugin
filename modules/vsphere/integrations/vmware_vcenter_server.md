@@ -224,7 +224,7 @@ The following options can be defined globally: update_every, autodetection_retry
 Metrics of hosts matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/src/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
 - Syntax:
 
   ```yaml
@@ -240,7 +240,7 @@ Metrics of hosts matching the selector will be collected.
 Metrics of VMs matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern/VM pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/src/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
 - Syntax:
 
   ```yaml
