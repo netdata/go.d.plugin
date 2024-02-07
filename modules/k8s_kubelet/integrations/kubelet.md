@@ -104,11 +104,11 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ kubelet_node_config_error ](https://github.com/netdata/netdata/blob/master/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_node_config_error | the node is experiencing a configuration-related error (0: false, 1: true) |
-| [ kubelet_token_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_token_requests | number of failed Token() requests to the alternate token source |
-| [ kubelet_token_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_token_requests | number of failed Token() requests to the alternate token source |
-| [ kubelet_operations_error ](https://github.com/netdata/netdata/blob/master/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_operations_errors | number of Docker or runtime operation errors |
-| [ kubelet_operations_error ](https://github.com/netdata/netdata/blob/master/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_operations_errors | number of Docker or runtime operation errors |
+| [ kubelet_node_config_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_node_config_error | the node is experiencing a configuration-related error (0: false, 1: true) |
+| [ kubelet_token_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_token_requests | number of failed Token() requests to the alternate token source |
+| [ kubelet_token_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_token_requests | number of failed Token() requests to the alternate token source |
+| [ kubelet_operations_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_operations_errors | number of Docker or runtime operation errors |
+| [ kubelet_operations_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/kubelet.conf) | k8s_kubelet.kubelet_operations_errors | number of Docker or runtime operation errors |
 
 
 ## Setup

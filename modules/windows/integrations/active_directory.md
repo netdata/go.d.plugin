@@ -625,13 +625,13 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ windows_10min_cpu_usage ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.cpu_utilization_total | average CPU utilization over the last 10 minutes |
-| [ windows_ram_in_use ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.memory_utilization | memory utilization |
-| [ windows_inbound_packets_discarded ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.net_nic_discarded | number of inbound discarded packets for the network interface in the last 10 minutes |
-| [ windows_outbound_packets_discarded ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.net_nic_discarded | number of outbound discarded packets for the network interface in the last 10 minutes |
-| [ windows_inbound_packets_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.net_nic_errors | number of inbound errors for the network interface in the last 10 minutes |
-| [ windows_outbound_packets_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.net_nic_errors | number of outbound errors for the network interface in the last 10 minutes |
-| [ windows_disk_in_use ](https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf) | windows.logical_disk_space_usage | disk space utilization |
+| [ windows_10min_cpu_usage ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.cpu_utilization_total | average CPU utilization over the last 10 minutes |
+| [ windows_ram_in_use ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.memory_utilization | memory utilization |
+| [ windows_inbound_packets_discarded ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.net_nic_discarded | number of inbound discarded packets for the network interface in the last 10 minutes |
+| [ windows_outbound_packets_discarded ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.net_nic_discarded | number of outbound discarded packets for the network interface in the last 10 minutes |
+| [ windows_inbound_packets_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.net_nic_errors | number of inbound errors for the network interface in the last 10 minutes |
+| [ windows_outbound_packets_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.net_nic_errors | number of outbound errors for the network interface in the last 10 minutes |
+| [ windows_disk_in_use ](https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf) | windows.logical_disk_space_usage | disk space utilization |
 
 
 ## Setup

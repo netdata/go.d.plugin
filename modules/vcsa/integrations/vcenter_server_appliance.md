@@ -118,21 +118,21 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ vcsa_system_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is orange. One or more components are degraded. |
-| [ vcsa_system_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is red. One or more components are unavailable or will stop functioning soon. |
-| [ vcsa_applmgmt_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_applmgmt_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_load_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_load_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_mem_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_mem_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_swap_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_swap_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_database_storage_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_database_storage_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_storage_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_storage_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_software_packages_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.software_packages_health_status | VCSA software packages security updates are available. |
+| [ vcsa_system_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is orange. One or more components are degraded. |
+| [ vcsa_system_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is red. One or more components are unavailable or will stop functioning soon. |
+| [ vcsa_applmgmt_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_applmgmt_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_load_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_load_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_mem_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_mem_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_swap_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_swap_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_database_storage_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_database_storage_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_storage_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_storage_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_software_packages_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.software_packages_health_status | VCSA software packages security updates are available. |
 
 
 ## Setup

@@ -103,9 +103,9 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ upsd_10min_ups_load ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} average load over the last 10 minutes |
-| [ upsd_ups_battery_charge ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_battery_charge | UPS ${label:ups_name} average battery charge over the last minute |
-| [ upsd_ups_last_collected_secs ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} number of seconds since the last successful data collection |
+| [ upsd_10min_ups_load ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} average load over the last 10 minutes |
+| [ upsd_ups_battery_charge ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_battery_charge | UPS ${label:ups_name} average battery charge over the last minute |
+| [ upsd_ups_last_collected_secs ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} number of seconds since the last successful data collection |
 
 
 ## Setup

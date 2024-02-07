@@ -166,10 +166,10 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ vsphere_vm_cpu_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.vm_cpu_utilization | Virtual Machine CPU utilization |
-| [ vsphere_vm_mem_usage ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.vm_mem_utilization | Virtual Machine memory utilization |
-| [ vsphere_host_cpu_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.host_cpu_utilization | ESXi Host CPU utilization |
-| [ vsphere_host_mem_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.host_mem_utilization | ESXi Host memory utilization |
+| [ vsphere_vm_cpu_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.vm_cpu_utilization | Virtual Machine CPU utilization |
+| [ vsphere_vm_mem_usage ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.vm_mem_utilization | Virtual Machine memory utilization |
+| [ vsphere_host_cpu_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.host_cpu_utilization | ESXi Host CPU utilization |
+| [ vsphere_host_mem_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.host_mem_utilization | ESXi Host memory utilization |
 
 
 ## Setup
@@ -224,7 +224,7 @@ The following options can be defined globally: update_every, autodetection_retry
 Metrics of hosts matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/src/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
 - Syntax:
 
   ```yaml
@@ -240,7 +240,7 @@ Metrics of hosts matching the selector will be collected.
 Metrics of VMs matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern/VM pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/src/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
 - Syntax:
 
   ```yaml

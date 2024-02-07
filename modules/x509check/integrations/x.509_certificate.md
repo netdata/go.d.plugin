@@ -80,8 +80,8 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ x509check_days_until_expiration ](https://github.com/netdata/netdata/blob/master/health/health.d/x509check.conf) | x509check.time_until_expiration | time until x509 certificate expires |
-| [ x509check_revocation_status ](https://github.com/netdata/netdata/blob/master/health/health.d/x509check.conf) | x509check.revocation_status | x509 certificate revocation status (0: revoked, 1: valid) |
+| [ x509check_days_until_expiration ](https://github.com/netdata/netdata/blob/master/src/health/health.d/x509check.conf) | x509check.time_until_expiration | time until x509 certificate expires |
+| [ x509check_revocation_status ](https://github.com/netdata/netdata/blob/master/src/health/health.d/x509check.conf) | x509check.revocation_status | x509 certificate revocation status (0: revoked, 1: valid) |
 
 
 ## Setup

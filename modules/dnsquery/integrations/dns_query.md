@@ -82,7 +82,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ dns_query_query_status ](https://github.com/netdata/netdata/blob/master/health/health.d/dns_query.conf) | dns_query.query_status | DNS request type ${label:record_type} to server ${label:server} is unsuccessful |
+| [ dns_query_query_status ](https://github.com/netdata/netdata/blob/master/src/health/health.d/dns_query.conf) | dns_query.query_status | DNS request type ${label:record_type} to server ${label:server} is unsuccessful |
 
 
 ## Setup
