@@ -163,11 +163,11 @@ modules:
       - name: pihole_blocklist_last_update
         metric: pihole.blocklist_last_update
         info: "gravity.list (blocklist) file last update time"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/pihole.conf
       - name: pihole_status
         metric: pihole.unwanted_domains_blocking_status
         info: unwanted domains blocking is disabled
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/pihole.conf
     metrics:
       folding:
         title: Metrics

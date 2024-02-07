@@ -156,107 +156,107 @@ modules:
       - name: vernemq_socket_errors
         metric: vernemq.socket_errors
         info: number of socket errors in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_queue_message_drop
         metric: vernemq.queue_undelivered_messages
         info: number of dropped messaged due to full queues in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_queue_message_expired
         metric: vernemq.queue_undelivered_messages
         info: number of messages which expired before delivery in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_queue_message_unhandled
         metric: vernemq.queue_undelivered_messages
         info: "number of unhandled messages (connections with clean session=true) in the last minute"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_average_scheduler_utilization
         metric: vernemq.average_scheduler_utilization
         info: average scheduler utilization over the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_cluster_dropped
         metric: vernemq.cluster_dropped
         info: amount of traffic dropped during communication with the cluster nodes in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_netsplits
         metric: vvernemq.netsplits
         info: "number of detected netsplits (split brain situation) in the last minute"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_connack_sent_reason_unsuccessful
         metric: vernemq.mqtt_connack_sent_reason
         info: number of sent unsuccessful v3/v5 CONNACK packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_disconnect_received_reason_not_normal
         metric: vernemq.mqtt_disconnect_received_reason
         info: number of received not normal v5 DISCONNECT packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_disconnect_sent_reason_not_normal
         metric: vernemq.mqtt_disconnect_sent_reason
         info: number of sent not normal v5 DISCONNECT packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_subscribe_error
         metric: vernemq.mqtt_subscribe_error
         info: number of failed v3/v5 SUBSCRIBE operations in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_subscribe_auth_error
         metric: vernemq.mqtt_subscribe_auth_error
         info: number of unauthorized v3/v5 SUBSCRIBE attempts in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_unsubscribe_error
         metric: vernemq.mqtt_unsubscribe_error
         info: number of failed v3/v5 UNSUBSCRIBE operations in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_publish_errors
         metric: vernemq.mqtt_publish_errors
         info: number of failed v3/v5 PUBLISH operations in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_publish_auth_errors
         metric: vernemq.mqtt_publish_auth_errors
         info: number of unauthorized v3/v5 PUBLISH attempts in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_puback_received_reason_unsuccessful
         metric: vernemq.mqtt_puback_received_reason
         info: number of received unsuccessful v5 PUBACK packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_puback_sent_reason_unsuccessful
         metric: vernemq.mqtt_puback_sent_reason
         info: number of sent unsuccessful v5 PUBACK packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_puback_unexpected
         metric: vernemq.mqtt_puback_invalid_error
         info: number of received unexpected v3/v5 PUBACK packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubrec_received_reason_unsuccessful
         metric: vernemq.mqtt_pubrec_received_reason
         info: number of received unsuccessful v5 PUBREC packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubrec_sent_reason_unsuccessful
         metric: vernemq.mqtt_pubrec_sent_reason
         info: number of sent unsuccessful v5 PUBREC packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubrec_invalid_error
         metric: vernemq.mqtt_pubrec_invalid_error
         info: number of received unexpected v3 PUBREC packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubrel_received_reason_unsuccessful
         metric: vernemq.mqtt_pubrel_received_reason
         info: number of received unsuccessful v5 PUBREL packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubrel_sent_reason_unsuccessful
         metric: vernemq.mqtt_pubrel_sent_reason
         info: number of sent unsuccessful v5 PUBREL packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubcomp_received_reason_unsuccessful
         metric: vernemq.mqtt_pubcomp_received_reason
         info: number of received unsuccessful v5 PUBCOMP packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubcomp_sent_reason_unsuccessful
         metric: vernemq.mqtt_pubcomp_sent_reason
         info: number of sent unsuccessful v5 PUBCOMP packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
       - name: vernemq_mqtt_pubcomp_unexpected
         metric: vernemq.mqtt_pubcomp_invalid_error
         info: number of received unexpected v3/v5 PUBCOMP packets in the last minute
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf
     metrics:
       folding:
         title: Metrics

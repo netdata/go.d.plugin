@@ -227,19 +227,19 @@ modules:
       - name: vsphere_vm_cpu_utilization
         metric: vsphere.vm_cpu_utilization
         info: Virtual Machine CPU utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf
       - name: vsphere_vm_mem_usage
         metric: vsphere.vm_mem_utilization
         info: Virtual Machine memory utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf
       - name: vsphere_host_cpu_utilization
         metric: vsphere.host_cpu_utilization
         info: ESXi Host CPU utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf
       - name: vsphere_host_mem_utilization
         metric: vsphere.host_mem_utilization
         info: ESXi Host memory utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf
     metrics:
       folding:
         title: Metrics
