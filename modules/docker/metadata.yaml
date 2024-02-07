@@ -109,7 +109,7 @@ modules:
       - name: docker_container_unhealthy
         metric: docker.container_health_status
         info: ${label:container_name} docker container health status is unhealthy
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/docker.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/docker.conf
     metrics:
       folding:
         title: Metrics

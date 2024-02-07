@@ -142,15 +142,15 @@ modules:
       - name: ping_host_reachable
         metric: ping.host_packet_loss
         info: "network host ${lab1el:host} reachability status"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf
       - name: ping_packet_loss
         metric: ping.host_packet_loss
         info: "packet loss percentage to the network host ${label:host} over the last 10 minutes"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf
       - name: ping_host_latency
         metric: ping.host_rtt
         info: "average latency to the network host ${label:host} over the last 10 seconds"
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf
     metrics:
       folding:
         title: Metrics

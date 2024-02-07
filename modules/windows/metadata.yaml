@@ -193,31 +193,31 @@ modules:
       - name: windows_10min_cpu_usage
         metric: windows.cpu_utilization_total
         info: average CPU utilization over the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_ram_in_use
         metric: windows.memory_utilization
         info: memory utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_inbound_packets_discarded
         metric: windows.net_nic_discarded
         info: number of inbound discarded packets for the network interface in the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_outbound_packets_discarded
         metric: windows.net_nic_discarded
         info: number of outbound discarded packets for the network interface in the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_inbound_packets_errors
         metric: windows.net_nic_errors
         info: number of inbound errors for the network interface in the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_outbound_packets_errors
         metric: windows.net_nic_errors
         info: number of outbound errors for the network interface in the last 10 minutes
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
       - name: windows_disk_in_use
         metric: windows.logical_disk_space_usage
         info: disk space utilization
-        link: https://github.com/netdata/netdata/blob/master/health/health.d/windows.conf
+        link: https://github.com/netdata/netdata/blob/master/src/health/health.d/windows.conf
     metrics:
       folding:
         title: Metrics
