@@ -105,7 +105,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ docker_container_unhealthy ](https://github.com/netdata/netdata/blob/master/health/health.d/docker.conf) | docker.container_health_status | ${label:container_name} docker container health status is unhealthy |
+| [ docker_container_unhealthy ](https://github.com/netdata/netdata/blob/master/src/health/health.d/docker.conf) | docker.container_health_status | ${label:container_name} docker container health status is unhealthy |
 
 
 ## Setup
