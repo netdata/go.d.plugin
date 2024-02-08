@@ -86,8 +86,8 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ pihole_blocklist_last_update ](https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf) | pihole.blocklist_last_update | gravity.list (blocklist) file last update time |
-| [ pihole_status ](https://github.com/netdata/netdata/blob/master/health/health.d/pihole.conf) | pihole.unwanted_domains_blocking_status | unwanted domains blocking is disabled |
+| [ pihole_blocklist_last_update ](https://github.com/netdata/netdata/blob/master/src/health/health.d/pihole.conf) | pihole.blocklist_last_update | gravity.list (blocklist) file last update time |
+| [ pihole_status ](https://github.com/netdata/netdata/blob/master/src/health/health.d/pihole.conf) | pihole.unwanted_domains_blocking_status | unwanted domains blocking is disabled |
 
 
 ## Setup

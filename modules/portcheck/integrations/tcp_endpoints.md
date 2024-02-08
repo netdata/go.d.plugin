@@ -82,9 +82,9 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ portcheck_service_reachable ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | TCP host ${label:host} port ${label:port} liveness status |
-| [ portcheck_connection_timeouts ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | percentage of timed-out TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
-| [ portcheck_connection_fails ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | percentage of failed TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
+| [ portcheck_service_reachable ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | TCP host ${label:host} port ${label:port} liveness status |
+| [ portcheck_connection_timeouts ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | percentage of timed-out TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
+| [ portcheck_connection_fails ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | percentage of failed TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
 
 
 ## Setup

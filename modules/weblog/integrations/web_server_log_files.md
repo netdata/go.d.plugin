@@ -140,13 +140,13 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ web_log_1m_unmatched ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.excluded_requests | percentage of unparsed log lines over the last minute |
-| [ web_log_1m_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over the last minute (1xx, 2xx, 304, 401) |
-| [ web_log_1m_redirects ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of redirection HTTP requests over the last minute (3xx except 304) |
-| [ web_log_1m_bad_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of client error HTTP requests over the last minute (4xx except 401) |
-| [ web_log_1m_internal_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of server error HTTP requests over the last minute (5xx) |
-| [ web_log_web_slow ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.request_processing_time | average HTTP response time over the last 1 minute |
-| [ web_log_5m_requests_ratio ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over over the last 5 minutes, compared with the previous 5 minutes |
+| [ web_log_1m_unmatched ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.excluded_requests | percentage of unparsed log lines over the last minute |
+| [ web_log_1m_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over the last minute (1xx, 2xx, 304, 401) |
+| [ web_log_1m_redirects ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of redirection HTTP requests over the last minute (3xx except 304) |
+| [ web_log_1m_bad_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of client error HTTP requests over the last minute (4xx except 401) |
+| [ web_log_1m_internal_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of server error HTTP requests over the last minute (5xx) |
+| [ web_log_web_slow ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.request_processing_time | average HTTP response time over the last 1 minute |
+| [ web_log_5m_requests_ratio ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over over the last 5 minutes, compared with the previous 5 minutes |
 
 
 ## Setup

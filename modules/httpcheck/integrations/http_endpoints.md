@@ -152,6 +152,24 @@ jobs:
 ```
 </details>
 
+##### With HTTP request headers
+
+Configuration with HTTP request headers that will be sent by the client.
+
+<details><summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8080
+    headers:
+      Host: localhost:8080
+      User-Agent: netdata/go.d.plugin
+      Accept: */*
+
+```
+</details>
+
 ##### With `status_accepted`
 
 A basic example configuration with non-default status_accepted.
