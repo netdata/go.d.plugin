@@ -43,7 +43,7 @@ The steps are:
   developed collector. It will be placed into the `bin` directory (e.g `go.d.plugin/bin`)
 - Run it in the debug mode `bin/godplugin -d -m <MODULE_NAME>`. This will output the `STDOUT` of the collector, the same
   output that is sent to the Netdata Agent and is transformed into charts. You can read more about this collector API in
-  our [documentation](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#external-plugins-api).
+  our [documentation](https://github.com/netdata/netdata/blob/master/src/collectors/plugins.d/README.md#external-plugins-api).
 - If you want to test the collector with the actual Netdata Agent, you need to replace the `go.d.plugin` binary that
   exists in the Netdata Agent installation directory with the one you just compiled. Once
   you [restart](https://github.com/netdata/netdata/blob/master/docs/configure/start-stop-restart.md) the Netdata Agent, it will detect and run
@@ -116,13 +116,13 @@ func (e *Example) Check() bool {
 
 ### Charts method
 
-:exclamation: Netdata module produces [`charts`](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#chart), not
+:exclamation: Netdata module produces [`charts`](https://github.com/netdata/netdata/blob/master/src/collectors/plugins.d/README.md#chart), not
 raw metrics.
 
 Use [`agent/module`](https://github.com/netdata/go.d.plugin/blob/master/agent/module/charts.go) package to create them,
 it contains charts and dimensions structs.
 
-- `Charts` returns the [charts](https://github.com/netdata/netdata/blob/master/collectors/plugins.d/README.md#chart) (`*module.Charts`).
+- `Charts` returns the [charts](https://github.com/netdata/netdata/blob/master/src/collectors/plugins.d/README.md#chart) (`*module.Charts`).
 - Called after `Check` and only if `Check` returned `true`.
 - If it returns `nil`, the job will be disabled
 - :warning: Make sure not to share returned value between module instances (jobs).
