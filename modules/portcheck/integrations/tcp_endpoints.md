@@ -82,9 +82,9 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ portcheck_service_reachable ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | TCP host ${label:host} port ${label:port} liveness status |
-| [ portcheck_connection_timeouts ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | percentage of timed-out TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
-| [ portcheck_connection_fails ](https://github.com/netdata/netdata/blob/master/health/health.d/portcheck.conf) | portcheck.status | percentage of failed TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
+| [ portcheck_service_reachable ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | TCP host ${label:host} port ${label:port} liveness status |
+| [ portcheck_connection_timeouts ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | percentage of timed-out TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
+| [ portcheck_connection_fails ](https://github.com/netdata/netdata/blob/master/src/health/health.d/portcheck.conf) | portcheck.status | percentage of failed TCP connections to host ${label:host} port ${label:port} in the last 5 minutes |
 
 
 ## Setup
@@ -101,7 +101,7 @@ The configuration file name for this integration is `go.d/portcheck.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -116,11 +116,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| host | Remote host address in IPv4, IPv6 format, or DNS name. |  | True |
-| ports | Remote host ports. Must be specified in numeric format. |  | True |
-| timeout | HTTP request timeout. | 2 | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| host | Remote host address in IPv4, IPv6 format, or DNS name. |  | yes |
+| ports | Remote host ports. Must be specified in numeric format. |  | yes |
+| timeout | HTTP request timeout. | 2 | no |
 
 </details>
 

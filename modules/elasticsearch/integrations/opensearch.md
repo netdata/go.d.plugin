@@ -173,11 +173,11 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ elasticsearch_node_indices_search_time_query ](https://github.com/netdata/netdata/blob/master/health/health.d/elasticsearch.conf) | elasticsearch.node_indices_search_time | search performance is degraded, queries run slowly. |
-| [ elasticsearch_node_indices_search_time_fetch ](https://github.com/netdata/netdata/blob/master/health/health.d/elasticsearch.conf) | elasticsearch.node_indices_search_time | search performance is degraded, fetches run slowly. |
-| [ elasticsearch_cluster_health_status_red ](https://github.com/netdata/netdata/blob/master/health/health.d/elasticsearch.conf) | elasticsearch.cluster_health_status | cluster health status is red. |
-| [ elasticsearch_cluster_health_status_yellow ](https://github.com/netdata/netdata/blob/master/health/health.d/elasticsearch.conf) | elasticsearch.cluster_health_status | cluster health status is yellow. |
-| [ elasticsearch_node_index_health_red ](https://github.com/netdata/netdata/blob/master/health/health.d/elasticsearch.conf) | elasticsearch.node_index_health | node index $label:index health status is red. |
+| [ elasticsearch_node_indices_search_time_query ](https://github.com/netdata/netdata/blob/master/src/health/health.d/elasticsearch.conf) | elasticsearch.node_indices_search_time | search performance is degraded, queries run slowly. |
+| [ elasticsearch_node_indices_search_time_fetch ](https://github.com/netdata/netdata/blob/master/src/health/health.d/elasticsearch.conf) | elasticsearch.node_indices_search_time | search performance is degraded, fetches run slowly. |
+| [ elasticsearch_cluster_health_status_red ](https://github.com/netdata/netdata/blob/master/src/health/health.d/elasticsearch.conf) | elasticsearch.cluster_health_status | cluster health status is red. |
+| [ elasticsearch_cluster_health_status_yellow ](https://github.com/netdata/netdata/blob/master/src/health/health.d/elasticsearch.conf) | elasticsearch.cluster_health_status | cluster health status is yellow. |
+| [ elasticsearch_node_index_health_red ](https://github.com/netdata/netdata/blob/master/src/health/health.d/elasticsearch.conf) | elasticsearch.node_index_health | node index $label:index health status is red. |
 
 
 ## Setup
@@ -194,7 +194,7 @@ The configuration file name for this integration is `go.d/elasticsearch.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -209,28 +209,28 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | Server URL. | http://127.0.0.1:9200 | True |
-| cluster_mode | Controls whether to collect metrics for all nodes in the cluster or only for the local node. | false | False |
-| collect_node_stats | Controls whether to collect nodes metrics. | true | False |
-| collect_cluster_health | Controls whether to collect cluster health metrics. | true | False |
-| collect_cluster_stats | Controls whether to collect cluster stats metrics. | true | False |
-| collect_indices_stats | Controls whether to collect indices metrics. | false | False |
-| timeout | HTTP request timeout. | 5 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. | GET | False |
-| body | HTTP request body. |  | False |
-| headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | Server URL. | http://127.0.0.1:9200 | yes |
+| cluster_mode | Controls whether to collect metrics for all nodes in the cluster or only for the local node. | false | no |
+| collect_node_stats | Controls whether to collect nodes metrics. | true | no |
+| collect_cluster_health | Controls whether to collect cluster health metrics. | true | no |
+| collect_cluster_stats | Controls whether to collect cluster stats metrics. | true | no |
+| collect_indices_stats | Controls whether to collect indices metrics. | false | no |
+| timeout | HTTP request timeout. | 5 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| method | HTTP request method. | GET | no |
+| body | HTTP request body. |  | no |
+| headers | HTTP request headers. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

@@ -103,9 +103,9 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ upsd_10min_ups_load ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} average load over the last 10 minutes |
-| [ upsd_ups_battery_charge ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_battery_charge | UPS ${label:ups_name} average battery charge over the last minute |
-| [ upsd_ups_last_collected_secs ](https://github.com/netdata/netdata/blob/master/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} number of seconds since the last successful data collection |
+| [ upsd_10min_ups_load ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} average load over the last 10 minutes |
+| [ upsd_ups_battery_charge ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_battery_charge | UPS ${label:ups_name} average battery charge over the last minute |
+| [ upsd_ups_last_collected_secs ](https://github.com/netdata/netdata/blob/master/src/health/health.d/upsd.conf) | upsd.ups_load | UPS ${label:ups_name} number of seconds since the last successful data collection |
 
 
 ## Setup
@@ -122,7 +122,7 @@ The configuration file name for this integration is `go.d/upsd.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -137,10 +137,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | UPS daemon address in IP:PORT format. | 127.0.0.1:3493 | True |
-| timeout | Connection/read/write timeout in seconds. The timeout includes name resolution, if required. | 2 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | UPS daemon address in IP:PORT format. | 127.0.0.1:3493 | yes |
+| timeout | Connection/read/write timeout in seconds. The timeout includes name resolution, if required. | 2 | no |
 
 </details>
 

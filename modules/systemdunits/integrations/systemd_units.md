@@ -89,16 +89,17 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ systemd_service_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.service_unit_state | systemd service unit in the failed state |
-| [ systemd_socket_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.socket_unit_state | systemd socket unit in the failed state |
-| [ systemd_target_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.target_unit_state | systemd target unit in the failed state |
-| [ systemd_path_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.path_unit_state | systemd path unit in the failed state |
-| [ systemd_device_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.device_unit_state | systemd device unit in the failed state |
-| [ systemd_mount_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.mount_unit_state | systemd mount unit in the failed state |
-| [ systemd_automount_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.automount_unit_state | systemd automount unit in the failed state |
-| [ systemd_swap_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.swap_unit_state | systemd swap unit in the failed state |
-| [ systemd_scope_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.scope_unit_state | systemd scope unit in the failed state |
-| [ systemd_slice_unit_failed_state ](https://github.com/netdata/netdata/blob/master/health/health.d/systemdunits.conf) | systemd.slice_unit_state | systemd slice unit in the failed state |
+| [ systemd_service_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.service_unit_state | systemd service unit in the failed state |
+| [ systemd_socket_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.socket_unit_state | systemd socket unit in the failed state |
+| [ systemd_target_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.target_unit_state | systemd target unit in the failed state |
+| [ systemd_path_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.path_unit_state | systemd path unit in the failed state |
+| [ systemd_device_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.device_unit_state | systemd device unit in the failed state |
+| [ systemd_mount_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.mount_unit_state | systemd mount unit in the failed state |
+| [ systemd_automount_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.automount_unit_state | systemd automount unit in the failed state |
+| [ systemd_swap_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.swap_unit_state | systemd swap unit in the failed state |
+| [ systemd_scope_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.scope_unit_state | systemd scope unit in the failed state |
+| [ systemd_slice_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.slice_unit_state | systemd slice unit in the failed state |
+| [ systemd_timer_unit_failed_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/systemdunits.conf) | systemd.timer_unit_state | systemd timer unit in the failed state |
 
 
 ## Setup
@@ -115,7 +116,7 @@ The configuration file name for this integration is `go.d/systemdunits.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -130,10 +131,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| include | Systemd units filter. | *.service | False |
-| timeout | System bus requests timeout. | 1 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| include | Systemd units filter. | *.service | no |
+| timeout | System bus requests timeout. | 1 | no |
 
 ##### include
 

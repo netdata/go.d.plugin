@@ -137,32 +137,32 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ vernemq_socket_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.socket_errors | number of socket errors in the last minute |
-| [ vernemq_queue_message_drop ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of dropped messaged due to full queues in the last minute |
-| [ vernemq_queue_message_expired ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of messages which expired before delivery in the last minute |
-| [ vernemq_queue_message_unhandled ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of unhandled messages (connections with clean session=true) in the last minute |
-| [ vernemq_average_scheduler_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.average_scheduler_utilization | average scheduler utilization over the last 10 minutes |
-| [ vernemq_cluster_dropped ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.cluster_dropped | amount of traffic dropped during communication with the cluster nodes in the last minute |
-| [ vernemq_netsplits ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vvernemq.netsplits | number of detected netsplits (split brain situation) in the last minute |
-| [ vernemq_mqtt_connack_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_connack_sent_reason | number of sent unsuccessful v3/v5 CONNACK packets in the last minute |
-| [ vernemq_mqtt_disconnect_received_reason_not_normal ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_disconnect_received_reason | number of received not normal v5 DISCONNECT packets in the last minute |
-| [ vernemq_mqtt_disconnect_sent_reason_not_normal ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_disconnect_sent_reason | number of sent not normal v5 DISCONNECT packets in the last minute |
-| [ vernemq_mqtt_subscribe_error ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_subscribe_error | number of failed v3/v5 SUBSCRIBE operations in the last minute |
-| [ vernemq_mqtt_subscribe_auth_error ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_subscribe_auth_error | number of unauthorized v3/v5 SUBSCRIBE attempts in the last minute |
-| [ vernemq_mqtt_unsubscribe_error ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_unsubscribe_error | number of failed v3/v5 UNSUBSCRIBE operations in the last minute |
-| [ vernemq_mqtt_publish_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_publish_errors | number of failed v3/v5 PUBLISH operations in the last minute |
-| [ vernemq_mqtt_publish_auth_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_publish_auth_errors | number of unauthorized v3/v5 PUBLISH attempts in the last minute |
-| [ vernemq_mqtt_puback_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_puback_received_reason | number of received unsuccessful v5 PUBACK packets in the last minute |
-| [ vernemq_mqtt_puback_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_puback_sent_reason | number of sent unsuccessful v5 PUBACK packets in the last minute |
-| [ vernemq_mqtt_puback_unexpected ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_puback_invalid_error | number of received unexpected v3/v5 PUBACK packets in the last minute |
-| [ vernemq_mqtt_pubrec_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_received_reason | number of received unsuccessful v5 PUBREC packets in the last minute |
-| [ vernemq_mqtt_pubrec_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_sent_reason | number of sent unsuccessful v5 PUBREC packets in the last minute |
-| [ vernemq_mqtt_pubrec_invalid_error ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_invalid_error | number of received unexpected v3 PUBREC packets in the last minute |
-| [ vernemq_mqtt_pubrel_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubrel_received_reason | number of received unsuccessful v5 PUBREL packets in the last minute |
-| [ vernemq_mqtt_pubrel_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubrel_sent_reason | number of sent unsuccessful v5 PUBREL packets in the last minute |
-| [ vernemq_mqtt_pubcomp_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_received_reason | number of received unsuccessful v5 PUBCOMP packets in the last minute |
-| [ vernemq_mqtt_pubcomp_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_sent_reason | number of sent unsuccessful v5 PUBCOMP packets in the last minute |
-| [ vernemq_mqtt_pubcomp_unexpected ](https://github.com/netdata/netdata/blob/master/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_invalid_error | number of received unexpected v3/v5 PUBCOMP packets in the last minute |
+| [ vernemq_socket_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.socket_errors | number of socket errors in the last minute |
+| [ vernemq_queue_message_drop ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of dropped messaged due to full queues in the last minute |
+| [ vernemq_queue_message_expired ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of messages which expired before delivery in the last minute |
+| [ vernemq_queue_message_unhandled ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.queue_undelivered_messages | number of unhandled messages (connections with clean session=true) in the last minute |
+| [ vernemq_average_scheduler_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.average_scheduler_utilization | average scheduler utilization over the last 10 minutes |
+| [ vernemq_cluster_dropped ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.cluster_dropped | amount of traffic dropped during communication with the cluster nodes in the last minute |
+| [ vernemq_netsplits ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vvernemq.netsplits | number of detected netsplits (split brain situation) in the last minute |
+| [ vernemq_mqtt_connack_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_connack_sent_reason | number of sent unsuccessful v3/v5 CONNACK packets in the last minute |
+| [ vernemq_mqtt_disconnect_received_reason_not_normal ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_disconnect_received_reason | number of received not normal v5 DISCONNECT packets in the last minute |
+| [ vernemq_mqtt_disconnect_sent_reason_not_normal ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_disconnect_sent_reason | number of sent not normal v5 DISCONNECT packets in the last minute |
+| [ vernemq_mqtt_subscribe_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_subscribe_error | number of failed v3/v5 SUBSCRIBE operations in the last minute |
+| [ vernemq_mqtt_subscribe_auth_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_subscribe_auth_error | number of unauthorized v3/v5 SUBSCRIBE attempts in the last minute |
+| [ vernemq_mqtt_unsubscribe_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_unsubscribe_error | number of failed v3/v5 UNSUBSCRIBE operations in the last minute |
+| [ vernemq_mqtt_publish_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_publish_errors | number of failed v3/v5 PUBLISH operations in the last minute |
+| [ vernemq_mqtt_publish_auth_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_publish_auth_errors | number of unauthorized v3/v5 PUBLISH attempts in the last minute |
+| [ vernemq_mqtt_puback_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_puback_received_reason | number of received unsuccessful v5 PUBACK packets in the last minute |
+| [ vernemq_mqtt_puback_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_puback_sent_reason | number of sent unsuccessful v5 PUBACK packets in the last minute |
+| [ vernemq_mqtt_puback_unexpected ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_puback_invalid_error | number of received unexpected v3/v5 PUBACK packets in the last minute |
+| [ vernemq_mqtt_pubrec_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_received_reason | number of received unsuccessful v5 PUBREC packets in the last minute |
+| [ vernemq_mqtt_pubrec_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_sent_reason | number of sent unsuccessful v5 PUBREC packets in the last minute |
+| [ vernemq_mqtt_pubrec_invalid_error ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubrec_invalid_error | number of received unexpected v3 PUBREC packets in the last minute |
+| [ vernemq_mqtt_pubrel_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubrel_received_reason | number of received unsuccessful v5 PUBREL packets in the last minute |
+| [ vernemq_mqtt_pubrel_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubrel_sent_reason | number of sent unsuccessful v5 PUBREL packets in the last minute |
+| [ vernemq_mqtt_pubcomp_received_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_received_reason | number of received unsuccessful v5 PUBCOMP packets in the last minute |
+| [ vernemq_mqtt_pubcomp_sent_reason_unsuccessful ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_sent_reason | number of sent unsuccessful v5 PUBCOMP packets in the last minute |
+| [ vernemq_mqtt_pubcomp_unexpected ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vernemq.conf) | vernemq.mqtt_pubcomp_invalid_error | number of received unexpected v3/v5 PUBCOMP packets in the last minute |
 
 
 ## Setup
@@ -179,7 +179,7 @@ The configuration file name for this integration is `go.d/vernemq.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -194,23 +194,23 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | Server URL. | http://127.0.0.1:8888/metrics | True |
-| timeout | HTTP request timeout. | 1 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. | GET | False |
-| body | HTTP request body. |  | False |
-| headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | False | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | Server URL. | http://127.0.0.1:8888/metrics | yes |
+| timeout | HTTP request timeout. | 1 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| method | HTTP request method. | GET | no |
+| body | HTTP request body. |  | no |
+| headers | HTTP request headers. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

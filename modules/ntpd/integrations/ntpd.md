@@ -123,7 +123,7 @@ The configuration file name for this integration is `go.d/ntpd.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -138,11 +138,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Server address in IP:PORT format. | 127.0.0.1:123 | True |
-| timeout | Connection/read/write timeout. | 3 | False |
-| collect_peers | Determines whether peer metrics will be collected. | False | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Server address in IP:PORT format. | 127.0.0.1:123 | yes |
+| timeout | Connection/read/write timeout. | 3 | no |
+| collect_peers | Determines whether peer metrics will be collected. | no | no |
 
 </details>
 

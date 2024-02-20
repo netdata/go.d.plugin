@@ -82,7 +82,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ dns_query_query_status ](https://github.com/netdata/netdata/blob/master/health/health.d/dns_query.conf) | dns_query.query_status | DNS request type ${label:record_type} to server ${label:server} is unsuccessful |
+| [ dns_query_query_status ](https://github.com/netdata/netdata/blob/master/src/health/health.d/dns_query.conf) | dns_query.query_status | DNS request type ${label:record_type} to server ${label:server} is unsuccessful |
 
 
 ## Setup
@@ -99,7 +99,7 @@ The configuration file name for this integration is `go.d/dns_query.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -114,14 +114,14 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| domains | Domain or subdomains to query. The collector will choose a random domain from the list on every iteration. |  | True |
-| servers | Servers to query. |  | True |
-| port | DNS server port. | 53 | False |
-| network | Network protocol name. Available options: udp, tcp, tcp-tls. | udp | False |
-| record_types | Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV. | A | False |
-| timeout | Query read timeout. | 2 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| domains | Domain or subdomains to query. The collector will choose a random domain from the list on every iteration. |  | yes |
+| servers | Servers to query. |  | yes |
+| port | DNS server port. | 53 | no |
+| network | Network protocol name. Available options: udp, tcp, tcp-tls. | udp | no |
+| record_types | Query record type. Available options: A, AAAA, CNAME, MX, NS, PTR, TXT, SOA, SPF, TXT, SRV. | A | no |
+| timeout | Query read timeout. | 2 | no |
 
 </details>
 

@@ -105,7 +105,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ docker_container_unhealthy ](https://github.com/netdata/netdata/blob/master/health/health.d/docker.conf) | docker.container_health_status | ${label:container_name} docker container health status is unhealthy |
+| [ docker_container_unhealthy ](https://github.com/netdata/netdata/blob/master/src/health/health.d/docker.conf) | docker.container_health_status | ${label:container_name} docker container health status is unhealthy |
 
 
 ## Setup
@@ -122,7 +122,7 @@ The configuration file name for this integration is `go.d/docker.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -137,11 +137,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port] | unix:///var/run/docker.sock | True |
-| timeout | Request timeout in seconds. | 1 | False |
-| collect_container_size | Whether to collect container writable layer size. | no | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Docker daemon's listening address. When using a TCP socket, the format is: tcp://[ip]:[port] | unix:///var/run/docker.sock | yes |
+| timeout | Request timeout in seconds. | 1 | no |
+| collect_container_size | Whether to collect container writable layer size. | no | no |
 
 </details>
 

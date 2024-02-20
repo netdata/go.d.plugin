@@ -80,8 +80,8 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ x509check_days_until_expiration ](https://github.com/netdata/netdata/blob/master/health/health.d/x509check.conf) | x509check.time_until_expiration | time until x509 certificate expires |
-| [ x509check_revocation_status ](https://github.com/netdata/netdata/blob/master/health/health.d/x509check.conf) | x509check.revocation_status | x509 certificate revocation status (0: revoked, 1: valid) |
+| [ x509check_days_until_expiration ](https://github.com/netdata/netdata/blob/master/src/health/health.d/x509check.conf) | x509check.time_until_expiration | time until x509 certificate expires |
+| [ x509check_revocation_status ](https://github.com/netdata/netdata/blob/master/src/health/health.d/x509check.conf) | x509check.revocation_status | x509 certificate revocation status (0: revoked, 1: valid) |
 
 
 ## Setup
@@ -98,7 +98,7 @@ The configuration file name for this integration is `go.d/x509check.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -113,17 +113,17 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| source | Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file. |  | False |
-| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | False |
-| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | False |
-| check_revocation_status | Whether to check the revocation status of the certificate. | False | False |
-| timeout | SSL connection timeout. | 2 | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| source | Certificate source. Allowed schemes: https, tcp, tcp4, tcp6, udp, udp4, udp6, file. |  | no |
+| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | no |
+| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | no |
+| check_revocation_status | Whether to check the revocation status of the certificate. | no | no |
+| timeout | SSL connection timeout. | 2 | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

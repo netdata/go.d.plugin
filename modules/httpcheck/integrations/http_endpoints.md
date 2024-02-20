@@ -70,7 +70,7 @@ Metrics:
 |:------|:----------|:----|
 | httpcheck.response_time | time | ms |
 | httpcheck.response_length | length | characters |
-| httpcheck.status | success, no_connection, timeout, bad_content, bad_status | boolean |
+| httpcheck.status | success, timeout, redirect, no_connection, bad_content, bad_header, bad_status | boolean |
 | httpcheck.in_state | time | boolean |
 
 
@@ -94,7 +94,7 @@ The configuration file name for this integration is `go.d/httpcheck.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -109,26 +109,30 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | Server URL. |  | True |
-| status_accepted | HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart. | [200] | False |
-| response_match | If the status code is accepted, the content of the response will be matched against this regular expression. |  | False |
-| cookie_file | Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat). |  | False |
-| timeout | HTTP request timeout. | 1 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. | GET | False |
-| body | HTTP request body. |  | False |
-| headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | Server URL. |  | yes |
+| status_accepted | HTTP accepted response statuses. Anything else will result in 'bad status' in the status chart. | [200] | no |
+| response_match | If the status code is accepted, the content of the response will be matched against this regular expression. |  | no |
+| headers_match | This option defines a set of rules that check for specific key-value pairs in the HTTP headers of the response. | [] | no |
+| headers_match.exclude | This option determines whether the rule should check for the presence of the specified key-value pair or the absence of it. | no | no |
+| headers_match.key | The exact name of the HTTP header to check for. |  | yes |
+| headers_match.value | The [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) to match against the value of the specified header. |  | no |
+| cookie_file | Path to cookie file. See [cookie file format](https://everything.curl.dev/http/cookies/fileformat). |  | no |
+| timeout | HTTP request timeout. | 1 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| method | HTTP request method. | GET | no |
+| body | HTTP request body. |  | no |
+| headers | HTTP request headers. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 
@@ -148,7 +152,25 @@ jobs:
 ```
 </details>
 
-##### With status_accepted
+##### With HTTP request headers
+
+Configuration with HTTP request headers that will be sent by the client.
+
+<details><summary>Config</summary>
+
+```yaml
+jobs:
+  - name: local
+    url: http://127.0.0.1:8080
+    headers:
+      Host: localhost:8080
+      User-Agent: netdata/go.d.plugin
+      Accept: */*
+
+```
+</details>
+
+##### With `status_accepted`
 
 A basic example configuration with non-default status_accepted.
 
@@ -161,6 +183,53 @@ jobs:
     status_accepted:
       - 200
       - 204
+
+```
+</details>
+
+##### With `header_match`
+
+Example configurations with `header_match`. See the value [pattern](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format) syntax.
+
+<details><summary>Config</summary>
+
+```yaml
+jobs:
+    # The "X-Robots-Tag" header must be present in the HTTP response header,
+    # but the value of the header does not matter.
+    # This config checks for the presence of the header regardless of its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+
+    # The "X-Robots-Tag" header must be present in the HTTP response header
+    # only if its value is equal to "noindex, nofollow".
+    # This config checks both the presence of the header and its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        value: '= noindex,nofollow'
+
+    # The "X-Robots-Tag" header must not be present in the HTTP response header
+    # but the value of the header does not matter.
+    # This config checks for the presence of the header regardless of its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        exclude: yes
+
+    # The "X-Robots-Tag" header must not be present in the HTTP response header
+    # only if its value is equal to "noindex, nofollow".
+    # This config checks both the presence of the header and its value.
+  - name: local
+    url: http://127.0.0.1:8080
+    header_match:
+      - key: X-Robots-Tag
+        exclude: yes
+        value: '= noindex,nofollow'
 
 ```
 </details>

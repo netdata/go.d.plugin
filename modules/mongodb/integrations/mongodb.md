@@ -249,7 +249,7 @@ The configuration file name for this integration is `go.d/mongodb.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -264,11 +264,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| uri | MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/). | mongodb://localhost:27017 | True |
-| timeout | Query timeout in seconds. | 2 | False |
-| databases | Databases selector. Determines which database metrics will be collected. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| uri | MongoDB connection string. See [URI syntax](https://www.mongodb.com/docs/manual/reference/connection-string/). | mongodb://localhost:27017 | yes |
+| timeout | Query timeout in seconds. | 2 | no |
+| databases | Databases selector. Determines which database metrics will be collected. |  | no |
 
 </details>
 
@@ -283,7 +283,7 @@ An example configuration.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
 
 ```
 </details>
@@ -297,7 +297,7 @@ An example configuration.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
     databases:
       includes:
         - "* *"
@@ -317,10 +317,10 @@ Local and remote instances.
 ```yaml
 jobs:
   - name: local
-    uri: mongodb://netconfig:password@localhost:27017
+    uri: mongodb://netdata:password@localhost:27017
 
   - name: remote
-    uri: mongodb://netconfig:password@203.0.113.0:27017
+    uri: mongodb://netdata:password@203.0.113.0:27017
 
 ```
 </details>

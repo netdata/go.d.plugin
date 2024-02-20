@@ -118,21 +118,21 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ vcsa_system_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is orange. One or more components are degraded. |
-| [ vcsa_system_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is red. One or more components are unavailable or will stop functioning soon. |
-| [ vcsa_applmgmt_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_applmgmt_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_load_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_load_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_mem_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_mem_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_swap_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_swap_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_database_storage_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_database_storage_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_storage_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is orange. It is degraded, and may have serious problems. |
-| [ vcsa_storage_health_crit ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is red. It is unavailable, or will stop functioning soon. |
-| [ vcsa_software_packages_health_warn ](https://github.com/netdata/netdata/blob/master/health/health.d/vcsa.conf) | vcsa.software_packages_health_status | VCSA software packages security updates are available. |
+| [ vcsa_system_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is orange. One or more components are degraded. |
+| [ vcsa_system_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.system_health_status | VCSA overall system status is red. One or more components are unavailable or will stop functioning soon. |
+| [ vcsa_applmgmt_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_applmgmt_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.applmgmt_health_status | VCSA ApplMgmt component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_load_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_load_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.load_health_status | VCSA Load component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_mem_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_mem_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.mem_health_status | VCSA Memory component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_swap_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_swap_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.swap_health_status | VCSA Swap component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_database_storage_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_database_storage_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.database_storage_health_status | VCSA Database Storage component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_storage_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is orange. It is degraded, and may have serious problems. |
+| [ vcsa_storage_health_crit ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.storage_health_status | VCSA Storage component status is red. It is unavailable, or will stop functioning soon. |
+| [ vcsa_software_packages_health_warn ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vcsa.conf) | vcsa.software_packages_health_status | VCSA software packages security updates are available. |
 
 
 ## Setup
@@ -149,7 +149,7 @@ The configuration file name for this integration is `go.d/vcsa.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -164,23 +164,23 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | Server URL. |  | True |
-| timeout | HTTP request timeout. | 1 | False |
-| username | Username for basic HTTP authentication. |  | True |
-| password | Password for basic HTTP authentication. |  | True |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| method | HTTP request method. | GET | False |
-| body | HTTP request body. |  | False |
-| headers | HTTP request headers. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | false | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | false | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | Server URL. |  | yes |
+| timeout | HTTP request timeout. | 1 | no |
+| username | Username for basic HTTP authentication. |  | yes |
+| password | Password for basic HTTP authentication. |  | yes |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| method | HTTP request method. | GET | no |
+| body | HTTP request body. |  | no |
+| headers | HTTP request headers. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | false | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | false | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 </details>
 

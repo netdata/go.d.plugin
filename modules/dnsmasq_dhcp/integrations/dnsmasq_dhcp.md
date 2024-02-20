@@ -100,7 +100,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ dnsmasq_dhcp_dhcp_range_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/dnsmasq_dhcp.conf) | dnsmasq_dhcp.dhcp_range_utilization | DHCP range utilization |
+| [ dnsmasq_dhcp_dhcp_range_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/dnsmasq_dhcp.conf) | dnsmasq_dhcp.dhcp_range_utilization | DHCP range utilization |
 
 
 ## Setup
@@ -117,7 +117,7 @@ The configuration file name for this integration is `go.d/dnsmasq_dhcp.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -132,11 +132,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| leases_path | Path to dnsmasq DHCP leases file. | /var/lib/misc/dnsmasq.leases | False |
-| conf_path | Path to dnsmasq configuration file. | /etc/dnsmasq.conf | False |
-| conf_dir | Path to dnsmasq configuration directory. | /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| leases_path | Path to dnsmasq DHCP leases file. | /var/lib/misc/dnsmasq.leases | no |
+| conf_path | Path to dnsmasq configuration file. | /etc/dnsmasq.conf | no |
+| conf_dir | Path to dnsmasq configuration directory. | /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new | no |
 
 </details>
 

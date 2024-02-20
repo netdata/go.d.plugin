@@ -160,7 +160,7 @@ The configuration file name for this integration is `go.d/unbound.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -175,17 +175,17 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Server address in IP:PORT format. | 127.0.0.1:8953 | True |
-| timeout | Connection/read/write/ssl handshake timeout. | 1 | False |
-| conf_path | Absolute path to the unbound configuration file. | /etc/unbound/unbound.conf | False |
-| cumulative_stats | Statistics collection mode. Should have the same value as the `statistics-cumulative` parameter in the unbound configuration file. | /etc/unbound/unbound.conf | False |
-| use_tls | Whether to use TLS or not. | True | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | True | False |
-| tls_ca | Certificate authority that client use when verifying server certificates. |  | False |
-| tls_cert | Client tls certificate. | /etc/unbound/unbound_control.pem | False |
-| tls_key | Client tls key. | /etc/unbound/unbound_control.key | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Server address in IP:PORT format. | 127.0.0.1:8953 | yes |
+| timeout | Connection/read/write/ssl handshake timeout. | 1 | no |
+| conf_path | Absolute path to the unbound configuration file. | /etc/unbound/unbound.conf | no |
+| cumulative_stats | Statistics collection mode. Should have the same value as the `statistics-cumulative` parameter in the unbound configuration file. | /etc/unbound/unbound.conf | no |
+| use_tls | Whether to use TLS or not. | yes | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | yes | no |
+| tls_ca | Certificate authority that client use when verifying server certificates. |  | no |
+| tls_cert | Client tls certificate. | /etc/unbound/unbound_control.pem | no |
+| tls_key | Client tls key. | /etc/unbound/unbound_control.key | no |
 
 </details>
 

@@ -103,7 +103,7 @@ The configuration file name for this integration is `go.d/freeradius.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -118,11 +118,11 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Server address. | 127.0.0.1 | True |
-| port | Server port. | 18121 | False |
-| secret | FreeRADIUS secret. | adminsecret | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Server address. | 127.0.0.1 | yes |
+| port | Server port. | 18121 | no |
+| secret | FreeRADIUS secret. | adminsecret | no |
 
 </details>
 

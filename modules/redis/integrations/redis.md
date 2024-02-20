@@ -109,10 +109,10 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ redis_connections_rejected ](https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf) | redis.connections | connections rejected because of maxclients limit in the last minute |
-| [ redis_bgsave_slow ](https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf) | redis.bgsave_now | duration of the on-going RDB save operation |
-| [ redis_bgsave_broken ](https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf) | redis.bgsave_health | status of the last RDB save operation (0: ok, 1: error) |
-| [ redis_master_link_down ](https://github.com/netdata/netdata/blob/master/health/health.d/redis.conf) | redis.master_link_down_since_time | time elapsed since the link between master and slave is down |
+| [ redis_connections_rejected ](https://github.com/netdata/netdata/blob/master/src/health/health.d/redis.conf) | redis.connections | connections rejected because of maxclients limit in the last minute |
+| [ redis_bgsave_slow ](https://github.com/netdata/netdata/blob/master/src/health/health.d/redis.conf) | redis.bgsave_now | duration of the on-going RDB save operation |
+| [ redis_bgsave_broken ](https://github.com/netdata/netdata/blob/master/src/health/health.d/redis.conf) | redis.bgsave_health | status of the last RDB save operation (0: ok, 1: error) |
+| [ redis_master_link_down ](https://github.com/netdata/netdata/blob/master/src/health/health.d/redis.conf) | redis.master_link_down_since_time | time elapsed since the link between master and slave is down |
 
 
 ## Setup
@@ -129,7 +129,7 @@ The configuration file name for this integration is `go.d/redis.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -144,16 +144,16 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| address | Redis server address. | redis://@localhost:6379 | True |
-| timeout | Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds. | 1 | False |
-| username | Username used for authentication. |  | False |
-| password | Password used for authentication. |  | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | False | False |
-| tls_ca | Certificate authority that client use when verifying server certificates. |  | False |
-| tls_cert | Client tls certificate. |  | False |
-| tls_key | Client tls key. |  | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| address | Redis server address. | redis://@localhost:6379 | yes |
+| timeout | Dial (establishing new connections), read (socket reads) and write (socket writes) timeout in seconds. | 1 | no |
+| username | Username used for authentication. |  | no |
+| password | Password used for authentication. |  | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certificate authority that client use when verifying server certificates. |  | no |
+| tls_cert | Client tls certificate. |  | no |
+| tls_key | Client tls key. |  | no |
 
 </details>
 

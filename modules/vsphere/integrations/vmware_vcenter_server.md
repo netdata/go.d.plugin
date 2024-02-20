@@ -166,10 +166,10 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ vsphere_vm_cpu_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.vm_cpu_utilization | Virtual Machine CPU utilization |
-| [ vsphere_vm_mem_usage ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.vm_mem_utilization | Virtual Machine memory utilization |
-| [ vsphere_host_cpu_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.host_cpu_utilization | ESXi Host CPU utilization |
-| [ vsphere_host_mem_utilization ](https://github.com/netdata/netdata/blob/master/health/health.d/vsphere.conf) | vsphere.host_mem_utilization | ESXi Host memory utilization |
+| [ vsphere_vm_cpu_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.vm_cpu_utilization | Virtual Machine CPU utilization |
+| [ vsphere_vm_mem_usage ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.vm_mem_utilization | Virtual Machine memory utilization |
+| [ vsphere_host_cpu_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.host_cpu_utilization | ESXi Host CPU utilization |
+| [ vsphere_host_mem_utilization ](https://github.com/netdata/netdata/blob/master/src/health/health.d/vsphere.conf) | vsphere.host_mem_utilization | ESXi Host memory utilization |
 
 
 ## Setup
@@ -186,7 +186,7 @@ The configuration file name for this integration is `go.d/vsphere.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -201,30 +201,30 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 20 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| url | vCenter server URL. |  | True |
-| host_include | Hosts selector (filter). |  | False |
-| vm_include | Virtual machines selector (filter). |  | False |
-| discovery_interval | Hosts and VMs discovery interval. | 300 | False |
-| timeout | HTTP request timeout. | 20 | False |
-| username | Username for basic HTTP authentication. |  | False |
-| password | Password for basic HTTP authentication. |  | False |
-| proxy_url | Proxy URL. |  | False |
-| proxy_username | Username for proxy basic HTTP authentication. |  | False |
-| proxy_password | Password for proxy basic HTTP authentication. |  | False |
-| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | False |
-| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | False |
-| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | False |
-| tls_cert | Client TLS certificate. |  | False |
-| tls_key | Client TLS key. |  | False |
+| update_every | Data collection frequency. | 20 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| url | vCenter server URL. |  | yes |
+| host_include | Hosts selector (filter). |  | no |
+| vm_include | Virtual machines selector (filter). |  | no |
+| discovery_interval | Hosts and VMs discovery interval. | 300 | no |
+| timeout | HTTP request timeout. | 20 | no |
+| username | Username for basic HTTP authentication. |  | no |
+| password | Password for basic HTTP authentication. |  | no |
+| proxy_url | Proxy URL. |  | no |
+| proxy_username | Username for proxy basic HTTP authentication. |  | no |
+| proxy_password | Password for proxy basic HTTP authentication. |  | no |
+| not_follow_redirects | Redirect handling policy. Controls whether the client follows redirects. | no | no |
+| tls_skip_verify | Server certificate chain and hostname validation policy. Controls whether the client performs this check. | no | no |
+| tls_ca | Certification authority that the client uses when verifying the server's certificates. |  | no |
+| tls_cert | Client TLS certificate. |  | no |
+| tls_key | Client TLS key. |  | no |
 
 ##### host_include
 
 Metrics of hosts matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/blob/master/src/libnetdata/simple_pattern/README.md#simple-patterns).
 - Syntax:
 
   ```yaml
@@ -240,7 +240,7 @@ Metrics of hosts matching the selector will be collected.
 Metrics of VMs matching the selector will be collected.
 
 - Include pattern syntax: "/Datacenter pattern/Cluster pattern/Host pattern/VM pattern".
-- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/tree/master/libnetdata/simple_pattern#simple-patterns).
+- Match pattern syntax: [simple patterns](https://github.com/netdata/netdata/blob/master/src/libnetdata/simple_pattern/README.md#simple-patterns).
 - Syntax:
 
   ```yaml

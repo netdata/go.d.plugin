@@ -85,15 +85,15 @@ No action required.
 
 #### File
 
-The configuration file name for this integration is `go.d/isc_dhcps.conf`.
+The configuration file name for this integration is `go.d/isc_dhcpd.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
-sudo ./edit-config go.d/isc_dhcps.conf
+sudo ./edit-config go.d/isc_dhcpd.conf
 ```
 #### Options
 
@@ -104,10 +104,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| leases_path | Path to DHCP client lease database. | /var/lib/dhcp/dhcpd.leases | False |
-| pools | List of IP pools to monitor. |  | True |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| leases_path | Path to DHCP client lease database. | /var/lib/dhcp/dhcpd.leases | no |
+| pools | List of IP pools to monitor. |  | yes |
 
 ##### pools
 

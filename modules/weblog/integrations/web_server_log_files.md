@@ -140,13 +140,13 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ web_log_1m_unmatched ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.excluded_requests | percentage of unparsed log lines over the last minute |
-| [ web_log_1m_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over the last minute (1xx, 2xx, 304, 401) |
-| [ web_log_1m_redirects ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of redirection HTTP requests over the last minute (3xx except 304) |
-| [ web_log_1m_bad_requests ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of client error HTTP requests over the last minute (4xx except 401) |
-| [ web_log_1m_internal_errors ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of server error HTTP requests over the last minute (5xx) |
-| [ web_log_web_slow ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.request_processing_time | average HTTP response time over the last 1 minute |
-| [ web_log_5m_requests_ratio ](https://github.com/netdata/netdata/blob/master/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over over the last 5 minutes, compared with the previous 5 minutes |
+| [ web_log_1m_unmatched ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.excluded_requests | percentage of unparsed log lines over the last minute |
+| [ web_log_1m_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over the last minute (1xx, 2xx, 304, 401) |
+| [ web_log_1m_redirects ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of redirection HTTP requests over the last minute (3xx except 304) |
+| [ web_log_1m_bad_requests ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of client error HTTP requests over the last minute (4xx except 401) |
+| [ web_log_1m_internal_errors ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of server error HTTP requests over the last minute (5xx) |
+| [ web_log_web_slow ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.request_processing_time | average HTTP response time over the last 1 minute |
+| [ web_log_5m_requests_ratio ](https://github.com/netdata/netdata/blob/master/src/health/health.d/web_log.conf) | web_log.type_requests | ratio of successful HTTP requests over over the last 5 minutes, compared with the previous 5 minutes |
 
 
 ## Setup
@@ -163,7 +163,7 @@ The configuration file name for this integration is `go.d/web_log.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -210,26 +210,26 @@ Notes:
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| path | Path to the web server log file. |  | True |
-| exclude_path | Path to exclude. | *.gz | False |
-| url_patterns | List of URL patterns. | [] | False |
-| url_patterns.name | Used as a dimension name. |  | True |
-| url_patterns.pattern | Used to match against full original request URI. Pattern syntax in [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format). |  | True |
-| parser | Log parser configuration. |  | False |
-| parser.log_type | Log parser type. | auto | False |
-| parser.csv_config | CSV log parser config. |  | False |
-| parser.csv_config.delimiter | CSV field delimiter. | , | False |
-| parser.csv_config.format | CSV log format. |  | False |
-| parser.ltsv_config | LTSV log parser config. |  | False |
-| parser.ltsv_config.field_delimiter | LTSV field delimiter. | \t | False |
-| parser.ltsv_config.value_delimiter | LTSV value delimiter. | : | False |
-| parser.ltsv_config.mapping | LTSV fields mapping to **known fields**. |  | True |
-| parser.json_config | JSON log parser config. |  | False |
-| parser.json_config.mapping | JSON fields mapping to **known fields**. |  | True |
-| parser.regexp_config | RegExp log parser config. |  | False |
-| parser.regexp_config.pattern | RegExp pattern with named groups. |  | True |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| path | Path to the web server log file. |  | yes |
+| exclude_path | Path to exclude. | *.gz | no |
+| url_patterns | List of URL patterns. | [] | no |
+| url_patterns.name | Used as a dimension name. |  | yes |
+| url_patterns.pattern | Used to match against full original request URI. Pattern syntax in [matcher](https://github.com/netdata/go.d.plugin/tree/master/pkg/matcher#supported-format). |  | yes |
+| parser | Log parser configuration. |  | no |
+| parser.log_type | Log parser type. | auto | no |
+| parser.csv_config | CSV log parser config. |  | no |
+| parser.csv_config.delimiter | CSV field delimiter. | , | no |
+| parser.csv_config.format | CSV log format. |  | no |
+| parser.ltsv_config | LTSV log parser config. |  | no |
+| parser.ltsv_config.field_delimiter | LTSV field delimiter. | \t | no |
+| parser.ltsv_config.value_delimiter | LTSV value delimiter. | : | no |
+| parser.ltsv_config.mapping | LTSV fields mapping to **known fields**. |  | yes |
+| parser.json_config | JSON log parser config. |  | no |
+| parser.json_config.mapping | JSON fields mapping to **known fields**. |  | yes |
+| parser.regexp_config | RegExp log parser config. |  | no |
+| parser.regexp_config.pattern | RegExp pattern with named groups. |  | yes |
 
 ##### url_patterns
 

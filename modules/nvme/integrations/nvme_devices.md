@@ -94,7 +94,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ nvme_device_critical_warnings_state ](https://github.com/netdata/netdata/blob/master/health/health.d/nvme.conf) | nvme.device_critical_warnings_state | NVMe device ${label:device} has critical warnings |
+| [ nvme_device_critical_warnings_state ](https://github.com/netdata/netdata/blob/master/src/health/health.d/nvme.conf) | nvme.device_critical_warnings_state | NVMe device ${label:device} has critical warnings |
 
 
 ## Setup
@@ -124,7 +124,7 @@ The configuration file name for this integration is `go.d/nvme.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -139,10 +139,10 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 10 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| binary_path | Path to nvme binary. The default is "nvme" and the executable is looked for in the directories specified in the PATH environment variable. | nvme | False |
-| timeout | nvme binary execution timeout. | 2 | False |
+| update_every | Data collection frequency. | 10 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| binary_path | Path to nvme binary. The default is "nvme" and the executable is looked for in the directories specified in the PATH environment variable. | nvme | no |
+| timeout | nvme binary execution timeout. | 2 | no |
 
 </details>
 

@@ -101,9 +101,9 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ ping_host_reachable ](https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf) | ping.host_packet_loss | network host ${lab1el:host} reachability status |
-| [ ping_packet_loss ](https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf) | ping.host_packet_loss | packet loss percentage to the network host ${label:host} over the last 10 minutes |
-| [ ping_host_latency ](https://github.com/netdata/netdata/blob/master/health/health.d/ping.conf) | ping.host_rtt | average latency to the network host ${label:host} over the last 10 seconds |
+| [ ping_host_reachable ](https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf) | ping.host_packet_loss | network host ${lab1el:host} reachability status |
+| [ ping_packet_loss ](https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf) | ping.host_packet_loss | packet loss percentage to the network host ${label:host} over the last 10 minutes |
+| [ ping_host_latency ](https://github.com/netdata/netdata/blob/master/src/health/health.d/ping.conf) | ping.host_rtt | average latency to the network host ${label:host} over the last 10 seconds |
 
 
 ## Setup
@@ -120,7 +120,7 @@ The configuration file name for this integration is `go.d/ping.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -135,13 +135,13 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 5 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| hosts | Network hosts. |  | True |
-| network | Allows configuration of DNS resolution. Supported options: ip (select IPv4 or IPv6), ip4 (select IPv4), ip6 (select IPv6). | ip | False |
-| privileged | Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping. | True | False |
-| packets | Number of ping packets to send. | 5 | False |
-| interval | Timeout between sending ping packets. | 100ms | False |
+| update_every | Data collection frequency. | 5 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| hosts | Network hosts. |  | yes |
+| network | Allows configuration of DNS resolution. Supported options: ip (select IPv4 or IPv6), ip4 (select IPv4), ip6 (select IPv6). | ip | no |
+| privileged | Ping packets type. "no" means send an "unprivileged" UDP ping,  "yes" - raw ICMP ping. | yes | no |
+| packets | Number of ping packets to send. | 5 | no |
+| interval | Timeout between sending ping packets. | 100ms | no |
 
 </details>
 

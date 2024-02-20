@@ -79,7 +79,7 @@ The following alerts are available:
 
 | Alert name  | On metric | Description |
 |:------------|:----------|:------------|
-| [ whoisquery_days_until_expiration ](https://github.com/netdata/netdata/blob/master/health/health.d/whoisquery.conf) | whoisquery.time_until_expiration | time until the domain name registration expires |
+| [ whoisquery_days_until_expiration ](https://github.com/netdata/netdata/blob/master/src/health/health.d/whoisquery.conf) | whoisquery.time_until_expiration | time until the domain name registration expires |
 
 
 ## Setup
@@ -96,7 +96,7 @@ The configuration file name for this integration is `go.d/whoisquery.conf`.
 
 
 You can edit the configuration file using the `edit-config` script from the
-Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/configure/nodes.md#the-netdata-config-directory).
+Netdata [config directory](https://github.com/netdata/netdata/blob/master/docs/netdata-agent/configuration.md#the-netdata-config-directory).
 
 ```bash
 cd /etc/netdata 2>/dev/null || cd /opt/netdata/etc/netdata
@@ -111,12 +111,12 @@ The following options can be defined globally: update_every, autodetection_retry
 
 | Name | Description | Default | Required |
 |:----|:-----------|:-------|:--------:|
-| update_every | Data collection frequency. | 1 | False |
-| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | False |
-| source | Domain address. |  | True |
-| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | False |
-| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | False |
-| timeout | The query timeout in seconds. | 5 | False |
+| update_every | Data collection frequency. | 1 | no |
+| autodetection_retry | Recheck interval in seconds. Zero means no recheck will be scheduled. | 0 | no |
+| source | Domain address. |  | yes |
+| days_until_expiration_warning | Number of days before the alarm status is warning. | 30 | no |
+| days_until_expiration_critical | Number of days before the alarm status is critical. | 15 | no |
+| timeout | The query timeout in seconds. | 5 | no |
 
 </details>
 
